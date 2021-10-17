@@ -15,6 +15,12 @@ class CreateMilestonesTable extends Migration
     {
         Schema::create('milestones', function (Blueprint $table) {
             $table->id();
+            $table->integer('project_id');
+            $table->string('title', 255);
+            $table->text('description')->nullable();
+            $table->string('price', 255);
+            $table->integer('status')->default(0);
+            $table->date('due_date')->nullable();
             $table->timestamps();
         });
     }

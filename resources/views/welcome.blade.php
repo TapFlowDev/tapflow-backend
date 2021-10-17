@@ -4,11 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<<<<<<< HEAD
-        <title>Laravel HI 2</title>
-=======
         <title>Laravel HI from dev</title>
->>>>>>> 85c6744e815b5482553739642626d50b719120a7
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
