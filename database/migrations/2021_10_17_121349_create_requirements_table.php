@@ -14,7 +14,12 @@ class CreateRequirementsTable extends Migration
     public function up()
     {
         Schema::create('requirements', function (Blueprint $table) {
-            $table->id();
+            $table->integer('id')->autoIncrement();
+            $table->integer('project_id');
+            $table->integer('user_id');
+            $table->integer('milestone');
+            $table->string('name','255');
+            $table->text('description');
             $table->timestamps();
         });
     }
