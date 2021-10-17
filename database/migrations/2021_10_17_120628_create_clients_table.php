@@ -17,8 +17,6 @@ class CreateClientsTable extends Migration
             $table->integer('id')->autoIncrement();
             $table->integer('user_id');
             $table->integer('company_id');
-            $table->string('f_name','255');
-            $table->string('l_name','255');
             $table->text('bio');
             $table->string('attachment','255');
             $table->string('img','255');
