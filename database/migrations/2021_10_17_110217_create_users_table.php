@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('gender','10');
             $table->integer('type')->default('0');
             $table->integer('status')->default('0');
-            $table->string('token','255');
+            $table->string('token','255')->nullable();
             $table->integer('deleted')->default('0');
             $table->timestamps();
         });
