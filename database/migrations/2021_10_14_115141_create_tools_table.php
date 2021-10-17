@@ -15,6 +15,8 @@ class CreateToolsTable extends Migration
     {
         Schema::create('tools', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id');
+            $table->string('name', 255)->nullable();
             $table->timestamps();
         });
     }
