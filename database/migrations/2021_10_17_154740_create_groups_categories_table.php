@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAcceptedProposalsTable extends Migration
+class CreateGroupsCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,11 @@ class CreateAcceptedProposalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('accepted_proposals', function (Blueprint $table) {
-            $table->id();
+        Schema::create('groups_categories', function (Blueprint $table) {
+            $table->integer('id')->autoIncrement();
+            $table->integer('group_id');
+            $table->integer('category_id');
+            $table->integer('sub_category_id');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ class CreateAcceptedProposalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accepted_proposals');
+        Schema::dropIfExists('groups_categories');
     }
 }

@@ -11,7 +11,11 @@ use App\Models\User;
 class UserController extends Controller
 {
     //add row 
-    function Insert(Request $req)
+    function Insert_freelancer(Request $req)
+    {  //add row 
+
+        
+    function Insert_freelancer(Request $req)
     {
         $user=new User;
         $user_type=$req->user_type;
