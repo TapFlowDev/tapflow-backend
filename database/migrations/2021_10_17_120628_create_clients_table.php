@@ -16,10 +16,10 @@ class CreateClientsTable extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->integer('user_id');
-            $table->integer('company_id');
+            $table->integer('company_id')->nullable();
             $table->text('bio');
             $table->string('attachment','255');
-            $table->string('img','255');
+            $table->string('image','255');
             $table->string('country','255');
             $table->string('role','255')->nullable();
             $table->timestamps();
