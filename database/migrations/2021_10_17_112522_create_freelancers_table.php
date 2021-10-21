@@ -18,8 +18,6 @@ class CreateFreelancersTable extends Migration
             $table->integer('user_id');
             $table->integer('team_id')->nullable();
             $table->text('bio');
-            $table->string('f_name','255');
-            $table->string('l_name','255');
             $table->string('hourly_rate','255');
             $table->string('attachment','255');
             $table->string('image','255');
