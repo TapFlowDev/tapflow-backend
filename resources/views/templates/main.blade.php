@@ -35,6 +35,8 @@
                     @if (Route::has('login'))
                     <li class="nav-item">
                         <a class="nav-link" href="/AdminTool/users">Users</a>
+                    </li> <li class="nav-item">
+                        <a class="nav-link" href="/AdminTool/categories">Categories</a>
                     </li>
                     @endif
                     {{-- <li class="nav-item dropdown">
