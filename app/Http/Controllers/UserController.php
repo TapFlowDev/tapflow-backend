@@ -5,43 +5,289 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-// use App\Models\Freelancer;
-// use App\Models\Company;
-// user types 0,1 0:freelancer 1:client
+use App\Models\Freelancer;
+use App\Models\Client;
+use Illuminate\Support\Facades\Validator;
+
+use ApiResponser;
+use App\Models\Rate;
+use Exception;
+use GuzzleHttp\Promise\Create;
+use Illuminate\Support\Facades\Auth;
+
+use function PHPSTORM_META\type;
+use function PHPUnit\Framework\isEmpty;
+
+// user types 1,2 1:freelancer 2:client
 class UserController extends Controller
 {
-    //add row 
-    function Insert_freelancer(Request $req)
-    {  //add row 
+    //add freelancer
+    function add_user(Request $req)
+    {
+        $rules = array(
+            "first_name" => "required|max:255",
+            "last_name" => "required|max:255",
+            "email" => "email|required|max:255|unique:users",
+            "password" => "required |min:8|max:255",
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            return $validator->errors();
+        } else {
 
-        
+            $user = new User;
+
+            try {
+
+                $user_db = User::create($req->all());
+                $user_id = $user_db->id;
+
+                $response = array("data" => array(
+                    "message" => "user added successfully",
+                    "status" => "200",
+                    "user_id" => $user_id,
+                ));
+
+                return (json_encode($response));
+            } catch (\Exception $error) {
+                $response = array("data" => array(
+                    "message" => "There IS Error Occurred",
+                    "status" => "500",
+                    "error" => $error,
+                ));
+
+                return (json_encode($response));
+            }
+        }
+    }
+
     function Insert_freelancer(Request $req)
     {
-        $user=new User;
-        $user_type=$req->user_type;
-        
-        $user->email=$req->email;
-            $user->password=$req->password;
-            $user->type=$req->user_type;
+        $type = 1;
+        $rules = array(
+            "user_id" => "required",
+            "bio" => "required",
+            "hourly_rate" => "required",
+            "attachment" => "required",
+            "image" => "required",
+            "country" => "required",
+            "gender" => "max:1",
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+        try {
+            $data = $req->except(['gender', 'dob']);
+
+            print_r($data);
+            $freelancer = Freelancer::create($req->except(['gender', 'dob']));
+
+
+            $user = User::find($req->user_id);
+            $user->gender = $req->gender;
+            $user->dob = $req->dob;
+            $user->type = $type;
             $user->save();
-            $user_id=$user->id;
-        if($user_type == '0')
-        {   
-            $freelancer=new Freelancer;
-            $freelancer->user_id=$user_id;
-            $freelancer->
 
+            $response = array("data" => array(
+                "message" => "user information added successfully",
+                "status" => "200",
+                "user_id" => $req->user_id,
+            ));
 
+            return (json_encode($response));
+        } catch (Exception $error) {
+
+            $response = array("data" => array(
+                "message" => "There IS Error Occurred",
+                "status" => "500",
+                "error" => $error,
+            ));
+
+            return (json_encode($response));
+        }
+    }
+    // add company
+    function Insert_client(Request $req)
+    {
+        $type = 2;
+        $rules = array(
+            "user_id" => "required",
+            "bio" => "required",
+            "role" => "required",
+            "attachment" => "required",
+            "image" => "required",
+            "country" => "required",
+
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+        try {
+            $data = $req->except(['gender', 'dob']);
+            $client = Client::create($data);
+            $user = User::find($req->user_id);
+            $user->dob = $req->dob;
+            $user->gender = $req->gender;
+            $user->type = $type;
+            $user->save();
+
+            $response = array("data" => array(
+                "message" => "user information added successfully",
+                "status" => "200",
+                "user_id" => $req->user_id,
+            ));
+
+            return (json_encode($response));
+        } catch (\Exception $error) {
+
+            $response = array("data" => array(
+                "message" => "There IS Error Occurred",
+                "status" => "500",
+                "error" => $error,
+            ));
+
+            return (json_encode($response));
+        }
+    }
+    //login dunction using Sanctum auth token
+    function login(Request $req)
+    {
+
+        try {
+            $rules = array(
+                "email" => "email|required",
+                "password" => "required",
+            );
+            $validator = Validator::make($req->all(), $rules);
+            if ($validator->fails()) {
+                return $validator->errors();
+            }
+            $credentials = request(['email', 'password']);
+            if (!Auth::attempt($credentials)) {
+                $response = array("data" => array(
+                    "message" => "Unauthorized",
+                    "status" => "422",
+                ));
+
+                return (json_encode($response));
+            }
+
+            $user = User::where('email', $req->email)->first();
+            if (!Hash::check($req->password, $user->password)) {
+                $response = array("data" => array(
+                    "message" => "The Password does not match",
+                    "status" => "422",
+                ));
+
+                return (json_encode($response));
+            }
+            $tokenResult = $user->createToken('authToken')->plainTextToken;
+            $user->token = $tokenResult;
+            $user->save();
+            $response = array("data" => array(
+                "message" => "login successfully",
+                "status" => "200",
+                "user_id"=>$user->id,
+                "'userToken'" => $tokenResult,
+                "tokenType" => "Bearer"
+            ));
+
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = array("data" => array(
+                "message" => "There IS Error Occurred",
+                "status" => "500",
+                "error" => $error,
+            ));
+
+            return (json_encode($response));
+        }
+    }
+    function logout(Request $req)
+    { 
+        try {
+        $token=$req->header('Authorization');
+        $token=substr($token,7);
+        $user = User::where("token",substr($req->header('Authorization'),7))->first();
+        // $user=User::where('token',$token);
+        $user->token="NULL";
+        $user->save();
+        $response = array("data" => array(
+            "message" => "Logout successfully", 
+            "status" => "200",
+        ));
+
+        return (json_encode($response));
+       
+        // auth()->user()->tokens()->delete();
+    }
+        catch (Exception $error) {
+            $response = array("data" => array(
+                "message" => "There IS Error Occurred",
+                "status" => "500",
+                "error" => $error,
+            ));
+
+            return (json_encode($response));
+        }
+    }
+    //get free lancer info by id
+    function get_freelancer_info($id)
+    {   try{
+        $user=User::where('id',$id)->get();
+        $freelancer=Freelancer::where('user_id',$id)->get();
+        $response = array("data" => array(
+            "user" => $user,
+            "info" =>$freelancer,
+            "status" => "200",
+        ));
+        return (json_encode($response));
+    }
+    catch(Exception $error)
+    {
+        $response = array("data" => array(
+            "message" => "There IS Error Occurred",
+            "status" => "500",
+            "error" => $error,
+        ));
+
+        return (json_encode($response));   
+    }
+    }
+    //get client info by id
+    function get_client_info($id)
+    {
+        try{
+            $user=User::where('id',$id)->get();
+            $client=Client::where('user_id',$id)->get();
+            $response = array("data" => array(
+                "user" => $user,
+                "info" =>$client,
+                "status" => "200",
+            ));
+            return (json_encode($response));
+        }
+        catch(Exception $error)
+        {
+            $response = array("data" => array(
+                "message" => "There IS Error Occurred",
+                "status" => "500",
+                "error" => $error,
+            ));
+    
+            return (json_encode($response));   
         }
     }
     //update row according to row id
     function Update($id)
     {
-
     }
     //delete row according to row id
     function Delete($id)
     {
-
+        
     }
 }
