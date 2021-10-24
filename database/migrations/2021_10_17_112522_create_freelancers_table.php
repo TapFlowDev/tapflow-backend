@@ -14,13 +14,14 @@ class CreateFreelancersTable extends Migration
     public function up()
     {
         Schema::create('freelancers', function (Blueprint $table) {
-            $table->id();
+            $table->integer('id')->autoIncrement();
             $table->integer('user_id');
-            $table->integer('team_id');
-            $table->text('bio')->nullable();;
-            $table->string('hourly_rate', 255);
-            $table->string('attachment', 255)->nullable();
-            $table->string('image', 255)->nullable();;
+            $table->integer('team_id')->nullable();
+            $table->text('bio');
+            $table->string('hourly_rate','255');
+            $table->string('attachment','255');
+            $table->string('image','255');
+            $table->string('country','255');
             $table->timestamps();
         });
     }
