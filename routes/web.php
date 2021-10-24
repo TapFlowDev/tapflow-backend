@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
-use AdminTool\AdminConroller;
-use AdminTool\AdminCategoriesController;
-use AdminTool\AdminSubCategoryController;
+use App\Http\Controllers\AdminTool\AdminConroller;
+use App\Http\Controllers\AdminTool\AdminCategoriesController;
+use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 // use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 /*
 |--------------------------------------------------------------------------
