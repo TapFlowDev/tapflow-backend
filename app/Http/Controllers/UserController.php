@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Freelancer;
-use App\Models\Client;
+use App\Models\Client;  
 use Illuminate\Support\Facades\Validator;
 
 use ApiResponser;
@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Auth;
 
 use function PHPSTORM_META\type;
 use function PHPUnit\Framework\isEmpty;
+use App\Http\Controllers\UserCategoriesController;
+
 
 // user types 1,2 1:freelancer 2:client
 class UserController extends Controller
@@ -63,6 +65,7 @@ class UserController extends Controller
 
     function Insert_freelancer(Request $req)
     {
+        $userCategoryObj = new UserCategoriesController;
         $type = 1;
         $rules = array(
             "user_id" => "required",
@@ -78,18 +81,21 @@ class UserController extends Controller
             return $validator->errors();
         }
         try {
-            $data = $req->except(['gender', 'dob']);
+            $data = $req->except(['gender', 'dob', 'category']);
 
-            print_r($data);
+            // print_r($data);
             $freelancer = Freelancer::create($req->except(['gender', 'dob']));
-
-
+            
             $user = User::find($req->user_id);
             $user->gender = $req->gender;
             $user->dob = $req->dob;
             $user->type = $type;
             $user->save();
+            foreach($req->category as $key => $value){
+                // dd($value);
+                $userCategoryObj->Insert($value, $req->user_id);
 
+            }
             $response = array("data" => array(
                 "message" => "user information added successfully",
                 "status" => "200",
