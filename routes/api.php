@@ -27,9 +27,9 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
     Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
     
     Route::get('logout',[UserController::class,'logout']);
-    Route::get('getCategories',[CategoriesController::class,'getCategories']);
 });
 
+Route::get('getCategories',[CategoriesController::class,'getCategories']);
 
 
 Route::post('addUser',[UserController::class,'add_user']);

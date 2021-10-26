@@ -18,8 +18,7 @@ use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 */
 
 Route::get('/', function () {
-    // return redirect('/AdminTool');
-    return view('index');
+    return redirect('/AdminTool');
 });
 Route::get('/AdminTool', function () {
     return view('index');
