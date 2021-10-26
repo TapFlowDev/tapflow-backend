@@ -1,0 +1,12 @@
+spec:
+  name: tapflow-backend
+  services:
+  - environment_slug: php
+    git:
+      branch: main
+      repo_clone_url: https://github.com/TapFlowDev/tapflow-backend.git
+envs:
+- key: APP_KEY
+value: "base64:gRNzubVs95FIddAcwmaZXeo2+Q3XlVvCHjkJf7scyF0="
+name: tapflow-backend
+run_command: heroku-php-apache2 public/
