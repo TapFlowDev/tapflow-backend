@@ -22,6 +22,13 @@ use  App\Http\Controllers\CategoriesController;
 //     return $request->user();
 // });
 
+// Route::get('/token', function (Request $request) {
+//     $token = $request->session()->token();
+
+//     $token = csrf_token();
+
+// });
+
 Route::group(['middleware'=>'auth:sanctum'],function(){
     Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
     Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
