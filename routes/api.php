@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use  App\Http\Controllers\GroupController;
+use  App\Http\Controllers\CategoriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,10 +27,10 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
     Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
     
     Route::get('logout',[UserController::class,'logout']);
+    Route::get('getCategories',[CategoriesController::class,'getCategories']);
 });
 
 
-Route::get('getCategories',[GroupController::class,'get_categories']);
 
 Route::post('addUser',[UserController::class,'add_user']);
 Route::post('addFreelancerInfo',[UserController::class,'Insert_freelancer']);
