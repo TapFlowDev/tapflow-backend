@@ -26,6 +26,7 @@ class UserController extends Controller
     //add freelancer
     function add_user(Request $req)
     {
+        dd($req);
         $rules = array(
             "first_name" => "required|max:255",
             "last_name" => "required|max:255",
