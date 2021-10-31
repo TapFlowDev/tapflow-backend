@@ -288,6 +288,9 @@ class UserController extends Controller
             return (json_encode($response));   
         }
     }
+    function getAllUsers(){
+        return User::all();
+    }
     //update row according to row id
     function Update($id)
     {

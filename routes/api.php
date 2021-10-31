@@ -37,6 +37,7 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
 });
 
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
+Route::get('getAllUsers',[UserController::class,'getAllUsers']);
 
 
 Route::post('addUser',[UserController::class,'add_user']);
