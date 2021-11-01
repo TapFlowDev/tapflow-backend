@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Group;
 use App\Models\Category;
 use App\Models\SubCategory;
-use App\Models\groups_category;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\GroupCategoriesController;
 
 use Exception;
 
@@ -48,20 +48,26 @@ class GroupController extends Controller
     {
         $rules = array(
             "name" => "required|max:255",
+            "admin_id" => "required|unique:groups"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
             return $validator->errors();
         } else {
-
             // $group = new Group;
             $type = 1;
             $teamObj = new TeamController;
+            $groupCategoryObj = new GroupCategoriesController;
 
-            try {
+            // try {
                 $req->types = $type;
                 $group = Group::create($req->only(['name', 'admin_id', 'types']));
                 $group_id = $group->id;
+
+                foreach ($req->category as $key => $value) {
+                    //     // dd($value);
+                    $groupCategoryObj->Insert($value, $group_id);
+                }
 
                 $teamArr = array();
                 $teamArr['name'] = $req->name;
@@ -84,7 +90,6 @@ class GroupController extends Controller
                     $imageName = "team-attachment-" . $teamId . "." . $ext;
                     $req->image->move(public_path($destPath), $imageName);
                     $teamObj->updateFiles($teamId, $imageName, 'attachment');
-
                 }
                 $response = array("data" => array(
                     "message" => "team added successfully",
@@ -94,15 +99,15 @@ class GroupController extends Controller
                 ));
 
                 return (json_encode($response));
-            } catch (\Exception $error) {
-                $response = array("data" => array(
-                    "message" => "There IS Error Occurred",
-                    "status" => "500",
-                    "error" => $error,
-                ));
+            // } catch (\Exception $error) {
+            //     $response = array("data" => array(
+            //         "message" => "There IS Error Occurred",
+            //         "status" => "500",
+            //         "error" => $error,
+            //     ));
 
-                return (json_encode($response));
-            }
+            //     return (json_encode($response));
+            // }
         }
     }
     //update row according to row id
