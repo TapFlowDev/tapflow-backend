@@ -66,9 +66,14 @@ class GroupController extends Controller
                 $group_id = $group->id;
 
                 foreach ($req->category as $key => $value) {
-                    //     // dd($value);
-                    $groupCategoryObj->Insert($value, $group_id);
-                }
+                    $categoryArr = array();
+                   foreach ($value['subId'] as $keySub => $subValue) {
+                       $categoryArr[$keySub]['group_id'] = $group_id;
+                       $categoryArr[$keySub]['category_id'] = $value['catId'];
+                       $categoryArr[$keySub ]['sub_category_id'] = $subValue;
+                   }
+                   $groupCategoryObj->addMultiRows($categoryArr);
+               }
 
                 $teamArr = array();
                 $teamArr['name'] = $req->name;
@@ -100,14 +105,14 @@ class GroupController extends Controller
                 ));
 
                 return (json_encode($response));
-             } catch (\Exception $error) {
-                 $response = array("data" => array(
-                     "message" => "There IS Error Occurred",
-                     "status" => "500",
-                     "error" => $error,
-                 ));
+            } catch (\Exception $error) {
+                $response = array("data" => array(
+                    "message" => "There IS Error Occurred",
+                    "status" => "500",
+                    "error" => $error,
+                ));
 
-                 return (json_encode($response));
+                return (json_encode($response));
             }
         }
     }
@@ -115,7 +120,7 @@ class GroupController extends Controller
     {
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:groups"
+            // "admin_id" => "required|unique:groups"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -125,14 +130,20 @@ class GroupController extends Controller
             $type = 2;
             $teamObj = new CompanyController;
             $groupCategoryObj = new GroupCategoriesController;
-
-             try {
+     try {
                 $req->types = $type;
                 $group = Group::create($req->only(['name', 'admin_id', 'types']));
                 $group_id = $group->id;
+              
 
                 foreach ($req->category as $key => $value) {
-                    $groupCategoryObj->Insert($value, $group_id);
+                     $categoryArr = array();
+                    foreach ($value['subId'] as $keySub => $subValue) {
+                        $categoryArr[$keySub]['group_id'] = $group_id;
+                        $categoryArr[$keySub]['category_id'] = $value['catId'];
+                        $categoryArr[$keySub ]['sub_category_id'] = $subValue;
+                    }
+                    $groupCategoryObj->addMultiRows($categoryArr);
                 }
 
                 $teamArr = array();
@@ -165,7 +176,7 @@ class GroupController extends Controller
                 ));
 
                 return (json_encode($response));
-            } catch (\Exception $error) {
+             } catch (\Exception $error) {
                  $response = array("data" => array(
                      "message" => "There IS Error Occurred",
                      "status" => "500",
