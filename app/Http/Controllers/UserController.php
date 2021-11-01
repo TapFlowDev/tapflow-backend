@@ -197,7 +197,7 @@ class UserController extends Controller
                 "message" => "login successfully",
                 "status" => "200",
                 "user_id"=>$user->id,
-                "'userToken'" => $tokenResult,
+                "userToken" => $tokenResult,
                 "tokenType" => "Bearer"
             ));
 
