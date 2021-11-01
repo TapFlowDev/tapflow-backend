@@ -30,4 +30,8 @@ class UserCategoriesController extends Controller
     {
 
     }
+    function addMultiRows($info){
+        users_category::insert($info);
+
+    }
 }
