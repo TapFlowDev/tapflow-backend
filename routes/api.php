@@ -36,6 +36,7 @@ Route::post('addUser',[UserController::class,'add_user']);
 Route::post('addFreelancerInfo',[UserController::class,'Insert_freelancer']);
 Route::post('addClientInfo',[UserController::class,'Insert_client']);
 Route::post('Login',[UserController::class,'login']);
+Route::post('addTeam',[GroupController::class,'add_group_team']);
 
 
 

@@ -7,5 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+    /*
+    type 1 => team(agency or team of freelancers)
+    type 2 => company
+    */
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'admin_id',
+        'types'
+    ];
 }
