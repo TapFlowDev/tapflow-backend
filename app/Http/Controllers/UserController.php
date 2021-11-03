@@ -84,7 +84,12 @@ class UserController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+            $response = array("data" => array(
+                "message" => "Validation Error",
+                "status" => "101",
+                "error" => $validator->errors()
+            ));
+            return (json_encode($response));
         }
         try {
             $data = $req->except(['gender', 'dob', 'category']);
@@ -135,7 +140,12 @@ class UserController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+            $response = array("data" => array(
+                "message" => "Validation Error",
+                "status" => "101",
+                "error" => $validator->errors()
+            ));
+            return (json_encode($response));
         }
         try {
             $data = $req->except(['gender', 'dob']);
@@ -175,7 +185,13 @@ class UserController extends Controller
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
-                return $validator->errors();
+                $response = array("data" => array(
+                    "message" => "Validation Error",
+                    "status" => "101",
+                    "error" => $validator->errors()
+                ));
+
+                return (json_encode($response));
             }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
