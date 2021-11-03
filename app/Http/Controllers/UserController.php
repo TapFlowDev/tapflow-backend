@@ -51,6 +51,11 @@ class UserController extends Controller
                 $user_db = User::create($req->all());
                 $user_id = $user_db->id;
 
+                $user = User::find($req->user_id);
+                $user->type = $req->type;
+                $user->save();
+
+
                 $response = array("data" => array(
                     "message" => "user added successfully",
                     "status" => "200",
