@@ -16,13 +16,14 @@ use Illuminate\Auth\Middleware\Authenticate as Middleware;
     //    if (! $request->expectsJson()) {
     //         return "status:500 kol";
     //     }
-    if(!$request)
-    {
-        $response = array("data" => array(
-            "message" => "Validation Error",
-            "status" => "101",
-        ));
-        return (json_encode($response));
-    }
+    // if(!$request->expectsJson())
+    // {
+    //     $response = array("data" => array(
+    //         "message" => "Validation Error",
+    //         "status" => "101",
+    //     ));
+    //     return (json_encode($response));
+    // }
+    dd($request);
     }
  } 
