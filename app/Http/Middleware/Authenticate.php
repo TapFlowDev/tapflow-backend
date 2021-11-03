@@ -25,6 +25,6 @@ use Illuminate\Auth\Middleware\Authenticate as Middleware;
     //     return (json_encode($response));
     // }
     // dd($request);
-    echo "status: 101 , msg: not"
+    echo "status: 101 , msg: not";
     }
  } 
