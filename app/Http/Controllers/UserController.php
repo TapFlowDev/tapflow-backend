@@ -32,6 +32,7 @@ class UserController extends Controller
             "last_name" => "required|max:255",
             "email" => "email|required|max:255|unique:users",
             "password" => "required |min:8|max:255",
+            "type"=>"required",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -72,7 +73,7 @@ class UserController extends Controller
     function Insert_freelancer(Request $req)
     {
         $userCategoryObj = new UserCategoriesController;
-        $type = 1;
+       
         $rules = array(
             "user_id" => "required",
             "bio" => "required",
@@ -100,7 +101,7 @@ class UserController extends Controller
             $user = User::find($req->user_id);
             $user->gender = $req->gender;
             $user->dob = $req->dob;
-            $user->type = $type;
+            
             $user->save();
             foreach($req->category as $key => $value){
                 // dd($value);
@@ -128,7 +129,7 @@ class UserController extends Controller
     // add company
     function Insert_client(Request $req)
     {
-        $type = 2;
+        
         $rules = array(
             "user_id" => "required",
             "bio" => "required",
@@ -153,7 +154,7 @@ class UserController extends Controller
             $user = User::find($req->user_id);
             $user->dob = $req->dob;
             $user->gender = $req->gender;
-            $user->type = $type;
+         
             $user->save();
 
             $response = array("data" => array(
@@ -214,13 +215,16 @@ class UserController extends Controller
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
             $user->token = $tokenResult;
+            $user_type=$user->type;
             $user->save();
+            
             $response = array("data" => array(
                 "message" => "login successfully",
                 "status" => "200",
                 "user_id"=>$user->id,
                 "userToken" => $tokenResult,
-                "tokenType" => "Bearer"
+                "tokenType" => "Bearer",
+                "user_type"=>$user_type,
             ));
 
             return (json_encode($response));
