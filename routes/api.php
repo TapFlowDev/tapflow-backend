@@ -23,14 +23,14 @@ use  App\Http\Controllers\CategoriesController;
 // });
 
 Route::group(['middleware'=>'auth:sanctum'],function(){
-    Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
+   ;
     Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
     
     Route::get('logout',[UserController::class,'logout']);
     Route::get('getCategories',[CategoriesController::class,'getCategories']);
 });
 
-
+Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
 
 Route::post('addUser',[UserController::class,'add_user']);
 Route::post('addFreelancerInfo',[UserController::class,'Insert_freelancer']);

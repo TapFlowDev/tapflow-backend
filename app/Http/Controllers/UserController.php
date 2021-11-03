@@ -91,11 +91,20 @@ class UserController extends Controller
             $user->dob = $req->dob;
             $user->type = $type;
             $user->save();
-            foreach($req->category as $key => $value){
-                // dd($value);
-                $userCategoryObj->Insert($value, $req->user_id);
+            // foreach($req->category as $key => $value){
+            //     // dd($value);
+            //     $userCategoryObj->Insert($value, $req->user_id);
 
-            }
+            // }
+            foreach ($req->category as $key => $value) {
+                $categoryArr = array();
+               foreach ($value['subId'] as $keySub => $subValue) {
+                   $categoryArr[$keySub]['user_id'] = $req->user_id;
+                   $categoryArr[$keySub]['category_id'] = $value['catId'];
+                   $categoryArr[$keySub]['sub_category_id'] = $subValue;
+               }
+               $userCategoryObj->addMultiRows($categoryArr);
+           }
             $response = array("data" => array(
                 "message" => "user information added successfully",
                 "status" => "200",
@@ -197,7 +206,7 @@ class UserController extends Controller
                 "message" => "login successfully",
                 "status" => "200",
                 "user_id"=>$user->id,
-                "'userToken'" => $tokenResult,
+                "userToken" => $tokenResult,
                 "tokenType" => "Bearer"
             ));
 
