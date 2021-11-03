@@ -15,7 +15,7 @@ use Exception;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Auth;
 
-use function PHPSTORM_META\type;
+
 use function PHPUnit\Framework\isEmpty;
 use App\Http\Controllers\UserCategoriesController;
 
@@ -167,7 +167,7 @@ class UserController extends Controller
             return (json_encode($response));
         }
     }
-    //login dunction using Sanctum auth token
+    //login function using Sanctum auth token
     function login(Request $req)
     {
 
