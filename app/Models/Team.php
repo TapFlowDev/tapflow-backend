@@ -13,11 +13,13 @@ class Team extends Model
     */
     use HasFactory;
     protected $fillable = [
-        'name',
         'group_id',
         'bio',
         'image',
         'attachment',
-        'type'
+        'type',
+        'link',
+        'country',
+        'employees_number'
     ];
 }
