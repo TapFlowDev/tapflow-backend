@@ -61,19 +61,19 @@ class GroupController extends Controller
             $groupCategoryObj = new GroupCategoriesController;
 
             try {
-                $req->types = $type;
-                $group = Group::create($req->only(['name', 'admin_id', 'types']));
+                // $req->types = $type;
+                $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
 
                 foreach ($req->category as $key => $value) {
                     $categoryArr = array();
-                   foreach ($value['subId'] as $keySub => $subValue) {
-                       $categoryArr[$keySub]['group_id'] = $group_id;
-                       $categoryArr[$keySub]['category_id'] = $value['catId'];
-                       $categoryArr[$keySub ]['sub_category_id'] = $subValue;
-                   }
-                   $groupCategoryObj->addMultiRows($categoryArr);
-               }
+                    foreach ($value['subId'] as $keySub => $subValue) {
+                        $categoryArr[$keySub]['group_id'] = $group_id;
+                        $categoryArr[$keySub]['category_id'] = $value['catId'];
+                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                    }
+                    $groupCategoryObj->addMultiRows($categoryArr);
+                }
 
                 $teamArr = array();
                 $teamArr['name'] = $req->name;
@@ -130,18 +130,18 @@ class GroupController extends Controller
             $type = 2;
             $teamObj = new CompanyController;
             $groupCategoryObj = new GroupCategoriesController;
-     try {
-                $req->types = $type;
-                $group = Group::create($req->only(['name', 'admin_id', 'types']));
+            try {
+                // $req->types = $type;
+                $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
-              
+
 
                 foreach ($req->category as $key => $value) {
-                     $categoryArr = array();
+                    $categoryArr = array();
                     foreach ($value['subId'] as $keySub => $subValue) {
                         $categoryArr[$keySub]['group_id'] = $group_id;
                         $categoryArr[$keySub]['category_id'] = $value['catId'];
-                        $categoryArr[$keySub ]['sub_category_id'] = $subValue;
+                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
                     }
                     $groupCategoryObj->addMultiRows($categoryArr);
                 }
@@ -176,15 +176,15 @@ class GroupController extends Controller
                 ));
 
                 return (json_encode($response));
-             } catch (\Exception $error) {
-                 $response = array("data" => array(
-                     "message" => "There IS Error Occurred",
-                     "status" => "500",
-                     "error" => $error,
-                 ));
+            } catch (\Exception $error) {
+                $response = array("data" => array(
+                    "message" => "There IS Error Occurred",
+                    "status" => "500",
+                    "error" => $error,
+                ));
 
-                 return (json_encode($response));
-             }
+                return (json_encode($response));
+            }
         }
     }
     //update row according to row id

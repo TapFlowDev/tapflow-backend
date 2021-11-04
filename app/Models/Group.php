@@ -15,6 +15,6 @@ class Group extends Model
     protected $fillable = [
         'name',
         'admin_id',
-        'types'
+        'type'
     ];
 }
