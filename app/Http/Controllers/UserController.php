@@ -15,7 +15,7 @@ use Exception;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Support\Facades\Auth;
 
-
+use function PHPSTORM_META\type;
 use function PHPUnit\Framework\isEmpty;
 use App\Http\Controllers\UserCategoriesController;
 
@@ -26,23 +26,43 @@ class UserController extends Controller
     //add freelancer
     function add_user(Request $req)
     {
+        // dd($req);
         $rules = array(
             "first_name" => "required|max:255",
             "last_name" => "required|max:255",
             "email" => "email|required|max:255|unique:users",
             "password" => "required |min:8|max:255",
+            "type"=>"required",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+            $response = array("data" => array(
+                "message" => "Validation Error",
+                "status" => "101",
+                "error" => $validator->errors()
+            ));
+            return (json_encode($response));
         } else {
 
             $user = new User;
 
             try {
 
-                $user_db = User::create($req->all());
-                $user_id = $user_db->id;
+                // $user_db = User::create($req->all());
+                // $user_id = $user_db->id;
+
+                // $user = User::find($req->user_id);
+                // $user->type = $req->type;
+                // $user->save();
+                $user->first_name=$req->first_name;
+                $user->last_name=$req->last_name;
+                $user->email =$req->email ;
+                $user->	password=$req->	password;
+                $user->	type=$req->	type;
+                $user->save();
+                $user_id = $user->id;
+
+
 
                 $response = array("data" => array(
                     "message" => "user added successfully",
@@ -66,7 +86,7 @@ class UserController extends Controller
     function Insert_freelancer(Request $req)
     {
         $userCategoryObj = new UserCategoriesController;
-        $type = 1;
+       
         $rules = array(
             "user_id" => "required",
             "bio" => "required",
@@ -78,7 +98,12 @@ class UserController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+            $response = array("data" => array(
+                "message" => "Validation Error",
+                "status" => "101",
+                "error" => $validator->errors()
+            ));
+            return (json_encode($response));
         }
         try {
             $data = $req->except(['gender', 'dob', 'category']);
@@ -89,22 +114,13 @@ class UserController extends Controller
             $user = User::find($req->user_id);
             $user->gender = $req->gender;
             $user->dob = $req->dob;
-            $user->type = $type;
+            
             $user->save();
-            // foreach($req->category as $key => $value){
-            //     // dd($value);
-            //     $userCategoryObj->Insert($value, $req->user_id);
+            foreach($req->category as $key => $value){
+                // dd($value);
+                $userCategoryObj->Insert($value, $req->user_id);
 
-            // }
-            foreach ($req->category as $key => $value) {
-                $categoryArr = array();
-               foreach ($value['subId'] as $keySub => $subValue) {
-                   $categoryArr[$keySub]['user_id'] = $req->user_id;
-                   $categoryArr[$keySub]['category_id'] = $value['catId'];
-                   $categoryArr[$keySub]['sub_category_id'] = $subValue;
-               }
-               $userCategoryObj->addMultiRows($categoryArr);
-           }
+            }
             $response = array("data" => array(
                 "message" => "user information added successfully",
                 "status" => "200",
@@ -126,7 +142,7 @@ class UserController extends Controller
     // add company
     function Insert_client(Request $req)
     {
-        $type = 2;
+        
         $rules = array(
             "user_id" => "required",
             "bio" => "required",
@@ -138,7 +154,12 @@ class UserController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+            $response = array("data" => array(
+                "message" => "Validation Error",
+                "status" => "101",
+                "error" => $validator->errors()
+            ));
+            return (json_encode($response));
         }
         try {
             $data = $req->except(['gender', 'dob']);
@@ -146,7 +167,7 @@ class UserController extends Controller
             $user = User::find($req->user_id);
             $user->dob = $req->dob;
             $user->gender = $req->gender;
-            $user->type = $type;
+         
             $user->save();
 
             $response = array("data" => array(
@@ -167,7 +188,7 @@ class UserController extends Controller
             return (json_encode($response));
         }
     }
-    //login function using Sanctum auth token
+    //login dunction using Sanctum auth token
     function login(Request $req)
     {
 
@@ -178,7 +199,13 @@ class UserController extends Controller
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
-                return $validator->errors();
+                $response = array("data" => array(
+                    "message" => "Validation Error",
+                    "status" => "101",
+                    "error" => $validator->errors()
+                ));
+
+                return (json_encode($response));
             }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
@@ -201,13 +228,16 @@ class UserController extends Controller
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
             $user->token = $tokenResult;
+            $user_type=$user->type;
             $user->save();
+            
             $response = array("data" => array(
                 "message" => "login successfully",
                 "status" => "200",
                 "user_id"=>$user->id,
                 "userToken" => $tokenResult,
-                "tokenType" => "Bearer"
+                "tokenType" => "Bearer",
+                "user_type"=>$user_type,
             ));
 
             return (json_encode($response));
@@ -295,6 +325,9 @@ class UserController extends Controller
     
             return (json_encode($response));   
         }
+    }
+    function getAllUsers(){
+        return User::all();
     }
     //update row according to row id
     function Update($id)
