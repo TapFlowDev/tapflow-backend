@@ -61,7 +61,7 @@ class GroupController extends Controller
             $groupCategoryObj = new GroupCategoriesController;
 
             try {
-                // $req->types = $type;
+                $req->type = $type;
                 $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
 
@@ -80,6 +80,9 @@ class GroupController extends Controller
                 $teamArr['group_id'] = $group_id;
                 $teamArr['bio'] = $req->bio;
                 $teamArr['type'] = 0;
+                $teamArr['link'] = $req->link;
+                $teamArr['country'] = $req->country;
+                $teamArr['employees_number'] = $req->employees_number;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $teamInfo->id;
@@ -129,28 +132,18 @@ class GroupController extends Controller
             // $group = new Group;
             $type = 2;
             $teamObj = new CompanyController;
-            $groupCategoryObj = new GroupCategoriesController;
             try {
-                // $req->types = $type;
+                $req->type = $type;
                 $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
-
-
-                foreach ($req->category as $key => $value) {
-                    $categoryArr = array();
-                    foreach ($value['subId'] as $keySub => $subValue) {
-                        $categoryArr[$keySub]['group_id'] = $group_id;
-                        $categoryArr[$keySub]['category_id'] = $value['catId'];
-                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                    }
-                    $groupCategoryObj->addMultiRows($categoryArr);
-                }
 
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
                 $teamArr['bio'] = $req->bio;
                 $teamArr['link'] = $req->link;
                 $teamArr['country'] = $req->country;
+                $teamArr['employees_number'] = $req->employees_number;
+                $teamArr['field'] = $req->field;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $teamInfo->id;

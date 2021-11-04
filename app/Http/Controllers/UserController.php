@@ -31,7 +31,7 @@ class UserController extends Controller
             "first_name" => "required|max:255",
             "last_name" => "required|max:255",
             "email" => "email|required|max:255|unique:users",
-            "password" => "required |min:8|max:255",
+            "password" => "required|min:8|max:255",
             "type"=>"required",
         );
         $validator = Validator::make($req->all(), $rules);
@@ -116,11 +116,20 @@ class UserController extends Controller
             $user->dob = $req->dob;
             
             $user->save();
-            foreach($req->category as $key => $value){
-                // dd($value);
-                $userCategoryObj->Insert($value, $req->user_id);
+            // foreach($req->category as $key => $value){
+            //     // dd($value);
+            //     $userCategoryObj->Insert($value, $req->user_id);
 
-            }
+            // }
+            foreach ($req->category as $key => $value) {
+                $categoryArr = array();
+               foreach ($value['subId'] as $keySub => $subValue) {
+                   $categoryArr[$keySub]['user_id'] = $req->user_id;
+                   $categoryArr[$keySub]['category_id'] = $value['catId'];
+                   $categoryArr[$keySub]['sub_category_id'] = $subValue;
+               }
+               $userCategoryObj->addMultiRows($categoryArr);
+           }
             $response = array("data" => array(
                 "message" => "user information added successfully",
                 "status" => "200",

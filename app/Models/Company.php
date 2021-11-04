@@ -15,6 +15,8 @@ class Company extends Model
         'image',
         'attachment',
         'link',
-        'country'
+        'country',
+        'employees_number',
+        'field'
     ];
 }
