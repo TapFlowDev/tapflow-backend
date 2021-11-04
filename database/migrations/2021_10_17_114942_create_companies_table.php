@@ -19,8 +19,10 @@ class CreateCompaniesTable extends Migration
             $table->text('bio')->nullable();
             $table->string('attachment')->nullable();
             $table->string('image')->nullable();
-            $table->string('link')->nullable();
+            $table->string('link');
             $table->string('country','255')->nullable();
+            $table->string('employees_number','255')->nullable();
+            $table->string('field','255')->nullable();
             $table->timestamps();
         });
     }
