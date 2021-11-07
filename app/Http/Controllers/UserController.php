@@ -254,7 +254,7 @@ class UserController extends Controller
     function logout(Request $req)
     { 
         
-        $token=$req->header('Authorization');
+        $token=$req->route('Authorization');
         dd($token);
         $token=substr($token,7);
         // echo($token);
