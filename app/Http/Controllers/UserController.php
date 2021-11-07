@@ -253,7 +253,7 @@ class UserController extends Controller
     }
     function logout(Request $req)
     { 
-        try {
+        
         $token=$req->header('Authorization');
         $token=substr($token,7);
         $user = User::where("token",substr($req->header('Authorization'),7))->first();
@@ -268,16 +268,7 @@ class UserController extends Controller
         return (json_encode($response));
        
         // auth()->user()->tokens()->delete();
-    }
-        catch (Exception $error) {
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
-
-            return (json_encode($response));
-        }
+    
     }
     //get free lancer info by id
     function get_freelancer_info($id)
@@ -332,6 +323,7 @@ class UserController extends Controller
     //update row according to row id
     function Update($id)
     {
+        
     }
     //delete row according to row id
     function Delete($id)
