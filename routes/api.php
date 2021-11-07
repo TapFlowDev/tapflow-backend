@@ -33,11 +33,14 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
     Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
     Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
     
-    Route::get('logout',[UserController::class,'logout']);
+    
 });
 
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
 Route::get('getAllUsers',[UserController::class,'getAllUsers']);
+
+
+Route::get('logout',[UserController::class,'logout']);
 
 
 Route::post('addUser',[UserController::class,'add_user']);
