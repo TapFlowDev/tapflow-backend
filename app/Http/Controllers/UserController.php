@@ -255,9 +255,9 @@ class UserController extends Controller
     { 
         
         $token=$req->header('Authorization');
-        echo($token);
+        dd($token);
         $token=substr($token,7);
-        echo($token);
+        // echo($token);
         exit;
         $user = User::where("token",substr($req->header('Authorization'),7))->first();
         // $user=User::where('token',$token);
