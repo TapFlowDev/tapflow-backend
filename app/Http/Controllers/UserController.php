@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Freelancer;
 use App\Models\Client;  
+
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 use ApiResponser;
 use App\Models\Rate;
@@ -254,31 +256,30 @@ class UserController extends Controller
     function logout(Request $req)
     { 
         
-        // $token=$req->header("Authorization");
-        
-        // $token=substr($token,7);
+        try{
+        $user= User::find($req->user_id);
+        $user->token="Null";
+        $user->save();
+        $token=DB::table('personal_access_tokens')->where('tokenable_id', $req->user_id)->delete();
+        $response = array("data" => array(
+            "message" => "Logout successfully", 
+            "status" => "200",
+        ));
+
+        return (json_encode($response));
        
-        
-        // $user = User::where("token",$token)->first();
+    }
+    catch(Exception $error)
+    {
+        $response = array("data" => array(
+            "message" => "something wrong", 
+            "status" => "500",
+            "error"=>$error,
+        ));
 
+        return (json_encode($response));
 
-        // $user->token="NULL";
-
-        // $user->save();
-        // $req->user()->currentAccessToken()->delete();
-        dd($req);
-        
-        // $user = request()->user();
-    //   /  $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
-
-        // $response = array("data" => array(
-        //     "message" => "Logout successfully", 
-        //     "status" => "200",
-        // ));
-
-        // return (json_encode($response));
-       
-        // auth()->user()->tokens()->delete();
+    }
     
     }
     //get free lancer info by id
