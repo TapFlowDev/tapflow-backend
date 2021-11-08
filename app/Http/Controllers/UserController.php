@@ -253,7 +253,7 @@ class UserController extends Controller
             return (json_encode($response));
         }
     }
-    function logout(Request $req)
+    function signout(Request $req)
     { 
         
         try{
