@@ -263,13 +263,13 @@ class UserController extends Controller
     function logout(Request $req)
     { 
         
-        $token=$req->route('Authorization');
-        dd($token);
+        $token=$req->header('Authorization');
+        
         $token=substr($token,7);
-        // echo($token);
-        exit;
-        $user = User::where("token",substr($req->header('Authorization'),7))->first();
-        // $user=User::where('token',$token);
+       
+        
+        $user = User::where("token",$token)->first();
+        $user=User::where('token',$token);
         $user->token="NULL";
         $user->save();
         $response = array("data" => array(
