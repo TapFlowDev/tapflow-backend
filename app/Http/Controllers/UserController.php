@@ -274,7 +274,8 @@ class UserController extends Controller
         // $user->token="NULL";
 
         // $user->save();
-        $req->user()->currentAccessToken()->delete();
+        // $req->user()->currentAccessToken()->delete();
+        dd($req);
         
         // $user = request()->user();
     //   /  $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
