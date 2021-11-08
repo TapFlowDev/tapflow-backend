@@ -30,7 +30,7 @@ use  App\Http\Controllers\CategoriesController;
 // });
 
 Route::group(['middleware'=>'auth:sanctum'],function(){
-    Route::get('logout',[UserController::class,'logout']);
+    Route::post('Logout',[UserController::class,'logout']);
     Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
 });
 
