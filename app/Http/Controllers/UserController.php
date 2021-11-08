@@ -260,20 +260,24 @@ class UserController extends Controller
             return (json_encode($response));
         }
     }
-    function logout(\Illuminate\Http\Request $req)
+    function logout(Request $req)
     { 
         
-        $token=$req->header("Authorization");
+        // $token=$req->header("Authorization");
         
-        $token=substr($token,7);
+        // $token=substr($token,7);
        
         
-        $user = User::where("token",$token)->first();
+        // $user = User::where("token",$token)->first();
 
 
-        $user->token="NULL";
+        // $user->token="NULL";
 
-        $user->save();
+        // $user->save();
+        $req->user()->currentAccessToken()->delete();
+        
+        // $user = request()->user();
+    //   /  $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
 
         $response = array("data" => array(
             "message" => "Logout successfully", 
