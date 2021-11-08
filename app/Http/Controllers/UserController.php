@@ -269,9 +269,12 @@ class UserController extends Controller
        
         
         $user = User::where("token",$token)->first();
-        $user=User::where('token',$token);
+
+
         $user->token="NULL";
+
         $user->save();
+
         $response = array("data" => array(
             "message" => "Logout successfully", 
             "status" => "200",
