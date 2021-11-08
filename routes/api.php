@@ -38,11 +38,12 @@ Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
 Route::get('getAllUsers',[UserController::class,'getAllUsers']);
 
+Route::post('signout',[UserController::class,'signout']);
+
 });
 
 
 
-// Route::post('Logout',[UserController::class,'logout']);
 
 
 Route::post('addUser',[UserController::class,'add_user']);
