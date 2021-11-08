@@ -30,6 +30,7 @@ use  App\Http\Controllers\CategoriesController;
 // });
 
 Route::group(['middleware'=>'auth:sanctum'],function(){
+    Route::get('logout',[UserController::class,'logout']);
 });
 
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
