@@ -280,12 +280,12 @@ class UserController extends Controller
         // $user = request()->user();
     //   /  $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
 
-        $response = array("data" => array(
-            "message" => "Logout successfully", 
-            "status" => "200",
-        ));
+        // $response = array("data" => array(
+        //     "message" => "Logout successfully", 
+        //     "status" => "200",
+        // ));
 
-        return (json_encode($response));
+        // return (json_encode($response));
        
         // auth()->user()->tokens()->delete();
     
