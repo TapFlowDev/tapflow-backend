@@ -32,14 +32,15 @@ use  App\Http\Controllers\CategoriesController;
 Route::group(['middleware'=>'auth:sanctum'],function(){
     Route::post('Logout',[UserController::class,'logout']);
     Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
+    
+    Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
+    Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
 });
 
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
 Route::get('getAllUsers',[UserController::class,'getAllUsers']);
 
 
-Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
-Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
 
 
 
