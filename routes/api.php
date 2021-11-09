@@ -36,7 +36,6 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
   
 
 
-Route::get('getClientInfo/{id}',[ClientController::class,'get_client_info']);
 
 
 
@@ -47,6 +46,7 @@ Route::get('getFreelancerInfo/{id}',[FreeLancerController::class,'get_freelancer
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
 Route::get('getAllUsers',[UserController::class,'getAllUsers']);
 
+Route::get('getClientInfo/{id}',[ClientController::class,'get_client_info']);
 
 
 Route::post('addUser',[UserController::class,'add_user']);
