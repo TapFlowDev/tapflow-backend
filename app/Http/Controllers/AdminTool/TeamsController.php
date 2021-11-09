@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUserRequest;
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Gate;
+use App\Models\Group;
+use App\Models\Team;
+use Illuminate\Support\Facades\DB;
 
-class AdminConroller extends Controller
+
+class TeamsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,13 +18,11 @@ class AdminConroller extends Controller
      */
     public function index()
     {
-        //
-        // dd('admin');
-        // if(Gate::allows('is-admin')){
-
-        // }
-        return view('AdminTool.users.index', ['users'=>User::paginate(10)]);
-        // dd('go to login');
+        $teams = DB::table('teams')
+        ->join('groups', 'teams.group_id', '=', 'groups.id')
+        ->select('groups.*', 'teams.*')->paginate(10);
+        
+        return view('AdminTool.agencies.index', ['users' => $teams]);
     }
 
     /**
@@ -34,8 +33,6 @@ class AdminConroller extends Controller
     public function create()
     {
         //
-        return view('AdminTool.users.add');
-        
     }
 
     /**
@@ -44,11 +41,9 @@ class AdminConroller extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreUserRequest $request)
+    public function store(Request $request)
     {
-        $validatedData = $request->validated();
-        $user = User::create($request->except(['_token']));
-        return redirect('/AdminTool/users');
+        //
     }
 
     /**
@@ -70,8 +65,7 @@ class AdminConroller extends Controller
      */
     public function edit($id)
     {
-        // dd(User::find($id));
-        return view('AdminTool.users.edit', ['user'=>User::find($id)]);
+        //
     }
 
     /**
@@ -83,10 +77,7 @@ class AdminConroller extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::findOrfail($id);
-        $user->update($request->except(['_token']));
-        return redirect('/AdminTool/users');
-        
+        //
     }
 
     /**
@@ -97,13 +88,15 @@ class AdminConroller extends Controller
      */
     public function destroy($id)
     {
-        User::destroy($id);
-        return redirect('/AdminTool/users');
-    }    
-    
-    public function login($id)
+        //
+    }
+    private function getData($array)
     {
-        return view('AdminTool.login');
-        
+        foreach ($array as $key => &$user) {
+
+            // $groupName = Group::find($teamInfo->group_id)->name;
+            // $user->team_name = $groupName;
+        }
+        return $array;
     }
 }

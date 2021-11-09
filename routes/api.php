@@ -47,6 +47,7 @@ Route::get('getAllUsers',[UserController::class,'getAllUsers']);
 
 
 Route::post('addUser',[UserController::class,'add_user']);
+Route::post('addTeam',[GroupController::class,'add_group_team']);
 Route::post('addFreelancerInfo',[UserController::class,'Insert_freelancer']);
 Route::post('addClientInfo',[UserController::class,'Insert_client']);
 Route::post('Login',[UserController::class,'login']);
