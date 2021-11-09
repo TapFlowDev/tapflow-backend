@@ -93,6 +93,12 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+        'api'=>[
+            'driver'=>'session',
+            'provider'=>'users',
+            'hash'=>true,
+
+        ],
     ],
 
     /*
