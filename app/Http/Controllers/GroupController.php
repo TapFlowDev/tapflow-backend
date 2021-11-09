@@ -11,6 +11,8 @@ use App\Models\SubCategory;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\GroupCategoriesController;
+use App\Http\Controllers\FreeLancerController;
+use App\Http\Controllers\ClientController;
 
 use Exception;
 
@@ -59,11 +61,13 @@ class GroupController extends Controller
             $type = 1;
             $teamObj = new TeamController;
             $groupCategoryObj = new GroupCategoriesController;
+            $userObj = new FreeLancerController;
 
             try {
                 $req->type = $type;
                 $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
+                $userId = $req->admin_id;
 
                 foreach ($req->category as $key => $value) {
                     $categoryArr = array();
@@ -86,19 +90,20 @@ class GroupController extends Controller
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $teamInfo->id;
+                $userObj->updateTeamId($userId, $group_id);
                 if ($req->hasFile('image')) {
                     $destPath = 'images/teams';
                     $ext = $req->file('image')->extension();
-                    $imageName = "team-image-" . $teamId . "." . $ext;
+                    $imageName = "team-image-" . $group_id . "." . $ext;
                     $req->image->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($teamId, $imageName, 'image');
+                    $teamObj->updateFiles($group_id, $imageName, 'image');
                 }
                 if ($req->hasFile('attachment')) {
                     $destPath = 'images/teams';
                     $ext = $req->file('image')->extension();
-                    $imageName = "team-attachment-" . $teamId . "." . $ext;
+                    $imageName = "team-attachment-" . $group_id . "." . $ext;
                     $req->image->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($teamId, $imageName, 'attachment');
+                    $teamObj->updateFiles($group_id, $imageName, 'attachment');
                 }
                 $response = array("data" => array(
                     "message" => "team added successfully",
@@ -132,10 +137,12 @@ class GroupController extends Controller
             // $group = new Group;
             $type = 2;
             $teamObj = new CompanyController;
+            $userObj = new ClientController;
             try {
                 $req->type = $type;
                 $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
+                $userId = $req->admin_id;
 
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
@@ -147,6 +154,7 @@ class GroupController extends Controller
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $teamInfo->id;
+                $userObj->updateTeamId($userId, $group_id);
                 if ($req->hasFile('image')) {
                     $destPath = 'images/companies';
                     $ext = $req->file('image')->extension();

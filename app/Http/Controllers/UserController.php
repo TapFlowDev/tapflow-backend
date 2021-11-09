@@ -32,7 +32,7 @@ class UserController extends Controller
             "last_name" => "required|max:255",
             "email" => "email|required|max:255|unique:users",
             "password" => "required|min:8|max:255",
-            "type"=>"required",
+            "type"=>"required|max:1|between:1,2",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
