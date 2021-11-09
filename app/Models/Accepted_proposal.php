@@ -7,5 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Accepted_proposal extends Model
 {
-    use HasFactory;
+    use HasFactory ;
 }
+      
