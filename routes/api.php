@@ -7,6 +7,8 @@ use App\Http\Controllers\UserController;
 use  App\Http\Controllers\GroupController;
 use  App\Http\Controllers\CategoriesController;
 use  App\Http\Controllers\ProjectController;
+use  App\Http\Controllers\ClientController;
+use  App\Http\Controllers\FreeLancerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,13 +36,13 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
   
 
 
-Route::get('getClientInfo/{id}',[UserController::class,'get_client_info']);
+Route::get('getClientInfo/{id}',[ClientController::class,'get_client_info']);
 
 
 
 });
 
-Route::get('getFreelancerInfo/{id}',[UserController::class,'get_freelancer_info']);
+Route::get('getFreelancerInfo/{id}',[FreeLancerController::class,'get_freelancer_info']);
 
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
 Route::get('getAllUsers',[UserController::class,'getAllUsers']);
@@ -50,7 +52,7 @@ Route::get('getAllUsers',[UserController::class,'getAllUsers']);
 Route::post('addUser',[UserController::class,'add_user']);
 Route::post('addTeam',[GroupController::class,'add_group_team']);
 Route::post('addCompany',[GroupController::class,'add_group_company']);
-Route::post('addFreelancerInfo',[UserController::class,'Insert_freelancer']);
-Route::post('addClientInfo',[UserController::class,'Insert_client']);
+Route::post('addFreelancerInfo',[FreeLancerController::class,'Insert_freelancer']);
+Route::post('addClientInfo',[ClientController::class,'Insert_client']);
 Route::post('Login',[UserController::class,'login']);
 Route::post('createProject',[ProjectController::class,'Insert']);
