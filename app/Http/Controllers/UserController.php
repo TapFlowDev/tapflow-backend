@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Freelancer;
 use App\Models\Client;  
+
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 use ApiResponser;
 use App\Models\Rate;
@@ -48,12 +50,6 @@ class UserController extends Controller
 
             try {
 
-                // $user_db = User::create($req->all());
-                // $user_id = $user_db->id;
-
-                // $user = User::find($req->user_id);
-                // $user->type = $req->type;
-                // $user->save();
                 $user->first_name=$req->first_name;
                 $user->last_name=$req->last_name;
                 $user->email =$req->email ;
@@ -260,15 +256,14 @@ class UserController extends Controller
             return (json_encode($response));
         }
     }
-    function logout(Request $req)
+    function signout(Request $req)
     { 
-        try {
-        $token=$req->header('Authorization');
-        $token=substr($token,7);
-        $user = User::where("token",substr($req->header('Authorization'),7))->first();
-        // $user=User::where('token',$token);
-        $user->token="NULL";
+        
+        try{
+        $user= User::find($req->user_id);
+        $user->token="Null";
         $user->save();
+        $token=DB::table('personal_access_tokens')->where('tokenable_id', $req->user_id)->delete();
         $response = array("data" => array(
             "message" => "Logout successfully", 
             "status" => "200",
@@ -276,17 +271,19 @@ class UserController extends Controller
 
         return (json_encode($response));
        
-        // auth()->user()->tokens()->delete();
     }
-        catch (Exception $error) {
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
+    catch(Exception $error)
+    {
+        $response = array("data" => array(
+            "message" => "something wrong", 
+            "status" => "500",
+            "error"=>$error,
+        ));
 
-            return (json_encode($response));
-        }
+        return (json_encode($response));
+
+    }
+    
     }
     //get free lancer info by id
     function get_freelancer_info($id)
@@ -341,6 +338,7 @@ class UserController extends Controller
     //update row according to row id
     function Update($id)
     {
+        
     }
     //delete row according to row id
     function Delete($id)
