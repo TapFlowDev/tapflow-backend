@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 use App\Http\Controllers\AdminTool\FreeLancerController;
 use App\Http\Controllers\AdminTool\ClientsController;
 use App\Http\Controllers\AdminTool\TeamsController;
+use App\Http\Controllers\AdminTool\CompaniesController;
 // use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
      Route::resource('/freelancers', FreeLancerController::class);
      Route::resource('/clients', ClientsController::class);
      Route::resource('/agencies', TeamsController::class);
+     Route::resource('/companies', CompaniesController::class);
     // Route::resource('/categories/{$parentId}/subCategories', AdminSubCategoryController::class);
     Route::resource('categories.subCategories', AdminSubCategoryController::class)->shallow();
 });

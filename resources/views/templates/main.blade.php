@@ -93,7 +93,7 @@
                                 <ul class="dropdwon-menu" aria-labelledby="users-dropdown" aria-expanded="false">
                                     <li>
                                         <a href="/AdminTool/agencies" class="dropdown-item">Teams/Agencies</a>
-                                        <a href="/AdminTool/" class="dropdown-item">Companies</a>
+                                        <a href="/AdminTool/companies" class="dropdown-item">Companies</a>
                                     </li>
                                 </ul>
                         </div>
