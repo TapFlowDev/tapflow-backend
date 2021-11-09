@@ -64,6 +64,12 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        'api'=>[
+            'driver'=>'session',
+            'provider'=>'users',
+            'hash'=>true,
+
+        ],
 
         // 'users' => [
         //     'driver' => 'database',
@@ -93,12 +99,7 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        'api'=>[
-            'driver'=>'session',
-            'provider'=>'users',
-            'hash'=>true,
-
-        ],
+       
     ],
 
     /*
