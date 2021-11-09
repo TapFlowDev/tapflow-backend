@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Client;
+
 
 class ClientController extends Controller
 {
@@ -23,6 +25,6 @@ class ClientController extends Controller
 
     }
     function updateTeamId($userId, $teamId){
-        Freelancer::where('user_id', $userId)->update(['team_id'=>$teamId]);
+        Client::where('user_id', $userId)->update(['company_id'=>$teamId]);
     }
 }

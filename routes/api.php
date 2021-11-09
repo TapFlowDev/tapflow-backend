@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use  App\Http\Controllers\GroupController;
 use  App\Http\Controllers\CategoriesController;
+use  App\Http\Controllers\ProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,8 @@ Route::get('getAllUsers',[UserController::class,'getAllUsers']);
 
 Route::post('addUser',[UserController::class,'add_user']);
 Route::post('addTeam',[GroupController::class,'add_group_team']);
+Route::post('addCompany',[GroupController::class,'add_group_company']);
 Route::post('addFreelancerInfo',[UserController::class,'Insert_freelancer']);
 Route::post('addClientInfo',[UserController::class,'Insert_client']);
 Route::post('Login',[UserController::class,'login']);
+Route::post('createProject',[ProjectController::class,'Insert']);

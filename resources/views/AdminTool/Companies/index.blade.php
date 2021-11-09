@@ -2,7 +2,7 @@
 @section('content')
 <div class="row">
 <div class="col-12">
-    <h1 class="float-left"> Teams/Agencies</h1>
+    <h1 class="float-left"> Companies</h1>
 </div>
 </div>
     <div class="card">
@@ -11,7 +11,7 @@
                 <tr>
                     <th scope="col">#id</th>
                     <th scope="col">Name</th>
-                    <th scope="col">is verified</th>
+                    {{-- <th scope="col">is verified</th> --}}
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -20,23 +20,24 @@
                     <tr>
                         <th scope="row">{{ $user->id }}</th>
                         <td>{{ $user->name}}</td>
-                        <td>
+                        {{-- <td>
                             @if($user->verified==1)
                             verified
                             @else
                             not verified
                             @endif
-                        </td>
+                        </td> --}}
                         <td>
                             {{-- <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.freelancers.show', $user->freelancer_id) }}"
                                 role="button">View</a> --}}
-                                <button class="btn btn-sm btn-danger" 
+                                {{-- <button class="btn btn-sm btn-danger" 
                                     onclick="event.preventDefault();
-                                    document.getElementById('delete-user-form-{{ $user->id }}').submit()">Verify</button>
+                                    document.getElementById('delete-user-form-{{ $user->id }}').submit()">Delete</button>
                                 <form id="delete-user-form-{{ $user->id }}"  action="{{ route('AdminTool.users.destroy', $user->id) }}" method="POST"
                                     style="display: none;">
                                 @csrf
-                                </form>
+                                @method("DELETE")
+                                </form> --}}
                         </td>
                     </tr>
                 @endforeach
