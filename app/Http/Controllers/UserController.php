@@ -50,12 +50,6 @@ class UserController extends Controller
 
             try {
 
-                // $user_db = User::create($req->all());
-                // $user_id = $user_db->id;
-
-                // $user = User::find($req->user_id);
-                // $user->type = $req->type;
-                // $user->save();
                 $user->first_name=$req->first_name;
                 $user->last_name=$req->last_name;
                 $user->email =$req->email ;
