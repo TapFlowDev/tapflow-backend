@@ -189,4 +189,8 @@ class UserController extends Controller
     {
         
     }
+
+    function getUserById($id){
+        return User::find($id)->first();
+    }
 }

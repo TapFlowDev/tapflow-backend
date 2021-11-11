@@ -11307,6 +11307,13 @@ body {
   background-color: #e6e6e6;
 }
 
+.content-container {
+  background-color: white;
+  margin: 45PX auto;
+  width: 90%;
+  padding: 30PX;
+}
+
 .page .sidebar {
   background: #1E2632;
   position: fixed;

@@ -9,6 +9,7 @@ use  App\Http\Controllers\CategoriesController;
 use  App\Http\Controllers\ProjectController;
 use  App\Http\Controllers\ClientController;
 use  App\Http\Controllers\FreeLancerController;
+use  App\Http\Controllers\InviteUsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,3 +53,6 @@ Route::post('addFreelancerInfo',[FreeLancerController::class,'Insert_freelancer'
 Route::post('addClientInfo',[ClientController::class,'Insert_client']);
 Route::post('Login',[UserController::class,'login']);
 Route::post('createProject',[ProjectController::class,'Insert']);
+Route::post('sendInvitation',[InviteUsersController::class,'sendInvitation']);
+Route::get('r/{token}',[InviteUsersController::class,'getDataByToken']);
+Route::post('acceptOrRefuseInvitation',[InviteUsersController::class,'updateInvitation']);

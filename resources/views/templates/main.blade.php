@@ -150,7 +150,7 @@
                     </a>
                 </button>
             </div>
-            <div class="container">
+            <div class="content-container">
                 @yield('content')
             </div>
             {{-- <div class="navigationBar">
