@@ -140,7 +140,7 @@ class   GroupController extends Controller
             $userObj = new ClientController;
             try {
                 $req->type = $type;
-                dd($req);
+                
                 $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
                 $userId = $req->admin_id;
