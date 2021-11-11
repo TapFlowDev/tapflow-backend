@@ -89,21 +89,24 @@ class   GroupController extends Controller
                 $teamArr['employees_number'] = $req->employees_number;
 
                 $teamInfo = $teamObj->Insert($teamArr);
-                $teamId = $teamInfo->id;
+                $teamId = $group_id;
                 $userObj->updateTeamId($userId, $group_id);
                 if ($req->hasFile('image')) {
-                    $destPath = 'images/teams';
+                    $destPath = 'images/companies';
                     $ext = $req->file('image')->extension();
-                    $imageName = "team-image-" . $group_id . "." . $ext;
-                    $req->image->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($group_id, $imageName, 'image');
+                    $imageName = "company-image-" . $teamId . "." . $ext;
+                    $image = $req->image;
+                    $image->move(public_path($destPath), $imageName);
+                    $teamObj->updateFiles($teamId, $imageName, 'image');
+                   
                 }
                 if ($req->hasFile('attachment')) {
-                    $destPath = 'images/teams';
-                    $ext = $req->file('image')->extension();
-                    $imageName = "team-attachment-" . $group_id . "." . $ext;
-                    $req->image->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($group_id, $imageName, 'attachment');
+                    $destPath = 'images/companies';
+                    $ext = $req->file('attachment')->extension();
+                    $attachName = "company-attachment-" . $teamId . "." . $ext;
+                    $attach = $req->attachment;
+                    $attach->move(public_path($destPath), $attachName);
+                    $teamObj->updateFiles($teamId, $attachName, 'attachment');
                 }
                 $response = array("data" => array(
                     "message" => "team added successfully",
@@ -160,15 +163,18 @@ class   GroupController extends Controller
                     $destPath = 'images/companies';
                     $ext = $req->file('image')->extension();
                     $imageName = "company-image-" . $teamId . "." . $ext;
-                    $req->image->move(public_path($destPath), $imageName);
+                    $image = $req->image;
+                    $image->move(public_path($destPath), $imageName);
                     $teamObj->updateFiles($teamId, $imageName, 'image');
+                   
                 }
                 if ($req->hasFile('attachment')) {
                     $destPath = 'images/companies';
-                    $ext = $req->file('image')->extension();
-                    $imageName = "company-attachment-" . $teamId . "." . $ext;
-                    $req->image->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($teamId, $imageName, 'attachment');
+                    $ext = $req->file('attachment')->extension();
+                    $attachName = "company-attachment-" . $teamId . "." . $ext;
+                    $attach = $req->attachment;
+                    $attach->move(public_path($destPath), $attachName);
+                    $teamObj->updateFiles($teamId, $attachName, 'attachment');
                 }
                 $response = array("data" => array(
                     "message" => "team added successfully",
@@ -197,7 +203,5 @@ class   GroupController extends Controller
     function Delete($id)
     {
     }
-    function getGroupById($id){
-        return Group::find($id);
-    }
+    
 }
