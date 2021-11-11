@@ -8,7 +8,7 @@ use App\Models\Freelancer;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Exception;
-
+use Illuminate\Support\Facades\DB;
 class FreeLancerController extends Controller
 {
     //add row 
@@ -81,11 +81,15 @@ class FreeLancerController extends Controller
     function get_freelancer_info($id)
     {
         try {
-            $user = User::where('id', $id)->get();
-            $freelancer = Freelancer::where('user_id', $id)->get();
+            // $user = User::where('id', $id)->get();
+            // $freelancer = Freelancer::where('user_id', $id)->get();
+            $user =DB::table('users')
+            ->join('freelancers','users.id','=','freelancers.user_id')
+            ->where('users.id',$id)
+            ->get();
+
             $response = array("data" => array(
-                "user" => $user,
-                "info" => $freelancer,
+                "user"=>$user,
                 "status" => "200",
             ));
             return (json_encode($response));

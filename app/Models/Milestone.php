@@ -11,4 +11,12 @@ class Milestone extends Model
 {
    
     use HasApiTokens, HasFactory, Notifiable;
+    protected $fillable=
+    [
+        "project_id",
+        "name",
+        "days",
+        "price",
+        "duration",
+    ];
 }
