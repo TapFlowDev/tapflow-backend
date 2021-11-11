@@ -157,7 +157,7 @@ class   GroupController extends Controller
                 $teamArr['field'] = $req->field;
 
                 $teamInfo = $teamObj->Insert($teamArr);
-                $teamId = $teamInfo->id;
+                $teamId = $group_id;
                 $userObj->updateTeamId($userId, $group_id);
                 if ($req->hasFile('image')) {
                     $destPath = 'images/companies';
