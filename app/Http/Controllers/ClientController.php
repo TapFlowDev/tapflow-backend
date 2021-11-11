@@ -6,19 +6,64 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Client;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Validator;
 use Exception;
+use Illuminate\Support\Facades\DB;
 class ClientController extends Controller
 {
+    function Insert_client(Request $req)
+    {
+        
+        $rules = array(
+            "user_id" => "required",
+            "bio" => "required",
+            "role" => "required",
+            "attachment" => "required",
+            "image" => "required",
+            "country" => "required",
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            $response = array("data" => array(
+                "message" => "Validation Error",
+                "status" => "101",
+                "error" => $validator->errors()
+            ));
+            return (json_encode($response));
+        }
+        try {
+            $data = $req->except(['gender', 'dob']);
+            $client = Client::create($data);
+            $user = User::find($req->user_id);
+            $user->dob = $req->dob;
+            $user->gender = $req->gender;
+         
+            $user->save();
+            $response = array("data" => array(
+                "message" => "user information added successfully",
+                "status" => "200",
+                "user_id" => $req->user_id,
+            ));
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = array("data" => array(
+                "message" => "There IS Error Occurred",
+                "status" => "500",
+                "error" => $error,
+            ));
+            return (json_encode($response));
+        }
+    }
     //add row 
     function get_client_info($id)
     {
         try{
-            $user=User::where('id',$id)->get();
-            $client=Client::where('user_id',$id)->get();
+            $user= $user =DB::table('users')
+            ->join('clients','users.id','=','clients.user_id')
+            ->where('users.id',$id)
+            ->get();
             $response = array("data" => array(
                 "user" => $user,
-                "info" =>$client,
                 "status" => "200",
             ));
             return (json_encode($response));

@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Freelancer;
-use App\Models\Client;  
+ 
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -68,14 +67,14 @@ class UserController extends Controller
 
                 return (json_encode($response));
             } catch (\Exception $error) {
-                $response = array("data" => array(
+                     $response = array("data" => array(
                     "message" => "There IS Error Occurred",
                     "status" => "500",
                     "error" => $error,
                 ));
 
                 return (json_encode($response));
-            }
+            }                                                           
         }
     }
 
@@ -188,6 +187,10 @@ class UserController extends Controller
     function Delete($id)
     {
         
+    } 
+    
+    function getUserById($id){
+        return User::find($id)->first();
     }
 
     function getUserById($id){
