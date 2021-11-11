@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers;
 
@@ -27,12 +27,14 @@ class FreeLancerController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            $response = array("data" => array(
-                "message" => "Validation Error",
-                "status" => "101",
-                "error" => $validator->errors()
-            ));
-            return (json_encode($response));
+            // $response = array("data" => array(
+            //     "message" => "Validation Error",
+            //     "status" => "101",
+            //     "error" => $validator->errors()
+            // ));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors);
+            return json_encode($response);
         }
         try {
             $data = $req->except(['gender', 'dob', 'category']);
@@ -59,22 +61,27 @@ class FreeLancerController extends Controller
                 }
                 $userCategoryObj->addMultiRows($categoryArr);
             }
-            $response = array("data" => array(
-                "message" => "user information added successfully",
-                "status" => "200",
+            // $response = array("data" => array(
+            //     "message" => "user information added successfully",
+            //     "status" => "200",
+            //     "user_id" => $req->user_id,
+            // ));
+            // return (json_encode($response));
+            $responseData = array(
                 "user_id" => $req->user_id,
-            ));
-
-            return (json_encode($response));
+            );
+            $response = Controller::returnResponse(200, 'user information added successfully', $responseData);
+            return json_encode($response);
         } catch (Exception $error) {
 
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
-
-            return (json_encode($response));
+            // $response = array("data" => array(
+            //     "message" => "There IS Error Occurred",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(200, 'There Is Error Occurred', $error);
+            return json_encode($response);
         }
     }
     //get free lancer info by id

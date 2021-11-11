@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
- 
+use App\Models\Freelancer;
+use App\Models\Client;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +34,7 @@ class UserController extends Controller
             "last_name" => "required|max:255",
             "email" => "email|required|max:255|unique:users",
             "password" => "required|min:8|max:255",
-            "type"=>"required|max:1|between:1,2",
+            "type" => "required|max:1|between:1,2",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -49,11 +50,11 @@ class UserController extends Controller
 
             try {
 
-                $user->first_name=$req->first_name;
-                $user->last_name=$req->last_name;
-                $user->email =$req->email ;
-                $user->	password=$req->	password;
-                $user->	type=$req->	type;
+                $user->first_name = $req->first_name;
+                $user->last_name = $req->last_name;
+                $user->email = $req->email;
+                $user->password = $req->password;
+                $user->type = $req->type;
                 $user->save();
                 $user_id = $user->id;
 
@@ -67,19 +68,19 @@ class UserController extends Controller
 
                 return (json_encode($response));
             } catch (\Exception $error) {
-                     $response = array("data" => array(
+                $response = array("data" => array(
                     "message" => "There IS Error Occurred",
                     "status" => "500",
                     "error" => $error,
                 ));
 
                 return (json_encode($response));
-            }                                                           
+            }
         }
     }
 
-   
-   
+
+
     //login dunction using Sanctum auth token
     function login(Request $req)
     {
@@ -91,109 +92,120 @@ class UserController extends Controller
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
-                $response = array("data" => array(
-                    "message" => "Validation Error",
-                    "status" => "101",
-                    "error" => $validator->errors()
-                ));
+                $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+                return json_encode($response);
+                // $response = array("data" => array(
+                //     "message" => "Validation Error",
+                //     "status" => "101",
+                //     "error" => 
+                // ));
 
-                return (json_encode($response));
+                return json_encode($response);
             }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
-                $response = array("data" => array(
-                    "message" => "Unauthorized",
-                    "status" => "422",
-                ));
+                // $response = array("data" => array(
+                //     "message" => "Unauthorized",
+                //     "status" => "422",
+                // ));
+                $response = Controller::returnResponse(422, 'Unauthorized', array());
+                return json_encode($response);
 
-                return (json_encode($response));
+                // return (json_encode($response));
             }
 
             $user = User::where('email', $req->email)->first();
             if (!Hash::check($req->password, $user->password)) {
-                $response = array("data" => array(
-                    "message" => "The Password does not match",
-                    "status" => "422",
-                ));
+                // $response = array("data" => array(
+                //     "message" => "The Password does not match",
+                //     "status" => "422",
+                // ));
+                $response = Controller::returnResponse(422, 'The Password does not match', array());
+                return json_encode($response);
 
-                return (json_encode($response));
+                // return (json_encode($response));
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
             $user->token = $tokenResult;
-            $user_type=$user->type;
+            $user_type = $user->type;
             $user->save();
-            
-            $response = array("data" => array(
-                "message" => "login successfully",
-                "status" => "200",
-                "user_id"=>$user->id,
+
+            // $response = array("data" => array(
+            //     "message" => "login successfully",
+            //     "status" => "200",
+            //     "user_id" => $user->id,
+            //     "userToken" => $tokenResult,
+            //     "tokenType" => "Bearer",
+            //     "user_type" => $user_type,
+            // ));
+            // return (json_encode($response));
+
+            $responseData = array(
+                "user_id" => $user->id,
                 "userToken" => $tokenResult,
                 "tokenType" => "Bearer",
-                "user_type"=>$user_type,
-            ));
+                "user_type" => $user_type,
+            );
 
-            return (json_encode($response));
+            $response = Controller::returnResponse(200, 'login successfully', $responseData);
+            return json_encode($response);
+            
         } catch (Exception $error) {
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
+            // $response = array("data" => array(
+            //     "message" => "There IS Error Occurred",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
+            // return (json_encode($response));
 
-            return (json_encode($response));
+            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
+            return json_encode($response);
         }
     }
     function signout(Request $req)
-    { 
-        
-        try{
-        $user= User::find($req->user_id);
-        $user->token="Null";
-        $user->save();
-        $token=DB::table('personal_access_tokens')->where('tokenable_id', $req->user_id)->delete();
-        $response = array("data" => array(
-            "message" => "Logout successfully", 
-            "status" => "200",
-        ));
-
-        return (json_encode($response));
-       
-    }
-    catch(Exception $error)
     {
-        $response = array("data" => array(
-            "message" => "something wrong", 
-            "status" => "500",
-            "error"=>$error,
-        ));
 
-        return (json_encode($response));
+        try {
+            $user = User::find($req->user_id);
+            $user->token = "Null";
+            $user->save();
+            $token = DB::table('personal_access_tokens')->where('tokenable_id', $req->user_id)->delete();
+            // $response = array("data" => array(
+            //     "message" => "Logout successfully",
+            //     "status" => "200",
+            // ));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(200, 'Logout successfully', array());
+            return json_encode($response);
+        } catch (Exception $error) {
+            // $response = array("data" => array(
+            //     "message" => "something wrong",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(500, 'something wrong', $error);
+            return json_encode($response);
+        }
+    }
 
-    }
-    
-    }
-  
     //get client info by id
-  
-    function getAllUsers(){
+
+    function getAllUsers()
+    {
         return User::all();
     }
     //update row according to row id
     function Update($id)
     {
-        
     }
     //delete row according to row id
     function Delete($id)
     {
-        
-    } 
-    
-    function getUserById($id){
-        return User::find($id)->first();
     }
 
-    function getUserById($id){
+    function getUserById($id)
+    {
         return User::find($id)->first();
     }
 }
