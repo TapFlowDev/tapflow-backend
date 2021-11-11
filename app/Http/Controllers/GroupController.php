@@ -16,7 +16,7 @@ use App\Http\Controllers\ClientController;
 
 use Exception;
 
-class GroupController extends Controller
+class   GroupController extends Controller
 {
     // get all categories 
     function get_categories()
@@ -177,7 +177,7 @@ class GroupController extends Controller
                 ));
 
                 return (json_encode($response));
-            } catch (\Exception $error) {
+            } catch (Exception $error) {
                 $response = array("data" => array(
                     "message" => "There IS Error Occurred",
                     "status" => "500",
