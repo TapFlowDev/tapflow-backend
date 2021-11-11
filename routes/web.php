@@ -9,6 +9,8 @@ use App\Http\Controllers\AdminTool\FreeLancerController;
 use App\Http\Controllers\AdminTool\ClientsController;
 use App\Http\Controllers\AdminTool\TeamsController;
 use App\Http\Controllers\AdminTool\CompaniesController;
+use App\Http\Controllers\AdminTool\GroupsController;
+use Illuminate\Http\Request;
 // use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 /*
 |--------------------------------------------------------------------------
@@ -43,11 +45,18 @@ Route::get('/AdminTool/dashboard', function () {
 
 Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminTool.')->group(function () {
     Route::resource('/users', AdminConroller::class);
-     Route::resource('/categories', AdminCategoriesController::class);
-     Route::resource('/freelancers', FreeLancerController::class);
-     Route::resource('/clients', ClientsController::class);
-     Route::resource('/agencies', TeamsController::class);
-     Route::resource('/companies', CompaniesController::class);
+    Route::resource('/categories', AdminCategoriesController::class);
+    Route::resource('/freelancers', FreeLancerController::class);
+    Route::resource('/clients', ClientsController::class);
+    Route::resource('/agencies', TeamsController::class);
+    Route::resource('/companies', CompaniesController::class);
+    Route::resource('/group', GroupsController::class);
+    // Route::post('', [GroupsController::class, 'verifyOrUnVerifyGroup']);
+
     // Route::resource('/categories/{$parentId}/subCategories', AdminSubCategoryController::class);
-    Route::resource('categories.subCategories', AdminSubCategoryController::class)->shallow();
+
 });
+Route::get('/r', function (Request $request) {
+    return redirect('/api/r/'.$request->r);
+});
+// Route::get('',[InviteUsersController::class,'addUserByToken']);

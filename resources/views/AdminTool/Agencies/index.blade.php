@@ -1,10 +1,10 @@
 @extends('templates.main')
 @section('content')
-<div class="row">
-<div class="col-12">
-    <h1 class="float-left"> Teams/Agencies</h1>
-</div>
-</div>
+    <div class="row">
+        <div class="col-12">
+            <h1 class="float-left"> Teams/Agencies</h1>
+        </div>
+    </div>
     <div class="card">
         <table class="table">
             <thead>
@@ -19,31 +19,49 @@
                 @foreach ($users as $user)
                     <tr>
                         <th scope="row">{{ $user->id }}</th>
-                        <td>{{ $user->name}}</td>
+                        <td>{{ $user->name }}</td>
                         <td>
-                            @if($user->verified==1)
-                            verified
+                            @if ($user->verified == 1)
+                                verified
                             @else
-                            not verified
+                                not verified
                             @endif
                         </td>
                         <td>
                             {{-- <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.freelancers.show', $user->freelancer_id) }}"
                                 role="button">View</a> --}}
-                                <button class="btn btn-sm btn-danger" 
+                            @if ($user->verified == 0)
+                                <button class="btn btn-sm btn-success"
                                     onclick="event.preventDefault();
-                                    document.getElementById('delete-user-form-{{ $user->id }}').submit()">Verify</button>
-                                <form id="delete-user-form-{{ $user->id }}"  action="{{ route('AdminTool.users.destroy', $user->id) }}" method="POST"
+                                        document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Verify</button>
+                                <form id="verifyTeam-user-form-{{ $user->id }}"
+                                    action="{{ route('AdminTool.group.update', $user->id) }}" method="POST"
                                     style="display: none;">
-                                @csrf
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="verify" value="1">
+
                                 </form>
+                            @elseif ($user->verified==1)
+                                <button class="btn btn-sm btn-danger"
+                                    onclick="event.preventDefault();
+                                    document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Unverify</button>
+                                <form id="verifyTeam-user-form-{{ $user->id }}"
+                                    action="{{ route('AdminTool.group.update', $user->id) }}" method="POST"
+                                    style="display: none;">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="verify" value="0">
+
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
 
             </tbody>
         </table>
-    {{ $users->links() }}
+        {{ $users->links() }}
     </div>
 
 @endsection

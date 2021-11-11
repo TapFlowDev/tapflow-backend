@@ -25,6 +25,12 @@ $text: #3A3C42;
 body {
     background-color: #e6e6e6;
 }
+.content-container{
+    background-color: white;
+    margin: 45PX auto;
+    width: 90%;
+    padding: 30PX;
+}
 .page .sidebar{
     background: $navBar;
     position: fixed;
