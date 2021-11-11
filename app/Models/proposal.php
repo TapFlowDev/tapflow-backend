@@ -10,4 +10,11 @@ class proposal extends Model
 {
     
     use HasApiTokens, HasFactory, Notifiable;
+    protected $fillable = [
+        'team_id',
+        'project_id',
+        'price',
+        'days',
+        'why_us',
+    ];
 }
