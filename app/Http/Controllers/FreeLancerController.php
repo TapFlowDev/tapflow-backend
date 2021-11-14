@@ -93,7 +93,7 @@ class FreeLancerController extends Controller
             $user =DB::table('users')
             ->leftJoin('freelancers','users.id','=','freelancers.user_id')
             ->where('users.id',$id)
-            ->get();
+            ->select('users.*', 'freelancers.*', 'freelancers.id as freelancer_id');
 
             // $response = array("data" => array(
             //     "user"=>$user,
