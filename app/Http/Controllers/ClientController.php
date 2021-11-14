@@ -69,7 +69,7 @@ class ClientController extends Controller
     {
         try{
             $user= $user =DB::table('users')
-            ->join('clients','users.id','=','clients.user_id')
+            ->leftJoin('clients','users.id','=','clients.user_id')
             ->where('users.id',$id)
             ->get();
             // $response = array("data" => array(

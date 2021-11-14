@@ -91,7 +91,7 @@ class FreeLancerController extends Controller
             // $user = User::where('id', $id)->get();
             // $freelancer = Freelancer::where('user_id', $id)->get();
             $user =DB::table('users')
-            ->join('freelancers','users.id','=','freelancers.user_id')
+            ->leftJoin('freelancers','users.id','=','freelancers.user_id')
             ->where('users.id',$id)
             ->get();
 
