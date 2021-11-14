@@ -11,6 +11,9 @@ use App\Http\Controllers\AdminTool\TeamsController;
 use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use Illuminate\Http\Request;
+use App\Mail\SendInvitation;
+use Illuminate\Support\Facades\Mail;
+
 // use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 /*
 |--------------------------------------------------------------------------
@@ -64,3 +67,7 @@ Route::get('/testForms', function () {
     return view('testForms');
 });
 // Route::get('',[InviteUsersController::class,'addUserByToken']);
+
+// Route::get('/emailTest', function(){
+//     return new SendInvitation;
+// });
