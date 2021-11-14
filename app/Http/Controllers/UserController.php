@@ -109,7 +109,7 @@ class UserController extends Controller
                 //     "error" => 
                 // ));
 
-                return json_encode($response);
+                // return json_encode($response);
             }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
