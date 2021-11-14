@@ -33,7 +33,7 @@ class FreeLancerController extends Controller
             //     "error" => $validator->errors()
             // ));
             // return (json_encode($response));
-            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors);
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
         }
         try {
