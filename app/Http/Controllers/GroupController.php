@@ -225,5 +225,8 @@ class   GroupController extends Controller
     function Delete($id)
     {
     }
+    function getGroupById($id){
+        return Group::find($id);
+    }
     
 }
