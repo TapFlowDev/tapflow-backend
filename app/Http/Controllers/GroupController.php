@@ -55,7 +55,8 @@ class   GroupController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            return json_encode($response);
         } else {
             // $group = new Group;
             $type = 1;
@@ -108,22 +109,30 @@ class   GroupController extends Controller
                     $attach->move(public_path($destPath), $attachName);
                     $teamObj->updateFiles($teamId, $attachName, 'attachment');
                 }
-                $response = array("data" => array(
-                    "message" => "team added successfully",
-                    "status" => "200",
-                    "group_id" => $group_id,
-                    "team_id" => $teamId,
-                ));
+                // $response = array("data" => array(
+                //     "message" => "team added successfully",
+                //     "status" => "200",
+                //     "group_id" => $group_id,
+                //     "team_id" => $teamId,
+                // ));
 
-                return (json_encode($response));
+                // return (json_encode($response));
+
+                $responseData = array(
+                    "group_id" => $group_id
+                );
+                $response = Controller::returnResponse(200, 'team added successfully', $responseData);
+                return json_encode($response);
             } catch (\Exception $error) {
-                $response = array("data" => array(
-                    "message" => "There IS Error Occurred",
-                    "status" => "500",
-                    "error" => $error,
-                ));
+                // $response = array("data" => array(
+                //     "message" => "There IS Error Occurred",
+                //     "status" => "500",
+                //     "error" => $error,
+                // ));
 
-                return (json_encode($response));
+                // return (json_encode($response));
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                return json_encode($response);
             }
         }
     }
@@ -135,7 +144,9 @@ class   GroupController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+            
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            return json_encode($response);
         } else {
             // $group = new Group;
             $type = 2;
@@ -176,22 +187,33 @@ class   GroupController extends Controller
                     $attach->move(public_path($destPath), $attachName);
                     $teamObj->updateFiles($teamId, $attachName, 'attachment');
                 }
-                $response = array("data" => array(
-                    "message" => "team added successfully",
-                    "status" => "200",
-                    "group_id" => $group_id,
-                    "company_id" => $teamId,
-                ));
+                // $response = array("data" => array(
+                //     "message" => "team added successfully",
+                //     "status" => "200",
+                //     "group_id" => $group_id,
+                //     "company_id" => $teamId,
+                // ));
 
-                return (json_encode($response));
+                // return (json_encode($response));
+
+                $responseData = array(
+                    "group_id" => $group_id
+                );
+                $response = Controller::returnResponse(200, 'team added successfully', $responseData);
+                return json_encode($response);
+            
+                
             } catch (Exception $error) {
-                $response = array("data" => array(
-                    "message" => "There IS Error Occurred",
-                    "status" => "500",
-                    "error" => $error,
-                ));
+                // $response = array("data" => array(
+                //     "message" => "There IS Error Occurred",
+                //     "status" => "500",
+                //     "error" => $error,
+                // ));
 
-                return (json_encode($response));
+                // return (json_encode($response));
+
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                return json_encode($response);
             }
         }
     }

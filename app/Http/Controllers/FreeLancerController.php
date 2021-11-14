@@ -95,19 +95,23 @@ class FreeLancerController extends Controller
             ->where('users.id',$id)
             ->get();
 
-            $response = array("data" => array(
-                "user"=>$user,
-                "status" => "200",
-            ));
-            return (json_encode($response));
+            // $response = array("data" => array(
+            //     "user"=>$user,
+            //     "status" => "200",
+            // ));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(200, 'data found', $user);
+            return json_encode($response);
         } catch (Exception $error) {
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
+            // $response = array("data" => array(
+            //     "message" => "There IS Error Occurred",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
 
-            return (json_encode($response));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
         }
     }
 
