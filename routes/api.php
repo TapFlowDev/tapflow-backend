@@ -1,7 +1,17 @@
 <?php
 
+use App\Models\Rate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use  App\Http\Controllers\GroupController;
+use  App\Http\Controllers\CategoriesController;
+use  App\Http\Controllers\ProjectController;
+use  App\Http\Controllers\ClientController;
+use  App\Http\Controllers\FreeLancerController;
+use  App\Http\Controllers\Proposals;
+use  App\Http\Controllers\Accepted_Proposals;
+use  App\Http\Controllers\InviteUsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +24,46 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+// Route::get('/token', function (Request $request) {
+//     $token = $request->session()->token();
+
+//     $token = csrf_token();
+
+// });
+
+Route::group(['middleware'=>'auth:sanctum'],function(){
+  
+
+
+
+
+
 });
+
+
+
+Route::post('addProposal',[Proposals::class,'insert']);
+Route::post('addAcceptedProposal',[Accepted_Proposals::class,'insert']);
+
+
+
+
+Route::get('getFreelancerInfo/{id}',[FreeLancerController::class,'get_freelancer_info']);
+Route::get('getCategories',[CategoriesController::class,'getCategories']);
+Route::get('getAllUsers',[UserController::class,'getAllUsers']);
+Route::get('getClientInfo/{id}',[ClientController::class,'get_client_info']);
+Route::post('addUser',[UserController::class,'add_user']);
+Route::post('addTeam',[GroupController::class,'add_group_team']);
+Route::post('addCompany',[GroupController::class,'add_group_company']);
+Route::post('addFreelancerInfo',[FreeLancerController::class,'Insert_freelancer']);
+Route::post('addClientInfo',[ClientController::class,'Insert_client']);
+Route::post('Login',[UserController::class,'login']);
+Route::post('createProject',[ProjectController::class,'Insert']);
+Route::post('sendInvitation',[InviteUsersController::class,'sendInvitation']);
+Route::get('r/{token}',[InviteUsersController::class,'getDataByToken']);
+Route::post('acceptOrRefuseInvitation',[InviteUsersController::class,'updateInvitation']);
+Route::post('joinWithCode',[InviteUsersController::class,'joinGroupByCode']);
