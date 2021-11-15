@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Auth;
 use function PHPSTORM_META\type;
 use function PHPUnit\Framework\isEmpty;
 use App\Http\Controllers\UserCategoriesController;
+use App\Http\Controllers\FreeLancerController;
+use App\Http\Controllers\ClientController;
 
 
 // user types 1,2 1:freelancer 2:client
@@ -174,12 +176,22 @@ class UserController extends Controller
             $user->save();
 
             //check the user info is filed or not 
-            
+            if($user_type ==1)
+            {
+                $freelancer=new FreeLancerController;
+                $check=$freelancer->checkIfExists($user->id);
+            }
+            elseif($user_type ==2)
+            {
+                $client=new ClientController;
+                $check=$client->checkIfExists($user->id);
+            }
             $responseData = array("data" => array(
                 "user_id"=>$user->id,
                 "userToken" => $tokenResult,
                 "tokenType" => "Bearer",
                 "user_type"=>$user_type,
+                "completed"=>$check
             ));
             $response=Controller::returnResponse( 200,"login successfully", $responseData);
             return (json_encode($response));

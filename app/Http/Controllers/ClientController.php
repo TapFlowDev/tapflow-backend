@@ -122,6 +122,21 @@ class ClientController extends Controller
     {
 
     }
+    function checkIfExists($id)
+    {
+       $freelancer= Client::where('user_id', '=', $id)->first();
+
+      
+       if($freelancer === null)
+       {
+        return(0);
+       }
+       else
+       {
+        return(1);
+       }
+        
+    }
     function updateTeamId($userId, $teamId){
         Client::where('user_id', $userId)->update(['company_id'=>$teamId]);
     }
