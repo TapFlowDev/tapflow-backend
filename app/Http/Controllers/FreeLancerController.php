@@ -140,6 +140,7 @@ class FreeLancerController extends Controller
     {
     }
 
+  
     function updateTeamId($userId, $teamId)
     {
         Freelancer::where('user_id', $userId)->update(['team_id' => $teamId]);
