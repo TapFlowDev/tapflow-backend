@@ -95,49 +95,9 @@ class UserController extends Controller
                 return (json_encode($response));
             }                                                           
         }
-    }
-
-   
-   
-    //login function using Sanctum auth token
-
-
-                $user->first_name = $req->first_name;
-                $user->last_name = $req->last_name;
-                $user->email = $req->email;
-                $user->password = $req->password;
-                $user->type = $req->type;
-                $user->save();
-                $user_id = $user->id;
-
-
-
-                // $response = array("data" => array(
-                //     "message" => "user added successfully",
-                //     "status" => "200",
-                //     "user_id" => $user_id,
-                // ));
-                // return (json_encode($response));
-                $responseData = array(
-                    "user_id" => $user_id,
-                );
-                $response = Controller::returnResponse(200, 'user added successfully', $responseData);
-                return json_encode($response);
-            } catch (\Exception $error) {
-                // $response = array("data" => array(
-                //     "message" => "There IS Error Occurred",
-                //     "status" => "500",
-                //     "error" => $error,
-                // ));
-
-                // return (json_encode($response));
-                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
-                return json_encode($response);
-            }
+    
+            
         }
-    }
-
-
 
     //login dunction using Sanctum auth token
 
@@ -228,37 +188,7 @@ class UserController extends Controller
             $response=Controller::returnResponse( 500,"There IS Error Occurred", $responseData);
             return (json_encode($response));
 
-            // $response = array("data" => array(
-            //     "message" => "login successfully",
-            //     "status" => "200",
-            //     "user_id" => $user->id,
-            //     "userToken" => $tokenResult,
-            //     "tokenType" => "Bearer",
-            //     "user_type" => $user_type,
-            // ));
-            // return (json_encode($response));
-
-            $responseData = array(
-                "user_id" => $user->id,
-                "userToken" => $tokenResult,
-                "tokenType" => "Bearer",
-                "user_type" => $user_type,
-            );
-
-            $response = Controller::returnResponse(200, 'login successfully', $responseData);
-            return json_encode($response);
-        } catch (Exception $error) {
-            // $response = array("data" => array(
-            //     "message" => "There IS Error Occurred",
-            //     "status" => "500",
-            //     "error" => $error,
-            // ));
-            // return (json_encode($response));
-
-            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
-            return json_encode($response);
-
-        }
+        } 
     }
     function signout(Request $req)
     {
