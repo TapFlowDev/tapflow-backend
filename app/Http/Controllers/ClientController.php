@@ -13,6 +13,7 @@ class ClientController extends Controller
 {
     function Insert_client(Request $req)
     {
+     
         
         $rules = array(
             "user_id" => "required",
