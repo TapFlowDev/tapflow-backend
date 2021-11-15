@@ -66,3 +66,4 @@ Route::post('createProject',[ProjectController::class,'Insert']);
 Route::post('sendInvitation',[InviteUsersController::class,'sendInvitation']);
 Route::get('r/{token}',[InviteUsersController::class,'getDataByToken']);
 Route::post('acceptOrRefuseInvitation',[InviteUsersController::class,'updateInvitation']);
+Route::post('joinWithCode',[InviteUsersController::class,'joinGroupByCode']);

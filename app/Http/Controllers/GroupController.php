@@ -51,11 +51,12 @@ class   GroupController extends Controller
     {
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:groups"
+            "admin_id" => "required|unique:groups|exists:freelancers,user_id"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            return json_encode($response);
         } else {
             // $group = new Group;
             $type = 1;
@@ -89,38 +90,48 @@ class   GroupController extends Controller
                 $teamArr['employees_number'] = $req->employees_number;
 
                 $teamInfo = $teamObj->Insert($teamArr);
-                $teamId = $teamInfo->id;
+                $teamId = $group_id;
                 $userObj->updateTeamId($userId, $group_id);
                 if ($req->hasFile('image')) {
-                    $destPath = 'images/teams';
+                    $destPath = 'images/companies';
                     $ext = $req->file('image')->extension();
-                    $imageName = "team-image-" . $group_id . "." . $ext;
-                    $req->image->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($group_id, $imageName, 'image');
+                    $imageName = "company-image-" . $teamId . "." . $ext;
+                    $image = $req->image;
+                    $image->move(public_path($destPath), $imageName);
+                    $teamObj->updateFiles($teamId, $imageName, 'image');
                 }
                 if ($req->hasFile('attachment')) {
-                    $destPath = 'images/teams';
-                    $ext = $req->file('image')->extension();
-                    $imageName = "team-attachment-" . $group_id . "." . $ext;
-                    $req->image->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($group_id, $imageName, 'attachment');
+                    $destPath = 'images/companies';
+                    $ext = $req->file('attachment')->extension();
+                    $attachName = "company-attachment-" . $teamId . "." . $ext;
+                    $attach = $req->attachment;
+                    $attach->move(public_path($destPath), $attachName);
+                    $teamObj->updateFiles($teamId, $attachName, 'attachment');
                 }
-                $response = array("data" => array(
-                    "message" => "team added successfully",
-                    "status" => "200",
-                    "group_id" => $group_id,
-                    "team_id" => $teamId,
-                ));
+                // $response = array("data" => array(
+                //     "message" => "team added successfully",
+                //     "status" => "200",
+                //     "group_id" => $group_id,
+                //     "team_id" => $teamId,
+                // ));
 
-                return (json_encode($response));
+                // return (json_encode($response));
+
+                $responseData = array(
+                    "group_id" => $group_id
+                );
+                $response = Controller::returnResponse(200, 'team added successfully', $responseData);
+                return json_encode($response);
             } catch (\Exception $error) {
-                $response = array("data" => array(
-                    "message" => "There IS Error Occurred",
-                    "status" => "500",
-                    "error" => $error,
-                ));
+                // $response = array("data" => array(
+                //     "message" => "There IS Error Occurred",
+                //     "status" => "500",
+                //     "error" => $error,
+                // ));
 
-                return (json_encode($response));
+                // return (json_encode($response));
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                return json_encode($response);
             }
         }
     }
@@ -128,11 +139,13 @@ class   GroupController extends Controller
     {
         $rules = array(
             "name" => "required|max:255",
-            // "admin_id" => "required|unique:groups"
+            "admin_id" => "required|unique:groups|exists:clients,user_id"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            return $validator->errors();
+
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            return json_encode($response);
         } else {
             // $group = new Group;
             $type = 2;
@@ -140,7 +153,7 @@ class   GroupController extends Controller
             $userObj = new ClientController;
             try {
                 $req->type = $type;
-                
+
                 $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
                 $userId = $req->admin_id;
@@ -154,38 +167,49 @@ class   GroupController extends Controller
                 $teamArr['field'] = $req->field;
 
                 $teamInfo = $teamObj->Insert($teamArr);
-                $teamId = $teamInfo->id;
+                $teamId = $group_id;
                 $userObj->updateTeamId($userId, $group_id);
                 if ($req->hasFile('image')) {
                     $destPath = 'images/companies';
                     $ext = $req->file('image')->extension();
                     $imageName = "company-image-" . $teamId . "." . $ext;
-                    $req->image->move(public_path($destPath), $imageName);
+                    $image = $req->image;
+                    $image->move(public_path($destPath), $imageName);
                     $teamObj->updateFiles($teamId, $imageName, 'image');
                 }
                 if ($req->hasFile('attachment')) {
                     $destPath = 'images/companies';
-                    $ext = $req->file('image')->extension();
-                    $imageName = "company-attachment-" . $teamId . "." . $ext;
-                    $req->image->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($teamId, $imageName, 'attachment');
+                    $ext = $req->file('attachment')->extension();
+                    $attachName = "company-attachment-" . $teamId . "." . $ext;
+                    $attach = $req->attachment;
+                    $attach->move(public_path($destPath), $attachName);
+                    $teamObj->updateFiles($teamId, $attachName, 'attachment');
                 }
-                $response = array("data" => array(
-                    "message" => "team added successfully",
-                    "status" => "200",
-                    "group_id" => $group_id,
-                    "company_id" => $teamId,
-                ));
+                // $response = array("data" => array(
+                //     "message" => "team added successfully",
+                //     "status" => "200",
+                //     "group_id" => $group_id,
+                //     "company_id" => $teamId,
+                // ));
 
-                return (json_encode($response));
+                // return (json_encode($response));
+
+                $responseData = array(
+                    "group_id" => $group_id
+                );
+                $response = Controller::returnResponse(200, 'team added successfully', $responseData);
+                return json_encode($response);
             } catch (Exception $error) {
-                $response = array("data" => array(
-                    "message" => "There IS Error Occurred",
-                    "status" => "500",
-                    "error" => $error,
-                ));
+                // $response = array("data" => array(
+                //     "message" => "There IS Error Occurred",
+                //     "status" => "500",
+                //     "error" => $error,
+                // ));
 
-                return (json_encode($response));
+                // return (json_encode($response));
+
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                return json_encode($response);
             }
         }
     }
@@ -197,7 +221,8 @@ class   GroupController extends Controller
     function Delete($id)
     {
     }
-    function getGroupById($id){
+    function getGroupById($id)
+    {
         return Group::find($id);
     }
 }

@@ -11,6 +11,9 @@ use App\Http\Controllers\AdminTool\TeamsController;
 use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use Illuminate\Http\Request;
+use App\Mail\SendInvitation;
+use Illuminate\Support\Facades\Mail;
+
 // use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 /*
 |--------------------------------------------------------------------------
@@ -52,11 +55,19 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/companies', CompaniesController::class);
     Route::resource('/group', GroupsController::class);
     // Route::post('', [GroupsController::class, 'verifyOrUnVerifyGroup']);
-
+    
     // Route::resource('/categories/{$parentId}/subCategories', AdminSubCategoryController::class);
+    Route::resource('categories.subCategories', AdminSubCategoryController::class)->shallow();
 
 });
 Route::get('/r', function (Request $request) {
     return redirect('/api/r/'.$request->r);
 });
+Route::get('/testForms', function () {
+    return view('testForms');
+});
 // Route::get('',[InviteUsersController::class,'addUserByToken']);
+
+// Route::get('/emailTest', function(){
+//     return new SendInvitation;
+// });
