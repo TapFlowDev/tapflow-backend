@@ -101,8 +101,8 @@ class FreeLancerController extends Controller
             ));
 
             return (json_encode($response));
-        }
     }
+}
 
 
     //update row according to row id
