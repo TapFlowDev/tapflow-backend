@@ -47,12 +47,12 @@ class UserController extends Controller
         $user->token = $tokenResult;
         $user_type=$user->type;
         $user->save();
-        $response = array("data" => array(
+        $response = array(
             "user_id"=>$user->id,
             "user_type"=>$user_type,
             "token" => $tokenResult,
             "tokenType" => "Bearer",
-        ));
+        );
         return($response);
     }
     //add freelancer
@@ -113,12 +113,6 @@ class UserController extends Controller
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
-
-                $response = array("data" => array(
-                    "message" => "Validation Error",
-                    "status" => "101",
-                    "error" => $validator->errors()
-                ));
                 $responseData=$validator->errors();
                 $response=Controller::returnResponse( 101,"Validation Error", $responseData);
 
@@ -129,27 +123,16 @@ class UserController extends Controller
                 $responseData = array();
                 $response=Controller::returnResponse( 422,"Unauthorized Error", $responseData);
                 return (json_encode($response));
-
                 $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
                 return json_encode($response);
-                // $response = array("data" => array(
-                //     "message" => "Validation Error",
-                //     "status" => "101",
-                //     "error" => 
-                // ));
-
-                // return json_encode($response);
             }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
-                // $response = array("data" => array(
-                //     "message" => "Unauthorized",
-                //     "status" => "422",
-                // ));
+                
                 $response = Controller::returnResponse(422, 'Unauthorized', array());
                 return json_encode($response);
 
-                // return (json_encode($response));
+             
 
             }
 
@@ -160,14 +143,11 @@ class UserController extends Controller
                 $response=Controller::returnResponse( 422,"The Password does not match", $responseData);
                 return (json_encode($response));
 
-                // $response = array("data" => array(
-                //     "message" => "The Password does not match",
-                //     "status" => "422",
-                // ));
+               
                 $response = Controller::returnResponse(422, 'The Password does not match', array());
                 return json_encode($response);
 
-                // return (json_encode($response));
+                
 
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
@@ -186,13 +166,13 @@ class UserController extends Controller
                 $client=new ClientController;
                 $check=$client->checkIfExists($user->id);
             }
-            $responseData = array("data" => array(
+            $responseData =  array(
                 "user_id"=>$user->id,
                 "userToken" => $tokenResult,
                 "tokenType" => "Bearer",
                 "user_type"=>$user_type,
                 "completed"=>$check
-            ));
+            );
             $response=Controller::returnResponse( 200,"login successfully", $responseData);
             return (json_encode($response));
         } catch (Exception $error) {
@@ -210,20 +190,11 @@ class UserController extends Controller
             $user->token = "Null";
             $user->save();
             $token = DB::table('personal_access_tokens')->where('tokenable_id', $req->user_id)->delete();
-            // $response = array("data" => array(
-            //     "message" => "Logout successfully",
-            //     "status" => "200",
-            // ));
-            // return (json_encode($response));
+           
             $response = Controller::returnResponse(200, 'Logout successfully', array());
             return json_encode($response);
         } catch (Exception $error) {
-            // $response = array("data" => array(
-            //     "message" => "something wrong",
-            //     "status" => "500",
-            //     "error" => $error,
-            // ));
-            // return (json_encode($response));
+           
             $response = Controller::returnResponse(500, 'something wrong', $error);
             return json_encode($response);
         }
