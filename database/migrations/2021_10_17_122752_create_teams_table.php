@@ -14,9 +14,8 @@ class CreateTeamsTable extends Migration
     public function up()
     {
         Schema::create('teams', function (Blueprint $table) {
-            $table->integer('id')->autoIncrement();
-            $table->integer('group_id');
-            $table->string('type','255')->nullable();//agency type, 1 tema of freelancers, 2 is agency
+            $table->integer('group_id')->unique();
+            $table->string('type','255')->nullable();//agency type, 1 team of freelancers, 2 is agency
             $table->text('bio')->nullable();
             $table->string('attachment')->nullable();
             $table->string('image')->nullable();

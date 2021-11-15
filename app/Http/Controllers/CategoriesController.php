@@ -33,22 +33,27 @@ class CategoriesController extends Controller
                 $value->image = asset('images/categories/' . $value->image);
             }
             // $categories = (array)$categories;
-            $response = array(
-                "data" => array(
-                "message" => "user information added successfully",
-                "status" => "200",
-                "data" => $categories,
-            ));
+            // $response = array(
+            //     "data" => array(
+            //     "message" => "user information added successfully",
+            //     "status" => "200",
+            //     "data" => $categories,
+            // ));
+            // return json_encode($response);
+
+            $response = Controller::returnResponse(200, 'user information added successfully', $categories);
             return json_encode($response);
         } catch (\Exception $error) {
 
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
+            // $response = array("data" => array(
+            //     "message" => "There IS Error Occurred",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
 
-            return (json_encode($response));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
         }
     }
     function getSubCategoriesByParent($category_id)

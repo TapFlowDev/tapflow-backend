@@ -14,8 +14,7 @@ class CreateFreelancersTable extends Migration
     public function up()
     {
         Schema::create('freelancers', function (Blueprint $table) {
-            $table->integer('id')->autoIncrement();
-            $table->integer('user_id');
+            $table->integer('user_id')->unique();
             $table->integer('team_id')->nullable();
             $table->text('bio')->nullable();
             $table->string('hourly_rate','255')->nullable();

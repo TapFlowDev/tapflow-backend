@@ -16,21 +16,22 @@ class ClientController extends Controller
      
         
         $rules = array(
-            "user_id" => "required",
+            "user_id" => "required|exists:users,id",
             "bio" => "required",
             "role" => "required",
-            "attachment" => "required",
-            "image" => "required",
             "country" => "required",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            $response = array("data" => array(
-                "message" => "Validation Error",
-                "status" => "101",
-                "error" => $validator->errors()
-            ));
-            return (json_encode($response));
+            // $response = array("data" => array(
+            //     "message" => "Validation Error",
+            //     "status" => "101",
+            //     "error" => $validator->errors()
+            // ));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            return json_encode($response);
+        
         }
         try {
             $data = $req->except(['gender', 'dob']);
@@ -38,21 +39,45 @@ class ClientController extends Controller
             $user = User::find($req->user_id);
             $user->dob = $req->dob;
             $user->gender = $req->gender;
-         
             $user->save();
-            $response = array("data" => array(
-                "message" => "user information added successfully",
-                "status" => "200",
+            $userId = $req->user_id;
+
+            if ($req->hasFile('image')) {
+                $destPath = 'images/companies';
+                $ext = $req->file('image')->extension();
+                $imageName = "company-image-" . $userId . "." . $ext;
+                $image = $req->image;
+                $image->move(public_path($destPath), $imageName);
+                $this->updateFiles($userId, $imageName, 'image');
+            }
+            if ($req->hasFile('attachment')) {
+                $destPath = 'images/companies';
+                $ext = $req->file('attachment')->extension();
+                $attachName = "company-attachment-" . $userId . "." . $ext;
+                $attach = $req->attachment;
+                $attach->move(public_path($destPath), $attachName);
+                $this->updateFiles($userId, $attachName, 'attachment');
+            }
+            // $response = array("data" => array(
+            //     "message" => "user information added successfully",
+            //     "status" => "200",
+            //     "user_id" => $req->user_id,
+            // ));
+            // return (json_encode($response));
+            $responseData = array(
                 "user_id" => $req->user_id,
-            ));
-            return (json_encode($response));
+            );
+            $response = Controller::returnResponse(200, 'user information added successfully', $responseData);
+            return json_encode($response);
         } catch (\Exception $error) {
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
-            return (json_encode($response));
+            // $response = array("data" => array(
+            //     "message" => "There IS Error Occurred",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
         }
     }
     //add row 
@@ -60,24 +85,31 @@ class ClientController extends Controller
     {
         try{
             $user= $user =DB::table('users')
-            ->join('clients','users.id','=','clients.user_id')
+            ->leftJoin('clients','users.id','=','clients.user_id')
             ->where('users.id',$id)
             ->get();
-            $response = array("data" => array(
-                "user" => $user,
-                "status" => "200",
-            ));
-            return (json_encode($response));
+            // $response = array("data" => array(
+            //     "user" => $user,
+            //     "status" => "200",
+            // ));
+            // return (json_encode($response));
+
+
+            $response = Controller::returnResponse(200, 'user information found', $user);
+            return json_encode($response);
         }
         catch(Exception $error)
         {
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
+            // $response = array("data" => array(
+            //     "message" => "There IS Error Occurred",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
     
-            return (json_encode($response));   
+            // return (json_encode($response));   
+
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
         }
     }
     //update row according to row id
@@ -92,5 +124,9 @@ class ClientController extends Controller
     }
     function updateTeamId($userId, $teamId){
         Client::where('user_id', $userId)->update(['company_id'=>$teamId]);
+    }
+    function updateFiles($userId, $imageName, $filedName)
+    {
+        Client::where('user_id', $userId)->update(array($filedName => $imageName));
     }
 }

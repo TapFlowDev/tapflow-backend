@@ -16,11 +16,14 @@ class CompanyController extends Controller
     //update row according to row id
     function Update($id)
     {
-
     }
     //delete row according to row id
     function Delete($id)
     {
+    }
 
+    function updateFiles($groupId, $imageName, $filedName)
+    {
+        Company::where('id', $groupId)->update(array($filedName => $imageName));
     }
 }
