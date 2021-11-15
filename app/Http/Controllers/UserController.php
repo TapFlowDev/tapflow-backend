@@ -24,9 +24,38 @@ use App\Http\Controllers\UserCategoriesController;
 // user types 1,2 1:freelancer 2:client
 class UserController extends Controller
 {
+    function internal_login($email,$password)
+    {
+        $credentials = request(['email', 'password']);
+        if (!Auth::attempt($credentials)) {
+            $responseData = array();
+            $response=Controller::returnResponse(422, 'Unauthorized', $responseData);
+            return json_encode($response);
+        }
+
+        $user = User::where('email',$email)->first();
+        if (!Hash::check($password, $user->password)) {
+            $responseData = array();
+           $response=Controller::returnResponse(422, 'The Password does not match', $responseData);
+            return json_encode($response);
+
+        }
+        $tokenResult = $user->createToken('authToken')->plainTextToken;
+        $user->token = $tokenResult;
+        $user_type=$user->type;
+        $user->save();
+        $response = array("data" => array(
+            "user_id"=>$user->id,
+            "user_type"=>$user_type,
+            "token" => $tokenResult,
+            "tokenType" => "Bearer",
+        ));
+        return($response);
+    }
     //add freelancer
     function add_user(Request $req)
     {
+
         // dd($req);
         $rules = array(
             "first_name" => "required|max:255",
@@ -37,42 +66,18 @@ class UserController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            $response = array("data" => array(
-                "message" => "Validation Error",
-                "status" => "101",
-                "error" => $validator->errors()
-            ));
+            $responseData=$validator->errors();
+            $response=Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
         } else {
-
-            $user = new User;
-
             try {
-
-                $user->first_name=$req->first_name;
-                $user->last_name=$req->last_name;
-                $user->email =$req->email ;
-                $user->	password=$req->	password;
-                $user->	type=$req->	type;
-                $user->save();
-                $user_id = $user->id;
-
-
-
-                $response = array("data" => array(
-                    "message" => "user added successfully",
-                    "status" => "200",
-                    "user_id" => $user_id,
-                ));
-
+                $user=User::create($req->all());
+               $responseData= $this->internal_login($req->email,$req->password);
+                $response=Controller::returnResponse( 200,"user added successfully", $responseData);
                 return (json_encode($response));
             } catch (\Exception $error) {
-                     $response = array("data" => array(
-                    "message" => "There IS Error Occurred",
-                    "status" => "500",
-                    "error" => $error,
-                ));
-
+                $responseData=$error;
+                $response=Controller::returnResponse( 500,"There IS Error Occurred", $responseData);
                 return (json_encode($response));
             }                                                           
         }
@@ -80,7 +85,7 @@ class UserController extends Controller
 
    
    
-    //login dunction using Sanctum auth token
+    //login function using Sanctum auth token
     function login(Request $req)
     {
 
@@ -96,50 +101,41 @@ class UserController extends Controller
                     "status" => "101",
                     "error" => $validator->errors()
                 ));
+                $responseData=$validator->errors();
+                $response=Controller::returnResponse( 101,"Validation Error", $responseData);
 
                 return (json_encode($response));
             }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
-                $response = array("data" => array(
-                    "message" => "Unauthorized",
-                    "status" => "422",
-                ));
-
+                $responseData = array();
+                $response=Controller::returnResponse( 422,"Unauthorized Error", $responseData);
                 return (json_encode($response));
             }
 
             $user = User::where('email', $req->email)->first();
             if (!Hash::check($req->password, $user->password)) {
-                $response = array("data" => array(
-                    "message" => "The Password does not match",
-                    "status" => "422",
-                ));
-
+                $responseData = array();
+                $response=Controller::returnResponse( 422,"The Password does not match", $responseData);
                 return (json_encode($response));
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
             $user->token = $tokenResult;
             $user_type=$user->type;
             $user->save();
+            //check the user info is filed or not 
             
-            $response = array("data" => array(
-                "message" => "login successfully",
-                "status" => "200",
+            $responseData = array("data" => array(
                 "user_id"=>$user->id,
                 "userToken" => $tokenResult,
                 "tokenType" => "Bearer",
                 "user_type"=>$user_type,
             ));
-
+            $response=Controller::returnResponse( 200,"login successfully", $responseData);
             return (json_encode($response));
         } catch (Exception $error) {
-            $response = array("data" => array(
-                "message" => "There IS Error Occurred",
-                "status" => "500",
-                "error" => $error,
-            ));
-
+            $responseData = array("error" => $error,);
+            $response=Controller::returnResponse( 500,"There IS Error Occurred", $responseData);
             return (json_encode($response));
         }
     }
@@ -193,7 +189,5 @@ class UserController extends Controller
         return User::find($id)->first();
     }
 
-    function getUserById($id){
-        return User::find($id)->first();
-    }
+   
 }
