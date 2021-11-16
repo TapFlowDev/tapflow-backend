@@ -50,7 +50,7 @@ class UserController extends Controller
         $response = array(
             "user_id"=>$user->id,
             "user_type"=>$user_type,
-            "token" => $tokenResult,
+            "userToken" => $tokenResult,
             "tokenType" => "Bearer",
         );
         return($response);
