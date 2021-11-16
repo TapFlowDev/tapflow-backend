@@ -140,6 +140,21 @@ class FreeLancerController extends Controller
     {
     }
 
+    function checkIfExists($id)
+    {
+       $freelancer= Freelancer::where('user_id', '=', $id)->first();
+
+      
+       if($freelancer === null)
+       {
+        return(0);
+       }
+       else
+       {
+        return(1);
+       }
+        
+    }
   
     function updateTeamId($userId, $teamId)
     {
