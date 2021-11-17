@@ -3,19 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\users_category;  
+use App\Models\Category;
+use App\Models\users_category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class UserCategoriesController extends Controller
 {
     //add row 
     function Insert($arr, $userId)
     {
-       
-        $info['user_id'] = $userId; 
-        $info['category_id'] = $arr['catId']; 
-        $info['sub_category_id'] = $arr['subId']; 
-        
+
+        $info['user_id'] = $userId;
+        $info['category_id'] = $arr['catId'];
+        $info['sub_category_id'] = $arr['subId'];
+
 
 
         users_category::create($info);
@@ -23,15 +26,33 @@ class UserCategoriesController extends Controller
     //update row according to row id
     function Update($id)
     {
-
     }
     //delete row according to row id
     function Delete($id)
     {
-
     }
-    function addMultiRows($info){
+    function addMultiRows($info)
+    {
         users_category::insert($info);
+    }
 
+    function getUserCategoriesByUserId($id)
+    {
+        
+        $categories = users_category::where('user_id', $id)->get();
+        $userCategory = array();
+        foreach ($categories as $keyCat => $category) {
+            $userCategory[$category->category_id]['catId'] = $category->category_id;
+            $userCategory[$category->category_id]['name'] = DB::table('categories')->select('name')->where('id', '=',$category->category_id)->get()->first()->name;
+            $userCategory[$category->category_id]['sub'][] = DB::table('sub_categories')->select('id', 'name', 'category_id')->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->get()->first();
+            
+        }
+
+        $allCategory = array();
+        foreach($userCategory as $keyUserCat => $valUserCat){
+            $allCategory[]=$valUserCat;
+        }
+
+        return $allCategory;
     }
 }

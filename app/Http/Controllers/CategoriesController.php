@@ -60,4 +60,9 @@ class CategoriesController extends Controller
     {
         return SubCategory::where('category_id', $category_id)->get();
     }
+
+    function getCategoryById($id){
+        Category::where('id', $id)->get();
+
+    }
 }

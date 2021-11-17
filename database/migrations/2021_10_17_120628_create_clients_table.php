@@ -21,7 +21,6 @@ class CreateClientsTable extends Migration
             $table->string('attachment','255')->nullable();
             $table->string('image','255')->nullable();
             $table->string('country','255')->nullable();
-            $table->string('role','255')->nullable();
             $table->timestamps();
         });
     }

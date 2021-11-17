@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminTool\ClientsController;
 use App\Http\Controllers\AdminTool\TeamsController;
 use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
+use App\Http\Controllers\AdminTool\RolesController;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
