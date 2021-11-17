@@ -65,8 +65,8 @@ class   GroupController extends Controller
             $userObj = new FreeLancerController;
 
             try {
-                $req->type = $type;
-                $group = Group::create($req->only(['name', 'admin_id', 'type']));
+
+                $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
                 $group_id = $group->id;
                 $userId = $req->admin_id;
 
@@ -152,9 +152,9 @@ class   GroupController extends Controller
             $teamObj = new CompanyController;
             $userObj = new ClientController;
             try {
-                $req->type = $type;
+                
+                $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
 
-                $group = Group::create($req->only(['name', 'admin_id', 'type']));
                 $group_id = $group->id;
                 $userId = $req->admin_id;
 

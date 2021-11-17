@@ -53,7 +53,7 @@ class UserController extends Controller
             "userToken" => $tokenResult,
             "tokenType" => "Bearer",
         );
-        return($response);
+        return ($response);
     }
     //add freelancer
     function add_user(Request $req)

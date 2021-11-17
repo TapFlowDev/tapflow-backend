@@ -138,33 +138,35 @@ class InviteUsersController extends Controller
 
     function joinGroupByCode(Request $req)
     {
-        $status = $req->accept; // must be 1 (approved) or 2 (denied)
+        $status = 1; // must be 1 (approved) or 2 (denied)
         $rules = array(
             "code" => "required|exists:invite_codes,code",
             "user_id" => "required|exists:users,id"
         );
         $userObj = new UserController;
-        $userInfo = $userObj->getUserById($req->user_id);
-        $userType = $userInfo->type;
-        if ($userType == 1) {
-            $userTypeObj = new FreeLancerController();
-        } elseif ($userType == 2) {
-            $userTypeObj = new ClientController();
-        } else {
-            $responseData = array(
-                "error" => 'User type not right'
-            );
-            $response = Controller::returnResponse(500, 'User type not right', $responseData);
-            return json_encode($response);
-        }
         $validator = Validator::make($req->all(), $rules);
         // dd($validator->fails());
         if ($validator->fails()) {
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
-        } else {
+        } 
+        try {
+            $userInfo = $userObj->getUserById($req->user_id);
+            $userType = $userInfo->type;
+            if ($userType == 1) {
+                $userTypeObj = new FreeLancerController();
+            } elseif ($userType == 2) {
+                $userTypeObj = new ClientController();
+            } else {
+                $responseData = array(
+                    "error" => 'User type not right'
+                );
+                $response = Controller::returnResponse(500, 'User type not right', $responseData);
+                return json_encode($response);
+            }
             // $userInfo = $userObj->getUserById($req->user_id);
-            $group = Invite_code::where('code', $req->link_token)->get()->first();
+            $group = Invite_code::where('code', $req->code)->get()->first();
+            // dd($group, $userTypeObj, $userInfo);
 
             if ($group->status == 0 && $group->expired == 0) {
                 Invite_code::where('code', $req->link_token)->update(['status' => $status, 'expired' => 1]);
@@ -176,9 +178,19 @@ class InviteUsersController extends Controller
                 $response = Controller::returnResponse(500, 'Invitation expired', array());
                 return json_encode($response);
             }
+            $response = Controller::returnResponse(200, 'user joind the team', array());
+            return json_encode($response);
+        }catch (\Exception $error) {
+            // $response = array("data" => array(
+            //     "message" => "There IS Error Occurred",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
+            // return (json_encode($response));
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
         }
-        $response = Controller::returnResponse(200, 'user joind the team', array());
-        return json_encode($response);
+        
     }
 
     private function generateCode()

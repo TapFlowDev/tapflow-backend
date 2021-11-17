@@ -20,25 +20,21 @@ class ClientController extends Controller
             "bio" => "required",
             "role" => "required",
             "country" => "required",
+            "role" => "max:100",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            // $response = array("data" => array(
-            //     "message" => "Validation Error",
-            //     "status" => "101",
-            //     "error" => $validator->errors()
-            // ));
-            // return (json_encode($response));
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
         
         }
         try {
-            $data = $req->except(['gender', 'dob']);
+            $data = $req->except(['gender', 'dob', 'role']);
             $client = Client::create($data);
             $user = User::find($req->user_id);
             $user->dob = $req->dob;
             $user->gender = $req->gender;
+            $user->role = $req->role;
             $user->save();
             $userId = $req->user_id;
 
@@ -58,24 +54,12 @@ class ClientController extends Controller
                 $attach->move(public_path($destPath), $attachName);
                 $this->updateFiles($userId, $attachName, 'attachment');
             }
-            // $response = array("data" => array(
-            //     "message" => "user information added successfully",
-            //     "status" => "200",
-            //     "user_id" => $req->user_id,
-            // ));
-            // return (json_encode($response));
             $responseData = array(
                 "user_id" => $req->user_id,
             );
             $response = Controller::returnResponse(200, 'user information added successfully', $responseData);
             return json_encode($response);
         } catch (\Exception $error) {
-            // $response = array("data" => array(
-            //     "message" => "There IS Error Occurred",
-            //     "status" => "500",
-            //     "error" => $error,
-            // ));
-            // return (json_encode($response));
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
         }
@@ -88,25 +72,12 @@ class ClientController extends Controller
             ->leftJoin('clients','users.id','=','clients.user_id')
             ->where('users.id',$id)
             ->get();
-            // $response = array("data" => array(
-            //     "user" => $user,
-            //     "status" => "200",
-            // ));
-            // return (json_encode($response));
-
 
             $response = Controller::returnResponse(200, 'user information found', $user);
             return json_encode($response);
         }
         catch(Exception $error)
-        {
-            // $response = array("data" => array(
-            //     "message" => "There IS Error Occurred",
-            //     "status" => "500",
-            //     "error" => $error,
-            // ));
-    
-            // return (json_encode($response));   
+        {  
 
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);

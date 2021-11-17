@@ -2,7 +2,7 @@
 <html>
 
 <body>
-    <form action="/api/addCompany" method="POST" enctype="multipart/form-data">
+    {{-- <form action="/api/addCompany" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="file" name="image">
         <br>
@@ -24,7 +24,18 @@
         <br>
         <button type="submit">submit</button>
 
+    </form> --}}
+    <form action="http://207.154.230.96/api/Login" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('POST')
+        <input type="email" name="email" value="testhamzah1@test.com">
+        <br>
+        <input type="password" name="password">
+        <br>
+        <button type="submit">submit</button>
+
     </form>
 </body>
-
+<script>
+</script>
 </html>
