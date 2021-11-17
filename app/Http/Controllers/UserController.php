@@ -50,7 +50,7 @@ class UserController extends Controller
         $response = array(
             "user_id"=>$user->id,
             "user_type"=>$user_type,
-            "token" => $tokenResult,
+            "userToken" => $tokenResult,
             "tokenType" => "Bearer",
         );
         return ($response);
@@ -123,32 +123,13 @@ class UserController extends Controller
                 $responseData = array();
                 $response=Controller::returnResponse( 422,"Unauthorized Error", $responseData);
                 return (json_encode($response));
-                $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
-                return json_encode($response);
             }
-            $credentials = request(['email', 'password']);
-            if (!Auth::attempt($credentials)) {
-                
-                $response = Controller::returnResponse(422, 'Unauthorized', array());
-                return json_encode($response);
-
-             
-
-            }
-
             $user = User::where('email', $req->email)->first();
             if (!Hash::check($req->password, $user->password)) {
 
                 $responseData = array();
                 $response=Controller::returnResponse( 422,"The Password does not match", $responseData);
                 return (json_encode($response));
-
-               
-                $response = Controller::returnResponse(422, 'The Password does not match', array());
-                return json_encode($response);
-
-                
-
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
             $user->token = $tokenResult;
