@@ -26,7 +26,8 @@ class FreeLancerController extends Controller
             "hourly_rate" => "required",
             "country" => "required",
             "gender" => "max:1",
-            "role" => "required|max:100",
+            "role" => "max:100",
+            "experience" => "gt:0|lt:100",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -36,15 +37,17 @@ class FreeLancerController extends Controller
         try {
             $data = $req->except(['gender', 'dob', 'category']);
             $userId = $req->user_id;
+
             // print_r($data);
-            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role']));
+            $tools = serialize($req->tools);
+            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
 
             $user = User::find($req->user_id);
             $user->gender = $req->gender;
             $user->dob = $req->dob;
             $user->role = $req->role;
-
             $user->save();
+
             foreach ($req->category as $key => $value) {
                 $categoryArr = array();
                 foreach ($value['subId'] as $keySub => $subValue) {
@@ -55,20 +58,37 @@ class FreeLancerController extends Controller
                 $userCategoryObj->addMultiRows($categoryArr);
             }
             if ($req->hasFile('image')) {
-                $destPath = 'images/companies';
+                $destPath = 'images/users';
                 $ext = $req->file('image')->extension();
-                $imageName = "company-image-" . $userId . "." . $ext;
+                $imageName = "user-image-" . $userId . "." . $ext;
                 $image = $req->image;
                 $image->move(public_path($destPath), $imageName);
                 $this->updateFiles($userId, $imageName, 'image');
             }
             if ($req->hasFile('attachment')) {
-                $destPath = 'images/companies';
-                $ext = $req->file('attachment')->extension();
-                $attachName = "company-attachment-" . $userId . "." . $ext;
-                $attach = $req->attachment;
-                $attach->move(public_path($destPath), $attachName);
-                $this->updateFiles($userId, $attachName, 'attachment');
+                $destPath = 'images/users';
+                DB::table('user_attachments')->where('user_id', $userId)->delete();
+                foreach ($req->attachment as $keyAttach => $valAttach) {
+                    $ext = $valAttach->extension();
+
+                    $attachName = "user-attachment-" . $userId . "-" . $keyAttach . "." . $ext;
+                    $attach = $valAttach;
+                    $attach->move(public_path($destPath), $attachName);
+                    DB::table('user_attachments')->insert([
+                        'user_id' => $userId,
+                        'attachment' => $attachName
+                    ]);
+                }
+            }
+            if (count($req->links) > 0) {
+                DB::table('user_links')->where('user_id', $userId)->delete();
+
+                foreach ($req->links as $keyLink => $valLink) {
+                    DB::table('user_links')->insert([
+                        'user_id' => $userId,
+                        'link' => $valLink
+                    ]);
+                }
             }
             $responseData = array(
                 "user_id" => $req->user_id,
@@ -76,7 +96,7 @@ class FreeLancerController extends Controller
             $response = Controller::returnResponse(200, 'user information added successfully', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
-            $response = Controller::returnResponse(200, 'There Is Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
             return json_encode($response);
         }
     }
@@ -110,20 +130,16 @@ class FreeLancerController extends Controller
 
     function checkIfExists($id)
     {
-       $freelancer= Freelancer::where('user_id', '=', $id)->first();
+        $freelancer = Freelancer::where('user_id', '=', $id)->first();
 
-      
-       if($freelancer === null)
-       {
-        return(0);
-       }
-       else
-       {
-        return(1);
-       }
-        
+
+        if ($freelancer === null) {
+            return (0);
+        } else {
+            return (1);
+        }
     }
-  
+
     function updateTeamId($userId, $teamId)
     {
         Freelancer::where('user_id', $userId)->update(['team_id' => $teamId]);
@@ -134,14 +150,15 @@ class FreeLancerController extends Controller
         Freelancer::where('user_id', $userId)->update(array($filedName => $imageName));
     }
 
-    private function getUserInfo($users){
+    private function getUserInfo($users)
+    {
         $userCategoryObj = new UserCategoriesController;
         $categoryObj = new CategoriesController;
-        foreach($users as $keyUser => &$user){
+        foreach ($users as $keyUser => &$user) {
             $categories = $userCategoryObj->getUserCategoriesByUserId($user->id);
             $user->categories = $categories;
+            $user->tools = unserialize($user->tools);
         }
         return $users;
-
     }
 }

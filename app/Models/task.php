@@ -6,15 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-class task extends Model
+class Task extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
     protected $fillable = [
-        'project_id',
-        'assigned_to',
         'milestone_id',
-        'final_proposal_id',
+        'name',
         'description',
-       
+        'status',
     ];
 }

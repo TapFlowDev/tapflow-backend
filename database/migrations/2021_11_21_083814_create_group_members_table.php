@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersCategoriesTable extends Migration
+class CreateGroupMembersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateUsersCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('users_categories', function (Blueprint $table) {
+        Schema::create('group_members', function (Blueprint $table) {
             $table->integer('user_id');
-            $table->integer('category_id');
-            $table->integer('sub_category_id');
+            $table->integer('group_id');
+            $table->integer('privileges')->default(0);
         });
     }
 
@@ -27,6 +27,6 @@ class CreateUsersCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users_categories');
+        Schema::dropIfExists('group_members');
     }
 }

@@ -16,7 +16,6 @@ class Company extends Model
         'group_id',
         'bio',
         'image',
-        'attachment',
         'link',
         'country',
         'employees_number',

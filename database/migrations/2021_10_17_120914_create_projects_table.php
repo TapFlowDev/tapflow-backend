@@ -16,14 +16,17 @@ class CreateProjectsTable extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
+            $table->integer('user_id');
             $table->integer('company_id');
             $table->integer('team_id')->nullable();
             $table->string('name','255');
-            $table->text('description');
+            $table->integer('budget_type');
             $table->string('budget');
-            $table->string('days');
-            $table->integer('hide_requirements')->default('0');
+            $table->text('description');
+            $table->text('requirements_description');
+            $table->string('days')->nullable();
             $table->integer('deleted')->default('0');
+            $table->integer('status')->default('0');
             $table->timestamps();
         });
     }

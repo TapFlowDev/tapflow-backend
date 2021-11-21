@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePortfoliosTable extends Migration
+class CreateUserLinksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreatePortfoliosTable extends Migration
      */
     public function up()
     {
-        Schema::create('portfolios', function (Blueprint $table) {
-            $table->integer('id')->autoIncrement();
-            $table->text('content');
-            $table->integer('type');
+        Schema::create('user_links', function (Blueprint $table) {
             $table->integer('user_id');
-            $table->timestamps();
+            $table->string('link', '255');
         });
     }
 
@@ -29,6 +26,6 @@ class CreatePortfoliosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('portfolios');
+        Schema::dropIfExists('user_links');
     }
 }

@@ -2,13 +2,17 @@
 <html>
 
 <body>
-    {{-- <form action="/api/addCompany" method="POST" enctype="multipart/form-data">
+    <form action="/api/addFreelancerInfo" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="file" name="image">
         <br>
-        <input type="file" name="attachment">
+        <input type="file" name="attachments[]">
         <br>
-        <input type="text" name="admin_id" value="5">
+        <input type="file" name="attachments[]">
+        <br>
+        <input type="file" name="attachments[]">
+        <br>
+        {{-- <input type="text" name="admin_id" value="5">
         <br>
         <input type="text" name="name" value="name">
         <br>
@@ -21,11 +25,11 @@
         <input type="text" name="employees_number" value="6">
         <br>
          <input type="text" name="link" value="https://www.google.com/">
-        <br>
+        <br> --}}
         <button type="submit">submit</button>
 
-    </form> --}}
-    <form action="http://207.154.230.96/api/Login" method="POST" enctype="multipart/form-data">
+    </form> 
+    {{-- <form action="http://207.154.230.96/api/Login" method="POST" enctype="multipart/form-data">
         @csrf
         @method('POST')
         <input type="email" name="email" value="testhamzah1@test.com">
@@ -34,7 +38,7 @@
         <br>
         <button type="submit">submit</button>
 
-    </form>
+    </form> --}}
 </body>
 <script>
 </script>

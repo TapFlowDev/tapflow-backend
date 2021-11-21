@@ -14,9 +14,9 @@ class Freelancer extends Model
         'user_id',
         'bio',
         'hourly_rate',
-        'attachment',
+        'experience',
         'image',
         'country',
-        'experience'
+        'tools',
     ];
 }

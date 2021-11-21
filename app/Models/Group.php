@@ -16,7 +16,6 @@ class Group extends Model
     use HasApiTokens, HasFactory, Notifiable;
     protected $fillable = [
         'name',
-        'admin_id',
         'type'
     ];
 }
