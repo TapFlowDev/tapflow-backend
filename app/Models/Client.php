@@ -16,10 +16,8 @@ class Client extends Model
         "user_id",
         "company_id",
         "bio",
-        "attachment",
-        "image",
-        "country",
-        "role",
         "experience",
+        "image",
+        "country"
     ];
 }

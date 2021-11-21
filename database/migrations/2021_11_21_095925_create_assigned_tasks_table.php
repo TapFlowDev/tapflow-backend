@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersCategoriesTable extends Migration
+class CreateAssignedTasksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateUsersCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('users_categories', function (Blueprint $table) {
+        Schema::create('assigned_tasks', function (Blueprint $table) {
+            $table->integer('task_id');
             $table->integer('user_id');
-            $table->integer('category_id');
-            $table->integer('sub_category_id');
         });
     }
 
@@ -27,6 +26,6 @@ class CreateUsersCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users_categories');
+        Schema::dropIfExists('assigned_tasks');
     }
 }

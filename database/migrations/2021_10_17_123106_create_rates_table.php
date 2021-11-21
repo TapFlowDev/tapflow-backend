@@ -15,10 +15,11 @@ class CreateRatesTable extends Migration
     {
         Schema::create('rates', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
+            $table->integer('team_id');
+            $table->integer('company_id')->unique();
             $table->integer('user_id');
-            $table->integer('group_id');
-            $table->string('rate','255');
-            $table->text('review');
+            $table->integer('rate');
+            $table->text('review')->nullable();
             $table->timestamps();
         });
     }

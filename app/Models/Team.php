@@ -18,10 +18,9 @@ class Team extends Model
         'group_id',
         'bio',
         'image',
-        'attachment',
-        'type',
         'link',
         'country',
-        'employees_number'
+        'employees_number',
+        'field'
     ];
 }

@@ -16,12 +16,13 @@ class CreateProposalsTable extends Migration
         Schema::create('proposals', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->integer('team_id');
+            $table->integer('user_id');
             $table->integer('project_id');
-            $table->string('price','255');
+            $table->string('price_min','255');
+            $table->string('price_max','255');
             $table->string('days','255');
-            $table->text('why_us');
-            $table->integer('status');
-            
+            $table->text('our_offer');
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

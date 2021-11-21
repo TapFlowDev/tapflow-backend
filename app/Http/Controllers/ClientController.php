@@ -18,9 +18,9 @@ class ClientController extends Controller
         $rules = array(
             "user_id" => "required|exists:users,id",
             "bio" => "required",
-            "role" => "required",
             "country" => "required",
-            "role" => "max:100",
+            "experience" => "gt:0|lt:100",
+
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -39,7 +39,7 @@ class ClientController extends Controller
             $userId = $req->user_id;
 
             if ($req->hasFile('image')) {
-                $destPath = 'images/companies';
+                $destPath = 'images/users';
                 $ext = $req->file('image')->extension();
                 $imageName = "company-image-" . $userId . "." . $ext;
                 $image = $req->image;
@@ -47,12 +47,29 @@ class ClientController extends Controller
                 $this->updateFiles($userId, $imageName, 'image');
             }
             if ($req->hasFile('attachment')) {
-                $destPath = 'images/companies';
-                $ext = $req->file('attachment')->extension();
-                $attachName = "company-attachment-" . $userId . "." . $ext;
-                $attach = $req->attachment;
-                $attach->move(public_path($destPath), $attachName);
-                $this->updateFiles($userId, $attachName, 'attachment');
+                $destPath = 'images/users';
+                DB::table('user_attachments')->where('user_id', $userId)->delete();
+                foreach ($req->attachment as $keyAttach => $valAttach) {
+                    $ext = $valAttach->extension();
+
+                    $attachName = "user-attachment-" . $userId . "-" . $keyAttach . "." . $ext;
+                    $attach = $valAttach;
+                    $attach->move(public_path($destPath), $attachName);
+                    DB::table('user_attachments')->insert([
+                        'user_id' => $userId,
+                        'attachment' => $attachName
+                    ]);
+                }
+            }
+            if (count($req->links) > 0) {
+                DB::table('user_links')->where('user_id', $userId)->delete();
+
+                foreach ($req->links as $keyLink => $valLink) {
+                    DB::table('user_links')->insert([
+                        'user_id' => $userId,
+                        'link' => $valLink
+                    ]);
+                }
             }
             $responseData = array(
                 "user_id" => $req->user_id,

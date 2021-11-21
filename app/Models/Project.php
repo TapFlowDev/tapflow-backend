@@ -10,13 +10,16 @@ class Project extends Model
     use HasFactory;
     protected $fillable=
     [
+        "user_id",
         "company_id",
         "team_id",
         "name",
-        "description",
+        "budget_type",
         "budget",
+        "description",
+        "requirements_description",
         "days",
-        "hide_requirements",
-        "deleted"
+        "deleted",
+        "status"
     ];
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAcceptedProposalsTable extends Migration
+class CreateFinalProposalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,16 @@ class CreateAcceptedProposalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('accepted_proposals', function (Blueprint $table) {
+        Schema::create('final_proposals', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
+            $table->integer('propsal_id');
             $table->integer('team_id');
             $table->integer('project_id');
-            $table->integer('proposal_id');
-            $table->string('price','255');
+            $table->string('price_min','255');
+            $table->string('price_max','255');
+            $table->text('description')->nullable();
             $table->string('days','255');
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }
@@ -31,6 +34,6 @@ class CreateAcceptedProposalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accepted_proposals');
+        Schema::dropIfExists('final_proposals');
     }
 }

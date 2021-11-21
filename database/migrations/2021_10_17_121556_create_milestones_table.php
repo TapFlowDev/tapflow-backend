@@ -16,11 +16,12 @@ class CreateMilestonesTable extends Migration
         Schema::create('milestones', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->integer('project_id');
+            $table->integer('final_propsal_id');
             $table->string('name','255');
+            $table->text('description');
             $table->string('days','255');
             $table->string('price','255');
-            $table->text('description');
-            $table->integer('status');
+            $table->integer('status')->default('0');
             $table->timestamps();
         });
     }

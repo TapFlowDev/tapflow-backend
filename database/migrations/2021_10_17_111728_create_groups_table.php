@@ -17,9 +17,8 @@ class CreateGroupsTable extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->string('name','255');
-            $table->integer('admin_id');
             $table->integer('type')->default('0');
-            $table->integer('status')->default('0');
+            $table->integer('status')->default('1');
             $table->integer('verified')->default('0');
             $table->integer('deleted')->default('0');
             $table->timestamps();

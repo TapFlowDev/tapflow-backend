@@ -15,13 +15,12 @@ class CreateTeamsTable extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->integer('group_id')->unique();
-            $table->string('type','255')->nullable();//agency type, 1 team of freelancers, 2 is agency
             $table->text('bio')->nullable();
-            $table->string('attachment')->nullable();
             $table->string('image')->nullable();
-            $table->string('link')->nullable();
+            $table->string('link');
             $table->string('country','255')->nullable();
             $table->string('employees_number','255')->nullable();
+            $table->string('field','255')->nullable();
             $table->timestamps();
         });
     }

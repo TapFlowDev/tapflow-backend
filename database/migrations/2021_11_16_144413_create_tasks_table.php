@@ -15,11 +15,10 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
-            $table->string('assign_to',255);
-            $table->text('description');
-            $table->integer('project_id');
             $table->integer('milestone_id');
-            $table->integer('final_proposal _id');
+            $table->string('name', '255');
+            $table->text('description');
+            $table->integer('status')->default('0');
             $table->timestamps();
         });
     }

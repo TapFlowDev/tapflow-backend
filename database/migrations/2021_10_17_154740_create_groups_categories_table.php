@@ -14,11 +14,9 @@ class CreateGroupsCategoriesTable extends Migration
     public function up()
     {
         Schema::create('groups_categories', function (Blueprint $table) {
-            $table->integer('id')->autoIncrement();
             $table->integer('group_id');
             $table->integer('category_id');
             $table->integer('sub_category_id');
-            $table->timestamps();
         });
     }
 

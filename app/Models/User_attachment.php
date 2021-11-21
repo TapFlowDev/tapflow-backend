@@ -4,16 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-class users_category extends Model
+
+class User_attachment extends Model
 {
-   
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
     protected $fillable = [
         'user_id',
-        'category_id',
-        'sub_category_id'
+        'attachment'
     ];
     public $timestamps = false;
 }
