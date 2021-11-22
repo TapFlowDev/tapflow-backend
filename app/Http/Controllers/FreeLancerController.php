@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Freelancer;
 use App\Models\User;
+use App\Models\User_link;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +19,8 @@ class FreeLancerController extends Controller
     //add row 
     function Insert_freelancer(Request $req)
     {
-        return(($req));
         $userCategoryObj = new UserCategoriesController;
+
         $rules = array(
             "user_id" => "required|exists:users,id",
             "bio" => "required",
@@ -158,6 +159,13 @@ class FreeLancerController extends Controller
             $categories = $userCategoryObj->getUserCategoriesByUserId($user->id);
             $user->categories = $categories;
             $user->tools = unserialize($user->tools);
+            $links = User_link::select('link')->where('user_id', $user->id)->get();
+            if(count($links)>0){
+                $user->links = $links;
+            }else{
+                $user->links = [];
+            }
+            
         }
         return $users;
     }
