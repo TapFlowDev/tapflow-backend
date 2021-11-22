@@ -18,7 +18,7 @@ class FreeLancerController extends Controller
     //add row 
     function Insert_freelancer(Request $req)
     {
-        return(json_encode($req));
+        return(($req));
         $userCategoryObj = new UserCategoriesController;
         $rules = array(
             "user_id" => "required|exists:users,id",
