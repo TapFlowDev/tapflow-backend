@@ -15,7 +15,7 @@ class CreateFinalProposalsTable extends Migration
     {
         Schema::create('final_proposals', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
-            $table->integer('propsal_id');
+            $table->integer('proposal_id');
             $table->integer('team_id');
             $table->integer('project_id');
             $table->string('price_min','255');

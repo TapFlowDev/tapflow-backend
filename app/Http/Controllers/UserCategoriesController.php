@@ -38,21 +38,26 @@ class UserCategoriesController extends Controller
 
     function getUserCategoriesByUserId($id)
     {
-        
-        $categories = users_category::where('user_id', $id)->get();
-        $userCategory = array();
-        foreach ($categories as $keyCat => $category) {
-            $userCategory[$category->category_id]['catId'] = $category->category_id;
-            $userCategory[$category->category_id]['name'] = DB::table('categories')->select('name')->where('id', '=',$category->category_id)->get()->first()->name;
-            $userCategory[$category->category_id]['sub'][] = DB::table('sub_categories')->select('id', 'name', 'category_id')->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->get()->first();
-            
-        }
-
         $allCategory = array();
-        foreach($userCategory as $keyUserCat => $valUserCat){
-            $allCategory[]=$valUserCat;
-        }
+        try {
+            $categories = users_category::where('user_id', $id)->get();
+            if (count($categories) > 1) {
 
+                $userCategory = array();
+                foreach ($categories as $keyCat => $category) {
+                    $userCategory[$category->category_id]['catId'] = $category->category_id;
+                    $userCategory[$category->category_id]['name'] = DB::table('categories')->select('name')->where('id', '=', $category->category_id)->get()->first()->name;
+                    $userCategory[$category->category_id]['sub'][] = DB::table('sub_categories')->select('id', 'name', 'category_id')->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->get()->first();
+                }
+
+                foreach ($userCategory as $keyUserCat => $valUserCat) {
+                    $allCategory[] = $valUserCat;
+                }
+            }
+        } catch (\Exception $error) {
+
+            return $allCategory;
+        }
         return $allCategory;
     }
 }
