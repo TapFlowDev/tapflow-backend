@@ -41,7 +41,7 @@ class ClientController extends Controller
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
                 $ext = $req->file('image')->extension();
-                $imageName = "company-image-" . $userId . "." . $ext;
+                $imageName =  mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
                 $image = $req->image;
                 $image->move(public_path($destPath), $imageName);
                 $this->updateFiles($userId, $imageName, 'image');
@@ -52,7 +52,7 @@ class ClientController extends Controller
                 foreach ($req->attachment as $keyAttach => $valAttach) {
                     $ext = $valAttach->extension();
 
-                    $attachName = "user-attachment-" . $userId . "-" . $keyAttach . "." . $ext;
+                    $attachName =  $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
                     $attach = $valAttach;
                     $attach->move(public_path($destPath), $attachName);
                     DB::table('user_attachments')->insert([
