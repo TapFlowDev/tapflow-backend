@@ -37,9 +37,11 @@ class FreeLancerController extends Controller
         }
         try {
             $data = $req->except(['gender', 'dob', 'category']);
-            $userId = $req->user_id;
+            // $userId = $req->user_id;
+            $userId = 3;
 
             // print_r($data);
+           
             $tools = serialize($req->tools);
             $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
 
@@ -58,29 +60,41 @@ class FreeLancerController extends Controller
                 }
                 $userCategoryObj->addMultiRows($categoryArr);
             }
+            
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
-                $ext = $req->file('image')->extension();
+                $ext = $req->file('image')->getClientOriginalExtension();
                 $imageName = "user-image-" . $userId . "." . $ext;
+                // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
+                $imageName = mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
+                // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+               
                 $image = $req->image;
+               
                 $image->move(public_path($destPath), $imageName);
                 $this->updateFiles($userId, $imageName, 'image');
+                
             }
             if ($req->hasFile('attachment')) {
+                // dd($req);
                 $destPath = 'images/users';
                 DB::table('user_attachments')->where('user_id', $userId)->delete();
+                // dd($req->attachment);
                 foreach ($req->attachment as $keyAttach => $valAttach) {
                     $ext = $valAttach->extension();
-
-                    $attachName = "user-attachment-" . $userId . "-" . $keyAttach . "." . $ext;
+                    
+                    // $attachName = "user-attachment-" . $userId . "-" . $keyAttach . "." . $ext;
+                    $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
                     $attach = $valAttach;
                     $attach->move(public_path($destPath), $attachName);
                     DB::table('user_attachments')->insert([
                         'user_id' => $userId,
                         'attachment' => $attachName
                     ]);
+
                 }
             }
+           
             if (count($req->links) > 0) {
                 DB::table('user_links')->where('user_id', $userId)->delete();
 
@@ -161,10 +175,14 @@ class FreeLancerController extends Controller
             $user->tools = unserialize($user->tools);
             $links = User_link::select('link')->where('user_id', $user->id)->get();
             if(count($links)>0){
-                $user->links = $links;
-            }else{
+                // $user->links = $links;
+                $user->links = array_column($links->toArray(), 'link');
+                // $user->linksType = gettype($links);
+            }else{ 
                 $user->links = [];
             }
+            $image = asset('images/users/'.$user->image);
+            $user->image = $image;
             
         }
         return $users;
