@@ -51,31 +51,31 @@ class FreeLancerController extends Controller
             // $user->dob = $req->dob;
             // $user->role = $req->role;
             // $user->save();
-            $cats =json_decode($req->categories); 
-            foreach ($cats as $key => $value) {
-                $categoryArr = array();
-                foreach ($value->subCat as $keySub => $subValue) {
-                    $categoryArr[$keySub]['user_id'] = $req->user_id;
-                    $categoryArr[$keySub]['category_id'] = $value->catId;
-                    $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                }
-                $userCategoryObj->addMultiRows($categoryArr);
-            }
+            // $cats =json_decode($req->categories); 
+            // foreach ($cats as $key => $value) {
+            //     $categoryArr = array();
+            //     foreach ($value->subCat as $keySub => $subValue) {
+            //         $categoryArr[$keySub]['user_id'] = $req->user_id;
+            //         $categoryArr[$keySub]['category_id'] = $value->catId;
+            //         $categoryArr[$keySub]['sub_category_id'] = $subValue;
+            //     }
+            //     $userCategoryObj->addMultiRows($categoryArr);
+            // }
             
-            if ($req->hasFile('image')) {
-                $destPath = 'images/users';
-                // $ext = $req->file('image')->getClientOriginalExtension();
-                // $imageName = "user-image-" . $userId . "." . $ext;
-                // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
-                $imageName = mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
-                // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+            // if ($req->hasFile('image')) {
+            //     $destPath = 'images/users';
+            //     // $ext = $req->file('image')->getClientOriginalExtension();
+            //     // $imageName = "user-image-" . $userId . "." . $ext;
+            //     // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
+            //     $imageName = mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
+            //     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
                 
-                $img = $req->image;
+            //     $img = $req->image;
                 
-                $img->move(public_path($destPath), $imageName);
-                $this->updateFiles($userId, $imageName, 'image');
+            //     $img->move(public_path($destPath), $imageName);
+            //     $this->updateFiles($userId, $imageName, 'image');
                 
-            }
+            // }
             if ($req->hasFile('attachment')) {
                 // dd($req);
                 $destPath = 'images/users';
