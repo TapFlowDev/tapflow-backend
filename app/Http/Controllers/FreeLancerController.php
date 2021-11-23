@@ -19,40 +19,40 @@ class FreeLancerController extends Controller
     //add row 
     function Insert_freelancer(Request $req)
     {
-        $cats =json_encode($req->categories); 
-        return($cats);
+       
 
         $userCategoryObj = new UserCategoriesController;
-        $rules = array(
-            "user_id" => "required|exists:users,id",
-            "bio" => "required",
-            "hourly_rate" => "required",
-            "country" => "required",
-            "gender" => "max:1",
-            "role" => "max:100",
-            "experience" => "gt:0|lt:100",
-        );
-        $validator = Validator::make($req->all(), $rules);
-        if ($validator->fails()) {
-            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
-            return json_encode($response);
-        }
+        // $rules = array(
+        //     "user_id" => "required|exists:users,id",
+        //     "bio" => "required",
+        //     "hourly_rate" => "required",
+        //     "country" => "required",
+        //     "gender" => "max:1",
+        //     "role" => "max:100",
+        //     "experience" => "gt:0|lt:100",
+        // );
+        // $validator = Validator::make($req->all(), $rules);
+        // if ($validator->fails()) {
+        //     $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+        //     return json_encode($response);
+        // }
         try {
             $data = $req->except(['gender', 'dob', 'category']);
             // $userId = $req->user_id;
-            $userId = 3;
+            $userId = 4;
 
             // print_r($data);
            
-            $tools = serialize($req->tools);
-            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
+            // $tools = serialize($req->tools);
+            // $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
 
-            $user = User::find($req->user_id);
-            $user->gender = $req->gender;
-            $user->dob = $req->dob;
-            $user->role = $req->role;
-            $user->save();
-
+            // $user = User::find($req->user_id);
+            // $user->gender = $req->gender;
+            // $user->dob = $req->dob;
+            // $user->role = $req->role;
+            // $user->save();
+            $cats =json_decode(json_encode($req->categories)); 
+            return($cats);
             foreach ($req->category as $key => $value) {
                 $categoryArr = array();
                 foreach ($value['subId'] as $keySub => $subValue) {
