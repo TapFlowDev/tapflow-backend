@@ -54,10 +54,10 @@ class FreeLancerController extends Controller
             $cats =json_decode($req->categories); 
             foreach ($cats as $key => $value) {
                 $categoryArr = array();
-                return($value->subCat);
-                foreach ($value['subCat'] as $keySub => $subValue) {
+                foreach ($value->subCat as $keySub => $subValue) {
+                    return($subValue);
                     $categoryArr[$keySub]['user_id'] = $req->user_id;
-                    $categoryArr[$keySub]['category_id'] = $value['catId'];
+                    $categoryArr[$keySub]['category_id'] = $value->catId;
                     $categoryArr[$keySub]['sub_category_id'] = $subValue;
                 }
                 $userCategoryObj->addMultiRows($categoryArr);
