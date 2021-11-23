@@ -52,9 +52,9 @@ class FreeLancerController extends Controller
             // $user->role = $req->role;
             // $user->save();
             $cats =json_decode($req->categories); 
-            return(gettype($cats));
             foreach ($cats as $key => $value) {
                 $categoryArr = array();
+                return($value);
                 foreach ($value['subId'] as $keySub => $subValue) {
                     $categoryArr[$keySub]['user_id'] = $req->user_id;
                     $categoryArr[$keySub]['category_id'] = $value['catId'];
