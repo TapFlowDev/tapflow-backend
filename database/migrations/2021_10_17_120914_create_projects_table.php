@@ -17,7 +17,7 @@ class CreateProjectsTable extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->integer('user_id');
-            $table->integer('company_id');
+            $table->integer('company_id')->nullable();
             $table->integer('team_id')->nullable();
             $table->string('name','255');
             $table->integer('budget_type');

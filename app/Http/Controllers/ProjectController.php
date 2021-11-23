@@ -15,9 +15,10 @@ class ProjectController extends Controller
     function Insert(Request $req)
     {
         $rules = array(
-            "company_id" => "required|exists:groups,id",
+            "user_id" => "required|exists:users,id",
             "name" => "required",
             "description" => "required",
+            "requirements_description" => "required",
             "budget" => "required",
             "days" => "required"
         );
