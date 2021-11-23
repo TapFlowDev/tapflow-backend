@@ -13,49 +13,51 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\UserCategoriesController;
 use App\Http\Controllers\CategoriesController;
 use App\Models\Category;
+use PhpParser\Node\Expr\Isset_;
 
 class FreeLancerController extends Controller
 {
     //add row 
     function Insert_freelancer(Request $req)
     {
-        // return($req);
+       
+
         $userCategoryObj = new UserCategoriesController;
-        $rules = array(
-            "user_id" => "required|exists:users,id",
-            "bio" => "required",
-            "hourly_rate" => "required",
-            "country" => "required",
-            "gender" => "max:1",
-            "role" => "max:100",
-            "experience" => "gt:0|lt:100",
-        );
-        $validator = Validator::make($req->all(), $rules);
-        if ($validator->fails()) {
-            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
-            return json_encode($response);
-        }
+         $rules = array(
+             "user_id" => "required|exists:users,id",
+             "bio" => "required",
+             "hourly_rate" => "required",
+             "country" => "required",
+             "gender" => "max:1",
+             "role" => "max:100",
+             "experience" => "gt:0|lt:100",
+         );
+         $validator = Validator::make($req->all(), $rules);
+         if ($validator->fails()) {
+             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+             return json_encode($response);
+         }
         try {
             $data = $req->except(['gender', 'dob', 'category']);
-            // $userId = $req->user_id;
-            $userId = 3;
+            $userId = $req->user_id;
+            // $userId = 4;
 
             // print_r($data);
            
-            $tools = serialize($req->tools);
-            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
+             $tools = serialize($req->tools);
+             $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
 
-            $user = User::find($req->user_id);
-            $user->gender = $req->gender;
-            $user->dob = $req->dob;
-            $user->role = $req->role;
-            $user->save();
-
-            foreach ($req->category as $key => $value) {
+             $user = User::find($req->user_id);
+             $user->gender = $req->gender;
+             $user->dob = $req->dob;
+             $user->role = $req->role;
+             $user->save();
+            $cats =json_decode($req->categories); 
+            foreach ($cats as $key => $value) {
                 $categoryArr = array();
-                foreach ($value['subId'] as $keySub => $subValue) {
+                foreach ($value->subCat as $keySub => $subValue) {
                     $categoryArr[$keySub]['user_id'] = $req->user_id;
-                    $categoryArr[$keySub]['category_id'] = $value['catId'];
+                    $categoryArr[$keySub]['category_id'] = $value->catId;
                     $categoryArr[$keySub]['sub_category_id'] = $subValue;
                 }
                 $userCategoryObj->addMultiRows($categoryArr);
@@ -63,15 +65,15 @@ class FreeLancerController extends Controller
             
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
-                $ext = $req->file('image')->getClientOriginalExtension();
-                $imageName = "user-image-" . $userId . "." . $ext;
+                // $ext = $req->file('image')->getClientOriginalExtension();
+                // $imageName = "user-image-" . $userId . "." . $ext;
                 // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
                 $imageName = mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
                 // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-               
-                $image = $req->image;
-               
-                $image->move(public_path($destPath), $imageName);
+                
+                $img = $req->image;
+                
+                $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($userId, $imageName, 'image');
                 
             }
@@ -95,7 +97,7 @@ class FreeLancerController extends Controller
                 }
             }
            
-            if (count($req->links) > 0) {
+           /* if (count($req->links) > 0 && isset($req->links)) {
                 DB::table('user_links')->where('user_id', $userId)->delete();
 
                 foreach ($req->links as $keyLink => $valLink) {
@@ -104,7 +106,7 @@ class FreeLancerController extends Controller
                         'link' => $valLink
                     ]);
                 }
-            }
+            }*/
             $responseData = array(
                 "user_id" => $req->user_id,
             );
