@@ -54,7 +54,7 @@ class FreeLancerController extends Controller
             $cats =json_decode(json_encode($req->categories)); 
             foreach ($cats as $key => $value) {
                 $categoryArr = array();
-                return($value['subId']);
+                return($value);
                 foreach ($value['subId'] as $keySub => $subValue) {
                     $categoryArr[$keySub]['user_id'] = $req->user_id;
                     $categoryArr[$keySub]['category_id'] = $value['catId'];
