@@ -86,15 +86,15 @@ class FreeLancerController extends Controller
                     
                     // $attachName = "user-attachment-" . $userId . "-" . $keyAttach . "." . $ext;
                     $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
-                    return($attachName);
                     $attach = $valAttach;
                     $attach->move(public_path($destPath), $attachName);
                     DB::table('user_attachments')->insert([
                         'user_id' => $userId,
                         'attachment' => $attachName
                     ]);
-
+                    
                 }
+                return('done');
             }else{
                 return('a7a');
             }
