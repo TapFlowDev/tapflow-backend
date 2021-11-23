@@ -51,7 +51,7 @@ class FreeLancerController extends Controller
             // $user->dob = $req->dob;
             // $user->role = $req->role;
             // $user->save();
-            $cats =json_decode(json_encode($req->categories)); 
+            $cats =json_decode($req->categories); 
             return(gettype($cats));
             foreach ($cats as $key => $value) {
                 $categoryArr = array();
