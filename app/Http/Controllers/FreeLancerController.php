@@ -74,12 +74,12 @@ class FreeLancerController extends Controller
                 
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($userId, $imageName, 'image');
+                return("done");
                 
             }
             if ($req->hasFile('attachment')) {
                 // dd($req);
                 $destPath = 'images/users';
-                return($req->attachment);
                 DB::table('user_attachments')->where('user_id', $userId)->delete();
                 // dd($req->attachment);
                 foreach ($req->attachment as $keyAttach => $valAttach) {
