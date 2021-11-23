@@ -61,14 +61,14 @@ class FreeLancerController extends Controller
                 }
                 $userCategoryObj->addMultiRows($categoryArr);
             }
-            return("done");
             
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
-                $ext = $req->file('image')->getClientOriginalExtension();
-                $imageName = "user-image-" . $userId . "." . $ext;
+                // $ext = $req->file('image')->getClientOriginalExtension();
+                // $imageName = "user-image-" . $userId . "." . $ext;
                 // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
                 $imageName = mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
+                return($imageName);
                 // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
                
                 $image = $req->image;
@@ -76,6 +76,8 @@ class FreeLancerController extends Controller
                 $image->move(public_path($destPath), $imageName);
                 $this->updateFiles($userId, $imageName, 'image');
                 
+            }else{
+                return("a7a");
             }
             if ($req->hasFile('attachment')) {
                 // dd($req);
