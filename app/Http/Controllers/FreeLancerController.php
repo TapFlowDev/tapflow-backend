@@ -77,7 +77,6 @@ class FreeLancerController extends Controller
                 
             }
             if ($req->hasFile('attachment')) {
-                return($imageName);
                 // dd($req);
                 $destPath = 'images/users';
                 DB::table('user_attachments')->where('user_id', $userId)->delete();
