@@ -59,9 +59,9 @@ class FreeLancerController extends Controller
                     $categoryArr[$keySub]['category_id'] = $value->catId;
                     $categoryArr[$keySub]['sub_category_id'] = $subValue;
                 }
-                return($categoryArr);
                 $userCategoryObj->addMultiRows($categoryArr);
             }
+            return("done");
             
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
