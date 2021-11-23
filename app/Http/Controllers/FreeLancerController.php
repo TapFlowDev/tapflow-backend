@@ -80,13 +80,13 @@ class FreeLancerController extends Controller
                 // dd($req);
                 $destPath = 'images/users';
                 DB::table('user_attachments')->where('user_id', $userId)->delete();
-                return($req->attachment);
                 // dd($req->attachment);
                 foreach ($req->attachment as $keyAttach => $valAttach) {
                     $ext = $valAttach->extension();
                     
                     // $attachName = "user-attachment-" . $userId . "-" . $keyAttach . "." . $ext;
                     $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
+                    return($attachName);
                     $attach = $valAttach;
                     $attach->move(public_path($destPath), $attachName);
                     DB::table('user_attachments')->insert([
