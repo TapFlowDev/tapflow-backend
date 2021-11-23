@@ -68,20 +68,18 @@ class FreeLancerController extends Controller
                 // $imageName = "user-image-" . $userId . "." . $ext;
                 // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
                 $imageName = mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
-                return($imageName);
                 // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-               
-                $image = $req->image;
-               
-                $image->move(public_path($destPath), $imageName);
+                
+                $img = $req->image;
+                
+                $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($userId, $imageName, 'image');
                 
-            }else{
-                return("a7a");
             }
             if ($req->hasFile('attachment')) {
                 // dd($req);
                 $destPath = 'images/users';
+                return($req->attachment);
                 DB::table('user_attachments')->where('user_id', $userId)->delete();
                 // dd($req->attachment);
                 foreach ($req->attachment as $keyAttach => $valAttach) {
@@ -97,6 +95,8 @@ class FreeLancerController extends Controller
                     ]);
 
                 }
+            }else{
+                return('a7a');
             }
            
             if (count($req->links) > 0) {
