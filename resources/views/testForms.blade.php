@@ -2,16 +2,16 @@
 <html>
 
 <body>
-    <form action="/api/addFreelancerInfo" method="POST" enctype="multipart/form-data">
+    <form action="/api/saveImage" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="file" name="image">
         <br>
-        <input type="file" name="attachments[]">
+        {{-- <input type="file" name="attachments[]">
         <br>
         <input type="file" name="attachments[]">
         <br>
         <input type="file" name="attachments[]">
-        <br>
+        <br> --}}
         {{-- <input type="text" name="admin_id" value="5">
         <br>
         <input type="text" name="name" value="name">
