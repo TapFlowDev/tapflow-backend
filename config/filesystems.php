@@ -33,7 +33,16 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
-            
+            'permissions' => [
+                'file' => [
+                    'public' => 0664,
+                    'private' => 0600,
+                ],
+                'dir' => [
+                    'public' => 0775,
+                    'private' => 0700,
+                ],
+            ],
         ],
 
         'public' => [
@@ -53,6 +62,10 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
         ],
+        'uploads' => [
+            'driver' => 'local',
+            'root'   => public_path() . '/images',
+        ]
 
     ],
 
