@@ -209,4 +209,19 @@ class InviteUsersController extends Controller
         }
         return $linkToken;
     }
+
+     //check if the user has been invited by email
+     function check_invite($email)
+     {
+     
+        $result=Invite_code::where('email', $email)->first();
+        $expired=$result->expired;
+        if ($result === null) {
+            return (0);
+        } else {
+            return(1);
+        }
+      
+
+     }
 }

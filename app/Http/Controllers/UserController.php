@@ -22,6 +22,9 @@ use function PHPUnit\Framework\isEmpty;
 use App\Http\Controllers\UserCategoriesController;
 use App\Http\Controllers\FreeLancerController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\InviteUsersController;
+use Illuminate\Support\Facades\Http;
+use App\Models\country;
 
 
 // user types 1,2 1:freelancer 2:client
@@ -47,6 +50,9 @@ class UserController extends Controller
         $user->token = $tokenResult;
         $user_type=$user->type;
         $user->save();
+        
+       
+       
         $response = array(
             "user_id"=>$user->id,
             "user_type"=>$user_type,
@@ -73,20 +79,10 @@ class UserController extends Controller
             $responseData=$validator->errors();
             $response=Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
-
-            // $response = array("data" => array(
-            //     "message" => "Validation Error",
-            //     "status" => "101",
-            //     "error" => $validator->errors()
-            // ));
-            // return (json_encode($response));
-
-            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
-            return json_encode($response);
-
-        } else {
-            try {
-
+        } 
+        else {
+            try
+             {
                 $user=User::create($req->all());
                $responseData= $this->internal_login($req->email,$req->password);
                 $response=Controller::returnResponse( 200,"user added successfully", $responseData);
@@ -105,6 +101,7 @@ class UserController extends Controller
 
     function login(Request $req)
     {
+       
 
         try {
             $rules = array(
@@ -147,12 +144,25 @@ class UserController extends Controller
                 $client=new ClientController;
                 $check=$client->checkIfExists($user->id);
             }
+            $invite= new InviteUsersController;
+            $invite_check=$invite->check_invite($req->email);
+            if ($invite_check == 0)
+            {
+                $invited='0';
+            }
+            else 
+            {
+                $invited='1';
+            }
+
             $responseData =  array(
                 "user_id"=>$user->id,
                 "userToken" => $tokenResult,
                 "tokenType" => "Bearer",
                 "user_type"=>$user_type,
-                "completed"=>$check
+                "completed"=>$check,
+                "invited"=>$invited
+
             );
             $response=Controller::returnResponse( 200,"login successfully", $responseData);
             return (json_encode($response));
@@ -188,19 +198,42 @@ class UserController extends Controller
         return User::all();
     }
     //update row according to row id
-    function Update($id)
+    function UpdateUserInfo(Request $req)
+    {  try{
+        $user_id=$req->user_id;
+        $user=User::where('id',$user_id)->update(["first_name"=>$req->first_name,"last_name"=>$req->last_name,]);
+        $response = Controller::returnResponse(200, 'User information updated successfully', array());
+        return json_encode($response);
+    }
+    catch(Exception $error)
     {
+        $response = Controller::returnResponse(500, 'something wrong', $error);
+        return json_encode($response);
+    }
     }
     //delete row according to row id
     function Delete($id)
     {
+        
     }
 
-
+    function get_countries()
+    {
+        try{
+      $countries=country::all();
+      $response = Controller::returnResponse(200, 'successfully', $countries);
+      return json_encode($response);
+        }
+        catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'something wrong', $error);
+            return json_encode($response);
+        }
+    }
 
     function getUserById($id)
     {
         return User::find($id)->first();
     }
-
+   
 }
