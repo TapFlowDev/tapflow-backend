@@ -29,4 +29,10 @@ class GroupMembersController extends Controller
     {
 
     }
+    function getGroupId($userId){
+        return Group_member::select('group_id')->where('user_id', $userId)->get()->first();
+    }
+    function getGroupInfoByUserId($userId){
+        
+    }
 }

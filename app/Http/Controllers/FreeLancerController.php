@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\UserCategoriesController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\GroupMembersController;
 use App\Models\Category;
 use PhpParser\Node\Expr\Isset_;
 
@@ -62,7 +63,7 @@ class FreeLancerController extends Controller
                 }
                 $userCategoryObj->addMultiRows($categoryArr);
             }
-            
+            /*
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
                 // $ext = $req->file('image')->getClientOriginalExtension();
@@ -96,6 +97,7 @@ class FreeLancerController extends Controller
 
                 }
             }
+            */
            
            /* if (count($req->links) > 0 && isset($req->links)) {
                 DB::table('user_links')->where('user_id', $userId)->delete();
@@ -171,6 +173,7 @@ class FreeLancerController extends Controller
     {
         $userCategoryObj = new UserCategoriesController;
         $categoryObj = new CategoriesController;
+        $membersObj = new GroupMembersController;
         foreach ($users as $keyUser => &$user) {
             $categories = $userCategoryObj->getUserCategoriesByUserId($user->id);
             $user->categories = $categories;
@@ -185,6 +188,7 @@ class FreeLancerController extends Controller
             }
             $image = asset('images/users/'.$user->image);
             $user->image = $image;
+            $user->team_id = $membersObj->getGroupId($user->id)->group_id;
             
         }
         return $users;
