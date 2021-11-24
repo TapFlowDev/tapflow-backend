@@ -18,7 +18,7 @@ class CreateRequirementsTable extends Migration
             $table->integer('project_id');
             $table->integer('user_id');
             $table->integer('milestone');
-            $table->string('name','255');
+            $table->string('name','255'); 
             $table->text('description');
             $table->timestamps();
         });

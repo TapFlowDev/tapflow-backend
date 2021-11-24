@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAssignedTasksTable extends Migration
+class CreateCountriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateAssignedTasksTable extends Migration
      */
     public function up()
     {
-        Schema::create('assigned_tasks', function (Blueprint $table) {
+        Schema::create('countries', function (Blueprint $table) {
+            $table->integer('id')->autoIncrement();
+           $table->string('name','255');
         
-            $table->integer('task_id');
-            $table->integer('user_id');
         });
     }
 
@@ -27,6 +27,6 @@ class CreateAssignedTasksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('assigned_tasks');
+        Schema::dropIfExists('countries');
     }
 }

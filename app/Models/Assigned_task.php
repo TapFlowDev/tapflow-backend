@@ -9,8 +9,8 @@ class Assigned_task extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'group_id',
-        'link'
+        'user_id',
+        'task_id'
     ];
     public $timestamps = false;
 }

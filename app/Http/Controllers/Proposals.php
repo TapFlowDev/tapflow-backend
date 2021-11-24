@@ -18,44 +18,36 @@ class Proposals extends Controller
     {
         $rules =array(
             "team_id"=>"required",
+            "user_id"=>"required",
             "project_id"=>"required",
-            "price"=>"required",
+            "price_min"=>"required",
+            "price_max"=>"required",
             "days"=>"required",
-            "why_us"=>"required",
+            "our_offer"=>"required"
         );
         $validators=Validator::make($req->all(),$rules);
         if ($validators->fails())
         {
-        $response =array('data'=>array(
-                "message"=>"Validation Error",
-                "status"=>"101",
-                "error"=>$validators->errors()
-        ))  ;
-        return (json_encode($response));          
+             $responseData=$validators->errors();
+            $response=Controller::returnResponse( 101,"Validation Error", $responseData);
+            return (json_encode($response));
         }
         else
         try{
         {
             $proposal=proposal::create($req->all());
             $proposal_id=$proposal->id;
-            $response =array('data'=>array(
-                "message"=>"proposal added successfully",
-                "status"=>"200",
-                "proposal_id"=>$proposal_id
-        ))  ;
-        return (json_encode($response));       
+            $responseData=array("proposal_id" =>$proposal_id);
+            $response=Controller::returnResponse( 200,"proposal added successfully", $responseData);
+            return (json_encode($response));      
 
         }
     }
     catch(Exception $error)
     {
-        $response = array("data" => array(
-            "message" => "There IS Error Occurred",
-            "status" => "500",
-            "error" => $error,
-        ));
-
-        return (json_encode($response));   
+        $responseData = array("error" => $error,);
+        $response=Controller::returnResponse( 500,"There IS Error Occurred", $responseData);
+        return (json_encode($response));
     }
     }
     //update row according to row id
