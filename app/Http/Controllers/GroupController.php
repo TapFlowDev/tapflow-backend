@@ -75,14 +75,17 @@ class   GroupController extends Controller
                 $userId = $req->admin_id;
                 $membersObj->Insert($group_id, $userId, 1);
                 $cats = json_decode($req->categories);
-                foreach ($cats as $key => $value) {
-                    $categoryArr = array();
-                    foreach ($value->subCat as $keySub => $subValue) {
-                        $categoryArr[$keySub]['group_id'] = $group_id;
-                        $categoryArr[$keySub]['category_id'] = $value->catId;
-                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                if (isset($cats)) {
+
+                    foreach ($cats as $key => $value) {
+                        $categoryArr = array();
+                        foreach ($value->subCat as $keySub => $subValue) {
+                            $categoryArr[$keySub]['group_id'] = $group_id;
+                            $categoryArr[$keySub]['category_id'] = $value->catId;
+                            $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                        }
+                        $groupCategoryObj->addMultiRows($categoryArr);
                     }
-                    $groupCategoryObj->addMultiRows($categoryArr);
                 }
 
                 $teamArr = array();
@@ -113,7 +116,7 @@ class   GroupController extends Controller
                     foreach ($req->attachment as $keyAttach => $valAttach) {
                         $ext = $valAttach->extension();
 
-                        $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
+                        $attachName = mt_rand(100000, 999999) . "-" . $valAttach->getClientOriginalName();
                         $attach = $valAttach;
                         $attach->move(public_path($destPath), $attachName);
                         DB::table('groups_attachments')->insert([
@@ -214,7 +217,7 @@ class   GroupController extends Controller
                     foreach ($req->attachment as $keyAttach => $valAttach) {
                         $ext = $valAttach->extension();
 
-                        $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
+                        $attachName = mt_rand(100000, 999999) . "-" . $valAttach->getClientOriginalName();
                         $attach = $valAttach;
                         $attach->move(public_path($destPath), $attachName);
                         DB::table('groups_attachments')->insert([
