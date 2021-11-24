@@ -18,8 +18,7 @@ class CreateFinalProposalsTable extends Migration
             $table->integer('proposal_id');
             $table->integer('team_id');
             $table->integer('project_id');
-            $table->string('price_min','255');
-            $table->string('price_max','255');
+            $table->string('price','255');
             $table->text('description')->nullable();
             $table->string('days','255');
             $table->integer('status')->default(0);
