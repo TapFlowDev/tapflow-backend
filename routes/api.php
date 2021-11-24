@@ -12,6 +12,7 @@ use  App\Http\Controllers\FreeLancerController;
 use  App\Http\Controllers\Proposals;
 use  App\Http\Controllers\Accepted_Proposals;
 use  App\Http\Controllers\InviteUsersController;
+use  App\Http\Controllers\ImagesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,3 +68,4 @@ Route::post('sendInvitation',[InviteUsersController::class,'sendInvitation']);
 Route::get('r/{token}',[InviteUsersController::class,'getDataByToken']);
 Route::post('acceptOrRefuseInvitation',[InviteUsersController::class,'updateInvitation']);
 Route::post('joinWithCode',[InviteUsersController::class,'joinGroupByCode']);
+Route::post('saveImage',[ImagesController::class,'Insert']);
