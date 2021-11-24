@@ -20,8 +20,8 @@ class ImagesController extends Controller
             
             $img = $req->image;
             
-            // $img->move(public_path($destPath), $imageName);
-            $img->storeAs($destPath, $imageName);
+            $img->move(public_path($destPath), $imageName);
+            // $img->storeAs($destPath, $imageName);
             dd('done');
             
         }
