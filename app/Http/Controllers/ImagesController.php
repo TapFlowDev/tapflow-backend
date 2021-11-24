@@ -15,7 +15,7 @@ class ImagesController extends Controller
             // $ext = $req->file('image')->getClientOriginalExtension();
             // $imageName = "user-image-" . $userId . "." . $ext;
             // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
-            $imageName = "hamzah". "-" . $req->file('image')->getClientOriginalName();
+            $imageName = "zdfsdgv" . mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
             // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
             
             $img = $req->image;
