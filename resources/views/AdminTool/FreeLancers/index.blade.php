@@ -24,7 +24,7 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->team_name }}</td>
                         <td>
-                            <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.freelancers.show', $user->freelancer_id) }}"
+                            <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.freelancers.show', $user->id) }}"
                                 role="button">View</a>
                                 {{-- <button class="btn btn-sm btn-danger" 
                                     onclick="event.preventDefault();
