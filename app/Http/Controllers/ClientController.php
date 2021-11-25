@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use App\Models\User_link;
+
 class ClientController extends Controller
 {
     function Insert_client(Request $req)
@@ -89,7 +91,7 @@ class ClientController extends Controller
             ->leftJoin('clients','users.id','=','clients.user_id')
             ->where('users.id',$id)
             ->get();
-
+            $user = $this->getUserInfo($user)->first();
             $response = Controller::returnResponse(200, 'user information found', $user);
             return json_encode($response);
         }
@@ -131,5 +133,33 @@ class ClientController extends Controller
     function updateFiles($userId, $imageName, $filedName)
     {
         Client::where('user_id', $userId)->update(array($filedName => $imageName));
+    }
+
+    private function getUserInfo($users)
+    {
+        $userCategoryObj = new UserCategoriesController;
+        $categoryObj = new CategoriesController;
+        $membersObj = new GroupMembersController;
+        foreach ($users as $keyUser => &$user) {
+            $categories = $userCategoryObj->getUserCategoriesByUserId($user->id);
+            $user->categories = $categories;
+            $links = User_link::select('link')->where('user_id', $user->id)->get();
+            if (count($links) > 0) {
+                // $user->links = $links;
+                $user->links = array_column($links->toArray(), 'link');
+                // $user->linksType = gettype($links);
+            } else {
+                $user->links = [];
+            }
+            $image = asset('images/users/' . $user->image);
+            $user->image = $image;
+            $groupId = $membersObj->getGroupId($user->id);
+            if ($groupId != '') {
+                $user->team_id = $groupId->group_id;
+            } else {
+                $user->team_id =  null;
+            }
+        }
+        return $users;
     }
 }
