@@ -38,29 +38,29 @@ class ClientController extends Controller
             $user->save();
             $userId = $req->user_id;
 
-            if ($req->hasFile('image')) {
-                $destPath = 'images/users';
-                $ext = $req->file('image')->extension();
-                $imageName =  mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
-                $image = $req->image;
-                $image->move(public_path($destPath), $imageName);
-                $this->updateFiles($userId, $imageName, 'image');
-            }
-            if ($req->hasFile('attachment')) {
-                $destPath = 'images/users';
-                DB::table('user_attachments')->where('user_id', $userId)->delete();
-                foreach ($req->attachment as $keyAttach => $valAttach) {
-                    $ext = $valAttach->extension();
+            // if ($req->hasFile('image')) {
+            //     $destPath = 'images/users';
+            //     $ext = $req->file('image')->extension();
+            //     $imageName =  mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
+            //     $image = $req->image;
+            //     $image->move(public_path($destPath), $imageName);
+            //     $this->updateFiles($userId, $imageName, 'image');
+            // }
+            // if ($req->hasFile('attachment')) {
+            //     $destPath = 'images/users';
+            //     DB::table('user_attachments')->where('user_id', $userId)->delete();
+            //     foreach ($req->attachment as $keyAttach => $valAttach) {
+            //         $ext = $valAttach->extension();
 
-                    $attachName =  $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
-                    $attach = $valAttach;
-                    $attach->move(public_path($destPath), $attachName);
-                    DB::table('user_attachments')->insert([
-                        'user_id' => $userId,
-                        'attachment' => $attachName
-                    ]);
-                }
-            }
+            //         $attachName =  $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
+            //         $attach = $valAttach;
+            //         $attach->move(public_path($destPath), $attachName);
+            //         DB::table('user_attachments')->insert([
+            //             'user_id' => $userId,
+            //             'attachment' => $attachName
+            //         ]);
+            //     }
+            // }
             if (count($req->links) > 0) {
                 DB::table('user_links')->where('user_id', $userId)->delete();
 

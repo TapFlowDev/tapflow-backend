@@ -101,7 +101,7 @@ class FreeLancerController extends Controller
             }
             */
 
-            /* if (count($req->links) > 0 && isset($req->links)) {
+             if (count($req->links) > 0 && isset($req->links)) {
                 DB::table('user_links')->where('user_id', $userId)->delete();
 
                 foreach ($req->links as $keyLink => $valLink) {
@@ -110,7 +110,7 @@ class FreeLancerController extends Controller
                         'link' => $valLink
                     ]);
                 }
-            }*/
+            }
             $responseData = array(
                 "user_id" => $req->user_id,
             );
