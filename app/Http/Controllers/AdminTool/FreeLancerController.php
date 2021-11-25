@@ -27,7 +27,7 @@ class FreeLancerController extends Controller
         $users = $this->getUserData($freeLancers);
         // print_r(json_encode($users));
 
-        return view('AdminTool.Freelancers.index', ['users' => $users]);
+        return view('AdminTool.FreeLancers.index', ['users' => $users]);
     }
 
     /**
