@@ -22,7 +22,7 @@ class AdminConroller extends Controller
         // if(Gate::allows('is-admin')){
 
         // }
-        return view('AdminTool.users.index', ['users'=>User::paginate(10)]);
+        return view('AdminTool.Users.index', ['users'=>User::paginate(10)]);
         // dd('go to login');
     }
 
@@ -34,7 +34,7 @@ class AdminConroller extends Controller
     public function create()
     {
         //
-        return view('AdminTool.users.add');
+        return view('AdminTool.Users.add');
         
     }
 
@@ -71,7 +71,7 @@ class AdminConroller extends Controller
     public function edit($id)
     {
         // dd(User::find($id));
-        return view('AdminTool.users.edit', ['user'=>User::find($id)]);
+        return view('AdminTool.Users.edit', ['user'=>User::find($id)]);
     }
 
     /**

@@ -15,12 +15,12 @@ class AdminSubCategoryController extends Controller
     {
         // dd($parentId);
         $subCats = SubCategory::where('category_id', $category)->paginate(10);
-        return view('AdminTool.categories.subCategories.index', ['category' => $category, 'categories' => $subCats]);
+        return view('AdminTool.Categories.SubCategories.index', ['category' => $category, 'categories' => $subCats]);
     }
     public function create($category)
     {
 
-        return view('AdminTool.categories.subCategories.add', ['categoryId' => $category]);
+        return view('AdminTool.Categories.SubCategories.add', ['categoryId' => $category]);
     }
     public function store(Request $request)
     {
