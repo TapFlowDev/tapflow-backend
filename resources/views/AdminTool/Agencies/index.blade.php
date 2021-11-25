@@ -47,7 +47,7 @@
                                     onclick="event.preventDefault();
                                     document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Unverify</button>
                                 <form id="verifyTeam-user-form-{{ $user->id }}"
-                                    action="{{ route('AdminTool.group.update', $user->id) }}" method="POST"
+                                    action="{{ route('AdminTool.Group.update', $user->id) }}" method="POST"
                                     style="display: none;">
                                     @csrf
                                     @method('PATCH')

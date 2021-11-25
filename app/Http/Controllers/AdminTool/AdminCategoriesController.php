@@ -23,7 +23,7 @@ class AdminCategoriesController extends Controller
     public function create()
     {
         //
-        return view('AdminTool.categories.add');
+        return view('AdminTool.Categories.add');
     }
     public function store(Request $request)
     {
@@ -49,7 +49,7 @@ class AdminCategoriesController extends Controller
     public function edit($id)
     {
         // dd(User::find($id));
-        return view('AdminTool.categories.edit', ['category' => Category::find($id)]);
+        return view('AdminTool.Categories.edit', ['category' => Category::find($id)]);
     }
     public function update(Request $request, $id)
     {
