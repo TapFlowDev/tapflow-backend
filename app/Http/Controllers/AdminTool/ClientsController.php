@@ -27,7 +27,7 @@ class ClientsController extends Controller
         // dd($freeLancers);
         $users = $this->getUserData($clients);
 
-        return view('AdminTool.clients.index', ['users' => $users]);
+        return view('AdminTool.Clients.index', ['users' => $users]);
     }
 
     /**
