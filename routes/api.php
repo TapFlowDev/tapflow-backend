@@ -13,6 +13,8 @@ use  App\Http\Controllers\Proposals;
 use  App\Http\Controllers\Final_Proposals;
 use  App\Http\Controllers\InviteUsersController;
 use  App\Http\Controllers\ImagesController;
+use  App\Http\Controllers\UserLinksController;
+use  App\Http\Controllers\UserAttachmentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +53,11 @@ Route::post('addProposal',[Proposals::class,'insert']);
 Route::post('addFinalProposal',[Final_Proposals::class,'insert']);
 Route::get('getCountries',[UserController::class,'get_countries']);
 Route::put('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
+Route::put('updateClientBio',[ClientController::class,'update_Bio']);
+Route::put('updateFreelancerBio',[FreeLancerController::class,'update_Bio']);
+Route::post('updateLinks',[UserLinksController::class,'update_links']);
+Route::post('updateAttachment',[UserAttachmentsController::class,'update_attachment']);
+Route::post('updateTools',[FreeLancerController::class,'update_tools']);
 
 
 
@@ -59,7 +66,7 @@ Route::put('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
 Route::get('getFreelancerInfo/{id}',[FreeLancerController::class,'get_freelancer_info']);
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
 Route::get('getAllUsers',[UserController::class,'getAllUsers']);
-Route::get('getClientInfo/{id}',[ClientController::class,'get_client_info']);
+Route::get('getClientInfo',[ClientController::class,'get_client_info']);
 Route::post('addUser',[UserController::class,'add_user']);
 Route::post('addTeam',[GroupController::class,'add_group_team']);
 Route::post('addCompany',[GroupController::class,'add_group_company']);
