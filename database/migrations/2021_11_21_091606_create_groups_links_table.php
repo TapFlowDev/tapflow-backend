@@ -14,6 +14,7 @@ class CreateGroupsLinksTable extends Migration
     public function up()
     {
         Schema::create('groups_links', function (Blueprint $table) {
+            $table->integer('id')->autoIncrement();
             $table->integer('group_id');
             $table->string('link', '255');
         });
