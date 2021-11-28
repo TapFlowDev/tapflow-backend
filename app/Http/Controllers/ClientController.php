@@ -63,16 +63,16 @@ class ClientController extends Controller
             //         ]);
             //     }
             // }
-            // if (count($req->links) > 0) {
-            //     DB::table('user_links')->where('user_id', $userId)->delete();
+            if (isset($req->links) && count($req->links) > 0) {
+                DB::table('user_links')->where('user_id', $userId)->delete();
 
-            //     foreach ($req->links as $keyLink => $valLink) {
-            //         DB::table('user_links')->insert([
-            //             'user_id' => $userId,
-            //             'link' => $valLink
-            //         ]);
-            //     }
-            // }
+                foreach ($req->links as $keyLink => $valLink) {
+                    DB::table('user_links')->insert([
+                        'user_id' => $userId,
+                        'link' => $valLink
+                    ]);
+                }
+            }
             $responseData = array(
                 "user_id" => $req->user_id,
             );
