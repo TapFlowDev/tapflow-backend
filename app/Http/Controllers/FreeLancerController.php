@@ -199,4 +199,30 @@ class FreeLancerController extends Controller
         }
         return $users;
     }
+    function update_Bio(Request $req)
+    { 
+      try{
+            $freelancer=Freelancer::where('user_id',$req->user_id)->update(['bio'=>$req->bio]);
+            $response = Controller::returnResponse(200, 'User information updated successfully', array());
+            return json_encode($response);
+        }catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+    function update_tools(Request $req)
+    {
+        try{
+            $user_id=$req->user_id;
+            $freelancer=Freelancer::where("user_id",$user_id)->update(['tools'=>serialize($req->tools)]);
+            $response = Controller::returnResponse(200, 'User tools updated successfully', array());
+            return json_encode($response);
+        }catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+
+    }
 }

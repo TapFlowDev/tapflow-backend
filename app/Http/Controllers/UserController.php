@@ -25,6 +25,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InviteUsersController;
 use Illuminate\Support\Facades\Http;
 use App\Models\country;
+use App\Models\User_link;
 
 
 // user types 1,2 1:freelancer 2:client
@@ -224,5 +225,5 @@ class UserController extends Controller
     {
         return User::find($id)->first();
     }
-   
+    
 }

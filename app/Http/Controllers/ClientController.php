@@ -127,6 +127,7 @@ class ClientController extends Controller
        }
         
     }
+
     function updateTeamId($userId, $teamId){
         Client::where('user_id', $userId)->update(['company_id'=>$teamId]);
     }
@@ -134,6 +135,21 @@ class ClientController extends Controller
     {
         Client::where('user_id', $userId)->update(array($filedName => $imageName));
     }
+
+    function update_Bio(Request $req)
+    { 
+      try{
+            $client=Client::where('user_id',$req->user_id)->update(['bio'=>$req->bio]);
+            $response = Controller::returnResponse(200, 'User information updated successfully', array());
+            return json_encode($response);
+        }catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+   
+
 
     private function getUserInfo($users)
     {
@@ -162,4 +178,5 @@ class ClientController extends Controller
         }
         return $users;
     }
+
 }
