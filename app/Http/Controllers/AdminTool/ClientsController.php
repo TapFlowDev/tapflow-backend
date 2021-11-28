@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Models\Group;
 use App\Models\Company;
+use App\Models\Group_member;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Echo_;
 
@@ -22,11 +23,11 @@ class ClientsController extends Controller
     {
         $clients = DB::table('clients')
             ->join('users', 'clients.user_id', '=', 'users.id')
-            ->join('companies', 'clients.company_id', '=', 'companies.id')
-            ->join('groups', 'companies.group_id', '=', 'groups.id')
-            ->select('clients.*', 'users.*', 'clients.id as client_id', 'groups.name as company_name')->paginate(10);
+            ->select('users.*', 'clients.*')->paginate(10);
         // dd($freeLancers);
-        return view('AdminTool.clients.index', ['users' => $clients]);
+        $users = $this->getUserData($clients);
+
+        return view('AdminTool.Clients.index', ['users' => $users]);
     }
 
     /**
@@ -58,7 +59,7 @@ class ClientsController extends Controller
      */
     public function show($id)
     {
-        $info = $this->getUserData(Client::where('id', 1)->get());
+        $info = $this->getUserData(Client::where('user_id', $id)->get());
 
         // dd();
         return $info->first();
@@ -102,11 +103,21 @@ class ClientsController extends Controller
         foreach ($array as $key => &$user) {
 
             $userInfo = User::find($user->user_id);
-            $teamInfo = Company::find($user->company_id);
-            $groupName = Group::find($teamInfo->group_id)->name;
-
+            // $userInfo = $user;
+            $groupId = Group_member::select('group_id')
+            ->where('user_id', $user->id)->get()->first();
+            if(isset($groupId) && $groupId!=''){
+                $companyId = $groupId->group_id;
+                $groupName = Group::find($groupId->group_id)->name;
+            }else{
+                $companyId = "";
+                $groupName ='no company yet';
+            }
+            // $teamInfo = Team::find($groupId);
+            
             $user->first_name = $userInfo->first_name;
             $user->last_name = $userInfo->last_name;
+            $user->company_id = $companyId;
             $user->company_name = $groupName;
         }
         return $array;

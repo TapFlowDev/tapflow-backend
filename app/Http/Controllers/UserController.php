@@ -145,16 +145,6 @@ class UserController extends Controller
                 $client=new ClientController;
                 $check=$client->checkIfExists($user->id);
             }
-            $invite= new InviteUsersController;
-            $invite_check=$invite->check_invite($req->email);
-            if ($invite_check == 0)
-            {
-                $invited='0';
-            }
-            else 
-            {
-                $invited='1';
-            }
 
             $responseData =  array(
                 "user_id"=>$user->id,
@@ -162,7 +152,6 @@ class UserController extends Controller
                 "tokenType" => "Bearer",
                 "user_type"=>$user_type,
                 "completed"=>$check,
-                "invited"=>$invited
 
             );
             $response=Controller::returnResponse( 200,"login successfully", $responseData);

@@ -22,7 +22,7 @@ class TeamsController extends Controller
         ->join('groups', 'teams.group_id', '=', 'groups.id')
         ->select('groups.*', 'teams.*')->paginate(10);
         
-        return view('AdminTool.agencies.index', ['users' => $teams]);
+        return view('AdminTool.Agencies.index', ['users' => $teams]);
     }
 
     /**

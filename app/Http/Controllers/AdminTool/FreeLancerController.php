@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Freelancer;
 use App\Models\User;
 use App\Models\Group;
+use App\Models\Group_member;
 use App\Models\Team;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Echo_;
@@ -22,11 +23,11 @@ class FreeLancerController extends Controller
     {
         $freeLancers = DB::table('freelancers')
             ->join('users', 'freelancers.user_id', '=', 'users.id')
-            ->join('teams', 'freelancers.team_id', '=', 'teams.id')
-            ->join('groups', 'teams.group_id', '=', 'groups.id')
-            ->select('freelancers.*', 'users.*', 'freelancers.id as freelancer_id', 'groups.name as team_name')->paginate(10);
-        // dd($freeLancers);
-        return view('AdminTool.freeLancers.index', ['users' => $freeLancers]);
+            ->select('users.*', 'freelancers.*')->paginate(10);
+        $users = $this->getUserData($freeLancers);
+        // print_r(json_encode($users));
+
+        return view('AdminTool.FreeLancers.index', ['users' => $users]);
     }
 
     /**
@@ -58,7 +59,7 @@ class FreeLancerController extends Controller
      */
     public function show($id)
     {
-        $info = $this->getUserData(Freelancer::where('id', 1)->get());
+        $info = $this->getUserData(Freelancer::where('user_id', $id)->get());
 
         // dd();
         return $info->first();
@@ -103,11 +104,21 @@ class FreeLancerController extends Controller
         foreach ($array as $key => &$user) {
 
             $userInfo = User::find($user->user_id);
-            $teamInfo = Team::find($user->team_id);
-            $groupName = Group::find($teamInfo->group_id)->name;
-
+            // $userInfo = $user;
+            $groupId = Group_member::select('group_id')
+            ->where('user_id', $user->id)->get()->first();
+            if(isset($groupId) && $groupId!=''){
+                $teamId = $groupId->group_id;
+                $groupName = Group::find($groupId->group_id)->name;
+            }else{
+                $teamId = "";
+                $groupName ='no team yet';
+            }
+            // $teamInfo = Team::find($groupId);
+            
             $user->first_name = $userInfo->first_name;
             $user->last_name = $userInfo->last_name;
+            $user->team_id = $teamId;
             $user->team_name = $groupName;
         }
         return $array;

@@ -49,8 +49,8 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
 
 
 
-Route::post('addProposal',[Proposals::class,'insert']);
-Route::post('addFinalProposal',[Final_Proposals::class,'insert']);
+Route::post('addProposal',[Proposals::class,'Insert']);
+Route::post('addFinalProposal',[Final_Proposals::class,'Insert']);
 Route::get('getCountries',[UserController::class,'get_countries']);
 Route::put('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
 Route::put('updateClientBio',[ClientController::class,'update_Bio']);

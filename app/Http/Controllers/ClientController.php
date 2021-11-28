@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use App\Models\User_link;
+
 class ClientController extends Controller
 {
     function Insert_client(Request $req)
@@ -38,29 +40,29 @@ class ClientController extends Controller
             $user->save();
             $userId = $req->user_id;
 
-            if ($req->hasFile('image')) {
-                $destPath = 'images/users';
-                $ext = $req->file('image')->extension();
-                $imageName =  mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
-                $image = $req->image;
-                $image->move(public_path($destPath), $imageName);
-                $this->updateFiles($userId, $imageName, 'image');
-            }
-            if ($req->hasFile('attachment')) {
-                $destPath = 'images/users';
-                DB::table('user_attachments')->where('user_id', $userId)->delete();
-                foreach ($req->attachment as $keyAttach => $valAttach) {
-                    $ext = $valAttach->extension();
+            // if ($req->hasFile('image')) {
+            //     $destPath = 'images/users';
+            //     $ext = $req->file('image')->extension();
+            //     $imageName =  mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
+            //     $image = $req->image;
+            //     $image->move(public_path($destPath), $imageName);
+            //     $this->updateFiles($userId, $imageName, 'image');
+            // }
+            // if ($req->hasFile('attachment')) {
+            //     $destPath = 'images/users';
+            //     DB::table('user_attachments')->where('user_id', $userId)->delete();
+            //     foreach ($req->attachment as $keyAttach => $valAttach) {
+            //         $ext = $valAttach->extension();
 
-                    $attachName =  $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
-                    $attach = $valAttach;
-                    $attach->move(public_path($destPath), $attachName);
-                    DB::table('user_attachments')->insert([
-                        'user_id' => $userId,
-                        'attachment' => $attachName
-                    ]);
-                }
-            }
+            //         $attachName =  $attachName = mt_rand(100000,999999) . "-" . $valAttach->getClientOriginalName();
+            //         $attach = $valAttach;
+            //         $attach->move(public_path($destPath), $attachName);
+            //         DB::table('user_attachments')->insert([
+            //             'user_id' => $userId,
+            //             'attachment' => $attachName
+            //         ]);
+            //     }
+            // }
             if (count($req->links) > 0) {
                 DB::table('user_links')->where('user_id', $userId)->delete();
 
@@ -89,7 +91,7 @@ class ClientController extends Controller
             ->leftJoin('clients','users.id','=','clients.user_id')
             ->where('users.id',$id)
             ->get();
-
+            $user = $this->getUserInfo($user)->first();
             $response = Controller::returnResponse(200, 'user information found', $user);
             return json_encode($response);
         }
@@ -133,6 +135,7 @@ class ClientController extends Controller
     {
         Client::where('user_id', $userId)->update(array($filedName => $imageName));
     }
+
     function update_Bio(Request $req)
     { 
       try{
@@ -146,4 +149,34 @@ class ClientController extends Controller
         }
     }
    
+
+
+    private function getUserInfo($users)
+    {
+        $userCategoryObj = new UserCategoriesController;
+        $categoryObj = new CategoriesController;
+        $membersObj = new GroupMembersController;
+        foreach ($users as $keyUser => &$user) {
+            $categories = $userCategoryObj->getUserCategoriesByUserId($user->id);
+            $user->categories = $categories;
+            $links = User_link::select('link')->where('user_id', $user->id)->get();
+            if (count($links) > 0) {
+                // $user->links = $links;
+                $user->links = array_column($links->toArray(), 'link');
+                // $user->linksType = gettype($links);
+            } else {
+                $user->links = [];
+            }
+            $image = asset('images/users/' . $user->image);
+            $user->image = $image;
+            $groupId = $membersObj->getGroupId($user->id);
+            if ($groupId != '') {
+                $user->company_id = $groupId->group_id;
+            } else {
+                $user->company_id =  null;
+            }
+        }
+        return $users;
+    }
+
 }

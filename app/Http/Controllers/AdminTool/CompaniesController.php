@@ -21,7 +21,7 @@ class CompaniesController extends Controller
         ->join('groups', 'companies.group_id', '=', 'groups.id')
         ->select('groups.*', 'companies.*')->paginate(10);
         
-        return view('AdminTool.companies.index', ['users' => $companies]);
+        return view('AdminTool.Companies.index', ['users' => $companies]);
     }
 
     /**
