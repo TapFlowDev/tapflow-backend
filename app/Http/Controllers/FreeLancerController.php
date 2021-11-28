@@ -52,7 +52,8 @@ class FreeLancerController extends Controller
                 $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
             }
             else{
-            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role']) );}
+            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role']) );
+        }
 
             $user = User::find($req->user_id);
             $user->gender = $req->gender;
