@@ -46,7 +46,13 @@ class FreeLancerController extends Controller
             // print_r($data);
 
             // $tools = serialize($req->tools);
-            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role']) );
+            if (isset($req->tools))
+            {
+                $tools = serialize($req->tools);
+                $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
+            }
+            else{
+            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role']) );}
 
             $user = User::find($req->user_id);
             $user->gender = $req->gender;
