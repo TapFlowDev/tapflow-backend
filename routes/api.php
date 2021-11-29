@@ -13,6 +13,8 @@ use  App\Http\Controllers\Proposals;
 use  App\Http\Controllers\Final_Proposals;
 use  App\Http\Controllers\InviteUsersController;
 use  App\Http\Controllers\ImagesController;
+use  App\Http\Controllers\UserLinksController;
+use  App\Http\Controllers\UserAttachmentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +57,11 @@ Route::post('addProposal',[Proposals::class,'Insert']);
 Route::post('addFinalProposal',[Final_Proposals::class,'Insert']);
 Route::get('getCountries',[UserController::class,'get_countries']);
 Route::put('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
+Route::put('updateClientBio',[ClientController::class,'update_Bio']);
+Route::put('updateFreelancerBio',[FreeLancerController::class,'update_Bio']);
+Route::post('updateLinks',[UserLinksController::class,'update_links']);
+Route::post('updateAttachment',[UserAttachmentsController::class,'update_attachment']);
+Route::post('updateTools',[FreeLancerController::class,'update_tools']);
 
 
 
