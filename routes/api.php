@@ -10,7 +10,7 @@ use  App\Http\Controllers\ProjectController;
 use  App\Http\Controllers\ClientController;
 use  App\Http\Controllers\FreeLancerController;
 use  App\Http\Controllers\Proposals;
-use  App\Http\Controllers\Final_Proposals;
+use  App\Http\Controllers\Final_proposals;
 use  App\Http\Controllers\InviteUsersController;
 use  App\Http\Controllers\ImagesController;
 
@@ -52,7 +52,7 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
 
 
 Route::post('addProposal',[Proposals::class,'Insert']);
-Route::post('addFinalProposal',[Final_Proposals::class,'Insert']);
+Route::post('addFinalProposal',[Final_proposals::class,'Insert']);
 Route::get('getCountries',[UserController::class,'get_countries']);
 Route::put('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
 
