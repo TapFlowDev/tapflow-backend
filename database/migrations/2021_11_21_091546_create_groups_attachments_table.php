@@ -14,6 +14,7 @@ class CreateGroupsAttachmentsTable extends Migration
     public function up()
     {
         Schema::create('groups_attachments', function (Blueprint $table) {
+            $table->integer('id')->autoIncrement();
             $table->integer('group_id');
             $table->string('attachment', '255');
         });

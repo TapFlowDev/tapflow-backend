@@ -14,6 +14,7 @@ class CreateUserAttachmentsTable extends Migration
     public function up()
     {
         Schema::create('user_attachments', function (Blueprint $table) {
+            $table->integer('id')->autoIncrement();
             $table->integer('user_id');
             $table->string('attachment', '255');
         } );
