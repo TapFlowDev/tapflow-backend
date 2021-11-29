@@ -37,14 +37,18 @@ use  App\Http\Controllers\UserAttachmentsController;
 //     $token = csrf_token();
 
 // });
+Route::post('newRegister',[UserController::class,'newRegister']);
+Route::post('newLogin',[UserController::class,'newLogin']);
 
 Route::group(['middleware'=>'auth:sanctum'],function(){
   
+    Route::post('newLogout',[UserController::class,'newLogout']);
 
-
-
-
-
+    Route::get('getAllUsers',[UserController::class,'getAllUsers']);
+    
+    
+    
+    
 });
 
 
@@ -65,7 +69,6 @@ Route::post('updateTools',[FreeLancerController::class,'update_tools']);
 
 Route::get('getFreelancerInfo/{id}',[FreeLancerController::class,'get_freelancer_info']);
 Route::get('getCategories',[CategoriesController::class,'getCategories']);
-Route::get('getAllUsers',[UserController::class,'getAllUsers']);
 Route::get('getClientInfo/{id}',[ClientController::class,'get_client_info']);
 Route::post('addUser',[UserController::class,'add_user']);
 Route::post('addTeam',[GroupController::class,'add_group_team']);

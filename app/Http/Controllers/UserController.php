@@ -31,32 +31,31 @@ use App\Models\User_link;
 // user types 1,2 1:freelancer 2:client
 class UserController extends Controller
 {
-    function internal_login($email,$password)
+    function internal_login($email, $password)
     {
         $credentials = request(['email', 'password']);
         if (!Auth::attempt($credentials)) {
             $responseData = array();
-            $response=Controller::returnResponse(422, 'Unauthorized', $responseData);
+            $response = Controller::returnResponse(422, 'Unauthorized', $responseData);
             return json_encode($response);
         }
 
-        $user = User::where('email',$email)->first();
+        $user = User::where('email', $email)->first();
         if (!Hash::check($password, $user->password)) {
             $responseData = array();
-           $response=Controller::returnResponse(422, 'The Password does not match', $responseData);
+            $response = Controller::returnResponse(422, 'The Password does not match', $responseData);
             return json_encode($response);
-
         }
         $tokenResult = $user->createToken('authToken')->plainTextToken;
         $user->token = $tokenResult;
-        $user_type=$user->type;
+        $user_type = $user->type;
         $user->save();
-        
-       
-       
+
+
+
         $response = array(
-            "user_id"=>$user->id,
-            "user_type"=>$user_type,
+            "user_id" => $user->id,
+            "user_type" => $user_type,
             "userToken" => $tokenResult,
             "tokenType" => "Bearer",
         );
@@ -77,32 +76,28 @@ class UserController extends Controller
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
 
-            $responseData=$validator->errors();
-            $response=Controller::returnResponse(101, "Validation Error", $responseData);
+            $responseData = $validator->errors();
+            $response = Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
-        } 
-        else {
-            try
-             {
-                $user=User::create($req->all());
-               $responseData= $this->internal_login($req->email,$req->password);
-                $response=Controller::returnResponse( 200,"user added successfully", $responseData);
+        } else {
+            try {
+                $user = User::create($req->all());
+                $responseData = $this->internal_login($req->email, $req->password);
+                $response = Controller::returnResponse(200, "user added successfully", $responseData);
                 return (json_encode($response));
             } catch (\Exception $error) {
-                $responseData=$error;
-                $response=Controller::returnResponse( 500,"There IS Error Occurred", $responseData);
+                $responseData = $error;
+                $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
                 return (json_encode($response));
-            }                                                           
+            }
         }
-    
-            
-        }
+    }
 
     //login dunction using Sanctum auth token
 
     function login(Request $req)
     {
-       
+
 
         try {
             $rules = array(
@@ -111,22 +106,22 @@ class UserController extends Controller
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
-                $responseData=$validator->errors();
-                $response=Controller::returnResponse( 101,"Validation Error", $responseData);
+                $responseData = $validator->errors();
+                $response = Controller::returnResponse(101, "Validation Error", $responseData);
 
                 return (json_encode($response));
             }
             $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
                 $responseData = array();
-                $response=Controller::returnResponse( 422,"Unauthorized Error", $responseData);
+                $response = Controller::returnResponse(422, "Unauthorized Error", $responseData);
                 return (json_encode($response));
             }
             $user = User::where('email', $req->email)->first();
             if (!Hash::check($req->password, $user->password)) {
 
                 $responseData = array();
-                $response=Controller::returnResponse( 422,"The Password does not match", $responseData);
+                $response = Controller::returnResponse(422, "The Password does not match", $responseData);
                 return (json_encode($response));
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
@@ -135,33 +130,29 @@ class UserController extends Controller
             $user->save();
 
             //check the user info is filed or not 
-            if($user_type ==1)
-            {
-                $freelancer=new FreeLancerController;
-                $check=$freelancer->checkIfExists($user->id);
-            }
-            elseif($user_type ==2)
-            {
-                $client=new ClientController;
-                $check=$client->checkIfExists($user->id);
+            if ($user_type == 1) {
+                $freelancer = new FreeLancerController;
+                $check = $freelancer->checkIfExists($user->id);
+            } elseif ($user_type == 2) {
+                $client = new ClientController;
+                $check = $client->checkIfExists($user->id);
             }
 
             $responseData =  array(
-                "user_id"=>$user->id,
+                "user_id" => $user->id,
                 "userToken" => $tokenResult,
                 "tokenType" => "Bearer",
-                "user_type"=>$user_type,
-                "completed"=>$check,
+                "user_type" => $user_type,
+                "completed" => $check,
 
             );
-            $response=Controller::returnResponse( 200,"login successfully", $responseData);
+            $response = Controller::returnResponse(200, "login successfully", $responseData);
             return (json_encode($response));
         } catch (Exception $error) {
             $responseData = array("error" => $error,);
-            $response=Controller::returnResponse( 500,"There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return (json_encode($response));
-
-        } 
+        }
     }
     function signout(Request $req)
     {
@@ -171,11 +162,11 @@ class UserController extends Controller
             $user->token = "Null";
             $user->save();
             $token = DB::table('personal_access_tokens')->where('tokenable_id', $req->user_id)->delete();
-           
+
             $response = Controller::returnResponse(200, 'Logout successfully', array());
             return json_encode($response);
         } catch (Exception $error) {
-           
+
             $response = Controller::returnResponse(500, 'something wrong', $error);
             return json_encode($response);
         }
@@ -189,33 +180,29 @@ class UserController extends Controller
     }
     //update row according to row id
     function UpdateUserInfo(Request $req)
-    {  try{
-        $user_id=$req->user_id;
-        $user=User::where('id',$user_id)->update(["first_name"=>$req->first_name,"last_name"=>$req->last_name,]);
-        $response = Controller::returnResponse(200, 'User information updated successfully', array());
-        return json_encode($response);
-    }
-    catch(Exception $error)
     {
-        $response = Controller::returnResponse(500, 'something wrong', $error);
-        return json_encode($response);
-    }
+        try {
+            $user_id = $req->user_id;
+            $user = User::where('id', $user_id)->update(["first_name" => $req->first_name, "last_name" => $req->last_name,]);
+            $response = Controller::returnResponse(200, 'User information updated successfully', array());
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'something wrong', $error);
+            return json_encode($response);
+        }
     }
     //delete row according to row id
     function Delete($id)
     {
-        
     }
 
     function get_countries()
     {
-        try{
-      $countries=country::all();
-      $response = Controller::returnResponse(200, 'successfully', $countries);
-      return json_encode($response);
-        }
-        catch(Exception $error)
-        {
+        try {
+            $countries = country::all();
+            $response = Controller::returnResponse(200, 'successfully', $countries);
+            return json_encode($response);
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'something wrong', $error);
             return json_encode($response);
         }
@@ -225,5 +212,81 @@ class UserController extends Controller
     {
         return User::find($id)->first();
     }
+
+    function newRegister(Request $req)
+    {
+
+        // dd($req);
+        $rules = array(
+            "first_name" => "required|max:255",
+            "last_name" => "required|max:255",
+            "email" => "email|required|max:255|unique:users",
+            "password" => "required|min:8|max:255",
+            "type" => "required|max:1|gt:0|lt:3",
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+
+            $responseData = $validator->errors();
+            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+            return (json_encode($response));
+        }
+
+        try {
+            $user = User::create($req->all());
+            $tokenResult = $user->createToken('myapptoken')->plainTextToken;
+            $responseData = array(
+                "userId" => $user->id,
+                "token" => $tokenResult
+            );
+            return $responseData;
+            // $response = Controller::returnResponse(200, "user added successfully", $responseData);
+            // return (json_encode($response));
+        } catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
+        }
+    }
+
+    public function newLogout(Request $req)
+    {
+        $req->user()->currentAccessToken()->delete();
+        $responseData = array(
+            "msg" => "loged out"
+        );
+        return $responseData;
+    }
+
+    function newLogin(Request $req)
+    {
+        $rules = array(
+            "email" => "email|required|max:255",
+            "password" => "required|min:8|max:255"
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+
+            $responseData = $validator->errors();
+            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+            return (json_encode($response));
+        }
+        $password = $req->password;
+        $user = User::where('email', $req->email)->first();
+
+        if (!$user || !Hash::check($req->password, $user->password)) {
+            $responseData = array(
+                "msg" => "unauthrized"
+            );
+            return $responseData;
+        }
+        $tokenResult = $user->createToken('myapptoken')->plainTextToken;
+        $responseData = array(
+            "userId" => $user->id,
+            "token" => $tokenResult
+        );
+        return $responseData;
+    }
     
+
 }
