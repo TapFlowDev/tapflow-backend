@@ -26,7 +26,7 @@ use App\Http\Controllers\InviteUsersController;
 use Illuminate\Support\Facades\Http;
 use App\Models\country;
 use App\Models\User_link;
-
+use Illuminate\Support\Arr;
 
 // user types 1,2 1:freelancer 2:client
 class UserController extends Controller
@@ -97,8 +97,45 @@ class UserController extends Controller
     
             
         }
+        //for agency members
+        function register(Request $req)
+    {
 
-    //login dunction using Sanctum auth token
+        // dd($req);
+        $rules = array(
+            "first_name" => "required|max:255",
+            "last_name" => "required|max:255",
+            "email" => "email|required|max:255|unique:users",
+            "password" => "required|min:8|max:255",
+            "role" => "required|max:255",
+            "type" => "required|max:1|gt:0|lt:3",
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+
+            $responseData=$validator->errors();
+            $response=Controller::returnResponse(101, "Validation Error", $responseData);
+            return (json_encode($response));
+        } 
+        else {
+            try
+             {
+                $user=User::create($req->all());
+                $array=array("user_id"=>$user->id);
+                $freelancer=Freelancer::create( $array);
+               $responseData= $this->internal_login($req->email,$req->password);
+                $response=Controller::returnResponse( 200,"user added successfully", $responseData);
+                return (json_encode($response));
+            } catch (\Exception $error) {
+                $responseData=$error;
+                $response=Controller::returnResponse( 500,"There IS Error Occurred", $responseData);
+                return (json_encode($response));
+            }                                                           
+        }
+    
+            
+        }
+    //login function using Sanctum auth token
 
     function login(Request $req)
     {
