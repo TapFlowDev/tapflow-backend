@@ -20,7 +20,7 @@ class CreateMilestonesTable extends Migration
             $table->string('name','255');
             $table->text('description');
             $table->string('days','255');
-            $table->string('price','255');
+            $table->string('price','255')->nullable();
             $table->integer('status')->default('0');
             $table->timestamps();
         });
