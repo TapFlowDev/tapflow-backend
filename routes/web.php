@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Mail;
 */
 
 Route::get('/', function () {
-    return redirect('/AdminTool');
+    return "home";
 });
 Route::get('/AdminTool', function () {
     return view('index');
