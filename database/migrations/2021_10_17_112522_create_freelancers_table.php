@@ -15,6 +15,7 @@ class CreateFreelancersTable extends Migration
     {
         Schema::create('freelancers', function (Blueprint $table) {
             $table->integer('user_id')->unique();
+          
             $table->text('bio')->nullable();
             $table->string('hourly_rate','255')->nullable();
             $table->string('experience','255')->nullable();
