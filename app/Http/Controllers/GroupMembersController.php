@@ -38,11 +38,23 @@ class GroupMembersController extends Controller
     }
     function getTeamMembersByGroupId($id)
     {
-       
+        
         $teamMembers=DB::table('group_members')
-        ->join('freelancers','group_members.user_id','=','freelancers.user_id')
+        ->leftjoin('freelancers','group_members.user_id','=','freelancers.user_id')
+        ->leftjoin('users','group_members.user_id','=','users.id')->select("freelancers.user_id","users.first_name","users.last_name","users.email","freelancers.type","freelancers.image","freelancers.country","users.role","group_members.privileges`    ")
         ->where('group_members.group_id','=',$id)
         ->get();
         return($teamMembers);
     }
-}
+    function checkIfExists($id)
+    {
+        $member = Group_member::where('user_id', '=', $id)->first();
+
+
+        if ($member === null) {
+            return (0);
+        } else {
+            return ($member->privileges);
+        }
+    }
+}   
