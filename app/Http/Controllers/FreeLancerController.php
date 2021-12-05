@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\UserCategoriesController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\GroupMembersController;
+
 use App\Models\Category;
 use PhpParser\Node\Expr\Isset_;
 
@@ -168,9 +169,11 @@ class FreeLancerController extends Controller
         }
     }
 
-    function updateTeamId($userId, $teamId)
-    {
-        Freelancer::where('user_id', $userId)->update(['team_id' => $teamId]);
+    function updateType($userId,$type)
+    {   
+   
+        Freelancer::where('user_id', $userId)->update(['type' => $type]);
+       
     }
 
     function updateFiles($userId, $imageName, $filedName)

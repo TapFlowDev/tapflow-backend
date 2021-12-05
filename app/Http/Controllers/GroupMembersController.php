@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Group_member;
+use Illuminate\Support\Facades\DB;
 
 
 class GroupMembersController extends Controller
@@ -34,5 +35,14 @@ class GroupMembersController extends Controller
     }
     function getGroupInfoByUserId($userId){
         
+    }
+    function getTeamMembersByGroupId($id)
+    {
+       
+        $teamMembers=DB::table('group_members')
+        ->join('freelancers','group_members.user_id','=','freelancers.user_id')
+        ->where('group_members.group_id','=',$id)
+        ->get();
+        return($teamMembers);
     }
 }

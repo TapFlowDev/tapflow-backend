@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User_link;
+use App\Models\Groups_link;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
-class UserLinksController extends Controller
+class GroupsLinksController extends Controller
 {
     //add row 
     function Insert(Request $req)
@@ -24,7 +25,17 @@ class UserLinksController extends Controller
     {
 
     }
-    function update_links(Request $req)
+     function get_group_links($id)
+    {
+        $links=Groups_link::select('link')->where('group_id',$id)->get();  
+       
+        if(count($links)>0)
+        {    $data=array_column($links->toArray(), 'link');
+        return($data);
+        }
+    else{return([]);}
+    }
+    function updateTeamLinks(Request $req)
     {
         $rules=array(
             "id"=>"required|exists:groups,id",
@@ -46,10 +57,10 @@ class UserLinksController extends Controller
            {
                $arr=array
                (
-                   "user_id"=>$req->user_id,
+                   "group_id"=>$req->id,
                    "link"=>$link,
                );
-                $userLinks= User_link::create($arr);
+                $groupLinks= Groups_link::create($arr);
            }
         }
        
@@ -58,9 +69,7 @@ class UserLinksController extends Controller
             foreach($remove as $link)
            {
             
-                $userLinks= User_link::where('id', $link)->delete();
-               
-
+                $groupLinks= Groups_link::where('id', $link)->delete();
            }
         }
         $response = Controller::returnResponse(200, 'updated successfully', $Array=array());
@@ -68,3 +77,4 @@ class UserLinksController extends Controller
     }
 }
 }
+
