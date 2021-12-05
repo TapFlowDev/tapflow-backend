@@ -15,14 +15,14 @@ class ImagesController extends Controller
             // $ext = $req->file('image')->getClientOriginalExtension();
             // $imageName = "user-image-" . $userId . "." . $ext;
             // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
-            $imageName = "zdfsdgv" . mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
+            $imageName = time() . "-" . mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
             // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
             
             $img = $req->image;
             
             $img->move(public_path($destPath), $imageName);
             // $img->storeAs($destPath, $imageName);
-            dd('done');
+            return json_encode(["done"=>'1']);
             
         }
         

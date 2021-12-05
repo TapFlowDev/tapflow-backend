@@ -301,7 +301,7 @@ class UserController extends Controller
         }
     }
 
-    public function newLogout(Request $req)
+    function newLogout(Request $req)
     {
         $req->user()->currentAccessToken()->delete();
         $responseData = array(
@@ -339,6 +339,7 @@ class UserController extends Controller
         );
         return $responseData;
     }
+
     public function getUserOriginalName()
     {
         return $this->originalName;
@@ -347,5 +348,4 @@ class UserController extends Controller
     {
         Freelancer::where('user_id', $userId)->update(array($filedName => $imageName));
     }
-
 }

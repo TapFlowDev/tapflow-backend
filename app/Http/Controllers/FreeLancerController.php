@@ -22,8 +22,6 @@ class FreeLancerController extends Controller
     //add row 
     function Insert_freelancer(Request $req)
     {
-
-
         $userCategoryObj = new UserCategoriesController;
         $rules = array(
             "user_id" => "required|exists:users,id",
@@ -50,11 +48,12 @@ class FreeLancerController extends Controller
             if (isset($req->tools))
             {
                 $tools = serialize($req->tools);
-                $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools']) + ['tools' => $tools]);
             }
             else{
-            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role']) );
-        }
+                $tools = serialize(array());
+            }
+            $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools', 'image']) + ['tools' => $tools]);
+            // $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'image']) );
 
             $user = User::find($req->user_id);
             $user->gender = $req->gender;
@@ -73,13 +72,13 @@ class FreeLancerController extends Controller
                     $userCategoryObj->addMultiRows($categoryArr);
                 }
             }
-            
+
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
                 // $ext = $req->file('image')->getClientOriginalExtension();
                 // $imageName = "user-image-" . $userId . "." . $ext;
                 // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
-                $imageName = mt_rand(100000,999999) . "-" . $req->file('image')->getClientOriginalName();
+                $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
                 // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
                 
                 $img = $req->image;
@@ -237,5 +236,7 @@ class FreeLancerController extends Controller
 
     }
 
+}
 
 }
+
