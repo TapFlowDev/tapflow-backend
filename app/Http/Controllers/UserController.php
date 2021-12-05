@@ -23,6 +23,7 @@ use App\Http\Controllers\UserCategoriesController;
 use App\Http\Controllers\FreeLancerController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InviteUsersController;
+use App\Http\Controllers\GroupMembersController;
 use Illuminate\Support\Facades\Http;
 use App\Models\country;
 use App\Models\User_link;
@@ -58,6 +59,7 @@ class UserController extends Controller
             "user_type" => $user_type,
             "userToken" => $tokenResult,
             "tokenType" => "Bearer",
+            "privileges" => "0",
         );
         return ($response);
     }
@@ -81,6 +83,20 @@ class UserController extends Controller
                 $user = User::create($req->all());
                 $array=array("user_id"=>$user->id,'type' => 1);
                  $freelancer=Freelancer::create( $array );
+                 if ($req->hasFile('image')) {
+                    $destPath = 'images/users';
+                    // $ext = $req->file('image')->getClientOriginalExtension();
+                    // $imageName = "user-image-" . $userId . "." . $ext;
+                    // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
+                    $imageName = time() . "-" . $req->file('image')->getUserOriginalName();
+                    // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                    
+                    $img = $req->image;
+                    
+                    $img->move(public_path($destPath), $imageName);
+                    $this->updateFiles($user->Id, $imageName, 'image');
+                    
+                }
                 $responseData = $this->internal_login($req->email, $req->password);
                 $response = Controller::returnResponse(200, "user added successfully", $responseData);
                 return (json_encode($response));
@@ -123,7 +139,7 @@ class UserController extends Controller
         }
     }
 
-    //login dunction using Sanctum auth token
+    //login function using Sanctum auth token
 
     function login(Request $req)
     {
@@ -159,10 +175,14 @@ class UserController extends Controller
             $user_type = $user->type;
             $user->save();
 
+            $member= new GroupMembersController;
+            $check_member=$member->checkIfExists($user->id);
+            
             //check the user info is filed or not 
             if ($user_type == 1) {
                 $freelancer = new FreeLancerController;
                 $check = $freelancer->checkIfExists($user->id);
+
             } elseif ($user_type == 2) {
                 $client = new ClientController;
                 $check = $client->checkIfExists($user->id);
@@ -174,6 +194,7 @@ class UserController extends Controller
                 "tokenType" => "Bearer",
                 "user_type" => $user_type,
                 "completed" => $check,
+                "privileges" => $check_member,
 
             );
             $response = Controller::returnResponse(200, "login successfully", $responseData);
@@ -318,6 +339,13 @@ class UserController extends Controller
         );
         return $responseData;
     }
-    
+    public function getUserOriginalName()
+    {
+        return $this->originalName;
+    }
+    function updateFiles($userId, $imageName, $filedName)
+    {
+        Freelancer::where('user_id', $userId)->update(array($filedName => $imageName));
+    }
 
 }
