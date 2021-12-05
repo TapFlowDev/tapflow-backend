@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Invite_code;
+
 use Illuminate\Support\Str;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\UserController;
@@ -16,6 +17,7 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendInvitation;
+use App\Http\Controllers\GroupMembersController;
 
 
 class InviteUsersController extends Controller
@@ -36,13 +38,24 @@ class InviteUsersController extends Controller
     function sendInvitation(Request $req)
     {
         // dd($req);
+        $rules=array(
+            "user_id"=>"required|exists:group_members",
+            "group_id"=>"required|exists:groups,id",
+            "emails"=>"required|array"
+        );
+        $validator=Validator::make($req->all(),$rules);
+        if($validator->fails())
+        {
+            $response=Controller::returnResponse(101,"Validation error",$validator->errors());
+            return json_encode($response);
+        }
         $groupObj = new GroupController;
         $groupData = $groupObj->getGroupById($req->group_id);
         // dd(gettype($groupData->verified));
-        if ($groupData->verified != 1) {
-            $response = Controller::returnResponse(500, 'group not verified', $groupData);
-            return json_encode($response);
-        }
+        // if ($groupData->verified != 1) {
+        //     $response = Controller::returnResponse(422, 'group not verified', $groupData);
+        //     return json_encode($response);
+        // }
         $arr['user_id'] = $req->user_id;
         $arr['group_id'] = $req->group_id;
         $invite_code = array();
@@ -99,8 +112,10 @@ class InviteUsersController extends Controller
             "user_id" => "required|exists:users,id"
         );
         $userObj = new UserController;
+        $group_member_obj=new GroupMembersController();
         $userInfo = $userObj->getUserById($req->user_id);
         $userType = $userInfo->type;
+
         if ($userType == 1) {
             $userTypeObj = new FreeLancerController();
         } elseif ($userType == 2) {
@@ -123,16 +138,17 @@ class InviteUsersController extends Controller
 
             if ($group->status == 0 && $group->expired == 0) {
                 Invite_code::where('link_token', $req->link_token)->update(['status' => $status, 'expired' => 1]);
-                $userTypeObj->updateTeamId($req->user_id, $group->group_id);
-
-                $response = Controller::returnResponse(200, 'user joind the team', array());
+        
+                $group_member_obj->Insert($group->group_id,$req->user_id,2);
+                //change freelancer type depend on group type agencu or team of freelancers
+                $response = Controller::returnResponse(200, 'user joined the team', array());
                 return json_encode($response);
             } else {
                 $response = Controller::returnResponse(500, 'Invitation expired', array());
                 return json_encode($response);
             }
         }
-        $response = Controller::returnResponse(200, 'user joind the team', array());
+        $response = Controller::returnResponse(200, 'user joined the team', array());
         return json_encode($response);
     }
 
@@ -153,6 +169,8 @@ class InviteUsersController extends Controller
         try {
             $userInfo = $userObj->getUserById($req->user_id);
             $userType = $userInfo->type;
+            $group_member_obj=new GroupMembersController();
+          
             if ($userType == 1) {
                 $userTypeObj = new FreeLancerController();
             } elseif ($userType == 2) {
@@ -166,16 +184,19 @@ class InviteUsersController extends Controller
             }
             // $userInfo = $userObj->getUserById($req->user_id);
             $group = Invite_code::where('code', $req->code)->get()->first();
-            // dd($group, $userTypeObj, $userInfo);
-
+            $group_info = GroupController::getGroupById($group->group_id);
+           
+            
             if ($group->status == 0 && $group->expired == 0) {
                 Invite_code::where('code', $req->link_token)->update(['status' => $status, 'expired' => 1]);
-                $userTypeObj->updateTeamId($req->user_id, $group->group_id);
-
-                $response = Controller::returnResponse(200, 'user joind the team', array());
+                $userTypeObj->updateType($req->user_id, $group_info->type);
+                
+                $group_member_obj->Insert($group->group_id,$req->user_id,2);
+                //change freelancer type depend on group type agencu or team of freelancers
+                $response = Controller::returnResponse(200, 'user joined the team', array());
                 return json_encode($response);
             } else {
-                $response = Controller::returnResponse(500, 'Invitation expired', array());
+                $response = Controller::returnResponse(422, 'Invitation expired', array());
                 return json_encode($response);
             }
             $response = Controller::returnResponse(200, 'user joind the team', array());

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User_link;
+use Illuminate\Support\Facades\Validator;
 
 class UserLinksController extends Controller
 {
@@ -25,6 +26,18 @@ class UserLinksController extends Controller
     }
     function update_links(Request $req)
     {
+        $rules=array(
+            "id"=>"required|exists:groups,id",
+            "add"=>"required|array",
+            "remove"=>"required|array"
+        );
+        $validator=Validator::make($req->all(),$rules);
+        if($validator->fails()){
+            $responseData = $validator->errors();
+            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+            return (json_encode($response));
+        }
+        else{
         $add=$req->add;
         $remove=$req->remove;
         if(count($add)>0)
@@ -53,5 +66,5 @@ class UserLinksController extends Controller
         $response = Controller::returnResponse(200, 'updated successfully', $Array=array());
         return json_encode($response);
     }
-   
+}
 }
