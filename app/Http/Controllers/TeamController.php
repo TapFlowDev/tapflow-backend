@@ -10,6 +10,8 @@ use App\Models\Group;
 use App\Http\Controllers\GroupsLinksController;
 use App\Http\Controllers\GroupMembersController;
 use Illuminate\Support\Facades\Validator;
+use League\CommonMark\Context;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 
 use function PHPSTORM_META\type;
 
@@ -74,6 +76,25 @@ class TeamController extends Controller
             $group=Group::where("id",$req->id)->update(['name'=>$req->name]);
             $team=Team::where("group_id",$req->id)->update(['country'=>$req->country,'employees_number'=>$req->employees_number]);
             $response = Controller::returnResponse(200, 'successful', $data=array());
+            return json_encode($response);
+        }
+    }
+    function updateLink(Request $req)
+    {
+        $rules=array(
+            "id"=>"required|exists:groups,id",
+            "link"=>"required|max:255"
+        );
+        $validator=Validator::make($req->all(),$rules);
+        if($validator->fails())
+        {
+            $response=Controller::returnResponse(101,'Validation Error',$validator->errors());
+            return json_encode($response);
+        }
+        else
+        {
+            $team=Team::where('group_id',$req->id)->update(['link'=>$req->link]);
+            $response=Controller::returnResponse(200,'successful',$arr=array());
             return json_encode($response);
         }
     }
