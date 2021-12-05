@@ -280,7 +280,7 @@ class UserController extends Controller
         }
     }
 
-    public function newLogout(Request $req)
+    function newLogout(Request $req)
     {
         $req->user()->currentAccessToken()->delete();
         $responseData = array(
@@ -318,6 +318,4 @@ class UserController extends Controller
         );
         return $responseData;
     }
-    
-
 }
