@@ -60,18 +60,18 @@ Route::post('addProposal',[Proposals::class,'Insert']);
 Route::post('addFinalProposal',[Final_proposals::class,'Insert']);
 Route::get('getCountries',[UserController::class,'get_countries']);
 Route::post('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
-Route::put('updateClientBio',[ClientController::class,'update_Bio']);
-Route::put('updateFreelancerBio',[FreeLancerController::class,'update_Bio']);
-Route::put('updateLinks',[UserLinksController::class,'update_links']);
-Route::put('updateAttachment',[UserAttachmentsController::class,'update_attachment']);
-Route::put('updateTools',[FreeLancerController::class,'update_tools']);
+Route::post('updateClientBio',[ClientController::class,'update_Bio']);
+Route::post('updateFreelancerBio',[FreeLancerController::class,'update_Bio']);
+Route::post('updateLinks',[UserLinksController::class,'update_links']);
+Route::post('updateAttachment',[UserAttachmentsController::class,'update_attachment']);
+Route::post('updateTools',[FreeLancerController::class,'update_tools']);
 Route::post('register',[UserController::class,'Register']);
 Route::get('getTeamInfo/{id}',[TeamController::class,'get_team']);
-Route::put('updateGeneralInfo',[TeamController::class,'updateGeneralInfo']);
-Route::put('updateLink',[TeamController::class,'updateLink']);
-Route::put('updateTeamLinks',[GroupsLinksController::class,'updateTeamLinks']);
-Route::put('updateTeamCategories',[GroupCategoriesController::class,'updateTeamCategories']);
-Route::put('updateGroupCategory',[GroupCategoriesController::class,'updateGroupCategory']);
+Route::post('updateGeneralInfo',[TeamController::class,'updateGeneralInfo']);
+Route::post('updateLink',[TeamController::class,'updateLink']);
+Route::post('updateTeamLinks',[GroupsLinksController::class,'updateTeamLinks']);
+Route::post('updateTeamCategories',[GroupCategoriesController::class,'updateTeamCategories']);
+Route::post('updateGroupCategory',[GroupCategoriesController::class,'updateGroupCategory']);
 
 
 
