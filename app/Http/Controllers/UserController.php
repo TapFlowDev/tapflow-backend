@@ -77,25 +77,23 @@ class UserController extends Controller
             $responseData = $validator->errors();
             $response = Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
-        }
-        else {
+        } else {
             try {
                 $user = User::create($req->all());
-                $array=array("user_id"=>$user->id,'type' => 1);
-                 $freelancer=Freelancer::create( $array );
-                 if ($req->hasFile('image')) {
+                $array = array("user_id" => $user->id, 'type' => 1);
+                $freelancer = Freelancer::create($array);
+                if ($req->hasFile('image')) {
                     $destPath = 'images/users';
                     // $ext = $req->file('image')->getClientOriginalExtension();
                     // $imageName = "user-image-" . $userId . "." . $ext;
                     // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
                     $imageName = time() . "-" . $req->file('image')->getUserOriginalName();
                     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-                    
+
                     $img = $req->image;
-                    
+
                     $img->move(public_path($destPath), $imageName);
-                    $this->updateFiles($user->Id, $imageName, 'image');
-                    
+                    $this->updateFiles($user->id, $imageName, 'image');
                 }
                 $responseData = $this->internal_login($req->email, $req->password);
                 $response = Controller::returnResponse(200, "user added successfully", $responseData);
@@ -175,14 +173,13 @@ class UserController extends Controller
             $user_type = $user->type;
             $user->save();
 
-            $member= new GroupMembersController;
-            $check_member=$member->checkIfExists($user->id);
-            
+            $member = new GroupMembersController;
+            $check_member = $member->checkIfExists($user->id);
+
             //check the user info is filed or not 
             if ($user_type == 1) {
                 $freelancer = new FreeLancerController;
                 $check = $freelancer->checkIfExists($user->id);
-
             } elseif ($user_type == 2) {
                 $client = new ClientController;
                 $check = $client->checkIfExists($user->id);
@@ -262,7 +259,6 @@ class UserController extends Controller
     function getUserById($id)
     {
         return User::find($id)->first();
-        
     }
 
     function newRegister(Request $req)
