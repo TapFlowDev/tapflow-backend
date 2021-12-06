@@ -33,7 +33,7 @@ class TeamController extends Controller
 
     }
     function updateFiles($id, $fileName, $columnName){
-        Team::where('id', $id)->update(array($columnName => $fileName));
+        Team::where('group_id', $id)->update(array($columnName => $fileName));
 
     }
      function get_team($id)
