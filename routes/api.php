@@ -65,7 +65,7 @@ Route::put('updateFreelancerBio',[FreeLancerController::class,'update_Bio']);
 Route::put('updateLinks',[UserLinksController::class,'update_links']);
 Route::put('updateAttachment',[UserAttachmentsController::class,'update_attachment']);
 Route::put('updateTools',[FreeLancerController::class,'update_tools']);
-Route::put('register',[UserController::class,'Register']);
+Route::post('register',[UserController::class,'Register']);
 Route::get('getTeamInfo/{id}',[TeamController::class,'get_team']);
 Route::put('updateGeneralInfo',[TeamController::class,'updateGeneralInfo']);
 Route::put('updateLink',[TeamController::class,'updateLink']);
