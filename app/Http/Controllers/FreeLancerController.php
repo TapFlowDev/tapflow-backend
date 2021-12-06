@@ -72,7 +72,7 @@ class FreeLancerController extends Controller
                     $userCategoryObj->addMultiRows($categoryArr);
                 }
             }
-           
+
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
                 // $ext = $req->file('image')->getClientOriginalExtension();
@@ -166,7 +166,7 @@ class FreeLancerController extends Controller
             return (0);
         } else {
             return (1);
-        }
+        }   
     }
 
     function updateType($userId,$type)
@@ -235,4 +235,8 @@ class FreeLancerController extends Controller
         }
 
     }
+
 }
+
+
+
