@@ -121,17 +121,15 @@ class   GroupController extends Controller
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
-                // if ($req->hasFile('image')) {
-                //     $destPath = 'images/groups';
-                //     // $ext = $req->file('image')->extension();
-                //     $imageName = mt_rand(100000, 999999) . "-" . $req->file('image')->getClientOriginalName();
-                //     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-
-                //     $img = $req->image;
-
-                //     $img->move(public_path($destPath), $imageName);
-                //     $teamObj->updateFiles($teamId, $imageName, 'image');
-                // }
+                 if ($req->hasFile('image')) {
+                     $destPath = 'images/companies';
+                     // $ext = $req->file('image')->extension();
+                     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                     $img = $req->image;
+                     $img->move(public_path($destPath), $imageName);
+                     $teamObj->updateFiles($teamId, $imageName, 'image');
+                 }
                 // if ($req->hasFile('attachment')) {
                 //     $destPath = 'images/groups';
                 //     DB::table('groups_attachments')->where('group_id', $teamId)->delete();
