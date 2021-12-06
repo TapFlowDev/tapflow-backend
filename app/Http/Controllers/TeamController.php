@@ -12,7 +12,7 @@ use App\Http\Controllers\GroupMembersController;
 use Illuminate\Support\Facades\Validator;
 use League\CommonMark\Context;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
-
+use Exception;
 use function PHPSTORM_META\type;
 
 class TeamController extends Controller
@@ -38,6 +38,7 @@ class TeamController extends Controller
     }
      function get_team($id)
     {
+        try{
         $linksController=new GroupsLinksController;
         $GroupMembersController=new GroupMembersController;
         $links=$linksController->get_group_links($id);
@@ -47,6 +48,12 @@ class TeamController extends Controller
         $info->teamMembers=$teamMembers; 
         $response=Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
+        }
+        catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
     }  
     private function get_team_info($id)
     {

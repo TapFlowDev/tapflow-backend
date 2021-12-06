@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Groups_link;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
+use Exception;
 
 class GroupsLinksController extends Controller
 {
@@ -27,6 +28,7 @@ class GroupsLinksController extends Controller
     }
      function get_group_links($id)
     {
+        try{
         $links=Groups_link::select('link')->where('group_id',$id)->get();  
        
         if(count($links)>0)
@@ -34,6 +36,12 @@ class GroupsLinksController extends Controller
         return($data);
         }
     else{return([]);}
+        }
+        catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
     }
     function updateTeamLinks(Request $req)
     {
