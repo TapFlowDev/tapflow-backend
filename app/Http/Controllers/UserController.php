@@ -230,9 +230,11 @@ class UserController extends Controller
     function UpdateUserInfo(Request $req)
     {
         try {
+            
             $user_id = $req->user_id;
-            $user = User::where('id', $user_id)->update(["first_name" => $req->first_name, "last_name" => $req->last_name,]);
-            $response = Controller::returnResponse(200, 'User information updated successfully', array());
+
+            $user = User::where('id', $user_id)->update(["first_name" => $req->first_name, "last_name" => $req->last_name]);
+            $response = Controller::returnResponse(200, 'User information updated successfully', $user);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'something wrong', $error);
