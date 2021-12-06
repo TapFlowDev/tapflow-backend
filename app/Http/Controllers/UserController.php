@@ -231,7 +231,7 @@ class UserController extends Controller
     {
         try {
             $user = User::where('id', $req->user_id)->update(["first_name" => $req->first_name, "last_name" => $req->last_name]);
-            dd($user);
+            
             $response = Controller::returnResponse(200, 'User information updated successfully', $user);
             return json_encode($response);
         } catch (Exception $error) {
