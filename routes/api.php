@@ -59,7 +59,7 @@ Route::group(['middleware'=>'auth:sanctum'],function(){
 Route::post('addProposal',[Proposals::class,'Insert']);
 Route::post('addFinalProposal',[Final_proposals::class,'Insert']);
 Route::get('getCountries',[UserController::class,'get_countries']);
-Route::put('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
+Route::post('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
 Route::put('updateClientBio',[ClientController::class,'update_Bio']);
 Route::put('updateFreelancerBio',[FreeLancerController::class,'update_Bio']);
 Route::put('updateLinks',[UserLinksController::class,'update_links']);
