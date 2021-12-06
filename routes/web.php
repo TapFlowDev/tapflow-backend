@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminTool\TeamsController;
 use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\RolesController;
+use App\Http\Controllers\AdminTool\AnnouncementsController;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
@@ -59,7 +60,8 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     
     // Route::resource('/categories/{$parentId}/subCategories', AdminSubCategoryController::class);
     Route::resource('categories.subCategories', AdminSubCategoryController::class)->shallow();
-
+    Route::resource('/announcements', AnnouncementsController::class);
+    
 });
 Route::get('/r', function (Request $request) {
     return redirect('/api/r/'.$request->r);

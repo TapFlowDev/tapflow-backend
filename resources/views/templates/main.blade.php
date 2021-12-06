@@ -17,6 +17,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous">
     </script>
+    <script src="//cdn.ckeditor.com/4.17.1/standard/ckeditor.js"></script>
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
@@ -106,6 +107,17 @@
                                 </div>
                                 <div class="col-9">
                                     Categories
+                                </div>
+                            </div>
+                        </a>
+                    </li><li class="navigation-list-item active">
+                        <a class="navigation-link" href="/AdminTool/announcements">
+                            <div class="row">
+                                <div class="col-2">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="col-9">
+                                    Announcments
                                 </div>
                             </div>
                         </a>
