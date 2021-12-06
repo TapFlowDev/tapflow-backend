@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\groups_category;
 use Illuminate\Support\Facades\Validator;
+use PHPUnit\TextUI\XmlConfiguration\Groups;
 
 class GroupCategoriesController extends Controller
 {
@@ -87,5 +88,26 @@ class GroupCategoriesController extends Controller
             return json_encode($response);
         }
 
+    }
+    function updateGroupCategory(Request $req)
+    {
+        $rules=array(
+            "group_id"=>"required|exists:groups",
+            "categories"=>"required|array",
+        );
+        $validator=Validator::make($req->all(),$rules);
+        if ($validator->fails())
+        {
+            $response=Controller::returnResponse(101,"Validation Error",$validator->errors());
+            return json_encode($response);
+        }
+        else
+        {
+        $del=groups_category::where('group_id',$req->group_id)->delete();
+        $cats=$req->categories;
+        $add=groups_category::create($cats)+(['group_id',$req->group_id]);
+        $response=Controller::returnResponse(200,"successful",[]);
+        return json_encode($response);
+        }
     }
 }

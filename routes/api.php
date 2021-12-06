@@ -71,6 +71,7 @@ Route::put('updateGeneralInfo',[TeamController::class,'updateGeneralInfo']);
 Route::put('updateLink',[TeamController::class,'updateLink']);
 Route::put('updateTeamLinks',[GroupsLinksController::class,'updateTeamLinks']);
 Route::put('updateTeamCategories',[GroupCategoriesController::class,'updateTeamCategories']);
+Route::put('updateGroupCategory',[GroupCategoriesController::class,'updateGroupCategory']);
 
 
 
