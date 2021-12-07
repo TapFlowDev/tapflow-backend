@@ -9,6 +9,7 @@ use App\Models\Team;
 use App\Models\Group;
 use App\Http\Controllers\GroupsLinksController;
 use App\Http\Controllers\GroupMembersController;
+use App\Http\Controllers\GroupCategoriesController;
 use Illuminate\Support\Facades\Validator;
 use League\CommonMark\Context;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
@@ -41,11 +42,14 @@ class TeamController extends Controller
         try{
         $linksController=new GroupsLinksController;
         $GroupMembersController=new GroupMembersController;
+        $GroupCategoriesController=new GroupCategoriesController;
         $links=$linksController->get_group_links($id);
         $teamMembers=$GroupMembersController->getTeamMembersByGroupId($id);
+        $cats=$GroupCategoriesController->getTeamCategories($id);
         $info=$this->get_team_info($id);
         $info->links=$links; 
         $info->teamMembers=$teamMembers; 
+        $info->categories=$cats; 
         $response=Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
         }
