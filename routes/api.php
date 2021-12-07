@@ -62,7 +62,7 @@ Route::get('getCountries',[UserController::class,'get_countries']);
 Route::post('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
 Route::post('updateClientBio',[ClientController::class,'update_Bio']);
 Route::post('updateFreelancerBio',[FreeLancerController::class,'update_Bio']);
-Route::post('updateLinks',[UserLinksController::class,'update_links']);
+Route::post('updateUserLinks',[UserLinksController::class,'update_links']);
 Route::post('updateAttachment',[UserAttachmentsController::class,'update_attachment']);
 Route::post('updateTools',[FreeLancerController::class,'update_tools']);
 Route::post('register',[UserController::class,'Register']);
