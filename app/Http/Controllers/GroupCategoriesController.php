@@ -37,7 +37,7 @@ class GroupCategoriesController extends Controller
     function updateTeamCategories(Request $req)
     {
         $rules=array(
-            'id'=>"required|exists:groups",
+            'group_id'=>"required|exists:groups,id",
             'categories'=>"required|array",
             
         );
@@ -49,7 +49,7 @@ class GroupCategoriesController extends Controller
         }
         else
         {   
-            $group_id=$req->id;
+            $group_id=$req->group_id;
             
             $delete=groups_category::where("group_id",$group_id)->delete();
             if(isset($req->local))
