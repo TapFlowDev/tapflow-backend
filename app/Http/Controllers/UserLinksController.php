@@ -29,7 +29,7 @@ class UserLinksController extends Controller
     function update_links(Request $req)
     {
         $rules=array(
-            "id"=>"required|exists:users,id",
+            "user_id"=>"required|exists:users,id",
             "links"=>"required|array"
           
         );
