@@ -71,7 +71,6 @@ class GroupCategoriesController extends Controller
             }
             else{
                 $cats = json_decode($req->categories);
-              
                 if (isset($cats)) {
                     foreach ($cats as $key => $value) {
                         $categoryArr = array();
