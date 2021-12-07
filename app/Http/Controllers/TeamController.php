@@ -104,4 +104,31 @@ class TeamController extends Controller
             return json_encode($response);
         }
     }
+    function updateTeamBio(Request $req)
+    {
+        $rules=array(
+            "group_id"=>"required|exists:groups,id",
+            "bio"=>"required"
+        );
+        $validator=Validator::make($req->all(),$rules);
+        if($validator->fails())
+        {
+            $response=Controller::returnResponse(101,'Validation Error',$validator->errors());
+            return json_encode($response);
+        }
+        else
+        {
+            try{
+            $team=Team::where('group_id',$req->group_id)->update(['bio'=>$req->bio]);
+            $response=Controller::returnResponse(200,'successful',$arr=array());
+            return json_encode($response);
+        }
+        catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+
+    }
 }
