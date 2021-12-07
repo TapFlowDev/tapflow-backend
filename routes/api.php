@@ -58,7 +58,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('register', [UserController::class, 'Register']);
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::post('updateGeneralInfo', [TeamController::class, 'updateGeneralInfo']);
-    Route::post('updateLink', [TeamController::class, 'updateLink']);
     Route::post('updateTeamBio', [TeamController::class, 'updateTeamBio']);
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
