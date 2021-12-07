@@ -38,7 +38,7 @@ class GroupCategoriesController extends Controller
     {
         $rules=array(
             'group_id'=>"required|exists:groups,id",
-            'categories'=>"required|array",
+            'categories'=>"required",
             
         );
         $validator=Validator::make($req->all(),$rules);
