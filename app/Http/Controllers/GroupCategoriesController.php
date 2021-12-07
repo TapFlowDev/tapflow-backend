@@ -70,8 +70,10 @@ class GroupCategoriesController extends Controller
                }
             }
             else{
-                $cats = json_decode($req->categories);
-                print_r($cats);
+                print_r($req->categories);
+                dd($req->categories);
+                // $cats = json_decode($req->categories);
+                // print_r($cats);
                 // $response=Controller::returnResponse(200,"successful",$cats);
                 // return json_encode($response);
         //         if (isset($cats)) {
