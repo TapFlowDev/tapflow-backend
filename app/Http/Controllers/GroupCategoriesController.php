@@ -70,26 +70,22 @@ class GroupCategoriesController extends Controller
                }
             }
             else{
-                print_r($req->categories);
-                dd($req->categories);
-                // $cats = json_decode($req->categories);
-                // print_r($cats);
-                // $response=Controller::returnResponse(200,"successful",$cats);
-                // return json_encode($response);
-        //         if (isset($cats)) {
-        //             foreach ($cats as $key => $value) {
-        //                 $categoryArr = array();
-        //                 foreach ($value->subCat as $keySub => $subValue) {
-        //                     $categoryArr[$keySub]['user_id'] = $req->user_id;
-        //                     $categoryArr[$keySub]['category_id'] = $value->catId;
-        //                     $categoryArr[$keySub]['sub_category_id'] = $subValue;
-        //                 }
-        //                 $this->addMultiRows($categoryArr);
-        //             }
-        //         }
-        // }
-        //     $response=Controller::returnResponse(200,"successful",[]);
-        //     return json_encode($response);
+                $cats = json_decode($req->categories);
+              
+                if (isset($cats)) {
+                    foreach ($cats as $key => $value) {
+                        $categoryArr = array();
+                        foreach ($value->subCat as $keySub => $subValue) {
+                            $categoryArr[$keySub]['group_id'] = $req->user_id;
+                            $categoryArr[$keySub]['category_id'] = $value->catId;
+                            $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                        }
+                        $this->addMultiRows($categoryArr);
+                    }
+                }
+        }
+            $response=Controller::returnResponse(200,"successful",[]);
+            return json_encode($response);
         }
 
     }
