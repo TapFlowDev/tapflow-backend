@@ -70,7 +70,6 @@ class TeamController extends Controller
         $rules=array(
             'id'=>"required|exists:groups,id",
             'name'=>"required|max:255",
-            'employees_number'=>"required|gt:1|lt:100",
             'country'=>"required|max:255",
         );
         $validator = Validator::make($req->all(), $rules);
@@ -81,7 +80,7 @@ class TeamController extends Controller
         else
         {
             $group=Group::where("id",$req->id)->update(['name'=>$req->name]);
-            $team=Team::where("group_id",$req->id)->update(['country'=>$req->country,'employees_number'=>$req->employees_number]);
+            $team=Team::where("group_id",$req->id)->update(['country'=>$req->country]);
             $response = Controller::returnResponse(200, 'successful', $data=array());
             return json_encode($response);
         }
