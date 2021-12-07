@@ -71,6 +71,7 @@ class GroupCategoriesController extends Controller
             }
             else{
                 $cats = json_decode($req->categories);
+
                 if (isset($cats)) {
                     foreach ($cats as $key => $value) {
                         $categoryArr = array();
@@ -83,7 +84,7 @@ class GroupCategoriesController extends Controller
                     }
                 }
         }
-            $response=Controller::returnResponse(200,"successful",[]);
+            $response=Controller::returnResponse(200,"caaaattttssssss",$cats);
             return json_encode($response);
         }
 
