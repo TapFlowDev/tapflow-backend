@@ -14,7 +14,6 @@ class CreateUserLinksTable extends Migration
     public function up()
     {
         Schema::create('user_links', function (Blueprint $table) {
-            $table->integer('id')->autoIncrement();
             $table->integer('user_id');
             $table->string('link', '255');
         });
