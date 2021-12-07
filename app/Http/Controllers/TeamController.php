@@ -68,7 +68,7 @@ class TeamController extends Controller
     function updateGeneralInfo(Request $req)
     {
         $rules=array(
-            'id'=>"required|exists:groups,id",
+            'group_id'=>"required|exists:groups,id",
             'name'=>"required|max:255",
             'country'=>"required|max:255",
         );
@@ -79,7 +79,7 @@ class TeamController extends Controller
         }
         else
         {
-            $group=Group::where("id",$req->id)->update(['name'=>$req->name]);
+            $group=Group::where("id",$req->group_id)->update(['name'=>$req->name]);
             $team=Team::where("group_id",$req->id)->update(['country'=>$req->country]);
             $response = Controller::returnResponse(200, 'successful', $data=array());
             return json_encode($response);
