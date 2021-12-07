@@ -43,7 +43,7 @@ class UserLinksController extends Controller
             try{
         $links=$req->links;
         $del_links=User_link::where('user_id',$req->user_id)->delete();
-        $add_links=User_link::create($req->links);
+        $add_links=User_link::create($req->all());
         $response = Controller::returnResponse(200, 'updated successfully', $Array=array());
         return json_encode($response);
             }
