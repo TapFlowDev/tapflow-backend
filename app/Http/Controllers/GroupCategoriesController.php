@@ -110,4 +110,9 @@ class GroupCategoriesController extends Controller
         return json_encode($response);
         }
     }
+    function getTeamCategories($id)
+    {
+        $cats=groups_category::select('category_id','sub_category_id')->where('group_id',$id)->get();
+        return $cats;
+    }
 }

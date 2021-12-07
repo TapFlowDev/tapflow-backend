@@ -56,7 +56,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateAttachment', [UserAttachmentsController::class, 'update_attachment']);
     Route::post('updateTools', [FreeLancerController::class, 'update_tools']);
     Route::post('register', [UserController::class, 'Register']);
-    Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
+   
     Route::post('updateGeneralInfo', [TeamController::class, 'updateGeneralInfo']);
     Route::post('updateTeamBio', [TeamController::class, 'updateTeamBio']);
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
@@ -77,3 +77,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('joinWithCode', [InviteUsersController::class, 'joinGroupByCode']);
     Route::post('saveImage', [ImagesController::class, 'Insert']);
 });
+Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
