@@ -71,21 +71,22 @@ class GroupCategoriesController extends Controller
             }
             else{
                 $cats = json_decode($req->categories);
-
-                if (isset($cats)) {
-                    foreach ($cats as $key => $value) {
-                        $categoryArr = array();
-                        foreach ($value->subCat as $keySub => $subValue) {
-                            $categoryArr[$keySub]['user_id'] = $req->user_id;
-                            $categoryArr[$keySub]['category_id'] = $value->catId;
-                            $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                        }
-                        $this->addMultiRows($categoryArr);
-                    }
-                }
-        }
-            $response=Controller::returnResponse(200,"caaaattttssssss",$cats);
-            return json_encode($response);
+                $response=Controller::returnResponse(200,"successful",$cats);
+                return json_encode($response);
+        //         if (isset($cats)) {
+        //             foreach ($cats as $key => $value) {
+        //                 $categoryArr = array();
+        //                 foreach ($value->subCat as $keySub => $subValue) {
+        //                     $categoryArr[$keySub]['user_id'] = $req->user_id;
+        //                     $categoryArr[$keySub]['category_id'] = $value->catId;
+        //                     $categoryArr[$keySub]['sub_category_id'] = $subValue;
+        //                 }
+        //                 $this->addMultiRows($categoryArr);
+        //             }
+        //         }
+        // }
+        //     $response=Controller::returnResponse(200,"successful",[]);
+        //     return json_encode($response);
         }
 
     }
