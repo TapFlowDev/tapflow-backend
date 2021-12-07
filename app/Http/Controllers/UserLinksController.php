@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User_link;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 
 class UserLinksController extends Controller
@@ -27,9 +29,9 @@ class UserLinksController extends Controller
     function update_links(Request $req)
     {
         $rules=array(
-            "id"=>"required|exists:groups,id",
-            "add"=>"required|array",
-            "remove"=>"required|array"
+            "id"=>"required|exists:users,id",
+            "links"=>"required|array"
+          
         );
         $validator=Validator::make($req->all(),$rules);
         if($validator->fails()){
@@ -38,33 +40,19 @@ class UserLinksController extends Controller
             return (json_encode($response));
         }
         else{
-        $add=$req->add;
-        $remove=$req->remove;
-        if(count($add)>0)
-        {
-           foreach($add as $link)
-           {
-               $arr=array
-               (
-                   "user_id"=>$req->user_id,
-                   "link"=>$link,
-               );
-                $userLinks= User_link::create($arr);
-           }
-        }
-       
-        if(count($remove)>0)
-        {
-            foreach($remove as $link)
-           {
-            
-                $userLinks= User_link::where('id', $link)->delete();
-               
-
-           }
-        }
+            try{
+        $links=$req->links;
+        $del_links=User_link::where('user_id',$req->user_id)->delete();
+        $add_links=User_link::create($req->links);
         $response = Controller::returnResponse(200, 'updated successfully', $Array=array());
         return json_encode($response);
+            }
+            catch(Exception $error)
+            {
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                return json_encode($response);
+            }
     }
+
 }
 }
