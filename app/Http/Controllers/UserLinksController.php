@@ -45,7 +45,7 @@ class UserLinksController extends Controller
         $del_links=User_link::where('user_id',$req->user_id)->delete();
         foreach($links as $link)
         {
-            $add_links=User_link::create(["user_id",$req->user_id,"link",$link]);
+            $add_links=User_link::create(["user_id"=>$req->user_id,"link"=>$link]);
         }
         
         $response = Controller::returnResponse(200, 'updated successfully', $Array=array());
