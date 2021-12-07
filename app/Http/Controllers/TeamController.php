@@ -71,6 +71,7 @@ class TeamController extends Controller
             'group_id'=>"required|exists:groups,id",
             'name'=>"required|max:255",
             'country'=>"required|max:255",
+            'link'=>"required|max:255",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -79,31 +80,14 @@ class TeamController extends Controller
         }
         else
         {
+           
             $group=Group::where("id",$req->group_id)->update(['name'=>$req->name]);
-            $team=Team::where("group_id",$req->id)->update(['country'=>$req->country]);
+            $team=Team::where("group_id",$req->id)->update(['country'=>$req->country,'link'=>$req->link]);
             $response = Controller::returnResponse(200, 'successful', $data=array());
             return json_encode($response);
         }
     }
-    function updateLink(Request $req)
-    {
-        $rules=array(
-            "id"=>"required|exists:groups,id",
-            "link"=>"required|max:255"
-        );
-        $validator=Validator::make($req->all(),$rules);
-        if($validator->fails())
-        {
-            $response=Controller::returnResponse(101,'Validation Error',$validator->errors());
-            return json_encode($response);
-        }
-        else
-        {
-            $team=Team::where('group_id',$req->id)->update(['link'=>$req->link]);
-            $response=Controller::returnResponse(200,'successful',$arr=array());
-            return json_encode($response);
-        }
-    }
+   
     function updateTeamBio(Request $req)
     {
         $rules=array(
