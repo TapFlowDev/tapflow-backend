@@ -70,19 +70,18 @@ class GroupCategoriesController extends Controller
                }
             }
             else{
-            $cats = json_decode($req->categories);
-            if (isset($cats)) {
-
-                foreach ($cats as $key => $value) {
-                    $categoryArr = array();
-                    foreach ($value->subCat as $keySub => $subValue) {
-                        $categoryArr[$keySub]['group_id'] = $group_id;
-                        $categoryArr[$keySub]['category_id'] = $value->catId;
-                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                $cats = json_decode($req->categories);
+                if (isset($cats)) {
+                    foreach ($cats as $key => $value) {
+                        $categoryArr = array();
+                        foreach ($value->subCat as $keySub => $subValue) {
+                            $categoryArr[$keySub]['user_id'] = $req->user_id;
+                            $categoryArr[$keySub]['category_id'] = $value->catId;
+                            $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                        }
+                        $this->addMultiRows($categoryArr);
                     }
-                    $this->addMultiRows($categoryArr);
                 }
-            }
         }
             $response=Controller::returnResponse(200,"successful",[]);
             return json_encode($response);

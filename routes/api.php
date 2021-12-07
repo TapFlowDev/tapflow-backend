@@ -60,7 +60,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateGeneralInfo', [TeamController::class, 'updateGeneralInfo']);
     Route::post('updateTeamBio', [TeamController::class, 'updateTeamBio']);
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
-    Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
     Route::get('getCategories', [CategoriesController::class, 'getCategories']);
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
@@ -78,3 +77,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('saveImage', [ImagesController::class, 'Insert']);
 });
 Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
+Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
