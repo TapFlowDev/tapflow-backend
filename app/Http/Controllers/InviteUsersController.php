@@ -185,15 +185,15 @@ class InviteUsersController extends Controller
             }
             // $userInfo = $userObj->getUserById($req->user_id);
             $group = Invite_code::where('code', $req->code)->get()->first();
-            print_r($group->group_id);
+            
             $group_info =  $group_obj->getGroupById($group->group_id);
            
             
             if ($group->status == 0 && $group->expired == 0) {
                 Invite_code::where('code', $req->link_token)->update(['status' => $status, 'expired' => 1]);
                 $group_member_obj->Insert($group->group_id,$req->user_id,2);
-                $tt=$userTypeObj->updateType($req->user_id, $group_info->type);
-                print_r("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",$tt);
+                $tt=$userTypeObj->updateType($req->user_id, 1);
+               
                 //change freelancer type depend on group type agencu or team of freelancers
                 $response = Controller::returnResponse(200, 'user joined the team', array());
                 return json_encode($response);
