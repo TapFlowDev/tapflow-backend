@@ -109,7 +109,13 @@ class GroupCategoriesController extends Controller
     }
     function getTeamCategories($id)
     {
-        $cats=groups_category::select('category_id','sub_category_id')->where('group_id',$id)->get();
+        // $cats=groups_category::select('category_id','sub_category_id')->where('group_id',$id)->get();
+        $cats=DB::table('groups_categories')
+        ->leftJoin('categories', 'groups_categories.category_id', '=', 'categories.id')
+        ->leftJoin('sub_categories', 'groups_categories.sub_category_id', '=', 'sub_categories.id')
+        ->where('groups_categories.group_id', $id)->select('categories.id','categories.name','categories.image','sub_categories.id','sub_categories.name','sub_categories.image')
+        ->get();
+        
         return $cats;
     }
 }
