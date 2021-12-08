@@ -16,6 +16,7 @@ use App\Http\Controllers\GroupMembersController;
 
 use App\Models\Category;
 use PhpParser\Node\Expr\Isset_;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class FreeLancerController extends Controller
 {
@@ -171,9 +172,8 @@ class FreeLancerController extends Controller
 
     function updateType($userId,$type)
     {   
-        print_r('bsdafefforewrgfewrfewfsac');
-       Freelancer::where('user_id', $userId)->update(['type' => $type]);
-       print_r('641651698161986468741+9876');
+       $data=Freelancer::where('user_id',$userId)->update(['type'=>$type]);
+       return($data);
     }
 
     function updateFiles($userId, $imageName, $filedName)
