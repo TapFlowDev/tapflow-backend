@@ -9,6 +9,8 @@ use App\Models\groups_category;
 use Illuminate\Support\Facades\Validator;
 use PHPUnit\TextUI\XmlConfiguration\Groups;
 use Illuminate\Support\Facades\DB;
+use App\Models\Category;
+use App\Models\SubCategory;
 
 class GroupCategoriesController extends Controller
 {
@@ -110,11 +112,25 @@ class GroupCategoriesController extends Controller
     }
     function getTeamCategories($id)
     {
-        
+        $categories_obj=new CategoriesController;
         $cats=groups_category::select('category_id','sub_category_id')->where('group_id',$id)->get();
+        $arr=array();
         foreach($cats as $cat)
         {
-            
+          $data=array();
+            $sub=SubCategory::find($cat['sub_category_id']);
+            $category=  Category::find($cat['category_id']);
+       
+           $data=array(
+           
+            "category_id" => $category->id,
+            "category_name" => $category->name,
+            "category_image" => $category->image,
+            "sub_category_id" => $sub->id,
+            "sub_category_name" => $sub->name,
+            "sub_category_image" => $sub->image,
+           );
+           array_push($arr,$data);
         }
         // $cats=DB::table('groups_categories')
         // ->leftJoin('categories', 'groups_categories.category_id', '=', 'categories.id')
@@ -122,6 +138,6 @@ class GroupCategoriesController extends Controller
         // ->where('groups_categories.group_id', $id)->select('categories.name','categories.image','sub_categories.id','sub_categories.name','sub_categories.image')
         // ->get();
         
-        return $cats;
+        return $arr;
     }
 }
