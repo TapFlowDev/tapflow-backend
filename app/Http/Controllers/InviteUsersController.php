@@ -166,7 +166,7 @@ class InviteUsersController extends Controller
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
         } 
-        try {
+        // try {
             $userInfo = $userObj->getUserById($req->user_id);
             $userType = $userInfo->type;
             $group_member_obj=new GroupMembersController();
@@ -203,10 +203,10 @@ class InviteUsersController extends Controller
             }
             $response = Controller::returnResponse(200, 'user joind the team', array());
             return json_encode($response);
-        }catch (\Exception $error) {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
-            return json_encode($response);
-        }
+        // }catch (\Exception $error) {
+        //     $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+        //     return json_encode($response);
+        // }
         
     }
 
