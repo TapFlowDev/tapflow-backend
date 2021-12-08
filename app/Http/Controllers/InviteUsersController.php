@@ -185,6 +185,7 @@ class InviteUsersController extends Controller
             }
             // $userInfo = $userObj->getUserById($req->user_id);
             $group = Invite_code::where('code', $req->code)->get()->first();
+            print_r($group->group_id);
             $group_info =  $group_obj->getGroupById($group->group_id);
            
             
@@ -203,12 +204,6 @@ class InviteUsersController extends Controller
             $response = Controller::returnResponse(200, 'user joind the team', array());
             return json_encode($response);
         }catch (\Exception $error) {
-            // $response = array("data" => array(
-            //     "message" => "There IS Error Occurred",
-            //     "status" => "500",
-            //     "error" => $error,
-            // ));
-            // return (json_encode($response));
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
         }

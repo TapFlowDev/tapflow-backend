@@ -69,12 +69,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('addFreelancerInfo', [FreeLancerController::class, 'Insert_freelancer']);
     Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
     Route::post('createProject', [ProjectController::class, 'Insert']);
-    Route::post('sendInvitation', [InviteUsersController::class, 'sendInvitation']);
+  
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
     Route::post('saveImage', [ImagesController::class, 'Insert']);
 });
 
-
+Route::post('sendInvitation', [InviteUsersController::class, 'sendInvitation']);
 
 Route::post('register', [UserController::class, 'Register']);
 Route::get('getCountries', [UserController::class, 'get_countries']);
