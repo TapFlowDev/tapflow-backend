@@ -91,18 +91,7 @@ class GroupCategoriesController extends Controller
     }
     function updateGroupCategory(Request $req)
     {
-        $rules=array(
-            "group_id"=>"required|exists:groups,id",
-            "categories"=>"required|array",
-        );
-        $validator=Validator::make($req->all(),$rules);
-        if ($validator->fails())
-        {
-            $response=Controller::returnResponse(101,"Validation Error",$validator->errors());
-            return json_encode($response);
-        }
-        else
-        {
+       
         $del=groups_category::where('group_id',$req->group_id)->delete();
         $cats=$req->categories;
         $group_id=$req->group_id;
@@ -115,7 +104,7 @@ class GroupCategoriesController extends Controller
     }}
         $response=Controller::returnResponse(200,"successful",[]);
         return json_encode($response);
-       }
+       
     }
     function getTeamCategories($id)
     {
