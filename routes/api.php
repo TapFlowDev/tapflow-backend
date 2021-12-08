@@ -63,7 +63,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
     Route::get('getCategories', [CategoriesController::class, 'getCategories']);
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
-    Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
+   
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
     Route::post('addFreelancerInfo', [FreeLancerController::class, 'Insert_freelancer']);
@@ -75,7 +75,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 });
 
 Route::post('sendInvitation', [InviteUsersController::class, 'sendInvitation']);
-
+Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
 Route::post('register', [UserController::class, 'Register']);
 Route::get('getCountries', [UserController::class, 'get_countries']);
 Route::post('addUser', [UserController::class, 'add_user']);
