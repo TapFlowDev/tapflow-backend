@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\groups_category;
 use Illuminate\Support\Facades\Validator;
 use PHPUnit\TextUI\XmlConfiguration\Groups;
+use Illuminate\Support\Facades\DB;
 
 class GroupCategoriesController extends Controller
 {
@@ -91,7 +92,7 @@ class GroupCategoriesController extends Controller
     function updateGroupCategory(Request $req)
     {
         $rules=array(
-            "group_id"=>"required|exists:groups",
+            "group_id"=>"required|exists:groups,id",
             "categories"=>"required|array",
         );
         $validator=Validator::make($req->all(),$rules);
@@ -104,10 +105,17 @@ class GroupCategoriesController extends Controller
         {
         $del=groups_category::where('group_id',$req->group_id)->delete();
         $cats=$req->categories;
-        $add=groups_category::create($cats)+(['group_id',$req->group_id]);
+        $group_id=$req->group_id;
+        foreach($cats as $cat){
+        foreach($cat['subId'] as $sub){
+           
+        $id = DB::table('groups_categories')->insert(
+            ['group_id' =>$group_id , 'category_id' => $cat['catId'],'sub_category_id'=>$sub]
+        );
+    }}
         $response=Controller::returnResponse(200,"successful",[]);
         return json_encode($response);
-        }
+       }
     }
     function getTeamCategories($id)
     {
