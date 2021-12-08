@@ -93,13 +93,14 @@ class GroupCategoriesController extends Controller
     {
        
         $del=groups_category::where('group_id',$req->group_id)->delete();
-        $cats=$req->categories;
+        // $cats=$req->categories;
+        $cats = json_decode($req->categories);
         $group_id=$req->group_id;
         foreach($cats as $cat){
-        foreach($cat['subId'] as $sub){
+        foreach($cat->subId as $sub){
            
         $id = DB::table('groups_categories')->insert(
-            ['group_id' =>$group_id , 'category_id' => $cat['catId'],'sub_category_id'=>$sub]
+            ['group_id' =>$group_id , 'category_id' => $cat->catId,'sub_category_id'=>$sub]
         );
     }}
         $response=Controller::returnResponse(200,"successful",[]);
