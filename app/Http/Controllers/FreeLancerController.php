@@ -172,8 +172,8 @@ class FreeLancerController extends Controller
 
     function updateType($userId,$type)
     {   
-       $data=Freelancer::where('user_id',$userId)->update(['type'=>$type]);
-       return($data);
+    Freelancer::where('user_id',$userId)->update(array('type'=>$type));
+       
     }
 
     function updateFiles($userId, $imageName, $filedName)
