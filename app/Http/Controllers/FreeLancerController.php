@@ -172,7 +172,7 @@ class FreeLancerController extends Controller
     function updateType($userId,$type)
     {   
    
-        Freelancer::where('user_id', $userId)->update(['type' => $type]);
+       Freelancer::where('user_id', $userId)->update(['type' => $type]);
        
     }
 
