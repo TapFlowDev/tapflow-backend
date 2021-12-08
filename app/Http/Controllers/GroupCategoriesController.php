@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\CategoriesController;
 use Illuminate\Http\Request;
 use App\Models\groups_category;
 use Illuminate\Support\Facades\Validator;
@@ -109,12 +110,17 @@ class GroupCategoriesController extends Controller
     }
     function getTeamCategories($id)
     {
-        // $cats=groups_category::select('category_id','sub_category_id')->where('group_id',$id)->get();
-        $cats=DB::table('groups_categories')
-        ->leftJoin('categories', 'groups_categories.category_id', '=', 'categories.id')
-        ->leftJoin('sub_categories', 'groups_categories.sub_category_id', '=', 'sub_categories.id')
-        ->where('groups_categories.group_id', $id)->select('categories.id','categories.name','categories.image','sub_categories.id','sub_categories.name','sub_categories.image')
-        ->get();
+        $cats
+        $cats=groups_category::select('category_id','sub_category_id')->where('group_id',$id)->get();
+        foreach($cats as $cat)
+        {
+
+        }
+        // $cats=DB::table('groups_categories')
+        // ->leftJoin('categories', 'groups_categories.category_id', '=', 'categories.id')
+        // ->leftJoin('sub_categories', 'groups_categories.sub_category_id', '=', 'sub_categories.id')
+        // ->where('groups_categories.group_id', $id)->select('categories.name','categories.image','sub_categories.id','sub_categories.name','sub_categories.image')
+        // ->get();
         
         return $cats;
     }

@@ -170,6 +170,7 @@ class InviteUsersController extends Controller
             $userInfo = $userObj->getUserById($req->user_id);
             $userType = $userInfo->type;
             $group_member_obj=new GroupMembersController();
+            $group_obj=new GroupController();
           
             if ($userType == 1) {
                 $userTypeObj = new FreeLancerController();
@@ -184,7 +185,7 @@ class InviteUsersController extends Controller
             }
             // $userInfo = $userObj->getUserById($req->user_id);
             $group = Invite_code::where('code', $req->code)->get()->first();
-            $group_info = GroupController::getGroupById($group->group_id);
+            $group_info =  $group_obj->getGroupById($group->group_id);
            
             
             if ($group->status == 0 && $group->expired == 0) {
