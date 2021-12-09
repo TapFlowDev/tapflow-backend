@@ -43,13 +43,17 @@ use App\Models\Freelancer;
 // });
 Route::post('newRegister', [UserController::class, 'newRegister']);
 Route::post('newLogin', [UserController::class, 'newLogin']);
+Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
+Route::post('register', [UserController::class, 'Register']);
+Route::get('getCountries', [UserController::class, 'get_countries']);
+Route::post('addUser', [UserController::class, 'add_user']);
+Route::post('Login', [UserController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('newLogout', [UserController::class, 'newLogout']);
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     Route::post('addProposal', [Proposals::class, 'Insert']);
     Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
- 
     Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);
     Route::post('updateClientBio', [ClientController::class, 'update_Bio']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
@@ -79,11 +83,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']); 
 });
 
-
-Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
-Route::post('register', [UserController::class, 'Register']);
-Route::get('getCountries', [UserController::class, 'get_countries']);
-Route::post('addUser', [UserController::class, 'add_user']);
- Route::post('Login', [UserController::class, 'login']);
 
      
