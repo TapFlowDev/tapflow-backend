@@ -33,47 +33,40 @@ class GroupCategoriesController extends Controller
     {
     }
 
-    function addMultiRows($info){
+    function addMultiRows($info)
+    {
         groups_category::insert($info);
-
     }
 
     function updateTeamCategories(Request $req)
     {
-        $rules=array(
-            'group_id'=>"required|exists:groups,id",
-            'categories'=>"required",
-            
-        );
-        $validator=Validator::make($req->all(),$rules);
-        if($validator->fails())
-        {
-            $response=Controller::returnResponse(101,'Validation error',$validator->errors());
-            return json_encode($response);
-        }
-        else
-        {   
-            $group_id=$req->group_id;
-            
-            $delete=groups_category::where("group_id",$group_id)->delete();
-            if(isset($req->local))
-            {
-              
-               foreach($req->categories as $c)
-               {
-                   foreach($c['subId'] as $s)
-                   {
-                    $arr=array(
-                        'group_id'=>$group_id,
-                        'category_id'=>$c['catId'],
-                        'sub_category_id'=>$s
+        $rules = array(
+            'group_id' => "required|exists:groups,id",
+            'categories' => "required",
 
-                    );
-                    $this->addMultiRows($arr);
-                   }
-               }
-            }
-            else{
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            $response = Controller::returnResponse(101, 'Validation error', $validator->errors());
+            return json_encode($response);
+        } else {
+            $group_id = $req->group_id;
+
+            $delete = groups_category::where("group_id", $group_id)->delete();
+            if (isset($req->local)) {
+
+                foreach ($req->categories as $c) {
+                    foreach ($c['subId'] as $s) {
+                        $arr = array(
+                            'group_id' => $group_id,
+                            'category_id' => $c['catId'],
+                            'sub_category_id' => $s
+
+                        );
+                        $this->addMultiRows($arr);
+                    }
+                }
+            } else {
                 $cats = json_decode($req->categories);
                 if (isset($cats)) {
                     foreach ($cats as $key => $value) {
@@ -86,58 +79,68 @@ class GroupCategoriesController extends Controller
                         $this->addMultiRows($categoryArr);
                     }
                 }
-        }
-            $response=Controller::returnResponse(200,"successful",[]);
+            }
+            $response = Controller::returnResponse(200, "successful", []);
             return json_encode($response);
         }
-
     }
     function updateGroupCategory(Request $req)
     {
-       
-        $del=groups_category::where('group_id',$req->group_id)->delete();
+
+        $del = groups_category::where('group_id', $req->group_id)->delete();
         // $cats=$req->categories;
         $cats = json_decode($req->categories);
-        $group_id=$req->group_id;
-        foreach($cats as $cat){
-        foreach($cat->subId as $sub){
-           
-        $id = DB::table('groups_categories')->insert(
-            ['group_id' =>$group_id , 'category_id' => $cat->catId,'sub_category_id'=>$sub]
-        );
-    }}
-        $response=Controller::returnResponse(200,"successful",[]);
+        $group_id = $req->group_id;
+        foreach ($cats as $cat) {
+            foreach ($cat->subId as $sub) {
+
+                $id = DB::table('groups_categories')->insert(
+                    ['group_id' => $group_id, 'category_id' => $cat->catId, 'sub_category_id' => $sub]
+                );
+            }
+        }
+        $response = Controller::returnResponse(200, "successful", []);
         return json_encode($response);
-       
     }
     function getTeamCategories($id)
     {
-        $categories_obj=new CategoriesController;
-        $cats=groups_category::select('category_id','sub_category_id')->where('group_id',$id)->get();
-        $arr=array();
-        foreach($cats as $cat)
-        {
-          $data=array();
-            $sub=SubCategory::find($cat['sub_category_id']);
-            $category=  Category::find($cat['category_id']);
+        $data2 = DB::table('groups_categories')
+            ->Join("sub_categories", "groups_categories.sub_category_id", '=', "sub_categories.id")
+            ->where("groups_categories.group_id", "=", $id)->select("sub_categories.id", "sub_categories.name", "sub_categories.image", "groups_categories.category_id")
+            ->get();
+        $ids = array();
+        $all = array();
        
-           $data=array(
-           
-            "category_id" => $category->id,
-            "category_name" => $category->name,
-            "category_image" => $category->image,
-            "sub_category_id" => $sub->id,
-            "sub_category_name" => $sub->name,
-            "sub_category_image" => $sub->image,
-           );
-           array_push($arr,$data);
+        foreach ($data2 as $value) {
+            if (!(in_array($value->category_id, $ids))) {
+                array_push($ids, $value->category_id);
+                $main = DB::table('categories')
+                    ->select("categories.id", "categories.name", "categories.image")
+                    ->where("categories.id", "=", $value->category_id)
+                    ->first();
+                $info = array(
+                    "category_id" => $main->id,
+                    "category_name" => $main->name,
+                    "category_image" => $main->image,
+                    "subs" => array(
+                        "sub_category_id" => $value->id,
+                        "sub_category_name" => $value->name,
+                        "sub_category_image" => $value->image,
+                    )
+                );
+                array_push($all,$info);
+            } 
+            else 
+            {
+                $index=array_search($value->category_id,$ids);
+                $sub=array(
+                    "sub_category_id" => $value->id,
+                    "sub_category_name" => $value->name,
+                    "sub_category_image" => $value->image,
+                );
+                array_push($all[$index]['subs'],$sub);
+            }
         }
-        // $cats=DB::table('groups_categories')
-        // ->leftJoin('categories', 'groups_categories.category_id', '=', 'categories.id')
-        // ->leftJoin('sub_categories', 'groups_categories.sub_category_id', '=', 'sub_categories.id')
-        // ->where('groups_categories.group_id', $id)->select('categories.name','categories.image','sub_categories.id','sub_categories.name','sub_categories.image')
-        // ->get();
-        
-        return $arr;
+        return $all;
     }
 }
