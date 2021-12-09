@@ -11,9 +11,13 @@ use App\Http\Controllers\GroupsLinksController;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupCategoriesController;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use League\CommonMark\Context;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Exception;
+use PHPUnit\TextUI\XmlConfiguration\Groups;
+
 use function PHPSTORM_META\type;
 
 class TeamController extends Controller
@@ -119,4 +123,37 @@ class TeamController extends Controller
     }
 
     }
+    function updateTeamImage(Request $req)
+    {
+        
+        $rules=array(
+            "group_id"=>"required|exists:groups,id",
+            "image"=>"required"
+        );
+        $validator=Validator::make($req->all(),$rules);
+        if($validator->fails())
+        {
+            $response=Controller::returnResponse(101,'Validation Error',$validator->errors());
+            return json_encode($response);
+        }
+        else
+        {
+            $id=$req->group_id;
+            $team_image=Team::where('group_id',$id)->select('image')->first()->image;
+            $image_path="images/companies/".$team_image;
+            
+                // dd(1);
+            $a=File::delete(public_path($image_path));
+            if ($req->hasFile('image')) {
+                $destPath = 'images/companies';
+                $ext = $req->file('image')->extension();
+                $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                $img = $req->image;
+                $img->move(public_path($destPath), $imageName);
+                $this->updateFiles($id, $imageName, 'image');
+           
+            }
+    }
+}
 }

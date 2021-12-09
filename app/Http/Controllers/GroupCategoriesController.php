@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use App\Models\SubCategory;
 
+use function GuzzleHttp\Promise\all;
+
 class GroupCategoriesController extends Controller
 {
     //add row 
@@ -104,43 +106,39 @@ class GroupCategoriesController extends Controller
     }
     function getTeamCategories($id)
     {
-        $data2 = DB::table('groups_categories')
-            ->Join("sub_categories", "groups_categories.sub_category_id", '=', "sub_categories.id")
-            ->where("groups_categories.group_id", "=", $id)->select("sub_categories.id", "sub_categories.name", "sub_categories.image", "groups_categories.category_id")
-            ->get();
-        $ids = array();
-        $all = array();
-       
-        foreach ($data2 as $value) {
-            if (!(in_array($value->category_id, $ids))) {
-                array_push($ids, $value->category_id);
-                $main = DB::table('categories')
-                    ->select("categories.id", "categories.name", "categories.image")
-                    ->where("categories.id", "=", $value->category_id)
-                    ->first();
-                $info = array(
-                    "category_id" => $main->id,
-                    "category_name" => $main->name,
-                    "category_image" => $main->image,
-                    "subs" => array(
-                        "sub_category_id" => $value->id,
-                        "sub_category_name" => $value->name,
-                        "sub_category_image" => $value->image,
-                    )
-                );
-                array_push($all,$info);
-            } 
-            else 
-            {
-                $index=array_search($value->category_id,$ids);
-                $sub=array(
-                    "sub_category_id" => $value->id,
-                    "sub_category_name" => $value->name,
-                    "sub_category_image" => $value->image,
-                );
-                array_push($all[$index]['subs'],$sub);
+        $allCategory = array();
+        $categories = groups_category::where('group_id', $id)->get();
+        if (count($categories) > 1) {
+            $team_categories = array();
+            foreach ($categories as  $category) {
+                $team_categories[$category->category_id]['category_id'] = $category->category_id;
+                $team_categories[$category->category_id]['name'] = DB::table('categories')
+                ->select('name')->where('id', '=', $category->category_id)->first()->name;
+                $team_categories[$category->category_id]['image'] = asset('images/categories/'.DB::table('categories')->select('image')
+                ->where('id', '=', $category->category_id)->first()->image);
+                 
+                $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                ->select('id', 'name','image')
+                ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
+                // $team_categories[$category->category_id]['sub'][] = asset('images/categories/'.DB::table('sub_categories')->select('image',"id","name")
+                // ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first()->image);
+                 
+
             }
+            $counter=0;
+            foreach ($team_categories as $val) {
+          
+                $allCategory[] = $val;
+                $subs_length=count($val['subs']);
+                for($i=0;$i<$subs_length;$i++){
+                $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
+                }
+               
+                print_r($counter);
+            }   
+            
+          
         }
-        return $all;
+        return $allCategory;
     }
 }
