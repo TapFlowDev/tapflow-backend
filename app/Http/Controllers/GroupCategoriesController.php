@@ -148,6 +148,7 @@ class GroupCategoriesController extends Controller
                 $sub=DB::table('sub_categories')
                 ->select('id', 'name','image')
                 ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
+                dd($sub->image);
                 if($sub->image !=null){
                     $sub->image=asset('images/categories/'.$sub->image);
                     $team_categories[$category->category_id]['subs'][]=$sub;
