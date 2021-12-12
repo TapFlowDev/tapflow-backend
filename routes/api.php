@@ -49,11 +49,13 @@ Route::get('getCountries', [UserController::class, 'get_countries']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
+
+Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     
     
     Route::get('getCategories', [CategoriesController::class, 'getCategories']);   
-    Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']); 
+   
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
