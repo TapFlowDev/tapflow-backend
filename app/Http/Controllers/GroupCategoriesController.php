@@ -11,6 +11,7 @@ use PHPUnit\TextUI\XmlConfiguration\Groups;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use App\Models\SubCategory;
+use Exception;
 
 use function GuzzleHttp\Promise\all;
 
@@ -158,11 +159,11 @@ class GroupCategoriesController extends Controller
                 $allCategory[] = $val;
                 $subs_length=count($val['subs']);
                 for($i=0;$i<$subs_length;$i++){
-                   $subimg=$val['subs'][$i]->image;
-                    if($subimg!=null || $subimg!=""){
+                  
+                   try{
                         $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
-                    }
-                    else{
+                   }catch(Exception $e)
+                    {
                         $val['subs'][$i]->image="NULL";
                     }
                 }
