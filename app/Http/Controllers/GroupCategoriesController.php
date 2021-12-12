@@ -160,8 +160,8 @@ class GroupCategoriesController extends Controller
                
                 $subs_length=count($val['subs']);
                 for($i=0;$i<$subs_length;$i++){
-                    if(($val['subs'][$i]->image) == null){dd("null");}
-                    else{dd("hi");}
+                    if(($val['subs'][$i]->image) == null){ $val['subs'][$i]->image="NULL";}
+                    else{$val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);}
                     // dd($val['subs'][$i]->image);
                 //     $idsub=  $val['subs'][$i]->image;
                 //   $img=DB::table('sub_categories')
