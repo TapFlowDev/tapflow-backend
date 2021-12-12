@@ -50,8 +50,13 @@ Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::post('newLogout', [UserController::class, 'newLogout']);
+    Route::get('getCategories', [CategoriesController::class, 'getCategories']);   
+    Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']); 
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
+    Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
+    Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
+    Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
+    Route::post('newLogout', [UserController::class, 'newLogout']);
     Route::post('addProposal', [Proposals::class, 'Insert']);
     Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
     Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);
@@ -65,20 +70,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('updateGroupCategory', [GroupCategoriesController::class, 'updateGroupCategory']);
-    Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
-    Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
     Route::post('addFreelancerInfo', [FreeLancerController::class, 'Insert_freelancer']);
     Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
     Route::post('createProject', [ProjectController::class, 'Insert']);
-    Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
     Route::post('saveImage', [ImagesController::class, 'Insert']);
     Route::post('joinWithCode', [InviteUsersController::class, 'joinGroupByCode']);
     Route::post('sendInvitation', [InviteUsersController::class, 'sendInvitation']);
-    Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
-    Route::get('getCategories', [CategoriesController::class, 'getCategories']);   
-    Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);      
+    Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);  
     Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);      
     Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']); 
 });
