@@ -151,7 +151,6 @@ class GroupCategoriesController extends Controller
                  
 
             }
-            $counter=0;
             foreach ($team_categories as $val) {
           
                 $allCategory[] = $val;
@@ -159,11 +158,7 @@ class GroupCategoriesController extends Controller
                 for($i=0;$i<$subs_length;$i++){
                 $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
                 }
-               
-                print_r($counter);
             }   
-            
-          
         }
         return $allCategory;
     }
