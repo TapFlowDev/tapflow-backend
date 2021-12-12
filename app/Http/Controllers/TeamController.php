@@ -91,7 +91,7 @@ class TeamController extends Controller
         {
            
             $group=Group::where("id",$req->group_id)->update(['name'=>$req->name]);
-            $team=Team::where("group_id",$req->id)->update(['country'=>$req->country,'link'=>$req->link]);
+            $team=Team::where("group_id",$req->group_id)->update(['country'=>$req->country,'link'=>$req->link]);
             $response = Controller::returnResponse(200, 'successful', $data=array());
             return json_encode($response);
         }
