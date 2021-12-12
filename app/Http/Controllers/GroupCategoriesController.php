@@ -80,13 +80,7 @@ class GroupCategoriesController extends Controller
                     {
                         $categoryArr[$subkey]['group_id']=$req->group_id;
                         $categoryArr[$subkey]['category_id']=$category->catId;
-                        $categoryArr[$subkey]['sub_category_id']=$category->catId;
-                        // DB::table('groups_categories')->insert([
-                        //                     'group_id' => $req->group_id,
-                        //                     'category_id' => $category->catId,
-                        //                     'sub_category_id' =>$category->catId,
-                        //                 ]);
-
+                        $categoryArr[$subkey]['sub_category_id']=$subcat;
                     }
                     $this->addMultiRows($categoryArr);
                   }
@@ -159,6 +153,8 @@ class GroupCategoriesController extends Controller
                 $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
                 }
             }   
+            
+          
         }
         return $allCategory;
     }
