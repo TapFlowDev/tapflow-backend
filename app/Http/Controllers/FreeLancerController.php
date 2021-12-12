@@ -242,7 +242,7 @@ class FreeLancerController extends Controller
             return json_encode($response);
         } else {
             $id = $req->user_id;
-            $user_image = Freelancer::where('Freelancers', $id)->select('image')->first()->image;
+            $user_image = Freelancer::where('user_id', $id)->select('image')->first()->image;
             $image_path = "images/users/" . $user_image;
              File::delete(public_path($image_path));
             if ($req->hasFile('image')) {
