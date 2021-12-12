@@ -157,7 +157,7 @@ class GroupCategoriesController extends Controller
                  
                     // $team_categories[$category->category_id]['subs'][]=$sub;
                 }else{
-                    $sub_image="Null";
+                   
                     $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
                     ->select('id', 'name')
                     ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
@@ -177,6 +177,7 @@ class GroupCategoriesController extends Controller
                 for($i=0;$i<$subs_length;$i++){
                     if(isset($val['subs'][$i]->image)){
                 $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);}
+                else{ $val['subs'][$i]->image="Nu0ll";}
                 // $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
                 }
             }   
