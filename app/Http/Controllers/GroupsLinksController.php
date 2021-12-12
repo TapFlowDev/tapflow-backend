@@ -39,7 +39,7 @@ class GroupsLinksController extends Controller
         }
         catch(Exception $error)
         {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There IS Error Occurred',array("e"=>"get team"));
             return json_encode($response);
         }
     }
