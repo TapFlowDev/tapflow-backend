@@ -177,7 +177,7 @@ class GroupCategoriesController extends Controller
                 for($i=0;$i<$subs_length;$i++){
                     if(isset($val['subs'][$i]->image)){
                 $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);}
-                else{ $val['subs'][$i]->image="Nu0ll";}
+                else{ $val['subs'][$i]->image="Null";}
                 // $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
                 }
             }   
