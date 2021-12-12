@@ -158,8 +158,8 @@ class GroupCategoriesController extends Controller
                 $allCategory[] = $val;
                 $subs_length=count($val['subs']);
                 for($i=0;$i<$subs_length;$i++){
-                   
-                    if(($val['subs'][$i]->image)!=null){
+                   $subimg=$val['subs'][$i]->image;
+                    if($subimg!=null || $subimg!=""){
                         $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
                     }
                     else{
