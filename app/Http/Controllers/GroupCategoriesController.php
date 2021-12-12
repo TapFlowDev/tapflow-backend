@@ -145,16 +145,22 @@ class GroupCategoriesController extends Controller
                 else{
                     $team_categories[$category->category_id]['image']="Null";
                 }
-                $sub=DB::table('sub_categories')
-                ->select('id', 'name','image')
+                $sub_image=DB::table('sub_categories')
+                ->select('image')
                 ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
-                dd($sub->image);
-                if($sub->image !=null){
-                    $sub->image=asset('images/categories/'.$sub->image);
-                    $team_categories[$category->category_id]['subs'][]=$sub;
+                
+                if($sub_image !=""){
+
+                    $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                    ->select('id', 'name',"image")
+                    ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
+                 
+                    // $team_categories[$category->category_id]['subs'][]=$sub;
                 }else{
-                    $sub->image="Null";
-                    $team_categories[$category->category_id]['subs'][]=$sub;
+                    $sub_image="Null";
+                    $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                    ->select('id', 'name')
+                    ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
                 }
                 // $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
                 // ->select('id', 'name','image')
