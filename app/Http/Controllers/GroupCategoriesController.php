@@ -170,35 +170,36 @@ class GroupCategoriesController extends Controller
                  
 
             }
-            // foreach ($team_categories as $val) {
+            foreach ($team_categories as $val) {
           
-            //     $allCategory[] = $val;
-            //     $subs_length=count($val['subs']);
-            //     for($i=0;$i<$subs_length;$i++){
-            //     $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
-            //     $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
-            //     }
-            // }   
+                $allCategory[] = $val;
+                $subs_length=count($val['subs']);
+                for($i=0;$i<$subs_length;$i++){
+                    if(isset($val['subs'][$i]['image'])){
+                $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);}
+                // $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
+                }
+            }   
 
-            foreach($team_categories as $tc)
-            {
-                $alldata[]=$tc;
-                // $sl=count($tc['subs']);
-                // for($i=0; $i<$sl;$i++)
-                // {   $subimg=$tc['subs'][$i]->image;
+            // foreach($team_categories as $tc)
+            // {
+            //     $alldata[]=$tc;
+            //     // $sl=count($tc['subs']);
+            //     // for($i=0; $i<$sl;$i++)
+            //     // {   $subimg=$tc['subs'][$i]->image;
 
-                //    if(isset($subimg) && $subimg!= null)
-                //    {
-                //         $tc['subs'][$i]->image=asset('images/categories/'.$tc['subs'][$i]->image);
-                //    }
-                //    else{
-                //     $tc['subs'][$i]->image="NULL";
-                //     }
-                // }
-            }
+            //     //    if(isset($subimg) && $subimg!= null)
+            //     //    {
+            //     //         $tc['subs'][$i]->image=asset('images/categories/'.$tc['subs'][$i]->image);
+            //     //    }
+            //     //    else{
+            //     //     $tc['subs'][$i]->image="NULL";
+            //     //     }
+            //     // }
+            // }
             
           
         }
-        return $alldata;
+        return $allCategory;
     }
 }
