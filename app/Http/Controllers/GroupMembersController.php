@@ -49,7 +49,7 @@ class GroupMembersController extends Controller
         }
         catch(Exception $error)
         {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', array("e"=>"get team members"));
             return json_encode($response);
         }
     }
