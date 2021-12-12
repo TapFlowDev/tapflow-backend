@@ -233,7 +233,7 @@ class FreeLancerController extends Controller
     {
 
         $rules = array(
-            "group_id" => "required|exists:groups,id",
+            "user_id" => "required|exists:users,id",
             "image" => "required"
         );
         $validator = Validator::make($req->all(), $rules);
@@ -253,6 +253,8 @@ class FreeLancerController extends Controller
                 $img = $req->image;
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($id, $imageName, 'image');
+                $response=Controller::returnResponse(200,'successful',[]);
+                return json_encode($response);
             }
         }
     }

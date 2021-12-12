@@ -50,10 +50,18 @@ class TeamController extends Controller
         $links=$linksController->get_group_links($id);
         $teamMembers=$GroupMembersController->getTeamMembersByGroupId($id);
         $cats=$GroupCategoriesController->getTeamCategories($id);
-        $info=$this->get_team_info($id);
-        $info->links=$links; 
-        $info->teamMembers=$teamMembers; 
-        $info->categories=$cats; 
+        $teamInformation=$this->get_team_info($id);
+        $info=array(
+            "general info"=> $teamInformation,
+            "links"=>$links,
+            "teamMembers"=>$teamMembers,
+            "categories"=>$cats,
+        );
+        // $info->links=$links; 
+        // $info->teamMembers=$teamMembers; 
+        // $info->categories=$cats; 
+        // dd(gettype(($info)));
+
         $response=Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
         }
@@ -138,6 +146,7 @@ class TeamController extends Controller
         }
         else
         {
+            try{
             $id=$req->group_id;
             $team_image=Team::where('group_id',$id)->select('image')->first()->image;
             $image_path="images/companies/".$team_image;
@@ -152,7 +161,13 @@ class TeamController extends Controller
                 $img = $req->image;
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($id, $imageName, 'image');
+              
            
+            }
+            }catch(Exception $error)
+            {
+                $response=Controller::returnResponse(500,'successful',$error);
+                return json_encode($response);
             }
     }
 }
