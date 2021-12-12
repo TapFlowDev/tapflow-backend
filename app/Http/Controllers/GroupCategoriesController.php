@@ -157,7 +157,7 @@ class GroupCategoriesController extends Controller
             foreach ($team_categories as $val) {
                 // dd($val);
                 $allCategory[] = $val;
-                // dd($val);
+                dd($ $val['subs'][$i]->id);
                 $subs_length=count($val['subs']);
                 for($i=0;$i<$subs_length;$i++){
                   $img=DB::table('sub_categories')
