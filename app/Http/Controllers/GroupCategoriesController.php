@@ -11,7 +11,6 @@ use PHPUnit\TextUI\XmlConfiguration\Groups;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use App\Models\SubCategory;
-use Exception;
 
 use function GuzzleHttp\Promise\all;
 
@@ -154,30 +153,35 @@ class GroupCategoriesController extends Controller
                  
 
             }
-            foreach ($team_categories as $val) {
-                // dd($val);
-                $allCategory[] = $val;
-               
-                $subs_length=count($val['subs']);
-                for($i=0;$i<$subs_length;$i++){
-                    if(($val['subs'][$i]->image) == null){ $val['subs'][$i]->image="NULL";}
-                    else{$val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);}
-                    // dd($val['subs'][$i]->image);
-                //     $idsub=  $val['subs'][$i]->image;
-                //   $img=DB::table('sub_categories')
-                //   ->select('image')
-                //   ->where([['category_id', '=', $val['category_id']],['id', '=', $idsub]])->first()->image;
-                //   if($img !=""){
-                //         $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
-                //    }else
-                //     {
-                //         $val['subs'][$i]->image="NULL";
-                //     }
+            // foreach ($team_categories as $val) {
+          
+            //     $allCategory[] = $val;
+            //     $subs_length=count($val['subs']);
+            //     for($i=0;$i<$subs_length;$i++){
+            //     $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
+            //     $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
+            //     }
+            // }   
+
+            foreach($team_categories as $tc)
+            {
+                $alldata[]=$tc;
+                $sl=count($tc['subs']);
+                for($i=0; $i<$sl;$i++)
+                {   $subimg=$tc['subs'][$i]->image;
+
+                   if(isset($subimg) && $subimg!= null)
+                   {
+                        $tc['subs'][$i]->image=asset('images/categories/'.$tc['subs'][$i]->image);
+                   }
+                   else{
+                    $tc['subs'][$i]->image="NULL";
+                    }
                 }
-            }   
+            }
             
           
         }
-        return $allCategory;
+        return $alldata;
     }
 }
