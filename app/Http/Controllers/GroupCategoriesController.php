@@ -155,13 +155,13 @@ class GroupCategoriesController extends Controller
 
             }
             foreach ($team_categories as $val) {
-                dd($val);
+                // dd($val);
                 $allCategory[] = $val;
                 $subs_length=count($val['subs']);
                 for($i=0;$i<$subs_length;$i++){
                   $img=DB::table('sub_categories')
                   ->select('image')
-                  ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first()->image;
+                  ->where([['category_id', '=', $val->category_id],['id', '=', $val->subs->id]])->first()->image;
                   if($img !=""){
                         $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
                    }else
