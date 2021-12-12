@@ -76,14 +76,14 @@ class GroupCategoriesController extends Controller
                     foreach ($cats as $key => $value) {
 
                         $categoryArr = array();
-                        foreach ($value->subCat as $keySub => $subValue) {
+                        foreach ($value->subId as $keySub => $subValue) {
                             // $categoryArr[$keySub]['group_id'] = $req->group_id;
                             // $categoryArr[$keySub]['category_id'] = $value->catId;
                             // $categoryArr[$keySub]['sub_category_id'] = $subValue;
                             DB::table('groups_categories')->insert([
                                 'group_id' => $req->group_id,
                                 'category_id' => $value->catId,
-                                'sub_category_id' => $value->catId,
+                                'sub_category_id' => $value->subValue,
                             ]);
                         }
                        
