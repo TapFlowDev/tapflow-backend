@@ -79,8 +79,8 @@ class GroupCategoriesController extends Controller
                     foreach($category->subId as $subkey=>$subcat)
                     {
                         $categoryArr[$subkey]['group_id']=$req->group_id;
-                        $categoryArr[$subkey]['category']=$category->catId;
-                        $categoryArr[$subkey]['subcategory']=$category->catId;
+                        $categoryArr[$subkey]['category_id']=$category->catId;
+                        $categoryArr[$subkey]['sub_category_id']=$category->catId;
                         // DB::table('groups_categories')->insert([
                         //                     'group_id' => $req->group_id,
                         //                     'category_id' => $category->catId,
