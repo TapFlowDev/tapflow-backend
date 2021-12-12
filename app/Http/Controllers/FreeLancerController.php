@@ -241,9 +241,9 @@ class FreeLancerController extends Controller
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
         } else {
-            $id = $req->group_id;
-            $team_image = Freelancer::where('Freelancers', $id)->select('image')->first()->image;
-            $image_path = "images/users/" . $team_image;
+            $id = $req->user_id;
+            $user_image = Freelancer::where('Freelancers', $id)->select('image')->first()->image;
+            $image_path = "images/users/" . $user_image;
              File::delete(public_path($image_path));
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
