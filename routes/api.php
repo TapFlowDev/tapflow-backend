@@ -43,14 +43,14 @@ use App\Models\Freelancer;
 // });
 Route::post('newRegister', [UserController::class, 'newRegister']);
 Route::post('newLogin', [UserController::class, 'newLogin']);
-Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
+
 Route::post('register', [UserController::class, 'Register']);
 Route::get('getCountries', [UserController::class, 'get_countries']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
-Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::get('getCategories', [CategoriesController::class, 'getCategories']);   
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']); 
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
@@ -60,6 +60,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('newLogout', [UserController::class, 'newLogout']);
     Route::post('addProposal', [Proposals::class, 'Insert']);
     Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+    Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);
     Route::post('updateClientBio', [ClientController::class, 'update_Bio']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
