@@ -94,7 +94,7 @@ class GroupCategoriesController extends Controller
             // }
             $response = Controller::returnResponse(200, "successful", $req);
             return json_encode($response);
-        }
+        // }
     }
     function updateGroupCategory(Request $req)
     {
