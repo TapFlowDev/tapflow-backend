@@ -131,7 +131,7 @@ class GroupCategoriesController extends Controller
         if (count($categories) > 1) {
             $team_categories = array();
             foreach ($categories as  $category) {
-                $team_categories[$category->category_id]['category_id'] = $category->category_id;
+                $team_categories[$category->category_id]['id'] = $category->category_id;
                 $team_categories[$category->category_id]['name'] = DB::table('categories')
                 ->select('name')->where('id', '=', $category->category_id)->first()->name;
 
