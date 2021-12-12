@@ -50,18 +50,10 @@ class TeamController extends Controller
         $links=$linksController->get_group_links($id);
         $teamMembers=$GroupMembersController->getTeamMembersByGroupId($id);
         $cats=$GroupCategoriesController->getTeamCategories($id);
-        $teamInformation=$this->get_team_info($id);
-        $info=array(
-            "general info"=> $teamInformation,
-            "links"=>$links,
-            "teamMembers"=>$teamMembers,
-            "categories"=>$cats,
-        );
-        // $info->links=$links; 
-        // $info->teamMembers=$teamMembers; 
-        // $info->categories=$cats; 
-        // dd(gettype(($info)));
-
+        $info=$this->get_team_info($id);
+        $info->links=$links; 
+        $info->teamMembers=$teamMembers; 
+        $info->categories=$cats; 
         $response=Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
         }
