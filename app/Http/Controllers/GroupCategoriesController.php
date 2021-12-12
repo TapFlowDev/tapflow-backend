@@ -80,7 +80,7 @@ class GroupCategoriesController extends Controller
                     {
                         $categoryArr[$subkey]['group_id']=$req->group_id;
                         $categoryArr[$subkey]['category']=$category->catId;
-                        $categoryArr[$subkey]['category']=$subcat;
+                        $categoryArr[$subkey]['subcategory']=$subcat;
                     }
                   }
                 //     foreach ($req->categories as $key => $value) {
