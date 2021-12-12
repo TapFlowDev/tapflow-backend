@@ -155,7 +155,7 @@ class GroupCategoriesController extends Controller
 
             }
             foreach ($team_categories as $val) {
-          
+                dd($val);
                 $allCategory[] = $val;
                 $subs_length=count($val['subs']);
                 for($i=0;$i<$subs_length;$i++){
