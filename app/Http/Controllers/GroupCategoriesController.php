@@ -158,6 +158,7 @@ class GroupCategoriesController extends Controller
                 // dd($val);
                 $allCategory[] = $val;
                 $subs_length=count($val['subs']);
+                dd($allCategory);
                 for($i=0;$i<$subs_length;$i++){
                   $img=DB::table('sub_categories')
                   ->select('image')
