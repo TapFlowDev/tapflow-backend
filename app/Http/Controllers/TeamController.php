@@ -51,7 +51,7 @@ class TeamController extends Controller
         $teamMembers=$GroupMembersController->getTeamMembersByGroupId($id);
         $cats=$GroupCategoriesController->getTeamCategories($id);
         $info=$this->get_team_info($id);
-        $image = asset('images/companies/' . $info->image);
+        $info->image = asset('images/companies/' . $info->image);
         $info->links=$links; 
         $info->teamMembers=$teamMembers; 
         $info->categories=$cats; 
