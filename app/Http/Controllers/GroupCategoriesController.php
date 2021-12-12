@@ -71,17 +71,24 @@ class GroupCategoriesController extends Controller
             //     }
             // } else {
                 $cats = json_decode($req->categories);
-                $categoryArr = array();
+               
                 // if (isset($req->categories)) {
                   foreach($cats as$key => $category)
                   {
-                   
+                    $categoryArr = array();
                     foreach($category->subId as $subkey=>$subcat)
                     {
-                        $categoryArr[$subkey]['group_id']=$req->group_id;
-                        $categoryArr[$subkey]['category']=$category->catId;
-                        $categoryArr[$subkey]['subcategory']=$subcat;
+                        // $categoryArr[$subkey]['group_id']=$req->group_id;
+                        // $categoryArr[$subkey]['category']=$category->catId;
+                        // $categoryArr[$subkey]['subcategory']=$category->catId;
+                        DB::table('groups_categories')->insert([
+                                            'group_id' => $req->group_id,
+                                            'category_id' => $category->catId,
+                                            'sub_category_id' =>$category->catId,
+                                        ]);
+
                     }
+                  
                   }
                 //     foreach ($req->categories as $key => $value) {
 
@@ -101,7 +108,7 @@ class GroupCategoriesController extends Controller
                  
                 // }
             // }
-            $response = Controller::returnResponse(200, "successful", $categoryArr);
+            $response = Controller::returnResponse(200, "successful", []);
             return json_encode($response);
         // }
     }
