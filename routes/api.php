@@ -50,6 +50,7 @@ Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::get('getCategories', [CategoriesController::class, 'getCategories']);   
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']); 
