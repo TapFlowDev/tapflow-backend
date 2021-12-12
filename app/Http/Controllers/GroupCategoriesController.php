@@ -69,11 +69,11 @@ class GroupCategoriesController extends Controller
             //         }
             //     }
             // } else {
-                $cats = json_decode($req->categories);
+                // $cats = json_decode($req->categories);
                 
-                if (isset($cats)) {
+                if (isset($req->categories)) {
                   
-                    foreach ($cats as $key => $value) {
+                    foreach ($req->categories as $key => $value) {
 
                         $categoryArr = array();
                         foreach ($value->subId as $keySub => $subValue) {
