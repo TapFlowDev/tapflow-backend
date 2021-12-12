@@ -68,7 +68,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateGeneralInfo', [TeamController::class, 'updateGeneralInfo']);
     Route::post('updateTeamBio', [TeamController::class, 'updateTeamBio']);
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
-    Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('updateGroupCategory', [GroupCategoriesController::class, 'updateGroupCategory']);
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
@@ -85,3 +84,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
 
      
+Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);

@@ -42,8 +42,7 @@ class GroupCategoriesController extends Controller
 
     function updateTeamCategories(Request $req)
     {
-        echo '<pre>',print_r($req),'</pre>';
-        exit;
+        
         // $rules = array(
         //     'group_id' => "required|exists:groups,id",
         //     'categories' => "required",
@@ -54,9 +53,9 @@ class GroupCategoriesController extends Controller
         //     $response = Controller::returnResponse(101, 'Validation error', $validator->errors());
         //     return json_encode($response);
         // } else {
-            $group_id = $req->group_id;
+            // $group_id = $req->group_id;
 
-            $delete = groups_category::where("group_id", $group_id)->delete();
+            // $delete = groups_category::where("group_id", $group_id)->delete();
             // if (isset($req->local)) {
 
             //     foreach ($req->categories as $c) {
@@ -73,27 +72,27 @@ class GroupCategoriesController extends Controller
             // } else {
                 // $cats = json_decode($req->categories);
                 
-                if (isset($req->categories)) {
+                // if (isset($req->categories)) {
                   
-                    foreach ($req->categories as $key => $value) {
+                //     foreach ($req->categories as $key => $value) {
 
-                        $categoryArr = array();
-                        foreach ($value->subId as $keySub => $subValue) {
-                            // $categoryArr[$keySub]['group_id'] = $req->group_id;
-                            // $categoryArr[$keySub]['category_id'] = $value->catId;
-                            // $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                            DB::table('groups_categories')->insert([
-                                'group_id' => $req->group_id,
-                                'category_id' => $value->catId,
-                                'sub_category_id' =>$subValue,
-                            ]);
-                        }
+                //         $categoryArr = array();
+                //         foreach ($value->subId as $keySub => $subValue) {
+                //             // $categoryArr[$keySub]['group_id'] = $req->group_id;
+                //             // $categoryArr[$keySub]['category_id'] = $value->catId;
+                //             // $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                //             DB::table('groups_categories')->insert([
+                //                 'group_id' => $req->group_id,
+                //                 'category_id' => $value->catId,
+                //                 'sub_category_id' =>$subValue,
+                //             ]);
+                //         }
                        
                     // }
                  
                 // }
-            }
-            $response = Controller::returnResponse(200, "successful", []);
+            // }
+            $response = Controller::returnResponse(200, "successful", $req);
             return json_encode($response);
         }
     }
