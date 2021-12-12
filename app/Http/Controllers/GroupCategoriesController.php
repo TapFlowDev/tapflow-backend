@@ -78,17 +78,17 @@ class GroupCategoriesController extends Controller
                     $categoryArr = array();
                     foreach($category->subId as $subkey=>$subcat)
                     {
-                        // $categoryArr[$subkey]['group_id']=$req->group_id;
-                        // $categoryArr[$subkey]['category']=$category->catId;
-                        // $categoryArr[$subkey]['subcategory']=$category->catId;
-                        DB::table('groups_categories')->insert([
-                                            'group_id' => $req->group_id,
-                                            'category_id' => $category->catId,
-                                            'sub_category_id' =>$category->catId,
-                                        ]);
+                        $categoryArr[$subkey]['group_id']=$req->group_id;
+                        $categoryArr[$subkey]['category']=$category->catId;
+                        $categoryArr[$subkey]['subcategory']=$category->catId;
+                        // DB::table('groups_categories')->insert([
+                        //                     'group_id' => $req->group_id,
+                        //                     'category_id' => $category->catId,
+                        //                     'sub_category_id' =>$category->catId,
+                        //                 ]);
 
                     }
-                  
+                    $this->addMultiRows($categoryArr);
                   }
                 //     foreach ($req->categories as $key => $value) {
 
