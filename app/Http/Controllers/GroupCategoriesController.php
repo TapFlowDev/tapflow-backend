@@ -76,7 +76,7 @@ class GroupCategoriesController extends Controller
                   foreach($cats as$key => $category)
                   {
                     $categoryArr[$key]['group_id']=$req->group_id;
-                    $categoryArr[$key]['category']=$category;
+                    $categoryArr[$key]['category']=$category->catId;
                   }
                 //     foreach ($req->categories as $key => $value) {
 
