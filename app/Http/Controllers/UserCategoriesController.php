@@ -60,4 +60,23 @@ class UserCategoriesController extends Controller
         }
         return $allCategory;
     }
+    function updateUserCategories(Request $req)
+    {
+        
+
+        $del = users_category::where('user_id', $req->user_id)->delete();
+        // $cats=$req->categories;
+        $cats = json_decode($req->categories);
+        $user_id = $req->user_id;
+        foreach ($cats as $cat) {
+            foreach ($cat->subId as $sub) {
+
+                $id = DB::table('users_categories')->insert(
+                    ['user_id' => $user_id, 'category_id' => $cat->catId, 'sub_category_id' => $sub]
+                );
+            }
+        }
+        $response = Controller::returnResponse(200, "successful", []);
+        return json_encode($response);
+    }
 }

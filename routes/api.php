@@ -18,6 +18,7 @@ use  App\Http\Controllers\UserAttachmentsController;
 use  App\Http\Controllers\TeamController;
 use  App\Http\Controllers\GroupsLinksController;
 use  App\Http\Controllers\GroupCategoriesController;
+use  App\Http\Controllers\UserCategoriesController;
 use App\Models\Freelancer;
 
 /*
@@ -68,6 +69,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateClientBio', [ClientController::class, 'update_Bio']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
     Route::post('updateUserLinks', [UserLinksController::class, 'update_links']);
+    Route::post('updateUserCategories', [UserCategoriesController::class, 'updateUserCategories']);
     Route::post('updateAttachment', [UserAttachmentsController::class, 'update_attachment']);
     Route::post('updateTools', [FreeLancerController::class, 'update_tools']);
     Route::post('updateGeneralInfo', [TeamController::class, 'updateGeneralInfo']);
