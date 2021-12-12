@@ -92,7 +92,7 @@ class GroupCategoriesController extends Controller
                  
                 // }
             // }
-            $response = Controller::returnResponse(200, "successful", $req);
+            $response = Controller::returnResponse(200, "successful", $req->categories);
             return json_encode($response);
         // }
     }
