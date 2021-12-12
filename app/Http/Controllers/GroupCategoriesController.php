@@ -42,7 +42,8 @@ class GroupCategoriesController extends Controller
 
     function updateTeamCategories(Request $req)
     {
-        dd($req);
+        echo '<pre>',print_r($req),'</pre>';
+        exit;
         // $rules = array(
         //     'group_id' => "required|exists:groups,id",
         //     'categories' => "required",
