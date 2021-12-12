@@ -43,7 +43,7 @@ class TeamController extends Controller
     }
      function get_team($id)
     {
-        try{
+        // try{
         $linksController=new GroupsLinksController;
         $GroupMembersController=new GroupMembersController;
         $GroupCategoriesController=new GroupCategoriesController;
@@ -56,12 +56,12 @@ class TeamController extends Controller
         $info->categories=$cats; 
         $response=Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
-        }
-        catch(Exception $error)
-        {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', array("e"=>"get team"));
-            return json_encode($response);
-        }
+        // }
+        // catch(Exception $error)
+        // {
+        //     // $response = Controller::returnResponse(500, 'There IS Error Occurred', array("e"=>"get team"));
+        //     // return json_encode($response);
+        // }
     }  
     private function get_team_info($id)
     {
