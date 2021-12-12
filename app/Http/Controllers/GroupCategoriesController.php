@@ -55,7 +55,7 @@ class GroupCategoriesController extends Controller
         // } else {
             // $group_id = $req->group_id;
 
-            // $delete = groups_category::where("group_id", $group_id)->delete();
+            $delete = groups_category::where("group_id", $req->group_id)->delete();
             // if (isset($req->local)) {
 
             //     foreach ($req->categories as $c) {
