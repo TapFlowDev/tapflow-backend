@@ -160,10 +160,10 @@ class GroupCategoriesController extends Controller
                
                 $subs_length=count($val['subs']);
                 for($i=0;$i<$subs_length;$i++){
-                    dd( $val['subs'][$i]->id);
+                    $idsub= $val['subs'][$i]->id;
                   $img=DB::table('sub_categories')
                   ->select('image')
-                  ->where([['category_id', '=', $val['category_id']],['id', '=', $val['subs'][$i]->id]])->first()->image;
+                  ->where([['category_id', '=', $val['category_id']],['id', '=', $idsub]])->first()->image;
                   if($img !=""){
                         $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
                    }else
