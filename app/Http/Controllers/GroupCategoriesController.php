@@ -81,9 +81,9 @@ class GroupCategoriesController extends Controller
                             // $categoryArr[$keySub]['category_id'] = $value->catId;
                             // $categoryArr[$keySub]['sub_category_id'] = $subValue;
                             DB::table('groups_categories')->insert([
-                                'group_id' => $req->group_id,
-                                'category_id' => $value->catId,
-                                'sub_category_id' => $value->subValue,
+                                'group_id' => 4,
+                                'category_id' => 1,
+                                'sub_category_id' =>1,
                             ]);
                         }
                        
