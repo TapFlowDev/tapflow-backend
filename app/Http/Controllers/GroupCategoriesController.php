@@ -55,23 +55,26 @@ class GroupCategoriesController extends Controller
             $group_id = $req->group_id;
 
             $delete = groups_category::where("group_id", $group_id)->delete();
-            if (isset($req->local)) {
+            // if (isset($req->local)) {
 
-                foreach ($req->categories as $c) {
-                    foreach ($c['subId'] as $s) {
-                        $arr = array(
-                            'group_id' => $group_id,
-                            'category_id' => $c['catId'],
-                            'sub_category_id' => $s
+            //     foreach ($req->categories as $c) {
+            //         foreach ($c['subId'] as $s) {
+            //             $arr = array(
+            //                 'group_id' => $group_id,
+            //                 'category_id' => $c['catId'],
+            //                 'sub_category_id' => $s
 
-                        );
-                        $this->addMultiRows($arr);
-                    }
-                }
-            } else {
+            //             );
+            //             $this->addMultiRows($arr);
+            //         }
+            //     }
+            // } else {
                 $cats = json_decode($req->categories);
+                print_r("before cats");
                 if (isset($cats)) {
+                    print_r("inside if");
                     foreach ($cats as $key => $value) {
+
                         $categoryArr = array();
                         foreach ($value->subCat as $keySub => $subValue) {
                             $categoryArr[$keySub]['group_id'] = $req->group_id;
@@ -80,7 +83,8 @@ class GroupCategoriesController extends Controller
                         }
                         $this->addMultiRows($categoryArr);
                     }
-                }
+                    print_r($categoryArr);
+                // }
             }
             $response = Controller::returnResponse(200, "successful", []);
             return json_encode($response);
