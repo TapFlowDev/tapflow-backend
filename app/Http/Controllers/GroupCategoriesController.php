@@ -152,14 +152,14 @@ class GroupCategoriesController extends Controller
                 if($sub_image !=""){
 
                     $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                    ->select('id', 'name',"image")
+                    ->select('category_id','id', 'name',"image")
                     ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
                  
                     // $team_categories[$category->category_id]['subs'][]=$sub;
                 }else{
                    
                     $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                    ->select('id', 'name')
+                    ->select('category_id','id', 'name')
                     ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
                 }
                 // $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
