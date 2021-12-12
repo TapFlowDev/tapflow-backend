@@ -160,18 +160,18 @@ class GroupCategoriesController extends Controller
                
                 $subs_length=count($val['subs']);
                 for($i=0;$i<$subs_length;$i++){
-                    if(($val['subs'][$i]->image) == null){dd(null);}else{dd("value");}
-                    dd($val['subs'][$i]->image);
-                    $idsub=  $val['subs'][$i]->image;
-                  $img=DB::table('sub_categories')
-                  ->select('image')
-                  ->where([['category_id', '=', $val['category_id']],['id', '=', $idsub]])->first()->image;
-                  if($img !=""){
-                        $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
-                   }else
-                    {
-                        $val['subs'][$i]->image="NULL";
-                    }
+                    if(($val['subs'][$i]->image) == null){$val['subs'][$i]->image="NULL";}else{$val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);}
+                    // dd($val['subs'][$i]->image);
+                //     $idsub=  $val['subs'][$i]->image;
+                //   $img=DB::table('sub_categories')
+                //   ->select('image')
+                //   ->where([['category_id', '=', $val['category_id']],['id', '=', $idsub]])->first()->image;
+                //   if($img !=""){
+                //         $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);
+                //    }else
+                //     {
+                //         $val['subs'][$i]->image="NULL";
+                //     }
                 }
             }   
             
