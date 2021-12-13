@@ -40,7 +40,7 @@ class UserCategoriesController extends Controller
     {
         $allCategory = array();
         $categories = users_category::where('user_id', $id)->get();
-        if (count($categories) > 1) {
+        if (count($categories) > 0) {
             $user_categories = array();
             foreach ($categories as  $category) {
                 $user_categories[$category->category_id]['id'] = $category->category_id;

@@ -45,20 +45,19 @@ class GroupCategoriesController extends Controller
         $group_id=$req->group_id;
         $delete = groups_category::where("group_id", $group_id)->delete();
         $cats = json_decode($req->categories);
-        $counter=0;
-        $sub_counter=0;
+       
         foreach ($cats as $key => $category) {
-            $counter++;
+            
             $categoryArr = array();
             foreach ($category->subId as $subkey => $subcat) {
-                $sub_counter++;
+                
                 $categoryArr[$subkey]['group_id'] = $group_id;
                 $categoryArr[$subkey]['category_id'] = $category->catId;
                 $categoryArr[$subkey]['sub_category_id'] = $subcat;
             }
             $this->addMultiRows($categoryArr);
         }
-        $response = Controller::returnResponse(200, "successful", ["counter"=>$counter,"sub_counter"=>$sub_counter]);
+        $response = Controller::returnResponse(200, "successful", []);
         return json_encode($response);
     }
     // function updateGroupCategory(Request $req)
@@ -84,7 +83,7 @@ class GroupCategoriesController extends Controller
     {
         $allCategory = array();
         $categories = groups_category::where('group_id', $id)->get();
-        if (count($categories) > 1) {
+        if (count($categories) > 0) {
             $team_categories = array();
             foreach ($categories as  $category) {
                 $team_categories[$category->category_id]['id'] = $category->category_id;
