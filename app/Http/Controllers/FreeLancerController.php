@@ -199,9 +199,9 @@ class FreeLancerController extends Controller
             $user->image = $image;
             $groupId = $membersObj->getGroupId($user->id);
             if ($groupId != '') {
-                $user->group_id = $groupId->group_id;
+                $user->team_id = $groupId->group_id;
             } else {
-                $user->group_id =  null;
+                $user->team_id =  null;
             }
         }
         return $users;
