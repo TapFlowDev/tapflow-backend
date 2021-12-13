@@ -43,7 +43,7 @@ class TeamController extends Controller
     }
      function get_team($id)
     {
-        // try{
+        try{
         $linksController=new GroupsLinksController;
         $GroupMembersController=new GroupMembersController;
         $GroupCategoriesController=new GroupCategoriesController;
@@ -57,16 +57,15 @@ class TeamController extends Controller
         $info->categories=$cats; 
         $response=Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
-        // }
-        // catch(Exception $error)
-        // {
-        //     // $response = Controller::returnResponse(500, 'There IS Error Occurred', array("e"=>"get team"));
-        //     // return json_encode($response);
-        // }
+        }
+        catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred',$error);
+            return json_encode($response);
+        }
     }  
     private function get_team_info($id)
     {
-        
         $team = DB::table('groups')
         ->Join('teams', 'groups.id', '=', 'teams.group_id')
         ->where('groups.id', '=',  $id)
@@ -89,7 +88,6 @@ class TeamController extends Controller
         }
         else
         {
-           
             $group=Group::where("id",$req->group_id)->update(['name'=>$req->name]);
             $team=Team::where("group_id",$req->group_id)->update(['country'=>$req->country,'link'=>$req->link]);
             $response = Controller::returnResponse(200, 'successful', $data=array());
@@ -126,7 +124,6 @@ class TeamController extends Controller
     }
     function updateTeamImage(Request $req)
     {
-        
         $rules=array(
             "group_id"=>"required|exists:groups,id",
             "image"=>"required"
@@ -143,8 +140,6 @@ class TeamController extends Controller
             $id=$req->group_id;
             $team_image=Team::where('group_id',$id)->select('image')->first()->image;
             $image_path="images/companies/".$team_image;
-            
-                // dd(1);
             $a=File::delete(public_path($image_path));
             if ($req->hasFile('image')) {
                 $destPath = 'images/companies';
@@ -154,8 +149,6 @@ class TeamController extends Controller
                 $img = $req->image;
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($id, $imageName, 'image');
-              
-           
             }
             }catch(Exception $error)
             {
