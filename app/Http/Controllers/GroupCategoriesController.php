@@ -42,88 +42,44 @@ class GroupCategoriesController extends Controller
 
     function updateTeamCategories(Request $req)
     {
-        
-        // $rules = array(
-        //     'group_id' => "required|exists:groups,id",
-        //     'categories' => "required",
-
-        // );
-        // $validator = Validator::make($req->all(), $rules);
-        // if ($validator->fails()) {
-        //     $response = Controller::returnResponse(101, 'Validation error', $validator->errors());
-        //     return json_encode($response);
-        // } else {
-            // $group_id = $req->group_id;
-
-            $delete = groups_category::where("group_id", $req->group_id)->delete();
-            // if (isset($req->local)) {
-
-            //     foreach ($req->categories as $c) {
-            //         foreach ($c['subId'] as $s) {
-            //             $arr = array(
-            //                 'group_id' => $group_id,
-            //                 'category_id' => $c['catId'],
-            //                 'sub_category_id' => $s
-
-            //             );
-            //             $this->addMultiRows($arr);
-            //         }
-            //     }
-            // } else {
-                $cats = json_decode($req->categories);
-               
-                // if (isset($req->categories)) {
-                  foreach($cats as$key => $category)
-                  {
-                    $categoryArr = array();
-                    foreach($category->subId as $subkey=>$subcat)
-                    {
-                        $categoryArr[$subkey]['group_id']=$req->group_id;
-                        $categoryArr[$subkey]['category_id']=$category->catId;
-                        $categoryArr[$subkey]['sub_category_id']=$subcat;
-                    }
-                    $this->addMultiRows($categoryArr);
-                  }
-                //     foreach ($req->categories as $key => $value) {
-
-                //         $categoryArr = array();
-                //         foreach ($value->subId as $keySub => $subValue) {
-                //             // $categoryArr[$keySub]['group_id'] = $req->group_id;
-                //             // $categoryArr[$keySub]['category_id'] = $value->catId;
-                //             // $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                //             DB::table('groups_categories')->insert([
-                //                 'group_id' => $req->group_id,
-                //                 'category_id' => $value->catId,
-                //                 'sub_category_id' =>$subValue,
-                //             ]);
-                //         }
-                       
-                    // }
-                 
-                // }
-            // }
-            $response = Controller::returnResponse(200, "successful", []);
-            return json_encode($response);
-        // }
-    }
-    function updateGroupCategory(Request $req)
-    {
-
-        $del = groups_category::where('group_id', $req->group_id)->delete();
-        // $cats=$req->categories;
+        $group_id=$req->group_id;
+        $delete = groups_category::where("group_id", $group_id)->delete();
         $cats = json_decode($req->categories);
-        $group_id = $req->group_id;
-        foreach ($cats as $cat) {
-            foreach ($cat->subId as $sub) {
-
-                $id = DB::table('groups_categories')->insert(
-                    ['group_id' => $group_id, 'category_id' => $cat->catId, 'sub_category_id' => $sub]
-                );
+        $counter=0;
+        $sub_counter=0;
+        foreach ($cats as $key => $category) {
+            $counter++;
+            $categoryArr = array();
+            foreach ($category->subId as $subkey => $subcat) {
+                $sub_counter++;
+                $categoryArr[$subkey]['group_id'] = $group_id;
+                $categoryArr[$subkey]['category_id'] = $category->catId;
+                $categoryArr[$subkey]['sub_category_id'] = $subcat;
             }
+            $this->addMultiRows($categoryArr);
         }
-        $response = Controller::returnResponse(200, "successful", []);
+        $response = Controller::returnResponse(200, "successful", ["counter"=>$counter,"sub_counter"=>$sub_counter]);
         return json_encode($response);
     }
+    // function updateGroupCategory(Request $req)
+    // {
+
+    //     $del = groups_category::where('group_id', $req->group_id)->delete();
+    //     // $cats=$req->categories;
+    //     $cats = json_decode($req->categories);
+    //     $group_id = $req->group_id;
+    //     foreach ($cats as $cat) {
+    //         foreach ($cat->subId as $sub) {
+
+    //             $id = DB::table('groups_categories')->insert(
+    //                 ['group_id' => $group_id, 'category_id' => $cat->catId, 'sub_category_id' => $sub]
+    //             );
+    //         }
+    //     }
+    //     $response = Controller::returnResponse(200, "successful", []);
+    //     return json_encode($response);
+    // }
+    //get team categories by id and set the image url depend ih there is image or not
     function getTeamCategories($id)
     {
         $allCategory = array();
@@ -133,44 +89,42 @@ class GroupCategoriesController extends Controller
             foreach ($categories as  $category) {
                 $team_categories[$category->category_id]['id'] = $category->category_id;
                 $team_categories[$category->category_id]['name'] = DB::table('categories')
-                ->select('name')->where('id', '=', $category->category_id)->first()->name;
-
-                $img=DB::table('categories')->select('image')
-                ->where('id', '=', $category->category_id)->first()->image;
-               
-                if($img !=""){
-                $team_categories[$category->category_id]['image'] = asset('images/categories/'.DB::table('categories')->select('image')
-                ->where('id', '=', $category->category_id)->first()->image);
+                    ->select('name')->where('id', '=', $category->category_id)->first()->name;
+                $img = DB::table('categories')->select('image')
+                    ->where('id', '=', $category->category_id)->first()->image;
+                if ($img != "") {
+                    $team_categories[$category->category_id]['image'] = asset('images/categories/' . DB::table('categories')->select('image')
+                        ->where('id', '=', $category->category_id)->first()->image);
+                } else {
+                    $team_categories[$category->category_id]['image'] = "Null";
                 }
-                else{
-                    $team_categories[$category->category_id]['image']="Null";
-                }
-                $sub_image=DB::table('sub_categories')
-                ->select('image')
-                ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
-                if($sub_image !=""){
+                $sub_image = DB::table('sub_categories')
+                    ->select('image')
+                    ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                if ($sub_image != "") {
 
                     $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                    ->select('category_id','id', 'name',"image")
-                    ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
-                }else{
-                   
+                        ->select('category_id', 'id', 'name', "image")
+                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                } else {
+
                     $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                    ->select('category_id','id', 'name')
-                    ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
+                        ->select('category_id', 'id', 'name')
+                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
                 }
             }
             foreach ($team_categories as $val) {
-          
+
                 $allCategory[] = $val;
-                $subs_length=count($val['subs']);
-                for($i=0;$i<$subs_length;$i++){
-                    if(isset($val['subs'][$i]->image)){
-                $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);}
-                else{ $val['subs'][$i]->image="Null";}
-               
+                $subs_length = count($val['subs']);
+                for ($i = 0; $i < $subs_length; $i++) {
+                    if (isset($val['subs'][$i]->image)) {
+                        $val['subs'][$i]->image = asset('images/categories/' . $val['subs'][$i]->image);
+                    } else {
+                        $val['subs'][$i]->image = "Null";
+                    }
                 }
-            }  
+            }
         }
         return $allCategory;
     }

@@ -38,27 +38,6 @@ class UserCategoriesController extends Controller
 
     function getUserCategoriesByUserId($id)
     {
-        // $allCategory = array();
-        // try {
-        //     $categories = users_category::where('user_id', $id)->get();
-        //     if (count($categories) > 1) {
-
-        //         $userCategory = array();
-        //         foreach ($categories as $keyCat => $category) {
-        //             $userCategory[$category->category_id]['id'] = $category->category_id;
-        //             $userCategory[$category->category_id]['name'] = DB::table('categories')->select('name')->where('id', '=', $category->category_id)->get()->first()->name;
-        //             $userCategory[$category->category_id]['sub'][] = DB::table('sub_categories')->select('id', 'name', 'category_id')->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->get()->first();
-        //         }
-
-        //         foreach ($userCategory as $keyUserCat => $valUserCat) {
-        //             $allCategory[] = $valUserCat;
-        //         }
-        //     }
-        // } catch (\Exception $error) {
-
-        //     return $allCategory;
-        // }
-        // return $allCategory;
         $allCategory = array();
         $categories = users_category::where('user_id', $id)->get();
         if (count($categories) > 1) {
@@ -66,55 +45,55 @@ class UserCategoriesController extends Controller
             foreach ($categories as  $category) {
                 $user_categories[$category->category_id]['id'] = $category->category_id;
                 $user_categories[$category->category_id]['name'] = DB::table('categories')
-                ->select('name')->where('id', '=', $category->category_id)->first()->name;
+                    ->select('name')->where('id', '=', $category->category_id)->first()->name;
 
-                $img=DB::table('categories')->select('image')
-                ->where('id', '=', $category->category_id)->first()->image;
-               
-                if($img !=""){
-                $user_categories[$category->category_id]['image'] = asset('images/categories/'.DB::table('categories')->select('image')
-                ->where('id', '=', $category->category_id)->first()->image);
+                $img = DB::table('categories')->select('image')
+                    ->where('id', '=', $category->category_id)->first()->image;
+
+                if ($img != "") {
+                    $user_categories[$category->category_id]['image'] = asset('images/categories/' . DB::table('categories')->select('image')
+                        ->where('id', '=', $category->category_id)->first()->image);
+                } else {
+                    $user_categories[$category->category_id]['image'] = "Null";
                 }
-                else{
-                    $user_categories[$category->category_id]['image']="Null";
-                }
-                $sub_image=DB::table('sub_categories')
-                ->select('image')
-                ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
-                if($sub_image !=""){
+                $sub_image = DB::table('sub_categories')
+                    ->select('image')
+                    ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                if ($sub_image != "") {
 
                     $user_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                    ->select('category_id','id', 'name',"image")
-                    ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
-                }else{
-                   
+                        ->select('category_id', 'id', 'name', "image")
+                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                } else {
+
                     $user_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                    ->select('category_id','id', 'name')
-                    ->where([['category_id', '=', $category->category_id],['id', '=', $category->sub_category_id]])->first();
+                        ->select('category_id', 'id', 'name')
+                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
                 }
             }
             foreach ($user_categories as $val) {
-          
+
                 $allCategory[] = $val;
-                $subs_length=count($val['subs']);
-                for($i=0;$i<$subs_length;$i++){
-                    if(isset($val['subs'][$i]->image)){
-                $val['subs'][$i]->image=asset('images/categories/'.$val['subs'][$i]->image);}
-                else{ $val['subs'][$i]->image="Null";}
-               
+                $subs_length = count($val['subs']);
+                for ($i = 0; $i < $subs_length; $i++) {
+                    if (isset($val['subs'][$i]->image)) {
+                        $val['subs'][$i]->image = asset('images/categories/' . $val['subs'][$i]->image);
+                    } else {
+                        $val['subs'][$i]->image = "Null";
+                    }
                 }
-            }  
+            }
         }
         return $allCategory;
     }
     function updateUserCategories(Request $req)
     {
         
-
-        $del = users_category::where('user_id', $req->user_id)->delete();
+        $user_id = $req->user_id;
+        $del = users_category::where('user_id', $user_id)->delete();
         // $cats=$req->categories;
         $cats = json_decode($req->categories);
-        $user_id = $req->user_id;
+        
         foreach ($cats as $cat) {
             foreach ($cat->subId as $sub) {
 

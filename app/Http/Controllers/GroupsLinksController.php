@@ -39,14 +39,13 @@ class GroupsLinksController extends Controller
         }
         catch(Exception $error)
         {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred',array("e"=>"get team"));
+            $response = Controller::returnResponse(500, 'There IS Error Occurred',$error);
             return json_encode($response);
         }
     }
     function updateTeamLinks(Request $req)
     {
        
-    
         $rules=array(
             "group_id"=>"required|exists:groups,id",
             "links"=>"required|array"
