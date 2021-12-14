@@ -10,7 +10,8 @@ class AnnouncementsController extends Controller
 {
     //add row 
     function getAnnouncementsByLimit($offset = 2){
-        $data = $this->getDataInfo(Announcement::select('content', 'logo', 'template', 'link')->latest()->offset($offset-1)->limit(2)->get());
+        //the link cou must be add to the data base table and in the select statement 
+        $data = $this->getDataInfo(Announcement::select('content', 'logo', 'template')->latest()->offset($offset-1)->limit(2)->get());
         return $data;
         try{
         }catch(\Exception $error){

@@ -14,7 +14,7 @@ class Updatefreelancertable extends Migration
     public function up()
     {
         Schema::table('freelancers', function (Blueprint $table) {
-            $table->integer('type')
+            $table->integer('type_freelancer')
                     ->after('user_id')
                     ->nullable();
         });

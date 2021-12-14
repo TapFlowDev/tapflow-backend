@@ -69,6 +69,7 @@ class TeamController extends Controller
         $team = DB::table('groups')
         ->Join('teams', 'groups.id', '=', 'teams.group_id')
         ->where('groups.id', '=',  $id)
+        ->select('groups.id','groups.name','groups.type','groups.verified','teams.bio','teams.image','teams.link','teams.country','teams.field',)
         ->first();
         
         return ($team);
