@@ -20,6 +20,7 @@ use  App\Http\Controllers\GroupsLinksController;
 use  App\Http\Controllers\GroupCategoriesController;
 use  App\Http\Controllers\UserCategoriesController;
 use App\Models\Freelancer;
+use  App\Http\Controllers\AnnouncementsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,12 +52,12 @@ Route::post('Login', [UserController::class, 'login']);
 Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    
+
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
-    Route::get('getCategories', [CategoriesController::class, 'getCategories']);   
+    Route::get('getCategories', [CategoriesController::class, 'getCategories']);
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
-    
+
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
     Route::post('newLogout', [UserController::class, 'newLogout']);
@@ -81,10 +82,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('saveImage', [ImagesController::class, 'Insert']);
     Route::post('joinWithCode', [InviteUsersController::class, 'joinGroupByCode']);
     Route::post('sendInvitation', [InviteUsersController::class, 'sendInvitation']);
-    Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);  
-    Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);      
-    Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']); 
+    Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
+    Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);
+    Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
 });
-
-
-     
+Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
