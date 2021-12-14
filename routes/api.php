@@ -18,6 +18,8 @@ use  App\Http\Controllers\UserAttachmentsController;
 use  App\Http\Controllers\TeamController;
 use  App\Http\Controllers\GroupsLinksController;
 use  App\Http\Controllers\GroupCategoriesController;
+use  App\Http\Controllers\UserCategoriesController;
+use App\Models\Freelancer;
 use  App\Http\Controllers\AnnouncementsController;
 
 /*
@@ -41,56 +43,47 @@ use  App\Http\Controllers\AnnouncementsController;
 //     $token = csrf_token();
 
 // });
-Route::post('newRegister',[UserController::class,'newRegister']);
-Route::post('newLogin',[UserController::class,'newLogin']);
+Route::post('newRegister', [UserController::class, 'newRegister']);
+Route::post('newLogin', [UserController::class, 'newLogin']);
+Route::post('register', [UserController::class, 'Register']);
+Route::get('getCountries', [UserController::class, 'get_countries']);
+Route::post('addUser', [UserController::class, 'add_user']);
+Route::post('Login', [UserController::class, 'login']);
+Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
 
-Route::group(['middleware'=>'auth:sanctum'],function(){
-  
-    Route::post('newLogout',[UserController::class,'newLogout']);
+Route::group(['middleware' => 'auth:sanctum'], function () {
 
-    Route::get('getAllUsers',[UserController::class,'getAllUsers']);
-    
-    
-    
-    
+    Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
+    Route::get('getCategories', [CategoriesController::class, 'getCategories']);
+    Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
+    Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
+
+    Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
+    Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
+    Route::post('newLogout', [UserController::class, 'newLogout']);
+    Route::post('addProposal', [Proposals::class, 'Insert']);
+    Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+    Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
+    Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);
+    Route::post('updateClientBio', [ClientController::class, 'update_Bio']);
+    Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
+    Route::post('updateUserLinks', [UserLinksController::class, 'update_links']);
+    Route::post('updateUserCategories', [UserCategoriesController::class, 'updateUserCategories']);
+    Route::post('updateAttachment', [UserAttachmentsController::class, 'update_attachment']);
+    Route::post('updateTools', [FreeLancerController::class, 'update_tools']);
+    Route::post('updateGeneralInfo', [TeamController::class, 'updateGeneralInfo']);
+    Route::post('updateTeamBio', [TeamController::class, 'updateTeamBio']);
+    Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
+    Route::post('addTeam', [GroupController::class, 'add_group_team']);
+    Route::post('addCompany', [GroupController::class, 'add_group_company']);
+    Route::post('addFreelancerInfo', [FreeLancerController::class, 'Insert_freelancer']);
+    Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
+    Route::post('createProject', [ProjectController::class, 'Insert']);
+    Route::post('saveImage', [ImagesController::class, 'Insert']);
+    Route::post('joinWithCode', [InviteUsersController::class, 'joinGroupByCode']);
+    Route::post('sendInvitation', [InviteUsersController::class, 'sendInvitation']);
+    Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
+    Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);
+    Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
 });
-
-
-
-Route::post('addProposal',[Proposals::class,'Insert']);
-Route::post('addFinalProposal',[Final_proposals::class,'Insert']);
-Route::get('getCountries',[UserController::class,'get_countries']);
-Route::post('UpdateUserInfo',[UserController::class,'UpdateUserInfo']);
-Route::post('updateClientBio',[ClientController::class,'update_Bio']);
-Route::post('updateFreelancerBio',[FreeLancerController::class,'update_Bio']);
-Route::post('updateUserLinks',[UserLinksController::class,'update_links']);
-Route::post('updateAttachment',[UserAttachmentsController::class,'update_attachment']);
-Route::post('updateTools',[FreeLancerController::class,'update_tools']);
-Route::post('register',[UserController::class,'Register']);
-Route::get('getTeamInfo/{id}',[TeamController::class,'get_team']);
-Route::post('updateGeneralInfo',[TeamController::class,'updateGeneralInfo']);
-Route::post('updateLink',[TeamController::class,'updateLink']);
-Route::post('updateTeamLinks',[GroupsLinksController::class,'updateTeamLinks']);
-Route::post('updateTeamCategories',[GroupCategoriesController::class,'updateTeamCategories']);
-Route::post('updateGroupCategory',[GroupCategoriesController::class,'updateGroupCategory']);
-Route::get('getAnnouncements/{offset}',[AnnouncementsController::class,'getAnnouncementsByLimit']);
-
-
-
-
-
-Route::get('getFreelancerInfo/{id}',[FreeLancerController::class,'get_freelancer_info']);
-Route::get('getCategories',[CategoriesController::class,'getCategories']);
-Route::get('getClientInfo/{id}',[ClientController::class,'get_client_info']);
-Route::post('addUser',[UserController::class,'add_user']);
-Route::post('addTeam',[GroupController::class,'add_group_team']);
-Route::post('addCompany',[GroupController::class,'add_group_company']);
-Route::post('addFreelancerInfo',[FreeLancerController::class,'Insert_freelancer']);
-Route::post('addClientInfo',[ClientController::class,'Insert_client']);
-Route::post('Login',[UserController::class,'login']);
-Route::post('createProject',[ProjectController::class,'Insert']);
-Route::post('sendInvitation',[InviteUsersController::class,'sendInvitation']);
-Route::get('r/{token}',[InviteUsersController::class,'getDataByToken']);
-Route::post('acceptOrRefuseInvitation',[InviteUsersController::class,'updateInvitation']);
-Route::post('joinWithCode',[InviteUsersController::class,'joinGroupByCode']);
-Route::post('saveImage',[ImagesController::class,'Insert']);
+Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);

@@ -8,6 +8,7 @@ use App\Models\Freelancer;
 use App\Models\User;
 use App\Models\User_link;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\UserCategoriesController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\GroupMembersController;
 
 use App\Models\Category;
 use PhpParser\Node\Expr\Isset_;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class FreeLancerController extends Controller
 {
@@ -45,11 +47,9 @@ class FreeLancerController extends Controller
             // print_r($data);
 
             // $tools = serialize($req->tools);
-            if (isset($req->tools))
-            {
+            if (isset($req->tools)) {
                 $tools = serialize($req->tools);
-            }
-            else{
+            } else {
                 $tools = serialize(array());
             }
             $freelancer = Freelancer::create($req->except(['gender', 'dob', 'role', 'tools', 'image']) + ['tools' => $tools]);
@@ -80,12 +80,11 @@ class FreeLancerController extends Controller
                 // $imageName = now() . "-" . $req->file('image')->getClientOriginalName();
                 $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
                 // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-                
+
                 $img = $req->image;
-                
+
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($userId, $imageName, 'image');
-                
             }
             /*
             if ($req->hasFile('attachment')) {
@@ -109,7 +108,7 @@ class FreeLancerController extends Controller
             }
             */
 
-             if (isset($req->links) && count($req->links) > 0) {
+            if (isset($req->links) && count($req->links) > 0) {
                 DB::table('user_links')->where('user_id', $userId)->delete();
 
                 foreach ($req->links as $keyLink => $valLink) {
@@ -166,14 +165,12 @@ class FreeLancerController extends Controller
             return (0);
         } else {
             return (1);
-        }   
+        }
     }
 
-    function updateType($userId,$type)
-    {   
-   
-        Freelancer::where('user_id', $userId)->update(['type' => $type]);
-       
+    function updateType($userId, $type)
+    {
+        Freelancer::where('user_id', $userId)->update(array('type' => $type));
     }
 
     function updateFiles($userId, $imageName, $filedName)
@@ -210,33 +207,55 @@ class FreeLancerController extends Controller
         return $users;
     }
     function update_Bio(Request $req)
-    { 
-      try{
-            $freelancer=Freelancer::where('user_id',$req->user_id)->update(['bio'=>$req->bio]);
+    {
+        try {
+            $freelancer = Freelancer::where('user_id', $req->user_id)->update(['bio' => $req->bio]);
             $response = Controller::returnResponse(200, 'User information updated successfully', array());
             return json_encode($response);
-        }catch(Exception $error)
-        {
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
         }
     }
     function update_tools(Request $req)
     {
-        try{
-            $user_id=$req->user_id;
-            $freelancer=Freelancer::where("user_id",$user_id)->update(['tools'=>serialize($req->tools)]);
+        try {
+            $user_id = $req->user_id;
+            $freelancer = Freelancer::where("user_id", $user_id)->update(['tools' => serialize($req->tools)]);
             $response = Controller::returnResponse(200, 'User tools updated successfully', array());
             return json_encode($response);
-        }catch(Exception $error)
-        {
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
         }
-
     }
+    function updateFreelancerImage(Request $req)
+    {
 
+        $rules = array(
+            "user_id" => "required|exists:users,id",
+            "image" => "required"
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            return json_encode($response);
+        } else {
+            $id = $req->user_id;
+            $user_image = Freelancer::where('user_id', $id)->select('image')->first()->image;
+            $image_path = "images/users/" . $user_image;
+             File::delete(public_path($image_path));
+            if ($req->hasFile('image')) {
+                $destPath = 'images/users';
+                $ext = $req->file('image')->extension();
+                $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                $img = $req->image;
+                $img->move(public_path($destPath), $imageName);
+                $this->updateFiles($id, $imageName, 'image');
+                $response=Controller::returnResponse(200,'successful',[]);
+                return json_encode($response);
+            }
+        }
+    }
 }
-
-
-

@@ -166,10 +166,11 @@ class InviteUsersController extends Controller
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
         } 
-        try {
+        // try {
             $userInfo = $userObj->getUserById($req->user_id);
             $userType = $userInfo->type;
             $group_member_obj=new GroupMembersController();
+            $group_obj=new GroupController();
           
             if ($userType == 1) {
                 $userTypeObj = new FreeLancerController();
@@ -184,14 +185,16 @@ class InviteUsersController extends Controller
             }
             // $userInfo = $userObj->getUserById($req->user_id);
             $group = Invite_code::where('code', $req->code)->get()->first();
-            $group_info = GroupController::getGroupById($group->group_id);
+            
+            $group_info =  $group_obj->getGroupById($group->group_id);
            
             
             if ($group->status == 0 && $group->expired == 0) {
                 Invite_code::where('code', $req->link_token)->update(['status' => $status, 'expired' => 1]);
-                $userTypeObj->updateType($req->user_id, $group_info->type);
-                
                 $group_member_obj->Insert($group->group_id,$req->user_id,2);
+                if ($userType == 1) {
+                $f=Freelancer::where("user_id",$req->user_id)->update(["type"=>$group_info->type]);
+                }
                 //change freelancer type depend on group type agencu or team of freelancers
                 $response = Controller::returnResponse(200, 'user joined the team', array());
                 return json_encode($response);
@@ -201,16 +204,10 @@ class InviteUsersController extends Controller
             }
             $response = Controller::returnResponse(200, 'user joind the team', array());
             return json_encode($response);
-        }catch (\Exception $error) {
-            // $response = array("data" => array(
-            //     "message" => "There IS Error Occurred",
-            //     "status" => "500",
-            //     "error" => $error,
-            // ));
-            // return (json_encode($response));
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
-            return json_encode($response);
-        }
+        // }catch (\Exception $error) {
+        //     $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+        //     return json_encode($response);
+        // }
         
     }
 

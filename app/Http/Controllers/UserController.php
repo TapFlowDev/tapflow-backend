@@ -344,4 +344,31 @@ class UserController extends Controller
     {
         Freelancer::where('user_id', $userId)->update(array($filedName => $imageName));
     }
+    function updaterole(Request $req)
+    {
+
+        $rules = array(
+            "user_id" => "required|exists:users,id",
+            "role" => "required|max:255"
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+
+            $responseData = $validator->errors();
+            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+            return (json_encode($response));
+        }
+        else{
+            try{
+            Freelancer::where('user_id',$req->user_id)->update(['role'=>$req->role]);
+            $response = Controller::returnResponse(200, 'successfully', []);
+            return json_encode($response);
+        }catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error);
+            return (json_encode($response));
+        }
+        }
+
+    }
 }
