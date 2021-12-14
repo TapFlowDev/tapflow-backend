@@ -114,6 +114,7 @@ class AnnouncementsController extends Controller
             $content = strip_tags($announcement->content);
             $content = html_entity_decode($content);
             $announcement->stripedContent = $content;
+            
         }
         
         return $announcements;

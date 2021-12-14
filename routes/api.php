@@ -18,6 +18,7 @@ use  App\Http\Controllers\UserAttachmentsController;
 use  App\Http\Controllers\TeamController;
 use  App\Http\Controllers\GroupsLinksController;
 use  App\Http\Controllers\GroupCategoriesController;
+use  App\Http\Controllers\AnnouncementsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,7 @@ Route::post('updateLink',[TeamController::class,'updateLink']);
 Route::post('updateTeamLinks',[GroupsLinksController::class,'updateTeamLinks']);
 Route::post('updateTeamCategories',[GroupCategoriesController::class,'updateTeamCategories']);
 Route::post('updateGroupCategory',[GroupCategoriesController::class,'updateGroupCategory']);
+Route::get('getAnnouncements/{offset}',[AnnouncementsController::class,'getAnnouncementsByLimit']);
 
 
 
