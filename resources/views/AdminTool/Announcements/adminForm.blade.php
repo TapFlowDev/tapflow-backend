@@ -7,9 +7,18 @@
         </span>
     @enderror
 </div>
+<div class="mb-3">
+    <label for="link" class="form-label">Link</label>
+    <input type="text"  name="link" class="form-control" id="link" aria-describedby="emailHelp" value="{{ old('link') }}@isset($announcement){{ $announcement->link }}@endisset">
+        @error('link')
+        <span class="invalid-feedback" style="display: block;" role="alert">
+            {{ $message }}
+        </span>
+    @enderror
+</div>
 
 <div class="mb-3">
-    <label for="template" class="form-label">template</label>
+    <label for="template" class="form-label">Template</label>
     <select name="template" class="form-control" id="template">
         <option value="1">Template 1</option>
         <option value="2">Template 2</option>

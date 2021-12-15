@@ -57,7 +57,7 @@ class   GroupController extends Controller
         //check if the team agency or team of freelancers-
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id"
+            "admin_id" => "required|exists:freelancers,user_id"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -223,7 +223,7 @@ class   GroupController extends Controller
                 if ($req->hasFile('image')) {
                     $destPath = 'images/groups';
                     // $ext = $req->file('image')->extension();
-                    $imageName = mt_rand(100000, 999999) . "-" . $req->file('image')->getClientOriginalName();
+                    $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
                     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
 
                     $img = $req->image;
@@ -237,7 +237,7 @@ class   GroupController extends Controller
                     foreach ($req->attachment as $keyAttach => $valAttach) {
                         $ext = $valAttach->extension();
 
-                        $attachName = mt_rand(100000, 999999) . "-" . $valAttach->getClientOriginalName();
+                        $attachName = time() . "-" . $valAttach->getClientOriginalName();
                         $attach = $valAttach;
                         $attach->move(public_path($destPath), $attachName);
                         DB::table('groups_attachments')->insert([
@@ -295,6 +295,5 @@ class   GroupController extends Controller
     function getGroupById($id)
     {
         return Group::find($id);
-    }
-    
+    }  
 }

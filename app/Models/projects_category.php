@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Announcement extends Model
+class projects_category extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'content',
-        'logo',
-        'template',
-        'link'
+        'project_id',
+        'category_id',
+        'sub_category_id'
     ];
+    public $timestamps = false;
 }

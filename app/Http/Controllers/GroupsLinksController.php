@@ -39,16 +39,17 @@ class GroupsLinksController extends Controller
         }
         catch(Exception $error)
         {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There IS Error Occurred',$error);
             return json_encode($response);
         }
     }
     function updateTeamLinks(Request $req)
     {
+       
         $rules=array(
-            "id"=>"required|exists:groups,id",
-            "add"=>"required|array",
-            "remove"=>"required|array"
+            "group_id"=>"required|exists:groups,id",
+            "links"=>"required|array"
+          
         );
         $validator=Validator::make($req->all(),$rules);
         if($validator->fails()){
@@ -57,32 +58,23 @@ class GroupsLinksController extends Controller
             return (json_encode($response));
         }
         else{
-        $add=$req->add;
-        $remove=$req->remove;
-        if(count($add)>0)
+            try{
+        $links=$req->links;
+        $del_links=Groups_link::where('group_id',$req->group_id)->delete();
+        foreach($links as $link)
         {
-           foreach($add as $link)
-           {
-               $arr=array
-               (
-                   "group_id"=>$req->id,
-                   "link"=>$link,
-               );
-                $groupLinks= Groups_link::create($arr);
-           }
+            $add_links=Groups_link::create(["group_id"=>$req->group_id,"link"=>$link]);
         }
-       
-        if(count($remove)>0)
-        {
-            foreach($remove as $link)
-           {
-            
-                $groupLinks= Groups_link::where('id', $link)->delete();
-           }
-        }
+        
         $response = Controller::returnResponse(200, 'updated successfully', $Array=array());
         return json_encode($response);
-    }
+            }
+            catch(Exception $error)
+            {
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                return json_encode($response);
+            }
+    }       
 }
 }
 

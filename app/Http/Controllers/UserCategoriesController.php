@@ -39,25 +39,70 @@ class UserCategoriesController extends Controller
     function getUserCategoriesByUserId($id)
     {
         $allCategory = array();
-        try {
-            $categories = users_category::where('user_id', $id)->get();
-            if (count($categories) > 1) {
+        $categories = users_category::where('user_id', $id)->get();
+        if (count($categories) > 0) {
+            $user_categories = array();
+            foreach ($categories as  $category) {
+                $user_categories[$category->category_id]['id'] = $category->category_id;
+                $user_categories[$category->category_id]['name'] = DB::table('categories')
+                    ->select('name')->where('id', '=', $category->category_id)->first()->name;
 
-                $userCategory = array();
-                foreach ($categories as $keyCat => $category) {
-                    $userCategory[$category->category_id]['catId'] = $category->category_id;
-                    $userCategory[$category->category_id]['name'] = DB::table('categories')->select('name')->where('id', '=', $category->category_id)->get()->first()->name;
-                    $userCategory[$category->category_id]['sub'][] = DB::table('sub_categories')->select('id', 'name', 'category_id')->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->get()->first();
+                $img = DB::table('categories')->select('image')
+                    ->where('id', '=', $category->category_id)->first()->image;
+
+                if ($img != "") {
+                    $user_categories[$category->category_id]['image'] = asset('images/categories/' . DB::table('categories')->select('image')
+                        ->where('id', '=', $category->category_id)->first()->image);
+                } else {
+                    $user_categories[$category->category_id]['image'] = "Null";
                 }
+                $sub_image = DB::table('sub_categories')
+                    ->select('image')
+                    ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                if ($sub_image != "") {
 
-                foreach ($userCategory as $keyUserCat => $valUserCat) {
-                    $allCategory[] = $valUserCat;
+                    $user_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                        ->select('category_id', 'id', 'name', "image")
+                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                } else {
+
+                    $user_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                        ->select('category_id', 'id', 'name')
+                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
                 }
             }
-        } catch (\Exception $error) {
+            foreach ($user_categories as $val) {
 
-            return $allCategory;
+                $allCategory[] = $val;
+                $subs_length = count($val['subs']);
+                for ($i = 0; $i < $subs_length; $i++) {
+                    if (isset($val['subs'][$i]->image)) {
+                        $val['subs'][$i]->image = asset('images/categories/' . $val['subs'][$i]->image);
+                    } else {
+                        $val['subs'][$i]->image = "Null";
+                    }
+                }
+            }
         }
         return $allCategory;
+    }
+    function updateUserCategories(Request $req)
+    {
+        
+        $user_id = $req->user_id;
+        $del = users_category::where('user_id', $user_id)->delete();
+        // $cats=$req->categories;
+        $cats = json_decode($req->categories);
+        
+        foreach ($cats as $cat) {
+            foreach ($cat->subId as $sub) {
+
+                $id = DB::table('users_categories')->insert(
+                    ['user_id' => $user_id, 'category_id' => $cat->catId, 'sub_category_id' => $sub]
+                );
+            }
+        }
+        $response = Controller::returnResponse(200, "successful", []);
+        return json_encode($response);
     }
 }
