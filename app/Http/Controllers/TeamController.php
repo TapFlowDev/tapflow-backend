@@ -123,9 +123,7 @@ class TeamController extends Controller
     }
 
     }
-<<<<<<< HEAD
-}
-=======
+
     function updateTeamImage(Request $req)
     {
         $rules=array(
@@ -162,4 +160,3 @@ class TeamController extends Controller
     }
 }
 }
->>>>>>> c80c0be36ced766db7440e2ddedbab75f60a060d
