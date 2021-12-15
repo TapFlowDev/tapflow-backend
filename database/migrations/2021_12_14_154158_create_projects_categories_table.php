@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Updatefreelancertable extends Migration
+class CreateProjectsCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class Updatefreelancertable extends Migration
      */
     public function up()
     {
-        Schema::table('freelancers', function (Blueprint $table) {
-            $table->integer('type_freelancer')
-                    ->after('user_id')
-                    ->nullable();
+        Schema::create('projects_categories', function (Blueprint $table) {
+            $table->integer('project_id');
+            $table->integer('category_id');
+            $table->integer('sub_category_id');
+         
         });
     }
 
@@ -27,6 +28,6 @@ class Updatefreelancertable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('projects_categories');
     }
 }

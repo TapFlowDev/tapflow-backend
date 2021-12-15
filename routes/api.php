@@ -51,16 +51,16 @@ Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
 
+Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
-
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::get('getCategories', [CategoriesController::class, 'getCategories']);
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
-
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
     Route::post('newLogout', [UserController::class, 'newLogout']);
+    Route::post('signout', [UserController::class, 'signout']);
     Route::post('addProposal', [Proposals::class, 'Insert']);
     Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
@@ -86,4 +86,3 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);
     Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
 });
-Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
