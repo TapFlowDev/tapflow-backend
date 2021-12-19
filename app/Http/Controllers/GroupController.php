@@ -81,19 +81,19 @@ class   GroupController extends Controller
                 if(isset($req->local))
                 {
                   
-                   foreach($req->categories as $c)
-                   {
-                       foreach($c['subId'] as $s)
-                       {
-                        $arr=array(
-                            'group_id'=>$group_id,
-                            'category_id'=>$c['catId'],
-                            'sub_category_id'=>$s
+                //    foreach($req->categories as $c)
+                //    {
+                //        foreach($c['subId'] as $s)
+                //        {
+                //         $arr=array(
+                //             'group_id'=>$group_id,
+                //             'category_id'=>$c['catId'],
+                //             'sub_category_id'=>$s
     
-                        );
-                        $groupCategoryObj->addMultiRows($arr);
-                       }
-                   }
+                //         );
+                //         $groupCategoryObj->addMultiRows($arr);
+                //        }
+                //    }
                 }
                 else{
                 $cats = json_decode($req->categories);
