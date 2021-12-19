@@ -80,7 +80,7 @@ class TeamController extends Controller
             'group_id'=>"required|exists:groups,id",
             'name'=>"required|max:255",
             'country'=>"required|max:255",
-            'link'=>"required|max:255",
+            'field'=>"required|max:255",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -90,8 +90,8 @@ class TeamController extends Controller
         else
         {
             $group=Group::where("id",$req->group_id)->update(['name'=>$req->name]);
-            $team=Team::where("group_id",$req->group_id)->update(['country'=>$req->country,'link'=>$req->link]);
-            $response = Controller::returnResponse(200, 'successful', $data=array());
+            $team=Team::where("group_id",$req->group_id)->update(['country'=>$req->country,'field'=>$req->field]);
+            $response = Controller::returnResponse(200, 'successful', []);
             return json_encode($response);
         }
     }
@@ -112,7 +112,7 @@ class TeamController extends Controller
         {
             try{
             $team=Team::where('group_id',$req->group_id)->update(['bio'=>$req->bio]);
-            $response=Controller::returnResponse(200,'successful',$arr=array());
+            $response=Controller::returnResponse(200,'successful',[]);
             return json_encode($response);
         }
         catch(Exception $error)
@@ -159,4 +159,34 @@ class TeamController extends Controller
             }
     }
 }
+
+function updateLink(Request $req)
+    {
+        $rules=array(
+            "group_id"=>"required|exists:groups,id",
+            "link"=>"required|max:255"
+        );
+        $validator=Validator::make($req->all(),$rules);
+        if($validator->fails())
+        {
+            $response=Controller::returnResponse(101,'Validation Error',$validator->errors());
+            return json_encode($response);
+        }
+        else
+        {
+            try{
+            $team=Team::where('group_id',$req->group_id)->update(['link'=>$req->link]);
+            $response=Controller::returnResponse(200,'successful',[]);
+            return json_encode($response);
+        }
+        catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+
+    }
 }
+}
+
