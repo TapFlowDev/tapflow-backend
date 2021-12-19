@@ -188,5 +188,4 @@ function updateLink(Request $req)
 
     }
 }
-}
 
