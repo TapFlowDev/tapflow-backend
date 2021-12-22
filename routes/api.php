@@ -73,7 +73,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateTools', [FreeLancerController::class, 'update_tools']);
     Route::post('updateGeneralInfo', [TeamController::class, 'updateGeneralInfo']);
     Route::post('updateTeamBio', [TeamController::class, 'updateTeamBio']);
-    Route::post('updateTeamLink', [GroupsLinksController::class, 'updateLink']);
+    Route::post('updateTeamLink', [TeamController::class, 'updateLink']);
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
