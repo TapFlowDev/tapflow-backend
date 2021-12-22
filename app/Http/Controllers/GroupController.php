@@ -81,19 +81,19 @@ class   GroupController extends Controller
                 if(isset($req->local))
                 {
                   
-                   foreach($req->categories as $c)
-                   {
-                       foreach($c['subId'] as $s)
-                       {
-                        $arr=array(
-                            'group_id'=>$group_id,
-                            'category_id'=>$c['catId'],
-                            'sub_category_id'=>$s
+                //    foreach($req->categories as $c)
+                //    {
+                //        foreach($c['subId'] as $s)
+                //        {
+                //         $arr=array(
+                //             'group_id'=>$group_id,
+                //             'category_id'=>$c['catId'],
+                //             'sub_category_id'=>$s
     
-                        );
-                        $groupCategoryObj->addMultiRows($arr);
-                       }
-                   }
+                //         );
+                //         $groupCategoryObj->addMultiRows($arr);
+                //        }
+                //    }
                 }
                 else{
                 $cats = json_decode($req->categories);
@@ -223,7 +223,7 @@ class   GroupController extends Controller
                 if ($req->hasFile('image')) {
                     $destPath = 'images/groups';
                     // $ext = $req->file('image')->extension();
-                    $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                    $imageName = mt_rand(100000, 999999) . "-" . $req->file('image')->getClientOriginalName();
                     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
 
                     $img = $req->image;
@@ -237,7 +237,7 @@ class   GroupController extends Controller
                     foreach ($req->attachment as $keyAttach => $valAttach) {
                         $ext = $valAttach->extension();
 
-                        $attachName = time() . "-" . $valAttach->getClientOriginalName();
+                        $attachName = mt_rand(100000, 999999) . "-" . $valAttach->getClientOriginalName();
                         $attach = $valAttach;
                         $attach->move(public_path($destPath), $attachName);
                         DB::table('groups_attachments')->insert([
@@ -295,5 +295,6 @@ class   GroupController extends Controller
     function getGroupById($id)
     {
         return Group::find($id);
-    }  
+    }
+    
 }
