@@ -2,7 +2,7 @@
 <html>
 
 <body>
-    <form action="/api/saveImage" method="POST" enctype="multipart/form-data">
+    <form action="/api/updateTeamImage" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="file" name="image">
         <br>

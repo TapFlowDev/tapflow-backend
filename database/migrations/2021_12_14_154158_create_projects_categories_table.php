@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGroupsLinksTable extends Migration
+class CreateProjectsCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateGroupsLinksTable extends Migration
      */
     public function up()
     {
-        Schema::create('groups_links', function (Blueprint $table) {
-            $table->integer('id')->autoIncrement();
-            $table->integer('group_id');
-            $table->string('link', '255');
+        Schema::create('projects_categories', function (Blueprint $table) {
+            $table->integer('project_id');
+            $table->integer('category_id');
+            $table->integer('sub_category_id');
+         
         });
     }
 
@@ -27,6 +28,6 @@ class CreateGroupsLinksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('groups_links');
+        Schema::dropIfExists('projects_categories');
     }
 }

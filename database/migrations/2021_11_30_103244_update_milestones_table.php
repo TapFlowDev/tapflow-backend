@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGroupsLinksTable extends Migration
+class UpdateMilestonesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateGroupsLinksTable extends Migration
      */
     public function up()
     {
-        Schema::create('groups_links', function (Blueprint $table) {
-            $table->integer('id')->autoIncrement();
-            $table->integer('group_id');
-            $table->string('link', '255');
+        Schema::table('milestones', function($table)
+        {
+            $table->integer('percentage')->after('days');
         });
     }
 
@@ -27,6 +26,6 @@ class CreateGroupsLinksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('groups_links');
+        //
     }
 }

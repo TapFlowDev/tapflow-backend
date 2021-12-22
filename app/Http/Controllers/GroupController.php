@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\DB;
 
 use Exception;
 
+use function GuzzleHttp\Promise\each;
+
 class   GroupController extends Controller
 {
     // get all categories 
@@ -52,6 +54,7 @@ class   GroupController extends Controller
     //add row 
     function add_group_team(Request $req)
     {
+        //check if the team agency or team of freelancers-
         $rules = array(
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id"
@@ -74,6 +77,25 @@ class   GroupController extends Controller
                 $group_id = $group->id;
                 $userId = $req->admin_id;
                 $membersObj->Insert($group_id, $userId, 1);
+               
+                if(isset($req->local))
+                {
+                  
+                //    foreach($req->categories as $c)
+                //    {
+                //        foreach($c['subId'] as $s)
+                //        {
+                //         $arr=array(
+                //             'group_id'=>$group_id,
+                //             'category_id'=>$c['catId'],
+                //             'sub_category_id'=>$s
+    
+                //         );
+                //         $groupCategoryObj->addMultiRows($arr);
+                //        }
+                //    }
+                }
+                else{
                 $cats = json_decode($req->categories);
                 if (isset($cats)) {
 
@@ -87,7 +109,7 @@ class   GroupController extends Controller
                         $groupCategoryObj->addMultiRows($categoryArr);
                     }
                 }
-
+            }
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
                 $teamArr['bio'] = $req->bio;
@@ -99,33 +121,31 @@ class   GroupController extends Controller
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
-                if ($req->hasFile('image')) {
-                    $destPath = 'images/groups';
-                    // $ext = $req->file('image')->extension();
-                    $imageName = mt_rand(100000, 999999) . "-" . $req->file('image')->getClientOriginalName();
-                    // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                 if ($req->hasFile('image')) {
+                     $destPath = 'images/companies';
+                     // $ext = $req->file('image')->extension();
+                     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                     $img = $req->image;
+                     $img->move(public_path($destPath), $imageName);
+                     $teamObj->updateFiles($teamId, $imageName, 'image');
+                 }
+                // if ($req->hasFile('attachment')) {
+                //     $destPath = 'images/groups';
+                //     DB::table('groups_attachments')->where('group_id', $teamId)->delete();
+                //     foreach ($req->attachment as $keyAttach => $valAttach) {
+                //         $ext = $valAttach->extension();
 
-                    $img = $req->image;
-
-                    $img->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($teamId, $imageName, 'image');
-                }
-                if ($req->hasFile('attachment')) {
-                    $destPath = 'images/groups';
-                    DB::table('groups_attachments')->where('group_id', $teamId)->delete();
-                    foreach ($req->attachment as $keyAttach => $valAttach) {
-                        $ext = $valAttach->extension();
-
-                        $attachName = mt_rand(100000, 999999) . "-" . $valAttach->getClientOriginalName();
-                        $attach = $valAttach;
-                        $attach->move(public_path($destPath), $attachName);
-                        DB::table('groups_attachments')->insert([
-                            'group_id' => $teamId,
-                            'attachment' => $attachName
-                        ]);
-                    }
-                }
-                if (count($req->links) > 0 && isset($req->links)) {
+                //         $attachName = mt_rand(100000, 999999) . "-" . $valAttach->getClientOriginalName();
+                //         $attach = $valAttach;
+                //         $attach->move(public_path($destPath), $attachName);
+                //         DB::table('groups_attachments')->insert([
+                //             'group_id' => $teamId,
+                //             'attachment' => $attachName
+                //         ]);
+                //     }
+                // }
+                if ( isset($req->links) && count($req->links) > 0 ) {
                     DB::table('groups_links')->where('group_id', $teamId)->delete();
 
                     foreach ($req->links as $keyLink => $valLink) {
@@ -276,4 +296,5 @@ class   GroupController extends Controller
     {
         return Group::find($id);
     }
+    
 }
