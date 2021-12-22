@@ -51,14 +51,12 @@ Route::get('getCountries', [UserController::class, 'get_countries']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
-
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::post('addTeam', [GroupController::class, 'add_group_team']);
 Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);    
 Route::post('createWallet', [WalletsController::class, 'Insert']);    
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
-
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
@@ -94,5 +92,4 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
     Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);
     Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
-
 });

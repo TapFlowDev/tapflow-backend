@@ -123,6 +123,7 @@ class TeamController extends Controller
     }
 
     }
+
     function updateTeamImage(Request $req)
     {
         $rules=array(
@@ -158,6 +159,7 @@ class TeamController extends Controller
             }
     }
 }
+
 function updateLink(Request $req)
     {
         $rules=array(
@@ -186,3 +188,4 @@ function updateLink(Request $req)
 
     }
 }
+
