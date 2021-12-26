@@ -15,8 +15,8 @@ class CreateCountriesTable extends Migration
     {
         Schema::create('countries', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
-           $table->string('name','255');
-        
+            $table->string('name', '255');
+            $table->string('shortcut', '255');
         });
     }
 
