@@ -21,7 +21,7 @@ class CreateFinalProposalsTable extends Migration
             $table->string('price','255');
             $table->text('description')->nullable();
             $table->string('days','255');
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(0);//0=>pending 1=>accepted 2=>rejected 
             $table->timestamps();
         });
     }

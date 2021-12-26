@@ -16,7 +16,7 @@ class CreateGroupMembersTable extends Migration
         Schema::create('group_members', function (Blueprint $table) {
             $table->integer('user_id');
             $table->integer('group_id');
-            $table->integer('privileges')->default(0);
+            $table->integer('privileges')->default(0);// 1=>admin 2=>user
         });
     }
 

@@ -60,7 +60,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
     Route::post('newLogout', [UserController::class, 'newLogout']);
-   
+
     Route::post('addProposal', [Proposals::class, 'Insert']);
     Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
