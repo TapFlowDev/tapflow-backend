@@ -30,7 +30,7 @@ class countriesController extends Controller
             $response = Controller::returnResponse(200, 'successfully', $countries);
             return json_encode($response);
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, 'something wrong', $error);
+            $response = Controller::returnResponse(500, 'Something wrong', $error);
             return json_encode($response);
         }
     }

@@ -20,7 +20,7 @@ class ContactUsController extends Controller
         $validator=Validator::make($req->all(),$rules);
         if($validator->fails())
         {   
-            $response=Controller::returnResponse(101,'validation Error',$validator->errors());
+            $response=Controller::returnResponse(101,'Validation Error',$validator->errors());
             return(json_encode($response));
         }
         else{
