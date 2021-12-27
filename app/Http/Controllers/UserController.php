@@ -244,18 +244,6 @@ class UserController extends Controller
     {
     }
 
-    function get_countries()
-    {
-        try {
-            $countries = country::all();
-            $response = Controller::returnResponse(200, 'successfully', $countries);
-            return json_encode($response);
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, 'something wrong', $error);
-            return json_encode($response);
-        }
-    }
-
     function getUserById($id)
     {
         return User::find($id)->first();
