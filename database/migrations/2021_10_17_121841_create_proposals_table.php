@@ -22,7 +22,7 @@ class CreateProposalsTable extends Migration
             $table->string('price_max','255');
             $table->string('days','255');
             $table->text('our_offer');
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(0);//0=>pending 1=>accepted 2=>rejected 
             $table->timestamps();
         });
     }

@@ -26,7 +26,7 @@ class CreateProjectsTable extends Migration
             $table->text('requirements_description');
             $table->string('days')->nullable();
             $table->integer('deleted')->default('0');
-            $table->integer('status')->default('0');
+            $table->integer('status')->default('0');//0=>pending 1=>in progress 2=>completed 3=>rejected
             $table->timestamps();
         });
     }
