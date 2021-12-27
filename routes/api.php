@@ -23,6 +23,7 @@ use App\Models\Freelancer;
 use  App\Http\Controllers\AnnouncementsController;
 use  App\Http\Controllers\WalletsController;
 use  App\Http\Controllers\ContactUsController;
+use  App\Http\Controllers\countriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +49,8 @@ use  App\Http\Controllers\ContactUsController;
 Route::post('newRegister', [UserController::class, 'newRegister']);
 Route::post('newLogin', [UserController::class, 'newLogin']);
 Route::post('register', [UserController::class, 'Register']);
-Route::get('getCountries', [UserController::class, 'get_countries']);
+Route::get('getCountries', [countriesController::class, 'get_countries']);
+Route::get('getCountryById', [countriesController::class, 'getCountryById']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
