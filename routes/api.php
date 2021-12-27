@@ -21,6 +21,8 @@ use  App\Http\Controllers\GroupCategoriesController;
 use  App\Http\Controllers\UserCategoriesController;
 use App\Models\Freelancer;
 use  App\Http\Controllers\AnnouncementsController;
+use  App\Http\Controllers\countriesController;
+use  App\Http\Controllers\ContactUsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +48,9 @@ use  App\Http\Controllers\AnnouncementsController;
 Route::post('newRegister', [UserController::class, 'newRegister']);
 Route::post('newLogin', [UserController::class, 'newLogin']);
 Route::post('register', [UserController::class, 'Register']);
-Route::get('getCountries', [UserController::class, 'get_countries']);
+Route::post('contactUs', [ContactUsController::class, 'insert']);
+Route::get('getCountries', [countriesController::class, 'get_countries']);
+Route::get('getCountryById/{id}', [countriesController::class, 'getCountryById']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
