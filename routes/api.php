@@ -25,6 +25,7 @@ use  App\Http\Controllers\WalletsController;
 use  App\Http\Controllers\ContactUsController;
 use  App\Http\Controllers\countriesController;
 use  App\Http\Controllers\ResetPasswordController;
+use  App\Http\Controllers\WaitingListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +65,8 @@ Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
 Route::post('contactUS', [ContactUsController::class, 'insert']);
 Route::post('forgetPassword', [ResetPasswordController::class, 'sendLinkResetPassword']);
 Route::post('reset-password', [ResetPasswordController::class, 'resetPasswordCheck']);
-
+Route::post('contactUS', [ContactUsController::class, 'Insert']);
+Route::post('waitingList', [WaitingListController::class, 'Insert']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);

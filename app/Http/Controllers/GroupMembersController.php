@@ -58,4 +58,9 @@ class GroupMembersController extends Controller
             return ($member->privileges);
         }
     }
+    function getUserPrivileges($user_id)
+    {
+        $privileges=Group_member::select('privileges')->where('user_id', $user_id)->get()->first();
+        return $privileges;
+    }
 }

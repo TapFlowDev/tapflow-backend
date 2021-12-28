@@ -137,6 +137,7 @@ class FreeLancerController extends Controller
                 ->where('users.id', $id)
                 ->select('users.id','users.first_name','users.last_name','users.email','users.role','users.dob','users.gender','users.type','users.token','freelancers.type as team_type','freelancers.bio','freelancers.country','freelancers.image','freelancers.tools',)
                 ->get();
+               
 
             $user = $this->getUserInfo($user)->first();
             $response = Controller::returnResponse(200, 'data found', $user);
@@ -201,6 +202,8 @@ class FreeLancerController extends Controller
             $groupId = $membersObj->getGroupId($user->id);
             if ($groupId != '') {
                 $user->team_id = $groupId->group_id;
+                $privileges = $membersObj->getUserPrivileges($user->id);
+                $user->privileges=$privileges;
             } else {
                 $user->team_id =  null;
             }
