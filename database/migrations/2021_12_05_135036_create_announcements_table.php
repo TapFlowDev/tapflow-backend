@@ -18,7 +18,6 @@ class CreateAnnouncementsTable extends Migration
             $table->text('content')->nullable();
             $table->string('logo', 255)->nullable();
             $table->integer('template')->default(0);
-            $table->string('link', 255)->nullable(); 
             $table->timestamps();
         });
     }
