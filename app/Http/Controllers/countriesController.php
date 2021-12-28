@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use app\Models\country;
 use Exception;
+use Illuminate\Support\Facades\DB;
 class countriesController extends Controller
 {
     //add row 
@@ -16,7 +17,7 @@ class countriesController extends Controller
     //update row according to row id
     function Update($id)
     {
-
+        
     }
     //delete row according to row id
     function Delete($id)
