@@ -51,7 +51,7 @@ use  App\Http\Controllers\WaitingListController;
 Route::post('newRegister', [UserController::class, 'newRegister']);
 Route::post('newLogin', [UserController::class, 'newLogin']);
 Route::post('register', [UserController::class, 'Register']);
-Route::get('getCountries', [countriesController::class, 'get_countries']);
+Route::get('getCountries', [countriesController::class, 'getCountries']);
 Route::get('getCountryById', [countriesController::class, 'getCountryById']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
