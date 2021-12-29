@@ -25,7 +25,7 @@ class countriesController extends Controller
 
     }
     
-    function get_countries()
+    function getCountries()
     {
         try {
             $countries = country::all();
