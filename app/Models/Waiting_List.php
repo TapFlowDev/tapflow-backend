@@ -11,6 +11,7 @@ class Waiting_List extends Model
 {
      
     use HasApiTokens, HasFactory, Notifiable;
+    protected $table = 'waiting__lists';
     protected $fillable = [
         'email',
     ];

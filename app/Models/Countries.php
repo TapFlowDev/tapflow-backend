@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 class Countries extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
-    
+    protected $table = 'countries';
     protected $fillable = [
         'name',
         'code',
