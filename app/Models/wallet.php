@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-
-class Contact_Us extends Model
+class wallet extends Model
 {
+    use HasFactory;
     use HasApiTokens, HasFactory, Notifiable;
     protected $fillable = [
-        'name',
-        'email',
-        'message'
+        'reference_id',
+        'balance',
+        'type',
     ];
 }

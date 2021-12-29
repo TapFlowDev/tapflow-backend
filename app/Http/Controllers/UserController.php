@@ -242,6 +242,7 @@ class UserController extends Controller
     function Delete($id)
     {
     }
+
     function getUserById($id)
     {
         return User::find($id)->first();

@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-
-class Contact_Us extends Model
+class Countries extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
+    
     protected $fillable = [
         'name',
-        'email',
-        'message'
+        'code',
+        'flag',
     ];
+    public $timestamps = false;
 }
