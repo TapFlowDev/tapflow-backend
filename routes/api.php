@@ -24,7 +24,7 @@ use  App\Http\Controllers\WalletsController;
 use  App\Http\Controllers\ContactUsController;
 use  App\Http\Controllers\ResetPasswordController;
 use  App\Http\Controllers\WaitingListController;
-use  App\Http\Controllers\CountriesController;
+use  App\Http\Controllers\NewCountriesController;
 
 
 /*
@@ -51,9 +51,9 @@ use  App\Http\Controllers\CountriesController;
 Route::post('newRegister', [UserController::class, 'newRegister']);
 Route::post('newLogin', [UserController::class, 'newLogin']);
 Route::post('register', [UserController::class, 'Register']);
-Route::post('addCountries', [CountriesController::class, 'Insert']);
-Route::get('getCountryById/{id}', [CountriesController::class, 'getCountryById']);
-Route::get('getCountries', [CountriesController::class, 'getCountries']);
+Route::post('addCountries', [NewCountriesController::class, 'Insert']);
+Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
+Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
