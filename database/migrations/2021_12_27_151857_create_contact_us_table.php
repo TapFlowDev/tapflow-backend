@@ -29,7 +29,7 @@ class CreateContactUsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('contact__us');
+        Schema::dropIfExists('contact_us');
     }
 }
 
