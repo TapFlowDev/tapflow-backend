@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnShortcutToCountries extends Migration
+class CreateWaitingListsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddColumnShortcutToCountries extends Migration
      */
     public function up()
     {
-        Schema::table('countries', function (Blueprint $table) {
-            $table->string('shortcut', '255');
+        Schema::create('waiting_lists', function (Blueprint $table) {
+            $table->integer('id')->autoIncrement();
+            $table->string('email');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +27,6 @@ class AddColumnShortcutToCountries extends Migration
      */
     public function down()
     {
-        Schema::table('countries', function (Blueprint $table) {
-            $table->dropColumn('shortcut');
-        });
+        Schema::dropIfExists('waiting__lists');
     }
 }

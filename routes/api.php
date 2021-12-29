@@ -19,11 +19,13 @@ use  App\Http\Controllers\TeamController;
 use  App\Http\Controllers\GroupsLinksController;
 use  App\Http\Controllers\GroupCategoriesController;
 use  App\Http\Controllers\UserCategoriesController;
-use App\Models\Freelancer;
 use  App\Http\Controllers\AnnouncementsController;
 use  App\Http\Controllers\WalletsController;
 use  App\Http\Controllers\ContactUsController;
-use  App\Http\Controllers\countriesController;
+use  App\Http\Controllers\ResetPasswordController;
+use  App\Http\Controllers\WaitingListController;
+use  App\Http\Controllers\NewCountriesController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -49,8 +51,9 @@ use  App\Http\Controllers\countriesController;
 Route::post('newRegister', [UserController::class, 'newRegister']);
 Route::post('newLogin', [UserController::class, 'newLogin']);
 Route::post('register', [UserController::class, 'Register']);
-Route::get('getCountries', [countriesController::class, 'get_countries']);
-Route::get('getCountryById', [countriesController::class, 'getCountryById']);
+Route::post('addCountries', [NewCountriesController::class, 'Insert']);
+Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
+Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
@@ -61,6 +64,10 @@ Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
 Route::post('contactUS', [ContactUsController::class, 'insert']);
+Route::post('forgetPassword', [ResetPasswordController::class, 'sendLinkResetPassword']);
+Route::post('reset-password', [ResetPasswordController::class, 'resetPasswordCheck']);
+Route::post('contactUS', [ContactUsController::class, 'Insert']);
+Route::post('waitingList', [WaitingListController::class, 'Insert']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);

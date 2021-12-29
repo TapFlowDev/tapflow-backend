@@ -4,31 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use app\Models\country;
+use App\Models\Countries;
 use Exception;
-use Illuminate\Support\Facades\DB;
-class countriesController extends Controller
+
+class NewCountriesController extends Controller
 {
     //add row 
     function Insert(Request $req)
     {
-
+        $data=$req->all();
+        
+        foreach($data as $country)
+        {
+            $flag="https://cdn.jsdelivr.net/npm/react-flagkit@1.0.2/img/SVG/".$country['code'] .".svg";
+            $county=Countries::create(['name' =>$country['name'] ,'code'=>$country['code'],'flag'=>$flag]);
+        }
+     return('success');
     }
     //update row according to row id
     function Update($id)
     {
-        
+
     }
     //delete row according to row id
     function Delete($id)
     {
 
     }
-    
-    function get_countries()
+    function getCountries()
     {
         try {
-            $countries = country::all();
+            $countries = Countries::all();
             $response = Controller::returnResponse(200, 'successfully', $countries);
             return json_encode($response);
         } catch (Exception $error) {
@@ -37,9 +43,8 @@ class countriesController extends Controller
         }
     }
     function getCountryById($id){
-        $country=country::where('id',$id)->select('name')->first();
+        $country=Countries::where('id',$id)->first();
         $response=Controller::returnResponse(200,'successful',['name'=>$country]);
         return (json_encode($response));
     }
-
 }
