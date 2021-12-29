@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use app\Models\country;
 use Exception;
 use Illuminate\Support\Facades\DB;
-class countriesController extends Controller
+class CountriesController extends Controller
 {
     //add row 
     function Insert(Request $req)
