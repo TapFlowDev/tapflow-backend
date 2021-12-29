@@ -27,6 +27,7 @@ use  App\Http\Controllers\WaitingListController;
 use  App\Http\Controllers\NewCountriesController;
 
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
