@@ -53,7 +53,6 @@ class UserController extends Controller
         $user->save();
 
 
-
         $response = array(
             "user_id" => $user->id,
             "user_type" => $user_type,
