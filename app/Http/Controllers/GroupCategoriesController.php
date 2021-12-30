@@ -11,6 +11,7 @@ use PHPUnit\TextUI\XmlConfiguration\Groups;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use App\Models\SubCategory;
+use Exception;
 
 use function GuzzleHttp\Promise\all;
 
@@ -37,20 +38,25 @@ class GroupCategoriesController extends Controller
 
     function addMultiRows($info)
     {
-        groups_category::insert($info);
+        try {
+            groups_category::insert($info);
+            return 200;
+        } catch (Exception $error) {
+            return 500;
+        }
     }
 
     function updateTeamCategories(Request $req)
     {
-        $group_id=$req->group_id;
+        $group_id = $req->group_id;
         $delete = groups_category::where("group_id", $group_id)->delete();
         $cats = json_decode($req->categories);
-       
+
         foreach ($cats as $key => $category) {
-            
+
             $categoryArr = array();
             foreach ($category->subId as $subkey => $subcat) {
-                
+
                 $categoryArr[$subkey]['group_id'] = $group_id;
                 $categoryArr[$subkey]['category_id'] = $category->catId;
                 $categoryArr[$subkey]['sub_category_id'] = $subcat;

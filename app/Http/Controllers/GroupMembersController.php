@@ -12,13 +12,18 @@ class GroupMembersController extends Controller
 {
     //add row 
     function Insert($groupId, $userId, $type)
-    {
+    { try{
         $data = [
             "group_id" => $groupId,
             "user_id" => $userId,
             "privileges" => $type
         ];
-        Group_member::create($data);
+       $groupMember= Group_member::create($data);
+        return 200;
+    }catch(Exception $error)
+    {
+        return 500;
+    }
     }
     //update row according to row id
     function Update($id)

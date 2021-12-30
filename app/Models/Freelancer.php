@@ -18,6 +18,6 @@ class Freelancer extends Model
         'image',
         'country',
         'tools',
-        'type',
+        'type_freelancer',
     ];
 }

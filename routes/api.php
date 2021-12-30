@@ -72,11 +72,9 @@ Route::post('reset-password', [ResetPasswordController::class, 'resetPasswordChe
 Route::post('contactUS', [ContactUsController::class, 'Insert']);
 Route::post('waitingList', [WaitingListController::class, 'Insert']);
 
-
-Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
-   
+    Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::get('getCategories', [CategoriesController::class, 'getCategories']);
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
