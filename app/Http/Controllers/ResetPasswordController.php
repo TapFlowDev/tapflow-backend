@@ -84,7 +84,7 @@ class ResetPasswordController extends Controller
                 // $userObj = new User;
                 $user = User::where('email', $userData->email)->get()->first();
                 $user->password = $request->password;
-                $user->tokens()->where('tokenable_id ', $user->id)->delete();
+                $user->tokens()->delete();
                 $user->save();
                 DB::table('password_resets')->where('email', $userData->email)->delete();
             }
