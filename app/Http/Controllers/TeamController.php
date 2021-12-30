@@ -56,12 +56,14 @@ class TeamController extends Controller
         $cats=$GroupCategoriesController->getTeamCategories($id);
         $info=$this->get_team_info($id);
         $country_id=$info->country;
-        $flag=$NewCountriesController->getCountryFlag($country_id);
+        $Country=$NewCountriesController->getCountryFlag($country_id);
         $info->image = asset('images/companies/' . $info->image);
         $info->links=$links; 
         $info->teamMembers=$teamMembers; 
         $info->categories=$cats; 
-        $info->flag=$flag;
+        $info->countryName=$Country->name;
+        $info->countryCode=$Country->code;
+        $info->countryFlag=$Country->flag;
         $response=Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
         }
