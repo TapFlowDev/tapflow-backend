@@ -49,7 +49,6 @@ class NewCountriesController extends Controller
 
     } function getCountryFlag($id){
         $country=Countries::where('id',$id)->select('flag')->first();
-        dd($country);
        return $country;
     }
 }
