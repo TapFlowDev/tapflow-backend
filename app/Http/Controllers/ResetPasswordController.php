@@ -68,7 +68,7 @@ class ResetPasswordController extends Controller
             $response = Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
         }
-        try {
+        // try {
             $token = $request->t;
             $userData = DB::table('password_resets')->where('token', $token)->get()->first();
             if (empty($userData)) {
@@ -84,16 +84,16 @@ class ResetPasswordController extends Controller
                 // $userObj = new User;
                 $user = User::where('email', $userData->email)->get()->first();
                 $user->password = $request->password;
-                // $user->tokens()->where('tokenable_id ', $user->id)->delete();
+                $user->tokens()->where('tokenable_id ', $user->id)->delete();
                 $user->save();
-                // DB::table('password_resets')->where('email', $userData->email)->delete();
+                DB::table('password_resets')->where('email', $userData->email)->delete();
             }
             $response = Controller::returnResponse(200, "password changed successfully", array());
             return json_encode($response);
-        } catch (Exception $error) {
-            $responseData = array("error" => $error);
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
-            return json_encode($response);
-        }
+        // } catch (Exception $error) {
+        //     $responseData = array("error" => $error);
+        //     $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+        //     return json_encode($response);
+        // }
     }
 }
