@@ -10,12 +10,15 @@ use App\Models\Group;
 use App\Http\Controllers\GroupsLinksController;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupCategoriesController;
+use App\Http\Controllers\NewCountriesController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use League\CommonMark\Context;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Exception;
+use Facade\FlareClient\Flare;
+use PhpParser\Node\Expr\New_;
 use PHPUnit\TextUI\XmlConfiguration\Groups;
 
 use function PHPSTORM_META\type;
@@ -47,14 +50,18 @@ class TeamController extends Controller
         $linksController=new GroupsLinksController;
         $GroupMembersController=new GroupMembersController;
         $GroupCategoriesController=new GroupCategoriesController;
+        $NewCountriesController=new NewCountriesController;
         $links=$linksController->get_group_links($id);
         $teamMembers=$GroupMembersController->getTeamMembersByGroupId($id);
         $cats=$GroupCategoriesController->getTeamCategories($id);
         $info=$this->get_team_info($id);
+        $country_id=$info->country;
+        $flag=$NewCountriesController->getCountryFlag($country_id);
         $info->image = asset('images/companies/' . $info->image);
         $info->links=$links; 
         $info->teamMembers=$teamMembers; 
         $info->categories=$cats; 
+        $info->flag=$flag;
         $response=Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
         }
