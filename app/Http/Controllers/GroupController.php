@@ -76,8 +76,13 @@ class   GroupController extends Controller
                 $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
                 $group_id = $group->id;
                 $userId = $req->admin_id;
-                $membersObj->Insert($group_id, $userId, 1);
-               
+               $member= $membersObj->Insert($group_id, $userId, 1);
+                if ($member ==500)
+                {   
+                    $delGroup=Group::where('id',$group_id)->delete();
+                    $response = Controller::returnResponse(500, 'Add group member error', []);
+                     return json_encode($response);
+                }
                 if(isset($req->local))
                 {
                   
@@ -106,7 +111,13 @@ class   GroupController extends Controller
                             $categoryArr[$keySub]['category_id'] = $value->catId;
                             $categoryArr[$keySub]['sub_category_id'] = $subValue;
                         }
-                        $groupCategoryObj->addMultiRows($categoryArr);
+                       $add_cat= $groupCategoryObj->addMultiRows($categoryArr);
+                       if($add_cat == 500)
+                       {
+                        $delGroup=Group::where('id',$group_id)->delete();
+                        $response = Controller::returnResponse(500, 'add cast error',[]);
+                        return json_encode($response);
+                       }
                     }
                 }
             }

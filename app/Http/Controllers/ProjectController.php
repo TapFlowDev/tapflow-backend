@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ProjectCategoriesController;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use Illuminate\Support\Facades\Validator;
@@ -31,12 +32,32 @@ class ProjectController extends Controller
             ));
             return (json_encode($response));
         }
+        else{
         try {
-            $data = $req->except(['gender', 'dob', 'category']);
-
+            $data = $req->except(['gender', 'dob', 'categories']);
+            $ProjectCategoriesObj=new ProjectCategoriesController;
             // print_r($data);
             $project = Project::create($req->all());
-            
+            $project_id=$project->id;
+            $cats = json_decode($req->categories);
+                if (isset($cats)) {
+
+                    foreach ($cats as $key => $value) {
+                        $categoryArr = array();
+                        foreach ($value->subCat as $keySub => $subValue) {
+                            $categoryArr[$keySub]['project_id'] = $project_id;
+                            $categoryArr[$keySub]['category_id'] = $value->catId;
+                            $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                        }
+                       $add_cat= $ProjectCategoriesObj->addMultiRows($categoryArr);
+                       if($add_cat == 500)
+                       {
+                        $delProject=Project::where('id',$project_id)->delete();
+                        $response = Controller::returnResponse(500, 'add cast error',[]);
+                        return json_encode($response);
+                       }
+                    }
+                }
             $response = array("data" => array(
                 "message" => "project created successfully",
                 "status" => "200",
@@ -44,7 +65,8 @@ class ProjectController extends Controller
             ));
 
             return (json_encode($response));
-        } catch (Exception $error) {
+        
+        }catch (Exception $error) {
 
             $response = array("data" => array(
                 "message" => "There IS Error Occurred",
@@ -53,6 +75,7 @@ class ProjectController extends Controller
             ));
 
             return (json_encode($response));
+        }
         }
     }
     //update row according to row id
@@ -64,5 +87,11 @@ class ProjectController extends Controller
     function Delete($id)
     {
 
+    }
+
+    function exploreProject()
+    {
+        $allProjects=Project::all();
+        
     }
 }

@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\UserCategoriesController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\GroupMembersController;
-
 use App\Models\Category;
 use PhpParser\Node\Expr\Isset_;
 use Symfony\Component\VarDumper\Cloner\Data;
@@ -135,7 +134,8 @@ class FreeLancerController extends Controller
             $user = DB::table('users')
                 ->leftJoin('freelancers', 'users.id', '=', 'freelancers.user_id')
                 ->where('users.id', $id)
-                ->select('users.id','users.first_name','users.last_name','users.email','users.role','users.dob','users.gender','users.type','users.token','freelancers.type as team_type','freelancers.bio','freelancers.country','freelancers.image','freelancers.tools',)
+                ->select('users.id','users.first_name','users.last_name','users.email','users.role','users.dob', 'users.gender','users.type','users.token',
+                'freelancers.type_freelancer','freelancers.bio','freelancers.country','freelancers.image','freelancers.tools',)
                 ->get();
                
 

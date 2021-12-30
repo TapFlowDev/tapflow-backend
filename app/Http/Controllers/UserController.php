@@ -79,7 +79,7 @@ class UserController extends Controller
         } else {
             try {
                 $user = User::create($req->all());
-                $array = array("user_id" => $user->id, 'type' => 1);
+                $array = array("user_id" => $user->id, 'type_freelancer' => 1);
                 $freelancer = Freelancer::create($array);
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
