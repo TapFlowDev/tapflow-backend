@@ -45,7 +45,7 @@ class GroupMembersController extends Controller
         try {
             $teamMembers = DB::table('group_members')
                 ->leftjoin('freelancers', 'group_members.user_id', '=', 'freelancers.user_id')
-                ->leftjoin('users', 'group_members.user_id', '=', 'users.id')->select("freelancers.user_id", "users.first_name", "users.last_name", "users.email", "freelancers.type", "freelancers.image", "freelancers.country", "users.role", "group_members.privileges")
+                ->leftjoin('users', 'group_members.user_id', '=', 'users.id')->select("freelancers.user_id", "users.first_name", "users.last_name", "users.email", "freelancers.type_freelancer", "freelancers.image", "freelancers.country", "users.role", "group_members.privileges")
                 ->where('group_members.group_id', '=', $id)
                 ->get();
             return ($teamMembers);
