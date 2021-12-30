@@ -1,11 +1,13 @@
-@component('mail::message')
-Reset your Password
-{{-- <a href="{{ $details['url'] }}">Click here to reset your password</a> --}}
-
-@component('mail::button', ['url' => $details['url']])
+{{-- @component('mail::message') --}}
+<h1 style="color: black; font-weight: bold;">Reset your Password</h1>
+<p style="color: black;">
+<a href={{ $details['url'] }}>Click here to reset your password</a>
+<br>
+{{-- @component('mail::button', ['url' => $details['url']])
 Button Text
-@endcomponent
+@endcomponent --}}
 
-Thanks,<br>
-{{ config('app.name') }}
-@endcomponent
+{{-- Thanks,<br> --}}
+<span style="color: black;">{{ config('app.name') }},</span>
+</p>
+{{-- @endcomponent --}}

@@ -1,9 +1,9 @@
-@component('mail::message')
+{{-- @component('mail::message') --}}
 Name: {{ $details['name'] }}<br>
 Email: {{ $details['email'] }}<br>
-Email: {{ $details['message'] }}<br>
+Message: {{ $details['message'] }}<br>
 
 
 <br>
-{{ config('app.name') }}
-@endcomponent
+{{ config('app.name') }},
+{{-- @endcomponent --}}
