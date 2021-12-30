@@ -46,5 +46,10 @@ class NewCountriesController extends Controller
         $country=Countries::where('id',$id)->first();
         $response=Controller::returnResponse(200,'successful',['name'=>$country]);
         return (json_encode($response));
+
+    } function getCountryFlag($id){
+        $country=Countries::where('id',$id)->select('flag')->first();
+        dd($country);
+       return $country;
     }
 }
