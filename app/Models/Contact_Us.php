@@ -11,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 class Contact_Us extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
+    protected $table = 'contact_us';
     protected $fillable = [
         'name',
         'email',
