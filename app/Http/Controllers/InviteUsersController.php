@@ -140,6 +140,7 @@ class InviteUsersController extends Controller
                 Invite_code::where('link_token', $req->link_token)->update(['status' => $status, 'expired' => 1]);
         
                 $group_member_obj->Insert($group->group_id,$req->user_id,2);
+                
                 //change freelancer type depend on group type agencu or team of freelancers
                 $response = Controller::returnResponse(200, 'user joined the team', array());
                 return json_encode($response);
@@ -193,7 +194,7 @@ class InviteUsersController extends Controller
                 Invite_code::where('code', $req->link_token)->update(['status' => $status, 'expired' => 1]);
                 $group_member_obj->Insert($group->group_id,$req->user_id,2);
                 if ($userType == 1) {
-                $f=Freelancer::where("user_id",$req->user_id)->update(["type"=>$group_info->type]);
+                $f=Freelancer::where("user_id",$req->user_id)->update(["type_freelancer"=>$group_info->type]);
                 }
                 //change freelancer type depend on group type agencu or team of freelancers
                 $response = Controller::returnResponse(200, 'user joined the team', array());

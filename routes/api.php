@@ -101,9 +101,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
     Route::post('createProject', [ProjectController::class, 'Insert']);
     Route::post('saveImage', [ImagesController::class, 'Insert']);
-    Route::post('joinWithCode', [InviteUsersController::class, 'joinGroupByCode']);
-    Route::post('sendInvitation', [InviteUsersController::class, 'sendInvitation']);
+
     Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
     Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);
     Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
-});
+});    
+Route::post('joinWithCode', [InviteUsersController::class, 'joinGroupByCode']);
+Route::post('sendInvitation', [InviteUsersController::class, 'sendInvitation']);
