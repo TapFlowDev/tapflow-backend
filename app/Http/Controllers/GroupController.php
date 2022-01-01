@@ -114,7 +114,7 @@ class   GroupController extends Controller
                        $add_cat= $groupCategoryObj->addMultiRows($categoryArr);
                        if($add_cat == 500)
                        {
-                        $delGroup=Group::where('id',$group_id)->delete();
+                           $delGroup=Group::where('id',$group_id)->delete();
                         $response = Controller::returnResponse(500, 'add cast error',[]);
                         return json_encode($response);
                        }
