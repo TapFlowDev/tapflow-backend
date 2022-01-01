@@ -73,9 +73,10 @@ class GroupMembersController extends Controller
     private function getUserImages($users)
     {
         foreach ($users as $keyUser => &$user) {
-
-            $image = asset('images/users/' . $user->image);
-            $user->image = $image;
+            if ($user->image != '') {
+                $image = asset('images/users/' . $user->image);
+                $user->image = $image;
+            }
         }
         return $users;
     }
