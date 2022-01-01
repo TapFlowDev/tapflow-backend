@@ -12,18 +12,18 @@ class GroupMembersController extends Controller
 {
     //add row 
     function Insert($groupId, $userId, $type)
-    { try{
-        $data = [
-            "group_id" => $groupId,
-            "user_id" => $userId,
-            "privileges" => $type
-        ];
-       $groupMember= Group_member::create($data);
-        return 200;
-    }catch(Exception $error)
     {
-        return 500;
-    }
+        try {
+            $data = [
+                "group_id" => $groupId,
+                "user_id" => $userId,
+                "privileges" => $type
+            ];
+            $groupMember = Group_member::create($data);
+            return 200;
+        } catch (Exception $error) {
+            return 500;
+        }
     }
     //update row according to row id
     function Update($id)
@@ -48,6 +48,7 @@ class GroupMembersController extends Controller
                 ->leftjoin('users', 'group_members.user_id', '=', 'users.id')->select("freelancers.user_id", "users.first_name", "users.last_name", "users.email", "freelancers.type_freelancer", "freelancers.image", "freelancers.country", "users.role", "group_members.privileges")
                 ->where('group_members.group_id', '=', $id)
                 ->get();
+            $teamMembers = $this->getUserImages($teamMembers);
             return ($teamMembers);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
@@ -65,7 +66,17 @@ class GroupMembersController extends Controller
     }
     function getUserPrivileges($user_id)
     {
-        $privileges=Group_member::select('privileges')->where('user_id', $user_id)->get()->first();
+        $privileges = Group_member::select('privileges')->where('user_id', $user_id)->get()->first();
         return $privileges;
+    }
+
+    private function getUserImages($users)
+    {
+        foreach ($users as $keyUser => &$user) {
+
+            $image = asset('images/users/' . $user->image);
+            $user->image = $image;
+        }
+        return $users;
     }
 }
