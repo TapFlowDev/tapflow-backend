@@ -76,6 +76,8 @@ class GroupMembersController extends Controller
             if ($user->image != '') {
                 $image = asset('images/users/' . $user->image);
                 $user->image = $image;
+            }else{
+                $user->image = "/static/media/profile-pic.908e425a.jpg";
             }
         }
         return $users;

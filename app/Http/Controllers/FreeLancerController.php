@@ -197,8 +197,12 @@ class FreeLancerController extends Controller
             } else {
                 $user->links = [];
             }
-            $image = asset('images/users/' . $user->image);
-            $user->image = $image;
+            if ($user->image != '') {
+                $image = asset('images/users/' . $user->image);
+                $user->image = $image;
+            }else{
+                $user->image = "/static/media/profile-pic.908e425a.jpg";
+            }
             $groupId = $membersObj->getGroupId($user->id);
             if ($groupId != '') {
                 $user->team_id = $groupId->group_id;
