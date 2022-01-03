@@ -14,7 +14,7 @@ class WaitingList extends Migration
     public function up()
     {
         //
-        Schema::create('countries', function (Blueprint $table) {
+        Schema::create('waiting_lists', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->string('email');
             $table->timestamps();
