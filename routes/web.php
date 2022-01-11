@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Mail;
 */
 
 Route::get('/', function () {
-    return "home";
+    return redirect('/AdminTool');
 });
 Route::get('/AdminTool', function () {
     return view('index');
