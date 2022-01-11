@@ -245,7 +245,7 @@ class UserController extends Controller
 
     function getUserById($id)
     {
-        return User::find($id)->first();
+        return User::find($id);
     }
 
     function newRegister(Request $req)

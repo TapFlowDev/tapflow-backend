@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Group_member;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class GroupMembersController extends Controller
@@ -76,10 +78,51 @@ class GroupMembersController extends Controller
             if ($user->image != '') {
                 $image = asset('images/users/' . $user->image);
                 $user->image = $image;
-            }else{
+            } else {
                 $user->image = "/static/media/profile-pic.908e425a.jpg";
             }
         }
         return $users;
+    }
+
+    function removeUserFromGroup(Request $req)
+    {
+
+        $rules = array(
+            "admin_id" => "required|exists:group_members,user_id",
+            "user_id" => "required|exists:group_members,user_id"
+        );
+        $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            $responseData = $validator->errors();
+            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+            return (json_encode($response));
+        }
+        $adminId = $req->admin_id;
+        $userId = $req->user_id;
+        try {
+            $adminInfo = Group_member::where("user_id", $adminId)->get()->first();
+            if ($adminInfo->privileges != 1) {
+                $response = Controller::returnResponse(422, 'user not admin ', []);
+                return json_encode($response);
+            }
+            $userInfo = Group_member::where("user_id", $userId)
+                ->where('group_id', $adminInfo->group_id)->get()->first();
+            if (isset($userInfo) && $userInfo != '') {
+                //remove
+                Group_member::where('user_id', $userId)->where('group_id', $adminInfo->group_id)->delete();
+                $user = User::find($userId);
+                $user->tokens()->delete();
+                $user->save();
+                $response = Controller::returnResponse(200, 'user deleted successfully', []);
+                return json_encode($response);
+            } else {
+                $response = Controller::returnResponse(422, 'user not in same group as admin ', []);
+                return json_encode($response);
+            }
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
     }
 }
