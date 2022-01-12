@@ -26,7 +26,7 @@ use  App\Http\Controllers\ResetPasswordController;
 use  App\Http\Controllers\WaitingListController;
 use  App\Http\Controllers\NewCountriesController;
 use  App\Http\Controllers\WalletsTransactionsController;
-use  App\Http\Controllers\Milestones;
+use  App\Http\Controllers\GroupMembersController;
 
 
 /*
@@ -107,4 +107,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
     Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);
     Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
+    Route::post('removeUser', [GroupMembersController::class, 'removeUserFromGroup']);
 });
