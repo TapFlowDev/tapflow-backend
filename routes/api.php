@@ -26,6 +26,7 @@ use  App\Http\Controllers\ResetPasswordController;
 use  App\Http\Controllers\WaitingListController;
 use  App\Http\Controllers\NewCountriesController;
 use  App\Http\Controllers\WalletsTransactionsController;
+use  App\Http\Controllers\Milestones;
 
 
 /*
