@@ -15,59 +15,79 @@ use App\Http\Controllers\TasksController;
 class Milestones extends Controller
 {
     //add row 
-    function Insert($data,$project_id,$final_proposal_id)
+    function Insert($data, $project_id, $final_proposal_id, $final_price)
 
-    {  
-       
-        $Tasks=new TasksController;
-       
-      
-        foreach($data as $milestone)
-        {  
-            $arr=array(
-                "project_id"=>$project_id,
-                "final_proposal_id"=>$final_proposal_id,
-                "name"=>$milestone['name'],
-                "days"=>$milestone['days'],
-                "description"=>$milestone['description'],
-                "price"=>"100",
+    {
+
+        $Tasks = new TasksController;
+
+        try{
+        foreach ($data as $milestone) {
+            $arr = array(
+                "project_id" => $project_id,
+                "final_proposal_id" => $final_proposal_id,
+                "name" => $milestone['name'],
+                "days" => $milestone['days'],
+                "description" => $milestone['description'],
+                "percentage" =>$milestone['percentage'],
             );
-            $milestone_info=Milestone::create($arr);
-           
-            $Tasks->Insert($milestone['tasks'],$milestone_info->id);
-           
-        }
-      
-    //  try{
-    //         $milestones=Milestone::Create($req->all());
-    //         $milestone_id=$milestones->id;
-    //         $response=array('data'=>array(
-    //             'message'=>"final proposal add successfully",
-    //             "status"=>"200",
-    //             "Accepted_proposal_id"=>$milestone_id,
-    //         ));
-    //         return (json_encode($response));
-    //     }
-    //     catch(Exception $error)
-    // {
-    //     $response = array("data" => array(
-    //         "message" => "There IS Error Occurred",
-    //         "status" => "500",
-    //         "error" => $error,
-    //     ));
+            $percentage=$milestone['percentage'];
+            $dividable =fmod($percentage,5);
+            if($dividable == 0)
+            {
+                $milestone_price=$this->calculatePrice($percentage,$final_price);
+                $mp=fmod($milestone_price,5);
+               
+                if($mp == 0.0)
+                {
+                    $milestone_info = Milestone::create($arr+["price"=>$milestone_price]);
 
-    //     return (json_encode($response));
-    // }
+                    $Tasks->Insert($milestone['tasks'], $milestone_info->id);
+                }
+                
+                else
+                {
+                    return 101;
+                }
+
+            }
+            else{ 
+                return 101;
+            }
+          
+
+
+         
+        }
+        return 200;
+        }catch(Exception $error)
+        {
+            return 500;
+        }
     }
-   
+    
+
     //update row according to row id
     function Update($id)
     {
-
     }
     //delete row according to row id
     function Delete($id)
     {
+    }
+    private function calculatePrice($percentage, $final_price)
+    {
 
+        $mPrice = $final_price * ($percentage/100);
+        return $mPrice;
+    }
+    private function dividableBy5($number)
+    {
+        $mod = $number % 5;
+        if ($mod == 0) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }
