@@ -38,12 +38,12 @@ class ProjectController extends Controller
         $userInfo = $userObj->getUserById($req->user_id);
         $userGroupInfo = $groupMemberObj->getMemberInfoByUserId($req->user_id);
         $userPrivilege = $userGroupInfo->privileges;
-        return "ok";
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
         }
+        return "ok";
         if ((int)$userInfo->type != 2 && (int)$userPrivilege != 1) {
             $validation = array("type" => array(
                 "user cant add project"
