@@ -18,6 +18,7 @@ class Milestone extends Model
         "name",
         "description",
         "days",
+        "percentage",
         "price",
         "status",
     ];
