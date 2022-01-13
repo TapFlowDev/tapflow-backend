@@ -129,7 +129,7 @@ class ProjectController extends Controller
             $projects =  DB::table('projects_categories')
                 ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
                 ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
-                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.requirements_description', 'projects.days')->distinct()
+                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.requirements_description', 'projects.days')
                 ->where('groups_categories.group_id', '=', $agency_id)
                 ->where('projects.status', '=', 0)
                 ->latest()->offset($page)->limit($limit)
