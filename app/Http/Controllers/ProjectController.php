@@ -51,6 +51,7 @@ class ProjectController extends Controller
             return json_encode($response);
         } else {
             try {
+                return "ok";
                 $ProjectCategoriesObj = new ProjectCategoriesController;
                 // print_r($data);
                 $project = Project::create($req->except(['postman']) + ["company_id" => $userGroupInfo->group_id]);
