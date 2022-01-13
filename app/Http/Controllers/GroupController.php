@@ -76,51 +76,47 @@ class   GroupController extends Controller
                 $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
                 $group_id = $group->id;
                 $userId = $req->admin_id;
-               $member= $membersObj->Insert($group_id, $userId, 1);
-                if ($member ==500)
-                {   
-                    $delGroup=Group::where('id',$group_id)->delete();
+                $member = $membersObj->Insert($group_id, $userId, 1);
+                if ($member == 500) {
+                    $delGroup = Group::where('id', $group_id)->delete();
                     $response = Controller::returnResponse(500, 'Add group member error', []);
-                     return json_encode($response);
+                    return json_encode($response);
                 }
-                if(isset($req->local))
-                {
-                  
-                //    foreach($req->categories as $c)
-                //    {
-                //        foreach($c['subId'] as $s)
-                //        {
-                //         $arr=array(
-                //             'group_id'=>$group_id,
-                //             'category_id'=>$c['catId'],
-                //             'sub_category_id'=>$s
-    
-                //         );
-                //         $groupCategoryObj->addMultiRows($arr);
-                //        }
-                //    }
-                }
-                else{
-                $cats = json_decode($req->categories);
-                if (isset($cats)) {
+                if (isset($req->local)) {
 
-                    foreach ($cats as $key => $value) {
-                        $categoryArr = array();
-                        foreach ($value->subCat as $keySub => $subValue) {
-                            $categoryArr[$keySub]['group_id'] = $group_id;
-                            $categoryArr[$keySub]['category_id'] = $value->catId;
-                            $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                    //    foreach($req->categories as $c)
+                    //    {
+                    //        foreach($c['subId'] as $s)
+                    //        {
+                    //         $arr=array(
+                    //             'group_id'=>$group_id,
+                    //             'category_id'=>$c['catId'],
+                    //             'sub_category_id'=>$s
+
+                    //         );
+                    //         $groupCategoryObj->addMultiRows($arr);
+                    //        }
+                    //    }
+                } else {
+                    $cats = json_decode($req->categories);
+                    if (isset($cats)) {
+
+                        foreach ($cats as $key => $value) {
+                            $categoryArr = array();
+                            foreach ($value->subCat as $keySub => $subValue) {
+                                $categoryArr[$keySub]['group_id'] = $group_id;
+                                $categoryArr[$keySub]['category_id'] = $value->catId;
+                                $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                            }
+                            $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
+                            if ($add_cat == 500) {
+                                $delGroup = Group::where('id', $group_id)->delete();
+                                $response = Controller::returnResponse(500, 'add cast error', []);
+                                return json_encode($response);
+                            }
                         }
-                       $add_cat= $groupCategoryObj->addMultiRows($categoryArr);
-                       if($add_cat == 500)
-                       {
-                           $delGroup=Group::where('id',$group_id)->delete();
-                        $response = Controller::returnResponse(500, 'add cast error',[]);
-                        return json_encode($response);
-                       }
                     }
                 }
-            }
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
                 $teamArr['bio'] = $req->bio;
@@ -132,15 +128,15 @@ class   GroupController extends Controller
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
-                 if ($req->hasFile('image')) {
-                     $destPath = 'images/companies';
-                     // $ext = $req->file('image')->extension();
-                     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
-                     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-                     $img = $req->image;
-                     $img->move(public_path($destPath), $imageName);
-                     $teamObj->updateFiles($teamId, $imageName, 'image');
-                 }
+                if ($req->hasFile('image')) {
+                    $destPath = 'images/companies';
+                    // $ext = $req->file('image')->extension();
+                    $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                    // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                    $img = $req->image;
+                    $img->move(public_path($destPath), $imageName);
+                    $teamObj->updateFiles($teamId, $imageName, 'image');
+                }
                 // if ($req->hasFile('attachment')) {
                 //     $destPath = 'images/groups';
                 //     DB::table('groups_attachments')->where('group_id', $teamId)->delete();
@@ -156,7 +152,7 @@ class   GroupController extends Controller
                 //         ]);
                 //     }
                 // }
-                if ( isset($req->links) && count($req->links) > 0 ) {
+                if (isset($req->links) && count($req->links) > 0) {
                     DB::table('groups_links')->where('group_id', $teamId)->delete();
 
                     foreach ($req->links as $keyLink => $valLink) {
@@ -198,7 +194,8 @@ class   GroupController extends Controller
     {
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id"
+            "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
+            "link" => "required"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -213,12 +210,10 @@ class   GroupController extends Controller
             $membersObj = new GroupMembersController;
 
             try {
-
                 $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
 
                 $group_id = $group->id;
                 $userId = $req->admin_id;
-                $membersObj->Insert($group_id, $userId, 1);
 
 
                 $teamArr = array();
@@ -230,34 +225,33 @@ class   GroupController extends Controller
                 $teamArr['field'] = $req->field;
 
                 $teamInfo = $teamObj->Insert($teamArr);
+                $membersObj->Insert($group_id, $userId, 1);
                 $teamId = $group_id;
-                if ($req->hasFile('image')) {
+                if ($req->hasFile('image') && isset($req->image)) {
                     $destPath = 'images/groups';
                     // $ext = $req->file('image')->extension();
-                    $imageName = mt_rand(100000, 999999) . "-" . $req->file('image')->getClientOriginalName();
+                    $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
                     // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-
                     $img = $req->image;
-
                     $img->move(public_path($destPath), $imageName);
                     $teamObj->updateFiles($teamId, $imageName, 'image');
                 }
-                if ($req->hasFile('attachment')) {
-                    $destPath = 'images/groups';
-                    DB::table('groups_attachments')->where('group_id', $teamId)->delete();
-                    foreach ($req->attachment as $keyAttach => $valAttach) {
-                        $ext = $valAttach->extension();
+                // if ($req->hasFile('attachment')) {
+                //     $destPath = 'images/groups';
+                //     DB::table('groups_attachments')->where('group_id', $teamId)->delete();
+                //     foreach ($req->attachment as $keyAttach => $valAttach) {
+                //         $ext = $valAttach->extension();
 
-                        $attachName = mt_rand(100000, 999999) . "-" . $valAttach->getClientOriginalName();
-                        $attach = $valAttach;
-                        $attach->move(public_path($destPath), $attachName);
-                        DB::table('groups_attachments')->insert([
-                            'group_id' => $teamId,
-                            'attachment' => $attachName
-                        ]);
-                    }
-                }
-                if (count($req->links) > 0 && isset($req->links)) {
+                //         $attachName = time() . "-" .  $valAttach->getClientOriginalName();
+                //         $attach = $valAttach;
+                //         $attach->move(public_path($destPath), $attachName);
+                //         DB::table('groups_attachments')->insert([
+                //             'group_id' => $teamId,
+                //             'attachment' => $attachName
+                //         ]);
+                //     }
+                // }
+                if (isset($req->links) && count($req->links) > 0) {
                     DB::table('groups_links')->where('group_id', $teamId)->delete();
 
                     foreach ($req->links as $keyLink => $valLink) {
@@ -267,6 +261,7 @@ class   GroupController extends Controller
                         ]);
                     }
                 }
+
                 // $response = array("data" => array(
                 //     "message" => "team added successfully",
                 //     "status" => "200",
@@ -307,5 +302,4 @@ class   GroupController extends Controller
     {
         return Group::find($id);
     }
-    
 }
