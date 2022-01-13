@@ -38,6 +38,7 @@ class ProjectController extends Controller
         $userInfo = $userObj->getUserById($req->user_id);
         $userGroupInfo = $groupMemberObj->getMemberInfoByUserId($req->user_id);
         $userPrivilege = $userGroupInfo->privileges;
+        return "ok";
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
@@ -51,7 +52,6 @@ class ProjectController extends Controller
             return json_encode($response);
         } else {
             try {
-                return "ok";
                 $ProjectCategoriesObj = new ProjectCategoriesController;
                 // print_r($data);
                 $project = Project::create($req->except(['postman']) + ["company_id" => $userGroupInfo->group_id]);
