@@ -64,8 +64,8 @@ Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::post('addTeam', [GroupController::class, 'add_group_team']);
-Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);    
-Route::post('createWallet', [WalletsController::class, 'Insert']);    
+Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
 Route::post('forgetPassword', [ResetPasswordController::class, 'sendLinkResetPassword']);
@@ -81,7 +81,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
-    
+
     Route::post('newLogout', [UserController::class, 'newLogout']);
     Route::post('addProposal', [Proposals::class, 'Insert']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
@@ -96,7 +96,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateTeamBio', [TeamController::class, 'updateTeamBio']);
     Route::post('updateTeamLink', [TeamController::class, 'updateLink']);
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
-  
+
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
     Route::post('addFreelancerInfo', [FreeLancerController::class, 'Insert_freelancer']);
     Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
@@ -108,4 +108,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);
     Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
     Route::post('removeUser', [GroupMembersController::class, 'removeUserFromGroup']);
+    Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
+    Route::get('getSuggestedProjects/{agency_id}', [ProjectController::class, 'suggestedProjects']);
 });

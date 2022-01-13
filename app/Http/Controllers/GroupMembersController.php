@@ -125,4 +125,7 @@ class GroupMembersController extends Controller
             return json_encode($response);
         }
     }
+    function getMemberInfoByUserId($userId){
+        return Group_member::where('user_id', '=', $userId)->first();
+    }
 }
