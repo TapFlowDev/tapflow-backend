@@ -72,6 +72,7 @@ Route::post('forgetPassword', [ResetPasswordController::class, 'sendLinkResetPas
 Route::post('reset-password', [ResetPasswordController::class, 'resetPasswordCheck']);
 Route::post('contactUS', [ContactUsController::class, 'Insert']);
 Route::post('waitingList', [WaitingListController::class, 'Insert']);
+Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
