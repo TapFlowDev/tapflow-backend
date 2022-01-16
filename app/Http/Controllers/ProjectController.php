@@ -132,6 +132,7 @@ class ProjectController extends Controller
                 ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.requirements_description', 'projects.days', 'projects.created_at')
                 ->where('groups_categories.group_id', '=', $agency_id)
                 ->where('projects.status', '=', 0)
+                ->distinct()
                 ->latest()->offset($page)->limit($limit)
                 ->get();
             $projectsData = $this->getProjectsInfo($projects);
