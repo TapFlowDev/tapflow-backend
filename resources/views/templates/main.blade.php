@@ -83,7 +83,7 @@
                         <li>
                             <a href="/AdminTool/clients">
                                 <span class="icon"></span>
-                                <span class="title">Companies Members</span>
+                                <span class="title">Company Members</span>
                             </a>
                         </li>
                     </ul>

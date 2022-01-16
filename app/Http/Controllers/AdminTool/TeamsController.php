@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GroupCategoriesController;
 use Illuminate\Http\Request;
 use App\Models\Group;
+use App\Models\Group_member;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 
@@ -21,8 +24,10 @@ class TeamsController extends Controller
         $teams = DB::table('teams')
         ->join('groups', 'teams.group_id', '=', 'groups.id')
         ->select('groups.*', 'teams.*')->paginate(10);
+        $teamsInfo = $this->getData($teams);
+        // return $teamsInfo;
         
-        return view('AdminTool.Agencies.index', ['users' => $teams]);
+        return view('AdminTool.Agencies.index', ['users' => $teamsInfo]);
     }
 
     /**
@@ -54,7 +59,19 @@ class TeamsController extends Controller
      */
     public function show($id)
     {
-        //
+        $teams = DB::table('teams')
+        ->join('groups', 'teams.group_id', '=', 'groups.id')
+        ->select('groups.*', 'teams.*')
+        ->where('groups.id', $id)
+        ->where('groups.status', 1)
+        ->where('groups.deleted', 0)
+        ->get();
+        $teamsInfo = $this->getData($teams)->first();
+
+        // dd();
+        // return $info->first();
+        return view('AdminTool.Agencies.show',  ['info' => $teamsInfo]);
+   
     }
 
     /**
@@ -92,10 +109,18 @@ class TeamsController extends Controller
     }
     private function getData($array)
     {
-        foreach ($array as $key => &$user) {
-
-            // $groupName = Group::find($teamInfo->group_id)->name;
-            // $user->team_name = $groupName;
+        $groupCatObj = new GroupCategoriesController;
+        foreach ($array as $key => &$group) {
+            $admin = Group_member::select('user_id')->where('group_id', $group->group_id)->get()->first();
+            $userInfo = User::find($admin->user_id);
+            $group->admin_name = $userInfo->first_name . " " . $userInfo->last_name;
+            $group->admin_id = $userInfo->id;
+            $group->categories = $groupCatObj->getTeamCategories($group->id);
+            if($group->image != ""){
+                $group->image = asset('images/users/' . $group->image);
+            }else{
+                $group->image = asset('images/profile-pic.jpg');
+            }
         }
         return $array;
     }
