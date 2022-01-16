@@ -22,7 +22,7 @@ class AdminConroller extends Controller
         // if(Gate::allows('is-admin')){
 
         // }
-        return view('AdminTool.Users.index', ['users'=>User::paginate(10)]);
+        return view('AdminTool.Users.index', ['users' => User::paginate(10)]);
         // dd('go to login');
     }
 
@@ -35,7 +35,6 @@ class AdminConroller extends Controller
     {
         //
         return view('AdminTool.Users.add');
-        
     }
 
     /**
@@ -71,7 +70,7 @@ class AdminConroller extends Controller
     public function edit($id)
     {
         // dd(User::find($id));
-        return view('AdminTool.Users.edit', ['user'=>User::find($id)]);
+        return view('AdminTool.Users.edit', ['user' => User::find($id)]);
     }
 
     /**
@@ -86,7 +85,6 @@ class AdminConroller extends Controller
         $user = User::findOrfail($id);
         $user->update($request->except(['_token']));
         return redirect('/AdminTool/users');
-        
     }
 
     /**
@@ -97,13 +95,16 @@ class AdminConroller extends Controller
      */
     public function destroy($id)
     {
-        User::destroy($id);
-        return redirect('/AdminTool/users');
-    }    
-    
+        // $userObj = new User;
+        // $user = $userObj::find($id);
+        // $user->status = 0;
+        // $user->deleted = 1;
+        // $user->save();
+        // return redirect('/AdminTool/users');
+    }
+
     public function login($id)
     {
         return view('AdminTool.login');
-        
     }
 }

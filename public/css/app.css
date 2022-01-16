@@ -11598,6 +11598,25 @@ body {
   list-style: none;
 }
 
+.team-name-link a {
+  text-decoration: none;
+  font-weight: 400;
+  color: black;
+}
+
+.team-name-link a:hover {
+  color: grey;
+}
+
+.verify {
+  display: flex;
+  justify-content: space-between;
+}
+
+.verify .fas {
+  font-size: 30px;
+}
+
 @media (max-width: 992px) {
   .navigation {
     left: -300px;
