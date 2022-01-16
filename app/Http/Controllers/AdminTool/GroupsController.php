@@ -72,7 +72,7 @@ class GroupsController extends Controller
     {
         // dd($request->verify);
         Group::where('id', $id)->update(['verified'=>(int)$request->verify]);
-        return redirect('/AdminTool/agencies');
+        return redirect()->back();
     }
 
     /**

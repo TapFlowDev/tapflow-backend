@@ -49,6 +49,7 @@ Route::get('/AdminTool/dashboard', function () {
 })->middleware(['auth', 'auth.isAdmin']);
 
 Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminTool.')->group(function () {
+    Route::get('/freelancers/sendEmailShow/{id}', [FreeLancerController::class, 'sendEmailShow'])->name('freelancers.sendEmailShow');
     Route::resource('/users', AdminConroller::class);
     Route::resource('/categories', AdminCategoriesController::class);
     Route::resource('/freelancers', FreeLancerController::class);
