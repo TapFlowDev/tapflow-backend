@@ -23,7 +23,9 @@ class TeamsController extends Controller
     {
         $teams = DB::table('teams')
         ->join('groups', 'teams.group_id', '=', 'groups.id')
-        ->select('groups.*', 'teams.*')->paginate(10);
+        ->select('groups.*', 'teams.*')
+        ->orderBy('groups.verified', 'asc')
+        ->paginate(10);
         $teamsInfo = $this->getData($teams);
         // return $teamsInfo;
         
@@ -106,6 +108,17 @@ class TeamsController extends Controller
     public function destroy($id)
     {
         //
+    }
+    function getUnverifiedAgencies(){
+        $teams = DB::table('teams')
+        ->join('groups', 'teams.group_id', '=', 'groups.id')
+        ->select('groups.*', 'teams.*')
+        ->where('groups.verified', 0)
+        ->paginate(10);
+        $teamsInfo = $this->getData($teams);
+        // return $teamsInfo;
+        
+        return $teamsInfo;
     }
     private function getData($array)
     {

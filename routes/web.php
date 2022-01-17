@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\RolesController;
 use App\Http\Controllers\AdminTool\AnnouncementsController;
+use App\Http\Controllers\AdminTool\DashboardController;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
@@ -44,9 +45,11 @@ Route::get('/AdminTool/login', function () {
 //  return redirect('/AdminTool/login');
 // });
 
-Route::get('/AdminTool/dashboard', function () {
-    return view('AdminTool.dashboard');
-})->middleware(['auth', 'auth.isAdmin']);
+Route::get('/AdminTool/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'auth.isAdmin']);
+
+// Route::get('/AdminTool/dashboard', function () {
+//     return view('AdminTool.dashboard');
+// })->middleware(['auth', 'auth.isAdmin']);
 
 Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminTool.')->group(function () {
     Route::get('/freelancers/sendEmailShow/{id}', [FreeLancerController::class, 'sendEmailShow'])->name('freelancers.sendEmailShow');

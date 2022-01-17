@@ -66,8 +66,6 @@ class FreeLancerController extends Controller
         ->join('users', 'freelancers.user_id', '=', 'users.id')
         ->select('users.*', 'freelancers.*')
         ->where('users.id', $id)
-        ->where('users.status', 1)
-        ->where('users.deleted', 0)
         ->get();
         $memberInfo = $this->getUserData($member)->first();
         //  return $memberInfo;

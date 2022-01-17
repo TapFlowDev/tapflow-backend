@@ -111,4 +111,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('removeUser', [GroupMembersController::class, 'removeUserFromGroup']);
     Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
     Route::get('getSuggestedProjects/{agency_id}', [ProjectController::class, 'suggestedProjects']);
+    Route::get('project/{id}', [ProjectController::class, 'getProject']);
 });

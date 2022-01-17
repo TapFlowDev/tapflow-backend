@@ -275,21 +275,20 @@ body {
     padding: 0;
     display: none;
     list-style: none;
+}.team-name-link a{
+  text-decoration: none;
+  font-weight: 400;
+  color: black;
 }
-.text-secondary a{
-    text-decoration: none;
-    font-weight: 400;
-    color: black;
-}
-.text-secondary a:hover{
-    color: grey;
+.team-name-link a:hover{
+  color: grey;
 }
 .verify{
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 .verify .fas{
-    font-size: 30px;
+  font-size: 30px;
 }
 @media (max-width: 992px) {
     .navigation {
@@ -364,6 +363,7 @@ body {
 //     box-shadow: inset 0 0 5px rgb(0, 0, 0, 0.1);
 //     border-radius: 10px;
 // }
+
 // /* Handle
 // ::-webkit-scrollbar-thumb {
 //     background: $background;
@@ -481,6 +481,7 @@ body {
 //     padding: 12px 18px 12px 25px;
 //     margin: 15px 0px;
 //     border-radius: 8px;
+
 // }
 // .navigation-list-item:hover {
 //     background: rgb(0, 0, 0, 0.05);
@@ -537,19 +538,24 @@ body {
 // .dropdown-item {
 //     color: $textColor;
 // }
+
 // a{
 //     text-decoration: none;
 //     font-weight: 400;
 //     font-size: 16px;
 //     color: rgb(255, 255, 255, 0.8);
+
 // }
+
 // // body{
 // //     background-color: $background;
 // //     color: $text;
 // // }
+
 // // h1{
 // //     margin-bottom: 30px;
 // // }
+
 // // .navbar{
 // //     background-color: $navBar;
 // //     width: 250px;
@@ -561,11 +567,13 @@ body {
 // //         color:#fff;
 // //     }
 // // }
+
 // // // .nav-link:active,
 // // // .nav-link:focus,
 // // // .nav-link:hover{
 // // //     background-color:$background;
 // // // }
+
 // // // .dropdown-menu{
 // // //     background-color: $background;
 // // // }
@@ -582,6 +590,7 @@ body {
 // //         color: $navBar;
 // //     }
 // // }
+
 // // .card{
 // //     box-shadow: 0 2px 4px rgba(204, 204, 204, 0.8);
 // //     padding: 20px 40px;

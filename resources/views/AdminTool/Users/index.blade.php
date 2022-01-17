@@ -25,8 +25,8 @@
                         <td>{{ $user->first_name . ' ' . $user->last_name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>
-                            <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.users.edit', $user->id) }}"
-                                role="button">edit</a>
+                            <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.users.show', $user->id) }}"
+                                role="button">View</a>
                                 <button class="btn btn-sm btn-danger" 
                                     onclick="event.preventDefault();
                                     document.getElementById('delete-user-form-{{ $user->id }}').submit()">Delete</button>

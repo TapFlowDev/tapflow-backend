@@ -32,7 +32,7 @@
         <div class="navigation">
             <ul class="sidebar-nav">
                 <li>
-                    <a href="AdminTool/dashboard">
+                    <a href="/AdminTool/dashboard">
                         <img class="logo-sidebar" src="{{ asset('images/logo.svg') }}" />
                     </a>
                 </li>
@@ -83,10 +83,16 @@
                         <li>
                             <a href="/AdminTool/clients">
                                 <span class="icon"></span>
-                                <span class="title">Company Members</span>
+                                <span class="title">Clients</span>
                             </a>
                         </li>
                     </ul>
+                </li>
+                <li>
+                    <a href="/AdminTool/users">
+                        <span class="icon"><i class="fas fa-book" aria-hidden="true"></i></span>
+                        <span class="title">Other Users</span>
+                    </a>
                 </li>
                 <li>
                     <a href="/AdminTool/announcements">
