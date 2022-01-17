@@ -90,7 +90,7 @@
                 </li>
                 <li>
                     <a href="/AdminTool/users">
-                        <span class="icon"><i class="fas fa-book" aria-hidden="true"></i></span>
+                        <span class="icon"><i class="fas fa-user-cog"></i></span>
                         <span class="title">Other Users</span>
                     </a>
                 </li>

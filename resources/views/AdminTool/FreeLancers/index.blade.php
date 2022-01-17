@@ -36,8 +36,8 @@
                                         <a class="btn btn-sm btn-primary"
                                             href="{{ route('AdminTool.freelancers.show', $user->id) }}"
                                             role="button">View</a>
-                                        <a class="btn btn-sm btn-primary"
-                                            href="{{ route('AdminTool.freelancers.sendEmailShow', $user->id) }}"
+                                        <a class="btn btn-sm btn-secondary"
+                                            href="{{ route('AdminTool.sendEmailShow.show', $user->id) }}"
                                             role="button">Send Email</a>
                                         <button class="btn btn-sm btn-danger"
                                             onclick="event.preventDefault();

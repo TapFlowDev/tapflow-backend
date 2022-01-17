@@ -165,12 +165,14 @@ class ProjectController extends Controller
         //DB::table('groups_categories')->select('project_id')->distinct()->where('group_id', $agency_id)->get()
         // return $projectsData;
     }
-    function getProject($id){
-        try{
-            $project = Project::where('id',$id)->get();
+    function getProject($id)
+    {
+        try {
+            $project = Project::where('id', $id)->get();
             $projectInfo = $this->getProjectsInfo($project)->first();
-            return $project;
-        }catch (\Exception $error) {
+            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
             $responseData = $error;
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return (json_encode($response));

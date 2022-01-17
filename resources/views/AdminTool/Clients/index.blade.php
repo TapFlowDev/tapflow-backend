@@ -23,6 +23,9 @@
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->team_name }}</td>
                                     <td>
+                                        <a class="btn btn-sm btn-secondary"
+                                            href="{{ route('AdminTool.sendEmailShow.show', $user->id) }}"
+                                            role="button">Send Email</a>
                                         <a class="btn btn-sm btn-primary"
                                             href="{{ route('AdminTool.clients.show', $user->id) }}"
                                             role="button">View</a>

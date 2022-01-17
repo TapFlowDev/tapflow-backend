@@ -13,6 +13,7 @@ use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\RolesController;
 use App\Http\Controllers\AdminTool\AnnouncementsController;
 use App\Http\Controllers\AdminTool\DashboardController;
+use App\Http\Controllers\AdminTool\EmailController;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
@@ -52,7 +53,7 @@ Route::get('/AdminTool/dashboard', [DashboardController::class, 'index'])->middl
 // })->middleware(['auth', 'auth.isAdmin']);
 
 Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminTool.')->group(function () {
-    Route::get('/freelancers/sendEmailShow/{id}', [FreeLancerController::class, 'sendEmailShow'])->name('freelancers.sendEmailShow');
+    // Route::get('/freelancers/sendEmailShow/{id}', [FreeLancerController::class, 'sendEmailShow'])->name('freelancers.sendEmailShow');
     Route::resource('/users', AdminConroller::class);
     Route::resource('/categories', AdminCategoriesController::class);
     Route::resource('/freelancers', FreeLancerController::class);
@@ -65,6 +66,8 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     // Route::resource('/categories/{$parentId}/subCategories', AdminSubCategoryController::class);
     Route::resource('categories.subCategories', AdminSubCategoryController::class)->shallow();
     Route::resource('/announcements', AnnouncementsController::class);
+    Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
+    Route::post('sendEmail',[EmailController::class, 'send'])->name('sendEmail.send');
     
 });
 Route::get('/r', function (Request $request) {
