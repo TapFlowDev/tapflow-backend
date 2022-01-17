@@ -165,6 +165,17 @@ class ProjectController extends Controller
         //DB::table('groups_categories')->select('project_id')->distinct()->where('group_id', $agency_id)->get()
         // return $projectsData;
     }
+    function getProject($id){
+        try{
+            $project = Project::where('id',$id)->get();
+            $projectInfo = $this->getProjectsInfo($project)->first();
+            return $project;
+        }catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
+        }
+    }
     private function getProjectsInfo($projects)
     {
         $projectCategoriesObj = new ProjectCategoriesController;
@@ -175,7 +186,7 @@ class ProjectController extends Controller
             if (isset($company_image)) {
                 $project->company_image = asset('images/companies/') . $company_image;
             } else {
-                $project->company_image = null;
+                $project->company_image = asset('images/profile-pic.jpg');
             }
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
         }

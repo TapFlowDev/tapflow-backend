@@ -195,6 +195,7 @@ class   GroupController extends Controller
         $rules = array(
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
+            "name" => "required",
             "link" => "required"
         );
         $validator = Validator::make($req->all(), $rules);
@@ -202,92 +203,92 @@ class   GroupController extends Controller
 
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
-        } else {
-            // $group = new Group;
-            $type = 2;
-            $teamObj = new CompanyController;
-            $userObj = new ClientController;
-            $membersObj = new GroupMembersController;
+        }
+        // $group = new Group;
+        $type = 2;
+        $teamObj = new CompanyController;
+        $userObj = new ClientController;
+        $membersObj = new GroupMembersController;
 
-            try {
-                $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
+        try {
+            $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
 
-                $group_id = $group->id;
-                $userId = $req->admin_id;
+            $group_id = $group->id;
+            $userId = $req->admin_id;
 
 
-                $teamArr = array();
-                $teamArr['group_id'] = $group_id;
-                $teamArr['bio'] = $req->bio;
-                $teamArr['link'] = $req->link;
-                $teamArr['country'] = $req->country;
-                $teamArr['employees_number'] = $req->employees_number;
-                $teamArr['field'] = $req->field;
+            $teamArr = array();
+            $teamArr['group_id'] = $group_id;
+            $teamArr['bio'] = $req->bio;
+            $teamArr['link'] = $req->link;
+            $teamArr['country'] = $req->country;
+            $teamArr['employees_number'] = $req->employees_number;
+            $teamArr['field'] = $req->field;
+            $teamArr['sector'] = $req->sector;
 
-                $teamInfo = $teamObj->Insert($teamArr);
-                $membersObj->Insert($group_id, $userId, 1);
-                $teamId = $group_id;
-                if ($req->hasFile('image') && isset($req->image)) {
-                    $destPath = 'images/groups';
-                    // $ext = $req->file('image')->extension();
-                    $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
-                    // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-                    $img = $req->image;
-                    $img->move(public_path($destPath), $imageName);
-                    $teamObj->updateFiles($teamId, $imageName, 'image');
-                }
-                // if ($req->hasFile('attachment')) {
-                //     $destPath = 'images/groups';
-                //     DB::table('groups_attachments')->where('group_id', $teamId)->delete();
-                //     foreach ($req->attachment as $keyAttach => $valAttach) {
-                //         $ext = $valAttach->extension();
-
-                //         $attachName = time() . "-" .  $valAttach->getClientOriginalName();
-                //         $attach = $valAttach;
-                //         $attach->move(public_path($destPath), $attachName);
-                //         DB::table('groups_attachments')->insert([
-                //             'group_id' => $teamId,
-                //             'attachment' => $attachName
-                //         ]);
-                //     }
-                // }
-                if (isset($req->links) && count($req->links) > 0) {
-                    DB::table('groups_links')->where('group_id', $teamId)->delete();
-
-                    foreach ($req->links as $keyLink => $valLink) {
-                        DB::table('groups_links')->insert([
-                            'group_id' => $teamId,
-                            'link' => $valLink
-                        ]);
-                    }
-                }
-
-                // $response = array("data" => array(
-                //     "message" => "team added successfully",
-                //     "status" => "200",
-                //     "group_id" => $group_id,
-                //     "company_id" => $teamId,
-                // ));
-
-                // return (json_encode($response));
-
-                $responseData = array(
-                    "group_id" => $group_id
-                );
-                $response = Controller::returnResponse(200, 'company added successfully', $responseData);
-                return json_encode($response);
-            } catch (Exception $error) {
-                // $response = array("data" => array(
-                //     "message" => "There IS Error Occurred",
-                //     "status" => "500",
-                //     "error" => $error,
-                // ));
-
-                // return (json_encode($response));
-
-                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
-                return json_encode($response);
+            $teamInfo = $teamObj->Insert($teamArr);
+            $membersObj->Insert($group_id, $userId, 1);
+            $teamId = $group_id;
+            if ($req->hasFile('image') && isset($req->image)) {
+                $destPath = 'images/groups';
+                // $ext = $req->file('image')->extension();
+                $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                $img = $req->image;
+                $img->move(public_path($destPath), $imageName);
+                $teamObj->updateFiles($teamId, $imageName, 'image');
             }
+            // if ($req->hasFile('attachment')) {
+            //     $destPath = 'images/groups';
+            //     DB::table('groups_attachments')->where('group_id', $teamId)->delete();
+            //     foreach ($req->attachment as $keyAttach => $valAttach) {
+            //         $ext = $valAttach->extension();
+
+            //         $attachName = time() . "-" .  $valAttach->getClientOriginalName();
+            //         $attach = $valAttach;
+            //         $attach->move(public_path($destPath), $attachName);
+            //         DB::table('groups_attachments')->insert([
+            //             'group_id' => $teamId,
+            //             'attachment' => $attachName
+            //         ]);
+            //     }
+            // }
+            if (isset($req->links) && count($req->links) > 0) {
+                DB::table('groups_links')->where('group_id', $teamId)->delete();
+
+                foreach ($req->links as $keyLink => $valLink) {
+                    DB::table('groups_links')->insert([
+                        'group_id' => $teamId,
+                        'link' => $valLink
+                    ]);
+                }
+            }
+
+            // $response = array("data" => array(
+            //     "message" => "team added successfully",
+            //     "status" => "200",
+            //     "group_id" => $group_id,
+            //     "company_id" => $teamId,
+            // ));
+
+            // return (json_encode($response));
+
+            $responseData = array(
+                "group_id" => $group_id
+            );
+            $response = Controller::returnResponse(200, 'company added successfully', $responseData);
+            return json_encode($response);
+        } catch (Exception $error) {
+            // $response = array("data" => array(
+            //     "message" => "There IS Error Occurred",
+            //     "status" => "500",
+            //     "error" => $error,
+            // ));
+
+            // return (json_encode($response));
+
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
         }
     }
     //update row according to row id
