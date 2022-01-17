@@ -275,7 +275,8 @@ body {
     padding: 0;
     display: none;
     list-style: none;
-}.team-name-link a{
+}
+.team-name-link a{
   text-decoration: none;
   font-weight: 400;
   color: black;
