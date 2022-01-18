@@ -196,7 +196,8 @@ class   GroupController extends Controller
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
             "name" => "required",
-            "link" => "required"
+            "link" => "required",
+            "image" => "image|mimes:jpeg,png,jpg|max:15"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -229,8 +230,8 @@ class   GroupController extends Controller
             $teamInfo = $teamObj->Insert($teamArr);
             $membersObj->Insert($group_id, $userId, 1);
             $teamId = $group_id;
-            if ($req->hasFile('image') && isset($req->image)) {
-                $destPath = 'images/groups';
+            if ($req->hasFile('image')) {
+                $destPath = 'images/companies';
                 // $ext = $req->file('image')->extension();
                 $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
                 // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
