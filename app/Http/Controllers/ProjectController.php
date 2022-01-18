@@ -31,7 +31,7 @@ class ProjectController extends Controller
             "budget_type" => "required|gte:0|lt:2",
             "min" => "numeric|multiple_of:5",
             "max" => "numeric|multiple_of:5",
-            "days" => "numeric|required",
+            "days" => "required|exists:categories,id",
         );
         $userObj = new UserController;
         $groupMemberObj = new GroupMembersController;
@@ -121,36 +121,37 @@ class ProjectController extends Controller
     {
         $limit = 4;
         $page = ($offset - 1) * $limit;
-        $subCats = $req->subCats;
-        $max = $req->max;
-        $min = $req->min;
-        $days = $req->days;
-        if ($max < 1) {
-            $max = null;
-            $min = null;
+        try {
+
+
+            $subCats = $req->subCats;
+            $max = $req->max;
+            $min = $req->min;
+            $duration = $req->duration;
+            if ($max < 1) {
+                $max = null;
+                $min = null;
+            }
+
+            $projects = Project::when($subCats, function ($query, $subCats) {
+                $projectIds = projects_category::select('project_id')->whereIn('sub_category_id', $subCats)->distinct()->pluck('project_id')->toArray();
+                return $query->whereIn('id', $projectIds);
+            })->when($max, function ($query, $max) {
+                return $query->where('max', '<=', $max);
+            })->when($min, function ($query, $min) {
+                return $query->where('min', '>=', $min);
+            })->when($duration, function ($query, $duration) {
+                return $query->whereIn('days', $duration);
+            })->where('status', '=', 0)->distinct()->latest()->offset($page)->limit($limit)->get();
+            // return $projects;
+            $projectsData = $this->getProjectsInfo($projects);
+            $response = Controller::returnResponse(200, "Data Found", $projectsData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
         }
-        if ($days < 1) {
-            $days = null;
-        }
-        $projects = Project::when($subCats, function ($query, $subCats) {
-            $projectIds = projects_category::select('project_id')->whereIn('sub_category_id', $subCats)->distinct()->pluck('project_id')->toArray();
-            return $query->whereIn('id', $projectIds);
-        })->when($max, function ($query, $max) {
-            return $query->where('max', '<=', $max);
-        })->when($min, function ($query, $min) {
-            return $query->where('min', '>=', $min);
-        })->when($days, function ($query, $days) {
-            return $query->where('days', '=', $days);
-        })
-            ->where('status', '=', 0)
-            ->distinct()
-            ->latest()->offset($page)->limit($limit)
-            ->get();
-        return $projects;
-
-
-
-        $allProjects = Project::all();
     }
     function suggestedProjects($agency_id, $offset = 1)
     {
@@ -223,6 +224,7 @@ class ProjectController extends Controller
                 $project->company_image = asset('images/profile-pic.jpg');
             }
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
+            $project->duration = Category::find($project->id)->name;
         }
         return $projects;
     }
