@@ -11,19 +11,19 @@ use App\Models\Category;
 
 class AdminCategoriesController extends Controller
 {
-    public function index()
+    public function index($categoryType)
     {
-        return view('AdminTool.Categories.index', ['categories' => Category::paginate(10)]);
+        return view('AdminTool.Categories.index', ['categories' => Category::where('type', $categoryType)->paginate(10), 'categoryType'=>$categoryType]);
     }
     //add row 
     function Insert(Request $req)
     {
     }
     //delete row according to row id
-    public function create()
+    public function create($categoryType)
     {
         //
-        return view('AdminTool.Categories.add');
+        return view('AdminTool.Categories.add', ['type'=>$categoryType]);
     }
     public function store(Request $request)
     {
@@ -43,13 +43,14 @@ class AdminCategoriesController extends Controller
             // $path = $request->file('image')->storeAs($imageName);
             Category::where('id', $categoryId)->update(array('image' => $imageName));
         }
-        return redirect('/AdminTool/categories');
+        return redirect('/AdminTool/categoryTypes/'.$request->type.'/categories');
     }
 
     public function edit($id)
     {
         // dd(User::find($id));
-        return view('AdminTool.Categories.edit', ['category' => Category::find($id)]);
+        $category = Category::find($id);
+        return view('AdminTool.Categories.edit', ['category' => $category , 'type'=>$category->type]);
     }
     public function update(Request $request, $id)
     {
@@ -66,13 +67,13 @@ class AdminCategoriesController extends Controller
             // $path = $request->file('image')->storeAs($imageName);
             Category::where('id', $categoryId)->update(array('image' => $imageName));
         }
-        return redirect('/AdminTool/categories');
+        return redirect('/AdminTool/categoryTypes/'.$request->type.'/categories');
     }
 
     public function destroy($id)
     {
         Category::destroy($id);
-        return redirect('/AdminTool/categories');
+        return back();
     }
 
     // public function subCategories($id)

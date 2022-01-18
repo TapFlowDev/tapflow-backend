@@ -5,7 +5,7 @@
             <div class="col-12">
                 <div class="content-container">
                     <h1> Categories </h1>
-                    <a class="btn btn-sm btn-success float-right mb-3" href="{{ route('AdminTool.categories.create') }}"
+                    <a class="btn btn-sm btn-success float-right mb-3" href="{{ route('AdminTool.categoryTypes.categories.create', $categoryType) }}"
                         role="button">Add</a>
                         <table class="table">
                             <thead>
@@ -25,9 +25,11 @@
                                         <td>
                                             <a class="btn btn-sm btn-primary"
                                                 href="{{ route('AdminTool.categories.edit', $category->id) }}" role="button">edit</a>
-                                            <a class="btn btn-sm btn-secondary"
+                                                @if ($category->type==1)
+                                                <a class="btn btn-sm btn-secondary"
                                                 href="{{ route('AdminTool.categories.subCategories.index', $category->id) }}"
                                                 role="button">Manage Sub Categories</a>
+                                                @endif
                                             <button class="btn btn-sm btn-danger"
                                                 onclick="event.preventDefault();
                                                         document.getElementById('delete-cat-form-{{ $category->id }}').submit()">Delete</button>

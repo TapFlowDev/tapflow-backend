@@ -74,6 +74,8 @@ Route::post('contactUS', [ContactUsController::class, 'Insert']);
 Route::post('waitingList', [WaitingListController::class, 'Insert']);
 Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
 
+Route::post('exploreProject/{offset}', [ProjectController::class, 'exploreProject']);
+
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
@@ -82,7 +84,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
-
+    
     Route::post('newLogout', [UserController::class, 'newLogout']);
     Route::post('addProposal', [Proposals::class, 'Insert']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
@@ -97,7 +99,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('updateTeamBio', [TeamController::class, 'updateTeamBio']);
     Route::post('updateTeamLink', [TeamController::class, 'updateLink']);
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
-
+    
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
     Route::post('addFreelancerInfo', [FreeLancerController::class, 'Insert_freelancer']);
     Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
@@ -112,4 +114,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
     Route::get('getSuggestedProjects/{agency_id}', [ProjectController::class, 'suggestedProjects']);
     Route::get('project/{id}', [ProjectController::class, 'getProject']);
+    Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
 });
+
