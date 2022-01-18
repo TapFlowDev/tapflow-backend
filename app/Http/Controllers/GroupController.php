@@ -197,7 +197,7 @@ class   GroupController extends Controller
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
             "name" => "required",
             "link" => "required",
-            "image" => "mimes:jpeg,png,jpg|max:15"
+            "image" => "mimes:jpeg,png,jpg|max:15000"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
