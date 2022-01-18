@@ -197,7 +197,7 @@ class   GroupController extends Controller
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
             "name" => "required",
             "link" => "required",
-            "image" => "mimes:jpeg,png,jpg|max:15000"
+            // "image" => "mimes:jpeg,png,jpg|max:15000"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -254,16 +254,16 @@ class   GroupController extends Controller
             //         ]);
             //     }
             // }
-            if (isset($req->links) && count($req->links) > 0) {
-                DB::table('groups_links')->where('group_id', $teamId)->delete();
+            // if (isset($req->links) && count($req->links) > 0) {
+            //     DB::table('groups_links')->where('group_id', $teamId)->delete();
 
-                foreach ($req->links as $keyLink => $valLink) {
-                    DB::table('groups_links')->insert([
-                        'group_id' => $teamId,
-                        'link' => $valLink
-                    ]);
-                }
-            }
+            //     foreach ($req->links as $keyLink => $valLink) {
+            //         DB::table('groups_links')->insert([
+            //             'group_id' => $teamId,
+            //             'link' => $valLink
+            //         ]);
+            //     }
+            // }
 
             // $response = array("data" => array(
             //     "message" => "team added successfully",
