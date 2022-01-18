@@ -117,8 +117,39 @@ class ProjectController extends Controller
     {
     }
 
-    function exploreProject()
+    function exploreProject(Request $req, $offset = 1)
     {
+        $limit = 4;
+        $page = ($offset - 1) * $limit;
+        $subCats = $req->subCats;
+        $max = $req->max;
+        $min = $req->min;
+        $days = $req->days;
+        if ($max < 1) {
+            $max = null;
+            $min = null;
+        }
+        if ($days < 1) {
+            $days = null;
+        }
+        $projects = Project::when($subCats, function ($query, $subCats) {
+            $projectIds = projects_category::select('project_id')->whereIn('sub_category_id', $subCats)->distinct()->pluck('project_id')->toArray();
+            return $query->whereIn('id', $projectIds);
+        })->when($max, function ($query, $max) {
+            return $query->where('max', '<=', $max);
+        })->when($min, function ($query, $min) {
+            return $query->where('min', '>=', $min);
+        })->when($days, function ($query, $days) {
+            return $query->where('days', '=', $days);
+        })
+            ->where('status', '=', 0)
+            ->distinct()
+            ->latest()->offset($page)->limit($limit)
+            ->get();
+        return $projects;
+
+
+
         $allProjects = Project::all();
     }
     function suggestedProjects($agency_id, $offset = 1)
@@ -127,7 +158,8 @@ class ProjectController extends Controller
         $page = ($offset - 1) * $limit;
         try {
             $projects =  DB::table('projects_categories')
-                ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
+                ->join('groups_categories', '
+                .sub_category_id', '=', 'groups_categories.sub_category_id')
                 ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
                 ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.requirements_description', 'projects.days', 'projects.created_at')
                 ->where('groups_categories.group_id', '=', $agency_id)

@@ -1,4 +1,4 @@
-<input type="hidden" name="type" value="0">
+<input type="hidden" name="type" value="{{ $type }}">
 <div class="mb-3">
     <label for="first_name" class="form-label">Category Name</label>
     <input type="text" name="name" required class="form-control" id="first_name" aria-describedby="emailHelp" value="{{ old('name') }}@isset($category){{ $category->name }}@endisset">

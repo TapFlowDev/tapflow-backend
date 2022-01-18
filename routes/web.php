@@ -14,6 +14,7 @@ use App\Http\Controllers\AdminTool\RolesController;
 use App\Http\Controllers\AdminTool\AnnouncementsController;
 use App\Http\Controllers\AdminTool\DashboardController;
 use App\Http\Controllers\AdminTool\EmailController;
+use App\Http\Controllers\AdminTool\CategoryTypesController;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
@@ -54,8 +55,9 @@ Route::get('/AdminTool/dashboard', [DashboardController::class, 'index'])->middl
 
 Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminTool.')->group(function () {
     // Route::get('/freelancers/sendEmailShow/{id}', [FreeLancerController::class, 'sendEmailShow'])->name('freelancers.sendEmailShow');
+    Route::resource('/categoryTypes', CategoryTypesController::class);
     Route::resource('/users', AdminConroller::class);
-    Route::resource('/categories', AdminCategoriesController::class);
+    Route::resource('categoryTypes.categories', AdminCategoriesController::class)->shallow();
     Route::resource('/freelancers', FreeLancerController::class);
     Route::resource('/clients', ClientsController::class);
     Route::resource('/agencies', TeamsController::class);

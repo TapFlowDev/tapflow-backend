@@ -43,7 +43,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/AdminTool/categories">
+                    <a href="/AdminTool/categoryTypes/1/categories">
                         <span class="icon"><i class="fas fa-book" aria-hidden="true"></i></span>
                         <span class="title">Categories</span>
                     </a>

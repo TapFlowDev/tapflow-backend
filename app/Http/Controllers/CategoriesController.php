@@ -26,7 +26,7 @@ class CategoriesController extends Controller
     public function getCategories(Request $req)
     {
 
-        $categories = Category::all();
+        $categories = Category::where('type',1)->get();
         try {
             foreach ($categories as $key => &$value) {
                 $value->subs = $this->getSubCategoriesByParent($value->id);
@@ -70,5 +70,16 @@ class CategoriesController extends Controller
        
         return SubCategory::where('id', $id)->get();
 
+    }
+    function getTimeDurations(){
+        try {
+            $categories = Category::where('type',2)->get();
+            return ($categories);
+
+            $response = Controller::returnResponse(200, 'user information added successfully', $categories);
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
     }
 }
