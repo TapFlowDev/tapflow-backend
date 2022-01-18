@@ -24,6 +24,6 @@ class CompanyController extends Controller
 
     function updateFiles($groupId, $imageName, $filedName)
     {
-        Company::where('id', $groupId)->update(array($filedName => $imageName));
+        Company::where('group_id', $groupId)->update(array($filedName => $imageName));
     }
 }
