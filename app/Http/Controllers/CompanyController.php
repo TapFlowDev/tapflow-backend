@@ -40,7 +40,7 @@ class CompanyController extends Controller
             $GroupCategoriesController = new GroupCategoriesController;
             $NewCountriesController = new NewCountriesController;
             $links = $linksController->get_group_links($id);
-            $teamMembers = $GroupMembersController->getTeamMembersByGroupId($id);
+            $teamMembers = $GroupMembersController->getCompanyMembersByGroupId($id);
             $cats = $GroupCategoriesController->getTeamCategories($id);
             $info = $this->get_company_info($id);
             $country_id = $info->country;
