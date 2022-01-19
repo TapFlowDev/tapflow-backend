@@ -64,4 +64,26 @@ class User extends Authenticatable
             return null;
         }
     }
+    public function isAgency($user)
+    {
+        // $id = $user['id'];
+        // $userData = $this->find($id);
+        $adminType = $user['type'];
+        if($adminType==1){
+            return $user;
+        } else{
+            return null;
+        }
+    }
+    public function isClient($user)
+    {
+        // $id = $user['id'];
+        // $userData = $this->find($id);
+        $adminType = $user['type'];
+        if($adminType==2){
+            return $user;
+        } else{
+            return null;
+        }
+    }
 }

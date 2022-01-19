@@ -128,4 +128,20 @@ class GroupMembersController extends Controller
     function getMemberInfoByUserId($userId){
         return Group_member::where('user_id', '=', $userId)->first();
     }
+
+    function getCompanyMembersByGroupId($id)
+    {
+        try {
+            $teamMembers = DB::table('group_members')
+                ->leftjoin('clients', 'group_members.user_id', '=', 'clients.user_id')
+                ->leftjoin('users', 'group_members.user_id', '=', 'users.id')->select("clients.user_id", "users.first_name", "users.last_name", "users.email", "clients.type_freelancer", "clients.image", "clients.country", "users.role", "group_members.privileges")
+                ->where('group_members.group_id', '=', $id)
+                ->get();
+            $teamMembers = $this->getUserImages($teamMembers);
+            return ($teamMembers);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
 }
