@@ -20,6 +20,7 @@ use  App\Http\Controllers\GroupsLinksController;
 use  App\Http\Controllers\GroupCategoriesController;
 use  App\Http\Controllers\UserCategoriesController;
 use  App\Http\Controllers\AnnouncementsController;
+use App\Http\Controllers\CompanyController;
 use  App\Http\Controllers\ContactUsController;
 use  App\Http\Controllers\WalletsController;
 use  App\Http\Controllers\ResetPasswordController;
@@ -115,5 +116,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getSuggestedProjects/{agency_id}', [ProjectController::class, 'suggestedProjects']);
     Route::get('project/{id}', [ProjectController::class, 'getProject']);
     Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
+    Route::get('getCompanyInfo/{id}', [CompanyController::class, 'getCompany']);
+    
 });
 
