@@ -50,7 +50,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(101, 'Validation Error', $validation);
             return json_encode($response);
         }
-        try {
+        // try {
             $ProjectCategoriesObj = new ProjectCategoriesController;
             // print_r($data);
             $project = Project::create($req->all() + ["company_id" => $userGroupInfo->group_id]);
@@ -120,10 +120,10 @@ class ProjectController extends Controller
             );
             $response = Controller::returnResponse(200, 'project created successfully', $responseData);
             return json_encode($response);
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
-            return json_encode($response);;
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
+        //     return json_encode($response);;
+        // }
     }
     //update row according to row id
     function Update($id)
