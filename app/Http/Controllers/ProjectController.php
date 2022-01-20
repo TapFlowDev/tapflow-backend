@@ -50,7 +50,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(101, 'Validation Error', $validation);
             return json_encode($response);
         }
-        // try {
+        try {
             $ProjectCategoriesObj = new ProjectCategoriesController;
             // print_r($data);
             $project = Project::create($req->all() + ["company_id" => $userGroupInfo->group_id]);
@@ -61,22 +61,22 @@ class ProjectController extends Controller
             //     $postman = 1;
             // }
             $cats = json_decode($req->categories);
-                if (isset($cats)) {
-                    foreach ($cats as $key => $value) {
-                        $categoryArr = array();
-                        foreach ($value->subCat as $keySub => $subValue) {
-                            $categoryArr[$keySub]['project_id'] = $project_id;
-                            $categoryArr[$keySub]['category_id'] = $value->catId;
-                            $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                        }
-                        $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
-                        if ($add_cat == 500) {
-                            $delProject = Project::where('id', $project_id)->delete();
-                            $response = Controller::returnResponse(500, 'add cast error', []);
-                            return json_encode($response);
-                        }
+            if (isset($cats)) {
+                foreach ($cats as $key => $value) {
+                    $categoryArr = array();
+                    foreach ($value->subCat as $keySub => $subValue) {
+                        $categoryArr[$keySub]['project_id'] = $project_id;
+                        $categoryArr[$keySub]['category_id'] = $value->catId;
+                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                    }
+                    $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
+                    if ($add_cat == 500) {
+                        $delProject = Project::where('id', $project_id)->delete();
+                        $response = Controller::returnResponse(500, 'add cast error', []);
+                        return json_encode($response);
                     }
                 }
+            }
             // if (env('APP_ENV') !== 'local' && $postman < 1) {
             //     $cats = json_decode($req->categories);
             //     if (isset($cats)) {
@@ -120,10 +120,10 @@ class ProjectController extends Controller
             );
             $response = Controller::returnResponse(200, 'project created successfully', $responseData);
             return json_encode($response);
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
-        //     return json_encode($response);;
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
+            return json_encode($response);;
+        }
     }
     //update row according to row id
     function Update($id)
