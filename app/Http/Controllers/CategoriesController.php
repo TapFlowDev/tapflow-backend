@@ -74,9 +74,9 @@ class CategoriesController extends Controller
     function getTimeDurations(){
         try {
             $categories = Category::where('type',2)->get();
-            return ($categories);
-
+            
             $response = Controller::returnResponse(200, 'user information added successfully', $categories);
+            return ($response);
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
