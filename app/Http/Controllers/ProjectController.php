@@ -60,8 +60,7 @@ class ProjectController extends Controller
             } else {
                 $postman = 1;
             }
-            if (env('APP_ENV') !== 'local' && $postman < 1) {
-                $cats = json_decode($req->categories);
+            $cats = json_decode($req->categories);
                 if (isset($cats)) {
                     foreach ($cats as $key => $value) {
                         $categoryArr = array();
@@ -78,25 +77,43 @@ class ProjectController extends Controller
                         }
                     }
                 }
-            } else {
-                $cats = $req->categories;
-                if (isset($cats)) {
-                    foreach ($cats as $key => $value) {
-                        $categoryArr = array();
-                        foreach ($value['subCat'] as $keySub => $subValue) {
-                            $categoryArr[$keySub]['project_id'] = $project_id;
-                            $categoryArr[$keySub]['category_id'] = $value['catId'];
-                            $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                        }
-                        $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
-                        if ($add_cat == 500) {
-                            $delProject = Project::where('id', $project_id)->delete();
-                            $response = Controller::returnResponse(500, 'add cast error', []);
-                            return json_encode($response);
-                        }
-                    }
-                }
-            }
+            // if (env('APP_ENV') !== 'local' && $postman < 1) {
+            //     $cats = json_decode($req->categories);
+            //     if (isset($cats)) {
+            //         foreach ($cats as $key => $value) {
+            //             $categoryArr = array();
+            //             foreach ($value->subCat as $keySub => $subValue) {
+            //                 $categoryArr[$keySub]['project_id'] = $project_id;
+            //                 $categoryArr[$keySub]['category_id'] = $value->catId;
+            //                 $categoryArr[$keySub]['sub_category_id'] = $subValue;
+            //             }
+            //             $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
+            //             if ($add_cat == 500) {
+            //                 $delProject = Project::where('id', $project_id)->delete();
+            //                 $response = Controller::returnResponse(500, 'add cast error', []);
+            //                 return json_encode($response);
+            //             }
+            //         }
+            //     }
+            // } else {
+            //     $cats = $req->categories;
+            //     if (isset($cats)) {
+            //         foreach ($cats as $key => $value) {
+            //             $categoryArr = array();
+            //             foreach ($value['subCat'] as $keySub => $subValue) {
+            //                 $categoryArr[$keySub]['project_id'] = $project_id;
+            //                 $categoryArr[$keySub]['category_id'] = $value['catId'];
+            //                 $categoryArr[$keySub]['sub_category_id'] = $subValue;
+            //             }
+            //             $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
+            //             if ($add_cat == 500) {
+            //                 $delProject = Project::where('id', $project_id)->delete();
+            //                 $response = Controller::returnResponse(500, 'add cast error', []);
+            //                 return json_encode($response);
+            //             }
+            //         }
+            //     }
+            // }
 
             $responseData = array(
                 "project_id" => $project->id,
