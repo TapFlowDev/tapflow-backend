@@ -24,10 +24,10 @@ class AccessAgency
         $response  = array(
             "status" => array(
                 "message" => 'unathrized action',
-                "code" => 422
+                "code" => 401
             ),
             "data" => []
         );
-        return response($response, 422);
+        return response($response, 401);
     }
 }
