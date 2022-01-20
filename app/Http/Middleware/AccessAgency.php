@@ -23,11 +23,11 @@ class AccessAgency
         }
         $response  = array(
             "status" => array(
-                "message" => 'unathrized user',
-                "code" => 503
+                "message" => 'unathrized action',
+                "code" => 422
             ),
             "data" => []
         );
-        return response($response, 503);
+        return response($response, 422);
     }
 }
