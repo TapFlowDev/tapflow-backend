@@ -53,13 +53,13 @@ class ProjectController extends Controller
         try {
             $ProjectCategoriesObj = new ProjectCategoriesController;
             // print_r($data);
-            $project = Project::create($req->except(['postman']) + ["company_id" => $userGroupInfo->group_id]);
+            $project = Project::create($req->all() + ["company_id" => $userGroupInfo->group_id]);
             $project_id = $project->id;
-            if (!isset($req->postman)) {
-                $postman = 0;
-            } else {
-                $postman = 1;
-            }
+            // if (!isset($req->postman)) {
+            //     $postman = 0;
+            // } else {
+            //     $postman = 1;
+            // }
             $cats = json_decode($req->categories);
                 if (isset($cats)) {
                     foreach ($cats as $key => $value) {
