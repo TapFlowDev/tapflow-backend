@@ -73,7 +73,7 @@ class CategoriesController extends Controller
     }
     function getTimeDurations(){
         try {
-            $categories = Category::where('type',2)->get();
+            $categories = Category::select('id', 'name')->where('type',2)->get();
             
             $response = Controller::returnResponse(200, 'user information added successfully', $categories);
             return json_encode($response);
