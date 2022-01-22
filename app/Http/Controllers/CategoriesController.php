@@ -76,7 +76,7 @@ class CategoriesController extends Controller
             $categories = Category::where('type',2)->get();
             
             $response = Controller::returnResponse(200, 'user information added successfully', $categories);
-            return ($response);
+            return json_encode($response);
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
