@@ -31,6 +31,7 @@ class CategoriesController extends Controller
             foreach ($categories as $key => &$value) {
                 $value->subs = $this->getSubCategoriesByParent($value->id);
                 $value->image = asset('images/categories/' . $value->image);
+                $value->image_2 = asset('images/categories/' . $value->image_2);
             }
             // $categories = (array)$categories;
             // $response = array(
