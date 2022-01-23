@@ -78,6 +78,9 @@ Route::get('/r', function (Request $request) {
 Route::get('/testForms', function () {
     return view('testForms');
 });
+Route::get('/checkout', function () {
+    return view('checkout');
+});
 // Route::get('',[InviteUsersController::class,'addUserByToken']);
 
 // Route::get('/emailTest', function(){
