@@ -239,7 +239,7 @@ class ProjectController extends Controller
             } else {
                 $project->company_image = asset('images/profile-pic.jpg');
             }
-            // $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
+            $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
             $project->duration = Category::find($project->id)->name;
         }
         return $projects;
