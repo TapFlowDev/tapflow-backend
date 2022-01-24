@@ -185,7 +185,7 @@ class ProjectController extends Controller
                 ->latest()->offset($page)->limit($limit)
                 ->get();
             $projectsData = $this->getProjectsInfo($projects);
-            $responseData = $projectsData;
+            $responseData = $projects;
             $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
         } catch (\Exception $error) {
