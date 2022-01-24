@@ -184,8 +184,8 @@ class ProjectController extends Controller
                 ->distinct()
                 ->latest()->offset($page)->limit($limit)
                 ->get();
-            // $projectsData = $this->getProjectsInfo($projects);
-            $responseData = $projects;
+            $projectsData = $this->getProjectsInfo($projects);
+            $responseData = $projectsData;
             $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -239,7 +239,7 @@ class ProjectController extends Controller
             } else {
                 $project->company_image = asset('images/profile-pic.jpg');
             }
-            $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
+            // $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
             $project->duration = Category::find($project->id)->name;
         }
         return $projects;
