@@ -71,6 +71,11 @@ Route::post('forgetPassword', [ResetPasswordController::class, 'sendLinkResetPas
 Route::post('reset-password', [ResetPasswordController::class, 'resetPasswordCheck']);
 Route::post('contactUS', [ContactUsController::class, 'Insert']);
 Route::post('waitingList', [WaitingListController::class, 'Insert']);
+Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
+Route::get('getCategories', [CategoriesController::class, 'getCategories']);
+Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
+Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies']);
+Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
@@ -86,14 +91,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::get('getCompanyInfo/{id}', [CompanyController::class, 'getCompany']);
-    
-    Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
-    Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
-    Route::get('getCategories', [CategoriesController::class, 'getCategories']);
-    Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
-    Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies']);
 
-    Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
+    Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
+
+
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
     Route::post('newLogout', [UserController::class, 'newLogout']);
     Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);
