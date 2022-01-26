@@ -28,6 +28,7 @@ use App\Http\Controllers\WaitingListController;
 use App\Http\Controllers\NewCountriesController;
 use App\Http\Controllers\WalletsTransactionsController;
 use App\Http\Controllers\GroupMembersController;
+use App\Http\Controllers\PaymentController;
 
 
 /*
@@ -57,6 +58,7 @@ Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
+Route::post('checkoutPayment', [PaymentController::class, 'checkout']);
 
 
 // apis does not need user token 
@@ -71,9 +73,10 @@ Route::post('contactUS', [ContactUsController::class, 'Insert']);
 Route::post('waitingList', [WaitingListController::class, 'Insert']);
 Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 
-Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 Route::get('getCategories', [CategoriesController::class, 'getCategories']);
 Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
+Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies']);
+Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
@@ -83,13 +86,14 @@ Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']
 
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
+    // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
+
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
-
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::get('getCompanyInfo/{id}', [CompanyController::class, 'getCompany']);
 
+    Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
     Route::post('newLogout', [UserController::class, 'newLogout']);
     Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);
