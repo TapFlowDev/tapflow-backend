@@ -26,7 +26,7 @@ class CategoriesController extends Controller
     public function getCategories(Request $req)
     {
 
-        $categories = Category::where('type',1)->get();
+        $categories = Category::where('type', 1)->get();
         try {
             foreach ($categories as $key => &$value) {
                 $value->subs = $this->getSubCategoriesByParent($value->id);
@@ -62,21 +62,34 @@ class CategoriesController extends Controller
         return SubCategory::where('category_id', $category_id)->get();
     }
 
-    function getCategoryById($id){
-       
+    function getCategoryById($id)
+    {
+
         return Category::where('id', $id)->get();
-
     }
-    function getSubCategoryById($id){
-       
+    function getSubCategoryById($id)
+    {
+
         return SubCategory::where('id', $id)->get();
-
     }
-    function getTimeDurations(){
+    function getTimeDurations()
+    {
         try {
-            $categories = Category::select('id', 'name')->where('type',2)->get();
             
-            $response = Controller::returnResponse(200, 'user information added successfully', $categories);
+            $categories = Category::select('id', 'name')->where('type', 2)->get();
+            $response = Controller::returnResponse(200, 'data found', $categories);
+            return json_encode($response);
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+    function getTargetCompanies()
+    {
+        try {
+
+            $categories = Category::select('id', 'name')->where('type', 3)->get();
+            $response = Controller::returnResponse(200, 'data found', $categories);
             return json_encode($response);
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
