@@ -135,7 +135,6 @@ class   GroupController extends Controller
                             }
                         }
                     }
-                    return response($targets, 202);
                     if (isset($targets) && count($targets)>0) {
                         $targetArray = array();
                         foreach ($targets as $keyTarget => $target) {
