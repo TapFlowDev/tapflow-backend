@@ -198,8 +198,8 @@ class   GroupController extends Controller
 
                     foreach ($req->targets as $keyLink => $valTarget) {
                         DB::table('agency_targets')->insert([
-                            'group_id' => $teamId,
-                            'category_id' => $valTarget
+                            'group_id' => (int)$teamId,
+                            'category_id' => (int)$valTarget
                         ]);
                     }
                 }
