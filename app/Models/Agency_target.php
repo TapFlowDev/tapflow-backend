@@ -12,4 +12,5 @@ class Agency_target extends Model
         'group_id',
         'category_id'
     ];
+    public $timestamps = false;
 }
