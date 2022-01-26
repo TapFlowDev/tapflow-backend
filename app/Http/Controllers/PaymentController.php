@@ -25,4 +25,10 @@ class PaymentController extends Controller
 
         echo json_encode($output);
     }
+
+    function createUserStripe(Request $req){
+        $user = $req->user();
+        $stripeCustomer = $user->createAsStripeCustomer();
+        return $stripeCustomer;
+    }
 }
