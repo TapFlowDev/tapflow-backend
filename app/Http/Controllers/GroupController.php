@@ -103,19 +103,19 @@ class   GroupController extends Controller
                     //         $groupCategoryObj->addMultiRows($arr);
                     //        }
                     //    }
-                    if (isset($targets) && count($targets) > 0) {
-                        $targetArray = array();
-                        foreach ($targets as $keyTarget => $target) {
-                            $targetArray[$keyTarget]['group_id'] = $group_id;
-                            $targetArray[$keyTarget]['category_id'] = $target;
-                        }
-                        $successTarget = $targetObj->addMultiRows($targetArray);
-                        if ($successTarget == 500) {
-                            // $delGroupTarget = Group::where('id', $group_id)->delete();
-                            $response = Controller::returnResponse(500, 'add cast error', []);
-                            return json_encode($response);
-                        }
-                    }
+                    // if (isset($targets) && count($targets) > 0) {
+                    //     $targetArray = array();
+                    //     foreach ($targets as $keyTarget => $target) {
+                    //         $targetArray[$keyTarget]['group_id'] = $group_id;
+                    //         $targetArray[$keyTarget]['category_id'] = $target;
+                    //     }
+                    //     $successTarget = $targetObj->addMultiRows($targetArray);
+                    //     if ($successTarget == 500) {
+                    //         // $delGroupTarget = Group::where('id', $group_id)->delete();
+                    //         $response = Controller::returnResponse(500, 'add cast error', []);
+                    //         return json_encode($response);
+                    //     }
+                    // }
                 } else {
                     $cats = json_decode($req->categories);
                     if (isset($cats)) {
@@ -135,27 +135,7 @@ class   GroupController extends Controller
                             }
                         }
                     }
-                    if (isset($targets) && count($targets) > 0) {
-                        // $targetArray = array();
-                        // foreach ($targets as $keyTarget => $target) {
-                        //     $targetArray[$keyTarget]['group_id'] = $group_id;
-                        //     $targetArray[$keyTarget]['category_id'] = $target;
-                        // }
-                        // $successTarget = $targetObj->addMultiRows($targetArray);
-                        // if ($successTarget == 500) {
-                        //     // $delGroupTarget = Group::where('id', $group_id)->delete();
-                        //     $response = Controller::returnResponse(500, 'add cast error', []);
-                        //     return json_encode($response);
-                        // }
-                        DB::table('agency_targets')->where('group_id', $group_id)->delete();
-
-                        foreach ($req->targets as $keyLink => $valLink) {
-                            DB::table('agency_targets')->insert([
-                                'group_id' => $group_id,
-                                'category_id' => $valLink
-                            ]);
-                        }
-                    }
+                    
                 }
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
@@ -199,6 +179,27 @@ class   GroupController extends Controller
                         DB::table('groups_links')->insert([
                             'group_id' => $teamId,
                             'link' => $valLink
+                        ]);
+                    }
+                }
+                if (isset($req->targets) && count($req->targets) > 0) {
+                    // $targetArray = array();
+                    // foreach ($targets as $keyTarget => $target) {
+                    //     $targetArray[$keyTarget]['group_id'] = $group_id;
+                    //     $targetArray[$keyTarget]['category_id'] = $target;
+                    // }
+                    // $successTarget = $targetObj->addMultiRows($targetArray);
+                    // if ($successTarget == 500) {
+                    //     // $delGroupTarget = Group::where('id', $group_id)->delete();
+                    //     $response = Controller::returnResponse(500, 'add cast error', []);
+                    //     return json_encode($response);
+                    // }
+                    DB::table('agency_targets')->where('group_id', $teamId)->delete();
+
+                    foreach ($req->targets as $keyLink => $valLink) {
+                        DB::table('agency_targets')->insert([
+                            'group_id' => $teamId,
+                            'category_id' => $valLink
                         ]);
                     }
                 }
