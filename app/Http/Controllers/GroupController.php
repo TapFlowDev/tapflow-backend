@@ -194,7 +194,7 @@ class   GroupController extends Controller
                     //     $response = Controller::returnResponse(500, 'add cast error', []);
                     //     return json_encode($response);
                     // }
-                    DB::table('agency_targets')->where('group_id', $teamId)->delete();
+                    // DB::table('agency_targets')->where('group_id', $teamId)->delete();
 
                     foreach ($req->targets as $keyLink => $valTarget) {
                         DB::table('agency_targets')->insert([

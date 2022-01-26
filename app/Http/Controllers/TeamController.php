@@ -63,9 +63,9 @@ class TeamController extends Controller
             $info->teamMembers = $teamMembers;
             $info->categories = $cats;
             $info->targets = $targets;
-            // $info->countryName = $Country->name;
-            // $info->countryCode = $Country->code;
-            // $info->countryFlag = $Country->flag;
+            $info->countryName = $Country->name;
+            $info->countryCode = $Country->code;
+            $info->countryFlag = $Country->flag;
             $response = Controller::returnResponse(200, "successful", $info);
             return (json_encode($response));
         } catch (Exception $error) {
