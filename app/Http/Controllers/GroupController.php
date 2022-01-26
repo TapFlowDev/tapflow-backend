@@ -150,7 +150,7 @@ class   GroupController extends Controller
                         DB::table('agency_targets')->where('group_id', $group_id)->delete();
 
                         foreach ($req->targets as $keyLink => $valLink) {
-                            DB::table('groups_links')->insert([
+                            DB::table('agency_targets')->insert([
                                 'group_id' => $group_id,
                                 'category_id' => $valLink
                             ]);
