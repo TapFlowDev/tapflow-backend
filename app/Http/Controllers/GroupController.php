@@ -172,16 +172,16 @@ class   GroupController extends Controller
                 //         ]);
                 //     }
                 // }
-                if (isset($req->links) && count($req->links) > 0) {
-                    DB::table('groups_links')->where('group_id', $teamId)->delete();
+                // if (isset($req->links) && count($req->links) > 0) {
+                //     DB::table('groups_links')->where('group_id', $teamId)->delete();
 
-                    foreach ($req->links as $keyLink => $valLink) {
-                        DB::table('groups_links')->insert([
-                            'group_id' => $teamId,
-                            'link' => $valLink
-                        ]);
-                    }
-                }
+                //     foreach ($req->links as $keyLink => $valLink) {
+                //         DB::table('groups_links')->insert([
+                //             'group_id' => $teamId,
+                //             'link' => $valLink
+                //         ]);
+                //     }
+                // }
                 if (isset($req->targets) && count($req->targets) > 0) {
                     // $targetArray = array();
                     // foreach ($targets as $keyTarget => $target) {
