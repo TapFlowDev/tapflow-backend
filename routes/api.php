@@ -80,17 +80,20 @@ Route::post('waitingList', [WaitingListController::class, 'Insert']);
 
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
+    // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
+
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
-
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::get('getCompanyInfo/{id}', [CompanyController::class, 'getCompany']);
+    
+    Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
     Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
-
-    Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
     Route::get('getCategories', [CategoriesController::class, 'getCategories']);
     Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
+    Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies']);
+
+    Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
     Route::post('newLogout', [UserController::class, 'newLogout']);
     Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);

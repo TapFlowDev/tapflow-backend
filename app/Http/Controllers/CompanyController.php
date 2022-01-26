@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Company;
+use App\Models\Category;
 use App\Http\Controllers\GroupCategoriesController;
 use App\Http\Controllers\NewCountriesController;
 use App\Http\Controllers\GroupsLinksController;
@@ -53,6 +54,12 @@ class CompanyController extends Controller
             $info->links = $links;
             $info->teamMembers = $teamMembers;
             $info->categories = $cats;
+            if(isset($info->field)){
+                // $info->field = Category::find($info->field)->name;
+                $info->field = Category::select('id','name')->where('id', '=', $info->field)->get()->first();
+            }else{
+                $info->field='';
+            }
             $info->countryName = $Country->name;
             $info->countryCode = $Country->code;
             $info->countryFlag = $Country->flag;

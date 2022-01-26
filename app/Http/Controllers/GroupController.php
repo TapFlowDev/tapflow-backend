@@ -14,6 +14,7 @@ use App\Http\Controllers\GroupCategoriesController;
 use App\Http\Controllers\FreeLancerController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\GroupMembersController;
+use App\Http\Controllers\AgencyTargetsController;
 use Illuminate\Support\Facades\DB;
 
 
@@ -70,6 +71,8 @@ class   GroupController extends Controller
             $groupCategoryObj = new GroupCategoriesController;
             $userObj = new FreeLancerController;
             $membersObj = new GroupMembersController;
+            $targetObj = new AgencyTargetsController;
+
 
             try {
 
@@ -77,6 +80,9 @@ class   GroupController extends Controller
                 $group_id = $group->id;
                 $userId = $req->admin_id;
                 $member = $membersObj->Insert($group_id, $userId, 1);
+
+                $targets = $req->targets;
+
                 if ($member == 500) {
                     $delGroup = Group::where('id', $group_id)->delete();
                     $response = Controller::returnResponse(500, 'Add group member error', []);
@@ -97,6 +103,19 @@ class   GroupController extends Controller
                     //         $groupCategoryObj->addMultiRows($arr);
                     //        }
                     //    }
+                    if (isset($targets) && count($targets)>0) {
+                        $targetArray = array();
+                        foreach ($targets as $keyTarget => $target) {
+                            $targetArray[$keyTarget]['group_id'] = $group_id;
+                            $targetArray[$keyTarget]['category_id'] = $target;
+                        }
+                        $successTarget = $targetObj->addMultiRows($targetArray);
+                        if ($successTarget == 500) {
+                            // $delGroupTarget = Group::where('id', $group_id)->delete();
+                            $response = Controller::returnResponse(500, 'add cast error', []);
+                            return json_encode($response);
+                        }
+                    }
                 } else {
                     $cats = json_decode($req->categories);
                     if (isset($cats)) {
@@ -114,6 +133,19 @@ class   GroupController extends Controller
                                 $response = Controller::returnResponse(500, 'add cast error', []);
                                 return json_encode($response);
                             }
+                        }
+                    }
+                    if (isset($targets) && count($targets)>0) {
+                        $targetArray = array();
+                        foreach ($targets as $keyTarget => $target) {
+                            $targetArray[$keyTarget]['group_id'] = $group_id;
+                            $targetArray[$keyTarget]['category_id'] = $target;
+                        }
+                        $successTarget = $targetObj->addMultiRows($targetArray);
+                        if ($successTarget == 500) {
+                            // $delGroupTarget = Group::where('id', $group_id)->delete();
+                            $response = Controller::returnResponse(500, 'add cast error', []);
+                            return json_encode($response);
                         }
                     }
                 }
@@ -197,7 +229,7 @@ class   GroupController extends Controller
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
             "name" => "required",
             "link" => "required",
-            "image" => "mimes:jpeg,png,jpg|max:15000"
+            // "image" => "mimes:jpeg,png,jpg|max:15000"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
