@@ -22,13 +22,15 @@ class TeamsController extends Controller
     public function index()
     {
         $teams = DB::table('teams')
-        ->join('groups', 'teams.group_id', '=', 'groups.id')
-        ->select('groups.*', 'teams.*')
-        ->orderBy('groups.verified', 'asc')
-        ->paginate(10);
+            ->join('groups', 'teams.group_id', '=', 'groups.id')
+            ->select('groups.*', 'teams.*')
+            ->where('groups.status', '=', 1)
+            ->where('groups.deleted', '=', 0)
+            ->orderBy('groups.verified', 'asc')
+            ->paginate(10);
         $teamsInfo = $this->getData($teams);
         // return $teamsInfo;
-        
+
         return view('AdminTool.Agencies.index', ['users' => $teamsInfo]);
     }
 
@@ -62,18 +64,15 @@ class TeamsController extends Controller
     public function show($id)
     {
         $teams = DB::table('teams')
-        ->join('groups', 'teams.group_id', '=', 'groups.id')
-        ->select('groups.*', 'teams.*')
-        ->where('groups.id', $id)
-        ->where('groups.status', 1)
-        ->where('groups.deleted', 0)
-        ->get();
+            ->join('groups', 'teams.group_id', '=', 'groups.id')
+            ->select('groups.*', 'teams.*')
+            ->where('groups.id', $id)
+            ->get();
         $teamsInfo = $this->getData($teams)->first();
 
         // dd();
         // return $info->first();
         return view('AdminTool.Agencies.show',  ['info' => $teamsInfo]);
-   
     }
 
     /**
@@ -107,17 +106,24 @@ class TeamsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $teamObj = new Group;
+        $team = $teamObj::find($id);
+        $team->status = 0;
+        $team->deleted = 1;
+        $team->save();
+        Group_member::where('group_id', '=', $id)->delete();
+        return redirect('/AdminTool/agencies');
     }
-    function getUnverifiedAgencies(){
+    function getUnverifiedAgencies()
+    {
         $teams = DB::table('teams')
-        ->join('groups', 'teams.group_id', '=', 'groups.id')
-        ->select('groups.*', 'teams.*')
-        ->where('groups.verified', 0)
-        ->paginate(10);
+            ->join('groups', 'teams.group_id', '=', 'groups.id')
+            ->select('groups.*', 'teams.*')
+            ->where('groups.verified', 0)
+            ->paginate(10);
         $teamsInfo = $this->getData($teams);
         // return $teamsInfo;
-        
+
         return $teamsInfo;
     }
     private function getData($array)
@@ -129,9 +135,9 @@ class TeamsController extends Controller
             $group->admin_name = $userInfo->first_name . " " . $userInfo->last_name;
             $group->admin_id = $userInfo->id;
             $group->categories = $groupCatObj->getTeamCategories($group->id);
-            if($group->image != ""){
+            if ($group->image != "") {
                 $group->image = asset('images/users/' . $group->image);
-            }else{
+            } else {
                 $group->image = asset('images/profile-pic.jpg');
             }
         }
