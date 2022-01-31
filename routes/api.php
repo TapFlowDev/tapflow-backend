@@ -28,7 +28,7 @@ use App\Http\Controllers\WaitingListController;
 use App\Http\Controllers\NewCountriesController;
 use App\Http\Controllers\WalletsTransactionsController;
 use App\Http\Controllers\GroupMembersController;
-use App\Http\Controllers\PaymentController;
+// use App\Http\Controllers\PaymentController;
 
 
 /*
@@ -58,7 +58,7 @@ Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
-Route::post('checkoutPayment', [PaymentController::class, 'checkout']);
+// Route::post('checkoutPayment', [PaymentController::class, 'checkout']);
 
 
 // apis does not need user token 
