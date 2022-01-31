@@ -95,7 +95,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
     Route::get('r/{token}', [InviteUsersController::class, 'getDataByToken']);
-    Route::post('newLogout', [UserController::class, 'newLogout']);
+    Route::get('logout', [UserController::class, 'newLogout']);
     Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);
     Route::post('updateUserLinks', [UserLinksController::class, 'update_links']);
     Route::post('updateUserCategories', [UserCategoriesController::class, 'updateUserCategories']);
