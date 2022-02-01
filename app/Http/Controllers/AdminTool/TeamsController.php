@@ -120,6 +120,8 @@ class TeamsController extends Controller
             ->join('groups', 'teams.group_id', '=', 'groups.id')
             ->select('groups.*', 'teams.*')
             ->where('groups.verified', 0)
+            ->where('groups.status', '=', 1)
+            ->where('groups.deleted', '=', 0)
             ->paginate(10);
         $teamsInfo = $this->getData($teams);
         // return $teamsInfo;
