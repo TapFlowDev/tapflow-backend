@@ -76,6 +76,7 @@ Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 Route::get('getCategories', [CategoriesController::class, 'getCategories']);
 Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
 Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies']);
+Route::get('getSectors', [CategoriesController::class, 'getSectors']);
 Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);

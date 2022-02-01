@@ -35,36 +35,41 @@ class CompanyController extends Controller
     }
     function getCompany($id)
     {
-         // try {
-            $linksController = new GroupsLinksController;
-            $GroupMembersController = new GroupMembersController;
-            $GroupCategoriesController = new GroupCategoriesController;
-            $NewCountriesController = new NewCountriesController;
-            $links = $linksController->get_group_links($id);
-            $teamMembers = $GroupMembersController->getCompanyMembersByGroupId($id);
-            $cats = $GroupCategoriesController->getTeamCategories($id);
-            $info = $this->get_company_info($id);
-            $country_id = $info->country;
-            $Country = $NewCountriesController->getCountryFlag($country_id);
-            if ($info->image == '') {
-                $info->image = asset('images/profile-pic.jpg');
-            } else {
-                $info->image = asset('images/companies/' . $info->image);
-            }
-            $info->links = $links;
-            $info->teamMembers = $teamMembers;
-            $info->categories = $cats;
-            if(isset($info->field)){
-                // $info->field = Category::find($info->field)->name;
-                $info->field = Category::select('id','name')->where('id', '=', $info->field)->get()->first();
-            }else{
-                $info->field='';
-            }
-            $info->countryName = $Country->name;
-            $info->countryCode = $Country->code;
-            $info->countryFlag = $Country->flag;
-            $response = Controller::returnResponse(200, "successful", $info);
-            return (json_encode($response));
+        // try {
+        $linksController = new GroupsLinksController;
+        $GroupMembersController = new GroupMembersController;
+        $GroupCategoriesController = new GroupCategoriesController;
+        $NewCountriesController = new NewCountriesController;
+        $links = $linksController->get_group_links($id);
+        $teamMembers = $GroupMembersController->getCompanyMembersByGroupId($id);
+        $cats = $GroupCategoriesController->getTeamCategories($id);
+        $info = $this->get_company_info($id);
+        $country_id = $info->country;
+        $Country = $NewCountriesController->getCountryFlag($country_id);
+        if ($info->image == '') {
+            $info->image = asset('images/profile-pic.jpg');
+        } else {
+            $info->image = asset('images/companies/' . $info->image);
+        }
+        $info->links = $links;
+        $info->teamMembers = $teamMembers;
+        $info->categories = $cats;
+        if (isset($info->field)) {
+            // $info->field = Category::find($info->field)->name;
+            $info->field = Category::select('id', 'name')->where('id', '=', $info->field)->get()->first();
+        } else {
+            $info->field = '';
+        }
+        if (isset($info->sector)) {
+            $info->sector = Category::select('id', 'name')->where('id', '=', $info->sector)->get()->first();
+        } else {
+            $info->sector = '';
+        }
+        $info->countryName = $Country->name;
+        $info->countryCode = $Country->code;
+        $info->countryFlag = $Country->flag;
+        $response = Controller::returnResponse(200, "successful", $info);
+        return (json_encode($response));
         // } catch (Exception $error) {
         //     $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
         //     return json_encode($response);
