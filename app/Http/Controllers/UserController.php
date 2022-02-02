@@ -78,7 +78,7 @@ class UserController extends Controller
             return (json_encode($response));
         } else {
             try {
-                $user = User::create($req->all());
+                $user = User::create($req->all() + ['name'=> $req->first_name . " " . $req->last_name]);
                 $array = array("user_id" => $user->id, 'type_freelancer' => (int)$req->type);
                 if ($req->type == 1) {
                     $freelancer = Freelancer::create($array);
