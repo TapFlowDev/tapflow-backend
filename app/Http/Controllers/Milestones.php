@@ -90,4 +90,25 @@ class Milestones extends Controller
             return 0;
         }
     }
+    function getMilestoneByProposalId($id)
+    {
+        $Tasks = new TasksController;
+        $milestones=Milestone::select('id','project_id','final_proposal_id','name','description','days','percentage','price','status')
+        ->where('final_proposal_id',$id)->get();
+        $milestones_details=[];
+        
+        foreach ($milestones as $milestone)
+        {
+            
+           $tasks= $Tasks->getTaskByMilestoneId($milestone->id);
+           array_push($milestones_details,array(
+            "milestone_id"=>$milestone->id,
+            "milestone_name"=>$milestone->name,
+            "milestone_description"=>$milestone->description,
+            "tasks"=>($tasks),
+           
+        ));
+        }
+        return ($milestones_details);
+    }
 }

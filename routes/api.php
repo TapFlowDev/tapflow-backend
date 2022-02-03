@@ -4,32 +4,35 @@ use App\Models\Rate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\GroupController;
-use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\FreeLancerController;
-use App\Http\Controllers\Proposals;
-use App\Http\Controllers\Final_proposals;
-use App\Http\Controllers\InviteUsersController;
-use App\Http\Controllers\ImagesController;
-use App\Http\Controllers\UserLinksController;
-use App\Http\Controllers\UserAttachmentsController;
-use App\Http\Controllers\TeamController;
-use App\Http\Controllers\GroupsLinksController;
-use App\Http\Controllers\GroupCategoriesController;
-use App\Http\Controllers\UserCategoriesController;
-use App\Http\Controllers\AnnouncementsController;
-use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\ContactUsController;
-use App\Http\Controllers\WalletsController;
-use App\Http\Controllers\ResetPasswordController;
-use App\Http\Controllers\WaitingListController;
-use App\Http\Controllers\NewCountriesController;
-use App\Http\Controllers\WalletsTransactionsController;
-use App\Http\Controllers\GroupMembersController;
-// use App\Http\Controllers\PaymentController;
 
+use  App\Http\Controllers\GroupController;
+use  App\Http\Controllers\CategoriesController;
+use  App\Http\Controllers\ProjectController;
+use  App\Http\Controllers\ClientController;
+use  App\Http\Controllers\FreeLancerController;
+use  App\Http\Controllers\Proposals;
+use  App\Http\Controllers\Final_proposals;
+use  App\Http\Controllers\InviteUsersController;
+use  App\Http\Controllers\ImagesController;
+use  App\Http\Controllers\UserLinksController;
+use  App\Http\Controllers\UserAttachmentsController;
+use  App\Http\Controllers\TeamController;
+use  App\Http\Controllers\GroupsLinksController;
+use  App\Http\Controllers\GroupCategoriesController;
+use  App\Http\Controllers\UserCategoriesController;
+use  App\Http\Controllers\AnnouncementsController;
+use  App\Http\Controllers\ContactUsController;
+use  App\Http\Controllers\WalletsController;
+use  App\Http\Controllers\ResetPasswordController;
+use  App\Http\Controllers\WaitingListController;
+use  App\Http\Controllers\NewCountriesController;
+use  App\Http\Controllers\WalletsTransactionsController;
+use  App\Http\Controllers\GroupMembersController;
+use  App\Http\Controllers\TasksController;
+use App\Http\Controllers\CompanyController;
+
+
+// use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +70,24 @@ Route::post('newLogin', [UserController::class, 'newLogin']);
 Route::post('register', [UserController::class, 'Register']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
+
+Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
+
+Route::post('addCountries', [NewCountriesController::class, 'Insert']);
+Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
+Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
+Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
+Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
+Route::post('updateTasks', [TasksController::class, 'updateTasks']);
+
+
+Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
+Route::post('addTeam', [GroupController::class, 'add_group_team']);
+Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);    
+Route::post('createWallet', [WalletsController::class, 'Insert']);    
+Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
+Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
+
 Route::post('forgetPassword', [ResetPasswordController::class, 'sendLinkResetPassword']);
 Route::post('reset-password', [ResetPasswordController::class, 'resetPasswordCheck']);
 Route::post('contactUS', [ContactUsController::class, 'Insert']);
