@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
+// use Laravel\Cashier\Billable;
+
 
 class User extends Authenticatable
 {
@@ -27,7 +29,8 @@ class User extends Authenticatable
         'dob',
         'gender',
         'type',
-        'token'
+        'token',
+        'name'
     ];
 
     /**
@@ -59,6 +62,28 @@ class User extends Authenticatable
         // $userData = $this->find($id);
         $adminType = $user['type'];
         if($adminType==0){
+            return $user;
+        } else{
+            return null;
+        }
+    }
+    public function isAgency($user)
+    {
+        // $id = $user['id'];
+        // $userData = $this->find($id);
+        $adminType = $user['type'];
+        if($adminType==1){
+            return $user;
+        } else{
+            return null;
+        }
+    }
+    public function isClient($user)
+    {
+        // $id = $user['id'];
+        // $userData = $this->find($id);
+        $adminType = $user['type'];
+        if($adminType==2){
             return $user;
         } else{
             return null;

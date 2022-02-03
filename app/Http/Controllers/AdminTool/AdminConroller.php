@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 
 class AdminConroller extends Controller
 {
@@ -17,13 +18,15 @@ class AdminConroller extends Controller
      */
     public function index()
     {
-        //
-        // dd('admin');
-        // if(Gate::allows('is-admin')){
+        $group_members = DB::table('group_members')->select('user_id')->pluck('user_id')->toArray();
+        $users = User::whereNotIn('id', $group_members)
+            ->where('type', '<>', 0)
+            ->where('status', '=', 1)
+            ->where('deleted', '=', 0)
+            ->latest()
+            ->paginate(10);
 
-        // }
-        return view('AdminTool.Users.index', ['users'=>User::paginate(10)]);
-        // dd('go to login');
+        return view('AdminTool.Users.index', ['users' => $users]);
     }
 
     /**
@@ -35,7 +38,6 @@ class AdminConroller extends Controller
     {
         //
         return view('AdminTool.Users.add');
-        
     }
 
     /**
@@ -59,7 +61,15 @@ class AdminConroller extends Controller
      */
     public function show($id)
     {
-        //
+        $member = User::select('users.*')
+        ->where('users.id', $id)
+        ->get();
+        $memberInfo = $this->getUserData($member)->first();
+        //  return $memberInfo;
+
+        // dd();
+        // return $info->first();
+        return view('AdminTool.Users.show',  ['info' => $memberInfo]);
     }
 
     /**
@@ -71,7 +81,7 @@ class AdminConroller extends Controller
     public function edit($id)
     {
         // dd(User::find($id));
-        return view('AdminTool.Users.edit', ['user'=>User::find($id)]);
+        return view('AdminTool.Users.edit', ['user' => User::find($id)]);
     }
 
     /**
@@ -86,7 +96,6 @@ class AdminConroller extends Controller
         $user = User::findOrfail($id);
         $user->update($request->except(['_token']));
         return redirect('/AdminTool/users');
-        
     }
 
     /**
@@ -97,13 +106,28 @@ class AdminConroller extends Controller
      */
     public function destroy($id)
     {
-        User::destroy($id);
+        $userObj = new User;
+        $user = $userObj::find($id);
+        $user->status = 0;
+        $user->deleted = 1;
+        $user->save();
         return redirect('/AdminTool/users');
-    }    
-    
+    }
+
     public function login($id)
     {
         return view('AdminTool.login');
-        
+    }
+    private function getUserData($users){
+        foreach ($users as $key => &$user) {
+
+            $user->full_name = $user->first_name . " " . $user->last_name;
+            if($user->image != ""){
+                $user->image = asset('images/users/' . $user->image);
+            }else{
+                $user->image = asset('images/profile-pic.jpg');
+            }
+        }
+        return $users;
     }
 }

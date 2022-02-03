@@ -21,10 +21,13 @@
                                     <th scope="row">{{ $user->id }}</th>
                                     <td>{{ $user->first_name . ' ' . $user->last_name }}</td>
                                     <td>{{ $user->email }}</td>
-                                    <td>{{ $user->company_name }}</td>
+                                    <td>{{ $user->team_name }}</td>
                                     <td>
+                                        <a class="btn btn-sm btn-secondary"
+                                            href="{{ route('AdminTool.sendEmailShow.show', $user->id) }}"
+                                            role="button">Send Email</a>
                                         <a class="btn btn-sm btn-primary"
-                                            href="{{ route('AdminTool.freelancers.show', $user->company_id) }}"
+                                            href="{{ route('AdminTool.clients.show', $user->id) }}"
                                             role="button">View</a>
                                         {{-- <button class="btn btn-sm btn-danger" 
                                 onclick="event.preventDefault();

@@ -10,6 +10,8 @@
                             <tr>
                                 <th scope="col">#id</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">Link</th>
+                                <th scope="col">Admin</th>
                                 <th scope="col">is verified</th>
                                 <th scope="col">Action</th>
                             </tr>
@@ -19,20 +21,30 @@
                                 <tr>
                                     <th scope="row">{{ $user->id }}</th>
                                     <td>{{ $user->name }}</td>
+                                    <td class="team-name-link">
+                                        <a href="{{ $user->link }}" target="_blanck" role="">{{ $user->link }}
+                                        </a>
+                                    </td>
+                                    <td class="team-name-link">
+                                        <a href="{{ route('AdminTool.freelancers.show', $user->admin_id) }}"
+                                            target="_blanck" role="">{{ $user->admin_name }}
+                                        </a>
+                                    </td>
                                     <td>
                                         @if ($user->verified == 1)
-                                            verified
+                                            <i class="fas fa-check"></i>
                                         @else
-                                            not verified
+                                            <i class="fas fa-times"></i>
                                         @endif
                                     </td>
                                     <td>
-                                        {{-- <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.freelancers.show', $user->freelancer_id) }}"
-                                    role="button">View</a> --}}
+                                        <a class="btn btn-sm btn-primary"
+                                            href="{{ route('AdminTool.agencies.show', $user->id) }}"
+                                            role="button">View</a>
                                         @if ($user->verified == 0)
                                             <button class="btn btn-sm btn-success"
                                                 onclick="event.preventDefault();
-                                                    document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Verify</button>
+                                                            document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Verify</button>
                                             <form id="verifyTeam-user-form-{{ $user->id }}"
                                                 action="{{ route('AdminTool.group.update', $user->id) }}" method="POST"
                                                 style="display: none;">
@@ -41,12 +53,12 @@
                                                 <input type="hidden" name="verify" value="1">
 
                                             </form>
-                                        @elseif ($user->verified==1)
+                                        @elseif ($user->verified == 1)
                                             <button class="btn btn-sm btn-danger"
                                                 onclick="event.preventDefault();
-                                                document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Unverify</button>
+                                                        document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Unverify</button>
                                             <form id="verifyTeam-user-form-{{ $user->id }}"
-                                                action="{{ route('AdminTool.Group.update', $user->id) }}" method="POST"
+                                                action="{{ route('AdminTool.group.update', $user->id) }}" method="POST"
                                                 style="display: none;">
                                                 @csrf
                                                 @method('PATCH')
@@ -54,6 +66,15 @@
 
                                             </form>
                                         @endif
+                                        <button class="btn btn-sm btn-danger"
+                                            onclick="event.preventDefault();
+                                        document.getElementById('delete-user-form-{{ $user->id }}').submit()">Delete</button>
+                                        <form id="delete-user-form-{{ $user->id }}"
+                                            action="{{ route('AdminTool.agencies.destroy', $user->id) }}" method="POST"
+                                            style="display: none;">
+                                            @csrf
+                                            @method("DELETE")
+                                        </form>
                                     </td>
                                 </tr>
                             @endforeach

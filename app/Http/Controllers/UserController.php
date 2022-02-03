@@ -78,9 +78,13 @@ class UserController extends Controller
             return (json_encode($response));
         } else {
             try {
-                $user = User::create($req->all());
-                $array = array("user_id" => $user->id, 'type_freelancer' => 1);
-                $freelancer = Freelancer::create($array);
+                $user = User::create($req->all() + ['name'=> $req->first_name . " " . $req->last_name]);
+                $array = array("user_id" => $user->id, 'type_freelancer' => (int)$req->type);
+                if ($req->type == 1) {
+                    $freelancer = Freelancer::create($array);
+                } elseif ($req->type == 2) {
+                    $freelancer = Client::create($array);
+                }
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
                     // $ext = $req->file('image')->getClientOriginalExtension();
@@ -229,8 +233,8 @@ class UserController extends Controller
     function UpdateUserInfo(Request $req)
     {
         try {
-            $user = User::where('id', $req->user_id)->update(["first_name" => $req->first_name, "last_name" => $req->last_name,'role'=>$req->role]);
-            
+            $user = User::where('id', $req->user_id)->update(["first_name" => $req->first_name, "last_name" => $req->last_name, 'role' => $req->role]);
+
             $response = Controller::returnResponse(200, 'successfully', []);
             return json_encode($response);
         } catch (Exception $error) {
@@ -286,11 +290,18 @@ class UserController extends Controller
 
     function newLogout(Request $req)
     {
-        $req->user()->currentAccessToken()->delete();
-        $responseData = array(
-            "msg" => "loged out"
-        );
-        return $responseData;
+        try {
+            $req->user()->currentAccessToken()->delete();
+            // $responseData = array(
+            //     "msg" => "loged out"
+            // );
+            $response = Controller::returnResponse(200, 'user logged out', []);
+            return json_encode($response);
+        } catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
+        }
     }
 
     function newLogin(Request $req)
@@ -344,18 +355,15 @@ class UserController extends Controller
             $responseData = $validator->errors();
             $response = Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
+        } else {
+            try {
+                Freelancer::where('user_id', $req->user_id)->update(['role' => $req->role]);
+                $response = Controller::returnResponse(200, 'successfully', []);
+                return json_encode($response);
+            } catch (Exception $error) {
+                $response = Controller::returnResponse(500, "There IS Error Occurred", $error);
+                return (json_encode($response));
+            }
         }
-        else{
-            try{
-            Freelancer::where('user_id',$req->user_id)->update(['role'=>$req->role]);
-            $response = Controller::returnResponse(200, 'successfully', []);
-            return json_encode($response);
-        }catch(Exception $error)
-        {
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $error);
-            return (json_encode($response));
-        }
-        }
-
     }
 }
