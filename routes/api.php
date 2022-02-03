@@ -27,7 +27,7 @@ use  App\Http\Controllers\WaitingListController;
 use  App\Http\Controllers\NewCountriesController;
 use  App\Http\Controllers\WalletsTransactionsController;
 use  App\Http\Controllers\GroupMembersController;
-
+use  App\Http\Controllers\TasksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +60,9 @@ Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnn
 Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
+Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
+Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
+Route::post('updateTasks', [TasksController::class, 'updateTasks']);
 
 
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);

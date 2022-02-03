@@ -39,4 +39,9 @@ class AssignedToController extends Controller
     {
 
     }
+    function getAssignedByTaskId($id)
+    {
+        $assigned =Assigned_task::where('task_id',$id)->get();
+        return ( $assigned);
+    }
 }
