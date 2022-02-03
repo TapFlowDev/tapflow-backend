@@ -16,48 +16,40 @@ class Proposals extends Controller
     //add row 
     function Insert(Request $req)
     {
-        $rules =array(
-            "team_id"=>"required",
-            "user_id"=>"required",
-            "project_id"=>"required",
-            "price_min"=>"required",
-            "price_max"=>"required",
-            "days"=>"required",
-            "our_offer"=>"required"
+        $rules = array(
+            "team_id" => "required",
+            "user_id" => "required",
+            "project_id" => "required",
+            "price_min" => "required",
+            "price_max" => "required",
+            "days" => "required",
+            "our_offer" => "required"
         );
-        $validators=Validator::make($req->all(),$rules);
-        if ($validators->fails())
-        {
-             $responseData=$validators->errors();
-            $response=Controller::returnResponse( 101,"Validation Error", $responseData);
+        $validators = Validator::make($req->all(), $rules);
+        if ($validators->fails()) {
+            $responseData = $validators->errors();
+            $response = Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
         }
-        else
-        try{
-        {
-            $proposal=proposal::create($req->all());
-            $proposal_id=$proposal->id;
-            $responseData=array("proposal_id" =>$proposal_id);
-            $response=Controller::returnResponse( 200,"proposal added successfully", $responseData);
-            return (json_encode($response));      
 
+        try {
+            $proposal = proposal::create($req->all());
+            $proposal_id = $proposal->id;
+            $responseData = array("proposal_id" => $proposal_id);
+            $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $responseData = array("error" => $error,);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
         }
-    }
-    catch(Exception $error)
-    {
-        $responseData = array("error" => $error,);
-        $response=Controller::returnResponse( 500,"There IS Error Occurred", $responseData);
-        return (json_encode($response));
-    }
     }
     //update row according to row id
     function Update($id)
     {
-
     }
     //delete row according to row id
     function Delete($id)
     {
-
     }
 }
