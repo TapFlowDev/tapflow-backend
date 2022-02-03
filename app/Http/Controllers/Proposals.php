@@ -22,7 +22,8 @@ class Proposals extends Controller
             "project_id" => "required",
             "price_min" => "required",
             "price_max" => "required",
-            "days" => "required",
+            "from" => "required",
+            "to" => "required",
             "our_offer" => "required"
         );
         $validators = Validator::make($req->all(), $rules);
