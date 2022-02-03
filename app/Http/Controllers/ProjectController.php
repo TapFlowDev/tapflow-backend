@@ -244,4 +244,51 @@ class ProjectController extends Controller
         }
         return $projects;
     }
+    function getAgencyPendingProjects($agency_id, $offset=1)
+    {
+        $limit = 4;
+        $page = ($offset - 1) * $limit;
+        try {
+            $projects = DB::table('projects')
+                ->join('proposals', 'projects.id', '=', 'proposals.project_id')
+                ->select('projects.*')
+                ->where('proposals.team_id', '=', $agency_id)
+                ->where('proposals.status', '<', 2)
+                ->where('projects.status', '=', 0)
+                ->distinct()
+                ->latest()->offset($page)->limit($limit)
+                ->get();
+
+            $projectInfo = $this->getProjectsInfo($projects);
+            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
+        }
+    }
+
+    function getAgencyActiveProjects($agency_id, $offset=1)
+    {
+        $limit = 4;
+        $page = ($offset - 1) * $limit;
+        try {
+            $projects = DB::table('projects')
+                ->select('projects.*')
+                ->where('projects.team_id', '=', $agency_id)
+                ->where('projects.status', '=', 1)
+                ->distinct()
+                ->latest()->offset($page)->limit($limit)
+                ->get();
+
+            $projectInfo = $this->getProjectsInfo($projects);
+            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
+        }
+    }
 }
