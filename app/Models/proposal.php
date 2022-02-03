@@ -16,7 +16,8 @@ class proposal extends Model
         'project_id',
         'price_min',
         'price_max',
-        'days',
+        'from',
+        'to',
         'our_offer',
         'status',
     ];
