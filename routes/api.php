@@ -61,6 +61,8 @@ Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
+Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
+Route::post('updateTasks', [TasksController::class, 'updateTasks']);
 // Route::post('checkoutPayment', [PaymentController::class, 'checkout']);
 
 
@@ -71,28 +73,16 @@ Route::post('register', [UserController::class, 'Register']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 
-Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
+// Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
 
-Route::post('addCountries', [NewCountriesController::class, 'Insert']);
-Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
-Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
-Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
-Route::post('updateTasks', [TasksController::class, 'updateTasks']);
-
-
-Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
-Route::post('addTeam', [GroupController::class, 'add_group_team']);
-Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
-Route::post('createWallet', [WalletsController::class, 'Insert']);
-Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
-Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
+// Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
 Route::post('forgetPassword', [ResetPasswordController::class, 'sendLinkResetPassword']);
 Route::post('reset-password', [ResetPasswordController::class, 'resetPasswordCheck']);
 Route::post('contactUS', [ContactUsController::class, 'Insert']);
 Route::post('waitingList', [WaitingListController::class, 'Insert']);
-Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 
+Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 Route::get('getCategories', [CategoriesController::class, 'getCategories']);
 Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
 Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies']);
