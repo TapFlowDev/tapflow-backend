@@ -79,6 +79,7 @@ Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
 Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
 Route::post('updateTasks', [TasksController::class, 'updateTasks']);
+Route::get('getAgencyActiveProject/{id}', [ProjectController::class, 'getAgencyActiveProject']);
 
 
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
