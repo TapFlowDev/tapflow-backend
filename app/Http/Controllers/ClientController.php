@@ -15,8 +15,8 @@ class ClientController extends Controller
 {
     function Insert_client(Request $req)
     {
-     
-        
+
+
         $rules = array(
             "user_id" => "required|exists:users,id",
             "bio" => "required",
@@ -28,7 +28,6 @@ class ClientController extends Controller
         if ($validator->fails()) {
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
-        
         }
         try {
             $data = $req->except(['gender', 'dob', 'role']);
@@ -99,17 +98,15 @@ class ClientController extends Controller
     //add row 
     function get_client_info($id)
     {
-        try{
-            $user= $user =DB::table('users')
-            ->leftJoin('clients','users.id','=','clients.user_id')
-            ->where('users.id',$id)
-            ->get();
+        try {
+            $user = $user = DB::table('users')
+                ->leftJoin('clients', 'users.id', '=', 'clients.user_id')
+                ->where('users.id', $id)
+                ->get();
             $user = $this->getUserInfo($user)->first();
             $response = Controller::returnResponse(200, 'user information found', $user);
             return json_encode($response);
-        }
-        catch(Exception $error)
-        {  
+        } catch (Exception $error) {
 
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
@@ -118,31 +115,26 @@ class ClientController extends Controller
     //update row according to row id
     function Update($id)
     {
-
     }
     //delete row according to row id
     function Delete($id)
     {
-
     }
     function checkIfExists($id)
     {
-       $freelancer= Client::where('user_id', '=', $id)->first();
+        $freelancer = Client::where('user_id', '=', $id)->first();
 
-      
-       if($freelancer === null)
-       {
-        return(0);
-       }
-       else
-       {
-        return(1);
-       }
-        
+
+        if ($freelancer === null) {
+            return (0);
+        } else {
+            return (1);
+        }
     }
 
-    function updateTeamId($userId, $teamId){
-        Client::where('user_id', $userId)->update(['company_id'=>$teamId]);
+    function updateTeamId($userId, $teamId)
+    {
+        Client::where('user_id', $userId)->update(['company_id' => $teamId]);
     }
     function updateFiles($userId, $imageName, $filedName)
     {
@@ -150,18 +142,17 @@ class ClientController extends Controller
     }
 
     function update_Bio(Request $req)
-    { 
-      try{
-            $client=Client::where('user_id',$req->user_id)->update(['bio'=>$req->bio]);
+    {
+        try {
+            $client = Client::where('user_id', $req->user_id)->update(['bio' => $req->bio]);
             $response = Controller::returnResponse(200, 'User information updated successfully', array());
             return json_encode($response);
-        }catch(Exception $error)
-        {
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
         }
     }
-   
+
 
 
     private function getUserInfo($users)
@@ -180,8 +171,12 @@ class ClientController extends Controller
             } else {
                 $user->links = [];
             }
-            $image = asset('images/users/' . $user->image);
-            $user->image = $image;
+            if (isset($user->image)) {
+                $user->image =  asset('images/users/' . $user->image);
+            } else {
+                $user->image  = asset('images/profile-pic.jpg');
+            }
+
             $groupId = $membersObj->getGroupId($user->id);
             if ($groupId != '') {
                 $user->company_id = $groupId->group_id;
@@ -191,5 +186,4 @@ class ClientController extends Controller
         }
         return $users;
     }
-
 }
