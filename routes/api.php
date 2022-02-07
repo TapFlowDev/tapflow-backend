@@ -142,6 +142,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyActiveProjects/{agency_id}/', [ProjectController::class, 'getAgencyActiveProjects']);
     Route::get('agencyActiveProjects/{agency_id}/{offset}', [ProjectController::class, 'getAgencyActiveProjects']);
     Route::get('getAgencyActiveProject/{id}', [ProjectController::class, 'getAgencyActiveProject']);
+    Route::get('getAgencyPendingProject/{id}', [ProjectController::class, 'getAgencyPendingProject']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
