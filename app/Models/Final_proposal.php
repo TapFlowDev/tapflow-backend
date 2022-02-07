@@ -16,7 +16,9 @@ class Final_proposal extends Model
         "price",
         "description",
         "days",
-        "status",
+        "status",//1 => sent, 2=> rejected, 3=>accepted 
+        "title",
+        "starting_date",
 
     ];
 }
