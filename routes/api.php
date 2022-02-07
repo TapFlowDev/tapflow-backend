@@ -62,6 +62,8 @@ Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
+Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
+Route::post('updateTasks', [TasksController::class, 'updateTasks']);
 // Route::post('checkoutPayment', [PaymentController::class, 'checkout']);
 
 
@@ -72,29 +74,25 @@ Route::post('register', [UserController::class, 'Register']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 
-Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
-
-Route::post('addCountries', [NewCountriesController::class, 'Insert']);
-Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
-Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
-Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
-Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
-Route::post('updateTasks', [TasksController::class, 'updateTasks']);
+// Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
 
 
-Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
+
 Route::post('addTeam', [GroupController::class, 'add_group_team']);
-Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+
 Route::post('createWallet', [WalletsController::class, 'Insert']);
-Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
-Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
+
+
+
+// Route::post('addCountries', [NewCountriesController::class, 'Insert']);
+
 
 Route::post('forgetPassword', [ResetPasswordController::class, 'sendLinkResetPassword']);
 Route::post('reset-password', [ResetPasswordController::class, 'resetPasswordCheck']);
 Route::post('contactUS', [ContactUsController::class, 'Insert']);
 Route::post('waitingList', [WaitingListController::class, 'Insert']);
-Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 
+Route::get('getCountries', [NewCountriesController::class, 'getCountries']);
 Route::get('getCategories', [CategoriesController::class, 'getCategories']);
 Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']);
 Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies']);
@@ -128,13 +126,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
     Route::post('removeUser', [GroupMembersController::class, 'removeUserFromGroup']);
     Route::get('project/{id}', [ProjectController::class, 'getProject']);
+    Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
     // Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     // Route::post('saveImage', [ImagesController::class, 'Insert']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
+
     Route::post('addProposal', [Proposals::class, 'Insert']);
+
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
     Route::post('updateTools', [FreeLancerController::class, 'update_tools']);
@@ -152,6 +153,8 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyPendingProjects/{agency_id}/{offset}', [ProjectController::class, 'getAgencyPendingProjects']);
     Route::get('agencyActiveProjects/{agency_id}/', [ProjectController::class, 'getAgencyActiveProjects']);
     Route::get('agencyActiveProjects/{agency_id}/{offset}', [ProjectController::class, 'getAgencyActiveProjects']);
+    Route::get('getAgencyActiveProject/{id}', [ProjectController::class, 'getAgencyActiveProject']);
+    Route::get('getAgencyPendingProject/{id}', [ProjectController::class, 'getAgencyPendingProject']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);

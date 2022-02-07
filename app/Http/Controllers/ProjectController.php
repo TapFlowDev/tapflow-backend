@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProjectCategoriesController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Milestones;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupCategoriesController;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use App\Models\projects_category;
 use App\Models\Group;
 use App\Models\Category;
 use App\Models\Company;
+use App\Models\Group_member;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -37,6 +39,13 @@ class ProjectController extends Controller
         $groupMemberObj = new GroupMembersController;
         $userInfo = $userObj->getUserById($req->user_id);
         $userGroupInfo = $groupMemberObj->getMemberInfoByUserId($req->user_id);
+        if ($userGroupInfo == '') {
+            $validation = array("type" => array(
+                "user must have company to add project"
+            ));
+            $response = Controller::returnResponse(101, 'Validation Error', $validation);
+            return json_encode($response);
+        }
         $userPrivilege = $userGroupInfo->privileges;
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -233,6 +242,7 @@ class ProjectController extends Controller
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
+            $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
             // dd($company_image);
             if (isset($company_image)) {
                 $project->company_image = asset('images/companies/') . $company_image;
@@ -240,11 +250,12 @@ class ProjectController extends Controller
                 $project->company_image = asset('images/profile-pic.jpg');
             }
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
+            $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
         }
         return $projects;
     }
-    function getAgencyPendingProjects($agency_id, $offset=1)
+    function getAgencyPendingProjects($agency_id, $offset = 1)
     {
         $limit = 4;
         $page = ($offset - 1) * $limit;
@@ -269,7 +280,7 @@ class ProjectController extends Controller
         }
     }
 
-    function getAgencyActiveProjects($agency_id, $offset=1)
+    function getAgencyActiveProjects($agency_id, $offset = 1)
     {
         $limit = 4;
         $page = ($offset - 1) * $limit;
@@ -284,6 +295,75 @@ class ProjectController extends Controller
 
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
+        }
+    }
+    function getAgencyActiveProject($id)
+    {
+        $milestonesObj = new Milestones;
+        try {
+            $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
+            $projectData->final_proposal_id = DB::table('final_proposals')->select('id')->where('project_id', '=', $projectData->id)->where('status', '=', 1)->pluck('id')->first();
+            if ($projectData->team_id == '' || $projectData->status < 1 || $projectData->final_proposal_id == '') {
+                $response = Controller::returnResponse(500, "project is not active", []);
+                return (json_encode($response));
+            }
+            $milestones = $milestonesObj->getMilestoneByProposalId($projectData->final_proposal_id);
+            $admins = DB::table('group_members')
+                ->join('users', 'group_members.user_id', '=', 'users.id')
+                ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
+                ->where('users.deleted', '=', 0)
+                ->where('users.status', '=', 1)
+                ->where('group_members.group_id', '=', $projectData->company_id)
+                ->where('group_members.privileges', '=', 1)
+                ->get();
+            foreach ($admins as &$admin) {
+                $userData = DB::table('clients')->where('user_id', $admin->id)->get()->first();
+                if (isset($userData->image)) {
+                    $admin->image =  asset('images/users/' . $userData->image);
+                } else {
+                    $admin->image  = asset('images/profile-pic.jpg');
+                }
+            }
+            $projectData->admins = $admins;
+            $projectData->milestones = $milestones;
+            $response = Controller::returnResponse(200, "data found", $projectData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
+        }
+    }
+    function getAgencyPendingProject($id){
+        try {
+            $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
+            if ($projectData->team_id != '' || $projectData->status > 0) {
+                $response = Controller::returnResponse(500, "project is not pending", []);
+                return (json_encode($response));
+            }
+            $admins = DB::table('group_members')
+                ->join('users', 'group_members.user_id', '=', 'users.id')
+                ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
+                ->where('users.deleted', '=', 0)
+                ->where('users.status', '=', 1)
+                ->where('group_members.group_id', '=', $projectData->company_id)
+                ->where('group_members.privileges', '=', 1)
+                ->get();
+            foreach ($admins as &$admin) {
+                $userData = DB::table('clients')->where('user_id', $admin->id)->get()->first();
+                if (isset($userData->image)) {
+                    $admin->image =  asset('images/users/' . $userData->image);
+                } else {
+                    $admin->image  = asset('images/profile-pic.jpg');
+                }
+            }
+            $projectData->admins = $admins;
+            $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
             $responseData = $error;
