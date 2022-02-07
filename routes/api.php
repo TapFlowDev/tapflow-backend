@@ -30,6 +30,7 @@ use  App\Http\Controllers\WalletsTransactionsController;
 use  App\Http\Controllers\GroupMembersController;
 use  App\Http\Controllers\TasksController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\Milestones;
 
 
 // use App\Http\Controllers\PaymentController;
@@ -83,8 +84,8 @@ Route::post('updateTasks', [TasksController::class, 'updateTasks']);
 
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::post('addTeam', [GroupController::class, 'add_group_team']);
-Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);    
-Route::post('createWallet', [WalletsController::class, 'Insert']);    
+Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
 
@@ -101,7 +102,7 @@ Route::get('getSectors', [CategoriesController::class, 'getSectors']);
 Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
-  Route::post('addProposal', [Proposals::class, 'Insert']);
+
 
 
 // Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
@@ -109,7 +110,7 @@ Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryByI
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
-
+    Route::post('submitMilestone', [Milestones::class, 'submitMilestone']);
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
@@ -133,7 +134,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
-  
+    Route::post('addProposal', [Proposals::class, 'Insert']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
     Route::post('updateTools', [FreeLancerController::class, 'update_tools']);
