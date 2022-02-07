@@ -16,11 +16,13 @@ class Final_proposals extends Controller
     {
         $milestone = new Milestones;
         $rules = array(
-            "team_id" => "required",
-            "project_id" => "required",
-            "proposal_id" => "required",
+            "title" => "required",  
+            "team_id" => "required|exists:groups,id",
+            "project_id" => "required|exists:projects,id",
+            "proposal_id" => "required|exists:proposals,id",
             "price" => "required",
             "days" => "required",
+            "starting_date" => "required|date",
             "milestones" => "required",
 
         );
