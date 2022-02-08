@@ -65,6 +65,7 @@ Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
 Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
 Route::post('updateTasks', [TasksController::class, 'updateTasks']);
+Route::post('getProposalByProjectAndTeamId', [Proposals::class, 'getProposalByProjectAndTeamId']);
 // Route::post('checkoutPayment', [PaymentController::class, 'checkout']);
 
 

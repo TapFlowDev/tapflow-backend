@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use App\Models\proposal;
 use Exception;
-
+use Illuminate\Support\Facades\DB;
 class Proposals extends Controller
 {
     //add row 
@@ -55,7 +55,12 @@ class Proposals extends Controller
     }
     function getProposalByProjectAndTeamId($project_id,$team_id)
     {
-        $proposal=proposal::where(['project_id'=>$project_id,"team_id"=>$team_id])->get();
+    
+        $proposal=DB::table('proposals')
+        ->where('project_id','=',$project_id)
+        ->where('team_id','=',$team_id)
+        ->first();
+       
         return $proposal;
     }
 }
