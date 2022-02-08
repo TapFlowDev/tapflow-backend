@@ -59,6 +59,7 @@ use App\Http\Controllers\Milestones;
 // for testing test
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+Route::post('saveFinalProposal', [Final_proposals::class, 'saveFinalProposal']);
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);

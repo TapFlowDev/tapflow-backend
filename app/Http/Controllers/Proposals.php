@@ -53,4 +53,10 @@ class Proposals extends Controller
     function Delete($id)
     {
     }
+    function getProposalByProjectAndTeamId($project_id,$team_id)
+    {
+        $proposal=proposal::where(['project_id'=>$project_id,"team_id"=>$team_id])->get();
+        dd($proposal);
+        return $proposal;
+    }
 }
