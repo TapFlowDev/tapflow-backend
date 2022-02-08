@@ -10,6 +10,7 @@
                             <tr>
                                 <th scope="col">#id</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">Admin</th>
                                 {{-- <th scope="col">is verified</th> --}}
                                 <th scope="col">Action</th>
                             </tr>
@@ -19,6 +20,11 @@
                                 <tr>
                                     <th scope="row">{{ $user->id }}</th>
                                     <td>{{ $user->name }}</td>
+                                    <td class="team-name-link">
+                                        <a href="{{ route('AdminTool.clients.show', $user->admin_id) }}"
+                                            target="_blanck" role="">{{ $user->admin_name }}
+                                        </a>
+                                    </td>
                                     {{-- <td>
                         @if ($user->verified == 1)
                         verified

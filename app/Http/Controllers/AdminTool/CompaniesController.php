@@ -23,9 +23,9 @@ class CompaniesController extends Controller
      */
     public function index()
     {
-        $companies = DB::table('companies')
+        $companies = $this->getData(DB::table('companies')
             ->join('groups', 'companies.group_id', '=', 'groups.id')
-            ->select('groups.*', 'companies.*')->paginate(10);
+            ->select('groups.*', 'companies.*')->paginate(10));
 
         return view('AdminTool.Companies.index', ['users' => $companies]);
     }
@@ -68,7 +68,7 @@ class CompaniesController extends Controller
         $teamsInfo = $this->getData($teams)->first();
         $projects = Project::where('company_id', '=', $teamsInfo->id)->latest()->get();
         // return $projects;
-        return view('AdminTool.Companies.show',  ['info' => $teamsInfo, 'projects'=>$projects]);
+        return view('AdminTool.Companies.show',  ['info' => $teamsInfo, 'projects' => $projects]);
     }
 
     /**
