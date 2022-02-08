@@ -339,25 +339,21 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-    function getAgencyPendingProject(Request $req,$id){
+    function getAgencyPendingProject(Request $req, $id)
+    {
         $userData = $req->user();
-       
+
         try {
             $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
             if ($projectData->team_id != '' || $projectData->status > 0) {
                 $response = Controller::returnResponse(500, "project is not pending", []);
                 return (json_encode($response));
             }
-            $team_id=Group_member::where("user_id",$userData->id)->select('group_id')
-            ->first();
-           
-
-            $proposalsObj=new Proposals;
-            $proposal= $proposalsObj->getProposalByProjectAndTeamId($projectData->id,$team_id->group_id);
-            
-            $proposal_id=$proposal->id;
-          
-           
+            $team_id = Group_member::where("user_id", $userData->id)->select('group_id')
+                ->first();
+            $proposalsObj = new Proposals;
+            $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id->group_id);
+            $proposal_id = $proposal->id;
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -376,7 +372,7 @@ class ProjectController extends Controller
             }
             $projectData->proposal_id = $proposal_id;
             $projectData->admins = $admins;
-           
+
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
