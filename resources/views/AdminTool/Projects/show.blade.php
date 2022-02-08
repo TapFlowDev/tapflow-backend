@@ -12,7 +12,7 @@
                                         width="150">
                                     <div class="mt-3 team-name-link">
                                         <h4> <a class=""
-                                                href="{{ route('AdminTool.agencies.show', $project->company_id) }}"
+                                                href="{{ route('AdminTool.companies.show', $project->company_id) }}"
                                                 role="button">{{ $project->company_name }}
                                             </a>| {{ $project->name }}</h4>
                                     </div>
