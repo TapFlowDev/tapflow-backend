@@ -347,9 +347,7 @@ class ProjectController extends Controller
                 return (json_encode($response));
             }
             
-            $proposalsObj=new Proposals;
-            $proposal= $proposalsObj->getProposalByProjectAndTeamId($projectData->id,$projectData->team_id);
-            $proposal_id=$proposal->id;
+           
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -367,7 +365,7 @@ class ProjectController extends Controller
                 }
             }
             $projectData->admins = $admins;
-            $projectData->proposal_id = $proposal_id;
+           
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
