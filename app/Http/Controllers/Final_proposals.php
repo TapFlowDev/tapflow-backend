@@ -58,7 +58,7 @@ class Final_proposals extends Controller
                     return json_encode($response);
                 }
             } catch (Exception $error) {
-                $response = Controller::returnResponse(500, 'something wrong', $error);
+                $response = Controller::returnResponse(500, 'something wrong', $error->getMessage());
                 return json_encode($response);
             }
         }
@@ -157,6 +157,10 @@ class Final_proposals extends Controller
                 return json_encode($response);
             }
         }
+    }
+    function getProposalByProjectIdAndTeamId(Request $req)
+    {
+
     }
 
 }
