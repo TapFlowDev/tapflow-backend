@@ -339,15 +339,23 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-    function getAgencyPendingProject($id){
+    function getAgencyPendingProject(Request $req,$id){
+        $userData = $req->user();
+
         try {
             $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
             if ($projectData->team_id != '' || $projectData->status > 0) {
                 $response = Controller::returnResponse(500, "project is not pending", []);
                 return (json_encode($response));
             }
-            
-           
+            $team_id=DB::table('group_members')
+            ->where('user_id','=',$userData->user_id)
+            ->select('group_id');
+
+            $proposalsObj=new Proposals;
+            $proposal= $proposalsObj->getProposalByProjectAndTeamId($projectData->id,$team_id);
+            $proposal_id=$proposal->id;
+            $projectData->proposal_id = $proposal_id;
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
