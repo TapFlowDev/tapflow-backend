@@ -242,7 +242,7 @@ class FreeLancerController extends Controller
 
         $rules = array(
             "user_id" => "required|exists:users,id",
-            "image" => "required|mimes:png,jpg,jpeg |max:5000"
+            "image" => "required|mimes:png,jpg,jpeg|max:5000"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
