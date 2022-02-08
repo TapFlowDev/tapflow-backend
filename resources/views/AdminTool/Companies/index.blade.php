@@ -27,6 +27,9 @@
                         @endif
                     </td> --}}
                                     <td>
+                                        <a class="btn btn-sm btn-primary"
+                                            href="{{ route('AdminTool.companies.show', $user->id) }}"
+                                            role="button">View</a>
                                         {{-- <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.freelancers.show', $user->freelancer_id) }}"
                             role="button">View</a> --}}
                                         {{-- <button class="btn btn-sm btn-danger" 

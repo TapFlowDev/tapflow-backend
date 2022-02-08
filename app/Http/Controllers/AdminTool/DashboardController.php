@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminTool\AdminConroller;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Models\Company;
+use App\Models\Group;
 use App\Models\Waiting_List;
 use App\Models\Project;
 use Illuminate\Support\Facades\DB;
@@ -28,8 +29,8 @@ class DashboardController extends Controller
     }
     private function getStats()
     {
-        $agency = Team::count();
-        $company = Company::count();
+        $agency = Group::where('type', '=', 1)->where('status', '=', 1)->count();
+        $company = Group::where('type', '=', 2)->where('status', '=', 1)->count();
         $waitingList = Waiting_List::count();
         $project = Project::where('status', 2)->count();
         $data = array(
