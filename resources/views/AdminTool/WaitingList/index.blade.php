@@ -4,31 +4,20 @@
         <div class="row">
             <div class="col-12">
                 <div class="content-container">
-                    <h1> Other Users </h1>
+                    <h1> Waiting List </h1>
                     <table class="table">
                         <thead>
                             <tr>
-                                <th scope="col">#id</th>
-                                <th scope="col">Name</th>
+                                <th scope="col">#</th>
                                 <th scope="col">Email</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($users as $user)
+                            @foreach ($users as $keyUser => $user)
                                 <tr>
-                                    <th scope="row">{{ $user->id }}</th>
-                                    <td>{{ $user->first_name . ' ' . $user->last_name }}</td>
+                                    <th scope="row">{{ $keyUser+1 }}</th>
                                     <td>{{ $user->email }}</td>
-                                    <td>
-                                        @if ($user->type == 1)
-                                            Agency Member
-                                        @else
-                                            Client
-                                        @endif
-                                    </td>
-                                    <td>
+                                    {{-- <td>
                                         <a class="btn btn-sm btn-secondary"
                                             href="{{ route('AdminTool.sendEmailShow.show', $user->id) }}"
                                             role="button">Send Email</a>
@@ -36,14 +25,14 @@
                                             href="{{ route('AdminTool.users.show', $user->id) }}" role="button">View</a>
                                         <button class="btn btn-sm btn-danger"
                                             onclick="event.preventDefault();
-                                            document.getElementById('delete-user-form-{{ $user->id }}').submit()">Delete</button>
+                                                document.getElementById('delete-user-form-{{ $user->id }}').submit()">Delete</button>
                                         <form id="delete-user-form-{{ $user->id }}"
                                             action="{{ route('AdminTool.users.destroy', $user->id) }}" method="POST"
                                             style="display: none;">
                                             @csrf
                                             @method("DELETE")
                                         </form>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                             @endforeach
 

@@ -15,6 +15,7 @@ use App\Http\Controllers\AdminTool\AnnouncementsController;
 use App\Http\Controllers\AdminTool\DashboardController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\AdminTool\CategoryTypesController;
+use App\Http\Controllers\AdminTool\ProjectsController;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
@@ -43,15 +44,7 @@ Route::get('/AdminTool/login', function () {
     return view('AdminTool.login');
 });
 
-// Route::get('/login', function () {
-//  return redirect('/AdminTool/login');
-// });
-
 Route::get('/AdminTool/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'auth.isAdmin']);
-
-// Route::get('/AdminTool/dashboard', function () {
-//     return view('AdminTool.dashboard');
-// })->middleware(['auth', 'auth.isAdmin']);
 
 Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminTool.')->group(function () {
     // Route::get('/freelancers/sendEmailShow/{id}', [FreeLancerController::class, 'sendEmailShow'])->name('freelancers.sendEmailShow');
@@ -63,12 +56,11 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/agencies', TeamsController::class);
     Route::resource('/companies', CompaniesController::class);
     Route::resource('/group', GroupsController::class);
-    // Route::post('', [GroupsController::class, 'verifyOrUnVerifyGroup']);
-    
-    // Route::resource('/categories/{$parentId}/subCategories', AdminSubCategoryController::class);
     Route::resource('categories.subCategories', AdminSubCategoryController::class)->shallow();
     Route::resource('/announcements', AnnouncementsController::class);
+    Route::resource('/projects', ProjectsController::class);
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
+    Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
     Route::post('sendEmail',[EmailController::class, 'send'])->name('sendEmail.send');
     
 });
@@ -81,7 +73,6 @@ Route::get('/testForms', function () {
 Route::get('/checkout', function () {
     return view('checkout');
 });
-// Route::get('',[InviteUsersController::class,'addUserByToken']);
 
 // Route::get('/emailTest', function(){
 //     return new SendInvitation;

@@ -296,6 +296,20 @@ body {
 .verify .fas {
     font-size: 30px;
 }
+.project-card {
+    display: flex;
+    justify-content: space-between;
+}
+.project-card-href{
+    text-decoration: none;
+    color: black;
+}
+.project-card-href:hover{
+    color: black;
+}
+.card-projects:hover{
+    box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+}
 @media (max-width: 992px) {
     .navigation {
         left: -300px;

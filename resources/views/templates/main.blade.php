@@ -43,6 +43,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="/AdminTool/projects">
+                        <span class="icon"><i class="fas fa-file" aria-hidden="true"></i></span>
+                        <span class="title">Projects</span>
+                    </a>
+                </li><li>
                     <a href="/AdminTool/categoryTypes/1/categories">
                         <span class="icon"><i class="fas fa-book" aria-hidden="true"></i></span>
                         <span class="title">Categories</span>
@@ -92,6 +97,12 @@
                     <a href="/AdminTool/users">
                         <span class="icon"><i class="fas fa-user-cog"></i></span>
                         <span class="title">Other Users</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/AdminTool/waitingList">
+                        <span class="icon"><i class="fas fa-address-book"></i></span>
+                        <span class="title">Waiting List</span>
                     </a>
                 </li>
                 <li>
