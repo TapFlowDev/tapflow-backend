@@ -59,7 +59,7 @@ class Final_proposals extends Controller
                     $responseData = array(
                         "Final_proposal_id" => $final_proposal_id,
                     );
-                    $response = Controller::returnResponse(200, 'Final proposal add successfully', [$responseData, 'value' => $milestones]);
+                    $response = Controller::returnResponse(200, 'Final proposal add successfully', $responseData);
                     return (json_encode($response));
                 } else {
                     $response = Controller::returnResponse(422, 'the price should be multiples of 5', []);
