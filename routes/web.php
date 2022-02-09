@@ -74,6 +74,6 @@ Route::get('/checkout', function () {
     return view('checkout');
 });
 
-// Route::get('/emailTest', function(){
-//     return new SendInvitation;
-// });
+Route::get('/testForms', function(){
+    return view('testForms');
+});
