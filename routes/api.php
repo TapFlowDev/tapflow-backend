@@ -107,7 +107,6 @@ Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryByI
 
 // Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
 
-Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
@@ -148,6 +147,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('updateTeamLinks', [GroupsLinksController::class, 'updateTeamLinks']);
     Route::post('addFreelancerInfo', [FreeLancerController::class, 'Insert_freelancer']);
     Route::post('updateTeamImage', [TeamController::class, 'updateTeamImage']);
+    Route::post('updateFreelancerImage', [FreeLancerController::class, 'updateFreelancerImage']);
     Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
     Route::get('getSuggestedProjects/{agency_id}', [ProjectController::class, 'suggestedProjects']);
     Route::post('exploreProject/{offset}', [ProjectController::class, 'exploreProject']);
