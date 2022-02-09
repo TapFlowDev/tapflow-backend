@@ -36,15 +36,13 @@ class Milestones extends Controller
                 $dividable = fmod($percentage, 5);
                 if ($dividable == 0.0) {
                     $milestone_price = $this->calculatePrice($percentage, $final_price);
-                    $mp = fmod($milestone_price, 5);
+                    // $mp = fmod($milestone_price, 5);
 
-                    if ($mp == 0.0) {
+                    // if ($mp == 0.0) {
                         $milestone_info = Milestone::create($arr + ["price" => $milestone_price]);
 
                         $Tasks->Insert($milestone['tasks'], $milestone_info->id);
-                    } else {
-                        return 102;
-                    }
+                    // } 
                 } else {
                     return 101;
                 }

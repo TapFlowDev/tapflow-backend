@@ -65,7 +65,6 @@ Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
 Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
 Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
 Route::post('updateTasks', [TasksController::class, 'updateTasks']);
-Route::post('getProposalByProjectAndTeamId', [Proposals::class, 'getProposalByProjectAndTeamId']);
 // Route::post('checkoutPayment', [PaymentController::class, 'checkout']);
 
 
@@ -109,6 +108,8 @@ Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryByI
 
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('getProposalByProjectIdAndTeamId', [Final_proposals::class, 'getProposalByProjectIdAndTeamId']);
+
     // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
     Route::post('submitMilestone', [Milestones::class, 'submitMilestone']);
     Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);

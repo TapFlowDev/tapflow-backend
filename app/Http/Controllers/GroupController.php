@@ -16,6 +16,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\AgencyTargetsController;
 use Illuminate\Support\Facades\DB;
+use App\Models\Group_member;
 
 
 use Exception;
@@ -135,7 +136,6 @@ class   GroupController extends Controller
                             }
                         }
                     }
-                    
                 }
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
@@ -226,7 +226,7 @@ class   GroupController extends Controller
                 // ));
 
                 // return (json_encode($response));
-                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
                 return json_encode($response);
             }
         }
@@ -329,7 +329,7 @@ class   GroupController extends Controller
 
             // return (json_encode($response));
 
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
         }
     }
@@ -344,5 +344,11 @@ class   GroupController extends Controller
     function getGroupById($id)
     {
         return Group::find($id);
+    }
+    function getGroupIdByUserId($user_id)
+    {
+        $group_id = Group_member::where("user_id", $user_id)->select('group_id')
+            ->first()->group_id;
+        return $group_id;
     }
 }
