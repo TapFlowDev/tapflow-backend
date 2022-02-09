@@ -10,8 +10,12 @@ use Exception;
 use Illuminate\Foundation\Mix;
 use App\Models\milestone_submission;
 use App\Models\Project;
+
 use App\Http\Controllers\TasksController;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\GroupMembersController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\Final_proposals;
 
 class Milestones extends Controller
 {
@@ -39,9 +43,9 @@ class Milestones extends Controller
                     // $mp = fmod($milestone_price, 5);
 
                     // if ($mp == 0.0) {
-                        $milestone_info = Milestone::create($arr + ["price" => $milestone_price]);
+                    $milestone_info = Milestone::create($arr + ["price" => $milestone_price]);
 
-                        $Tasks->Insert($milestone['tasks'], $milestone_info->id);
+                    $Tasks->Insert($milestone['tasks'], $milestone_info->id);
                     // } 
                 } else {
                     return 101;
@@ -55,12 +59,102 @@ class Milestones extends Controller
 
 
     //update row according to row id
-    function Update($id)
+    function Update(Request $req)
     {
+        $rules = [
+            "milestone_id" => "required|exists:milestones,id",
+            'name' => "required|max:255",
+            'description' => "required",
+            'days' => "required",
+            'percentage' => "required",
+            
+        ];
+        $validators = Validator::make($req->all(), $rules);
+        if ($validators->fails()) {
+            $responseData = $validators->errors();
+            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+            return (json_encode($response));
+        }
+        $Tasks = new TasksController;
+        $userData = $req->user();
+        $groupMemberObj = new GroupMembersController;
+        $userPrivileges = $groupMemberObj->getUserPrivileges($userData->id);
+        if ($userPrivileges->privileges != 1) {
+            $response = Controller::returnResponse(101, "This function for admins only", []);
+            return (json_encode($response));
+        } else {
+            try {
+                $id = $req->milestone_id;
+                $groupObj = new GroupController;
+                $proposalObj = new Final_proposals;
+                $group_id = $groupObj->getGroupIdByUserId($userData->id); //the user who try to dele this milestone
+                $milestone_info = Milestone::where('id', $id)->select('final_proposal_id', 'name')->first();
+                $proposal_info = $proposalObj->getProposalById($milestone_info->final_proposal_id);
+                $team_id = $proposal_info['team_id']; //the team how has this milestone
+                if ($group_id == $team_id) {
+                    $percentage = $req->percentage;
+                    $dividable = fmod($percentage, 5);
+                    if ($dividable == 0.0) {
+                        $milestone_price = $this->calculatePrice($percentage, $proposal_info->price);
+                        $milestone = Milestone::where('id', $id)->update([
+                            'name' => $req->name,
+                             'description' => $req->description,
+                            'days' => $req->days, 
+                            'percentage' => $req->percentage,
+                            'price' => $milestone_price,
+                        ]);
+                  
+                        $Tasks->updateTasksByMileStoneId($req->tasks, $id);
+                    } else {
+                        $response = Controller::returnResponse(101, "the milestone percentage  should be multiples of 5", []);
+                    return (json_encode($response));
+                    }
+                   
+                    $response = Controller::returnResponse(200, "Update milestone: " . $milestone_info->name . ' successfully', []);
+                    return (json_encode($response));
+                } else {
+                    $response = Controller::returnResponse(101, "The milestone you trying to update does not belong to your proposal", []);
+                    return (json_encode($response));
+                }
+            } catch (Exception $error) {
+                $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+                return (json_encode($response));
+            }
+        }
     }
     //delete row according to row id
-    function Delete($id)
+    function Delete(Request $req, $id)
     {
+        $userData = $req->user();
+        $groupMemberObj = new GroupMembersController;
+        $userPrivileges = $groupMemberObj->getUserPrivileges($userData->id);
+
+        if ($userPrivileges->privileges != 1) {
+            $response = Controller::returnResponse(101, "This function for admins only", []);
+            return (json_encode($response));
+        } else {
+            try {
+                $groupObj = new GroupController;
+                $proposalObj = new Final_proposals;
+                $group_id = $groupObj->getGroupIdByUserId($userData->id); //the user who try to dele this milestone
+                $milestone_info = Milestone::where('id', $id)->select('final_proposal_id', 'name')->first();
+
+                $proposal_info = $proposalObj->getProposalById($milestone_info->final_proposal_id);
+                $team_id = $proposal_info['team_id']; //the team how has this milestone
+
+                if ($group_id == $team_id) {
+                    $milestone = Milestone::where('id', $id)->delete();
+                    $response = Controller::returnResponse(200, "Delete milestone: " . $milestone_info->name . ' successfully', []);
+                    return (json_encode($response));
+                } else {
+                    $response = Controller::returnResponse(101, "The milestone you trying to delete does not belong to your proposal", []);
+                    return (json_encode($response));
+                }
+            } catch (Exception $error) {
+                $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+                return (json_encode($response));
+            }
+        }
     }
     private function calculatePrice($percentage, $final_price)
     {
@@ -99,7 +193,7 @@ class Milestones extends Controller
     }
     function submitMilestone(Request $req)
     {
-       
+
         $rules = [
             "submission_file" => "mimes:zip,rar |max:35000",
             'comment' => "required",
@@ -120,26 +214,26 @@ class Milestones extends Controller
                 }
                 $submission = milestone_submission::create($req->except(['submission_file']) + ['links' => $links]);
                 $submission_id = $submission->id;
-                $project = Project::where('id', $req->project_id)->select('name')->first();  
-                $projectName=str_replace(' ', '-', $project->name);
-                 $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();  
-                $milestoneName=str_replace(' ', '-', $milestone->name);   
-                $submissionName = time() . "-" . $projectName . '-' .$milestoneName.'-'. $req->file('submission_file')->getClientOriginalName();;
+                $project = Project::where('id', $req->project_id)->select('name')->first();
+                $projectName = str_replace(' ', '-', $project->name);
+                $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
+                $milestoneName = str_replace(' ', '-', $milestone->name);
+                $submissionName = time() . "-" . $projectName . '-' . $milestoneName . '-' . $req->file('submission_file')->getClientOriginalName();;
                 $submission_file = $req->submission_file;
                 if (!File::exists($projectName)) {
                     mkdir($projectName);
                     $submission_file->move(public_path($projectName), $submissionName);
                     $this->updateSubmissionFile($submission_id, $submissionName);
-                    $this->updateStatus($req->milestone_id,'1');
+                    $this->updateStatus($req->milestone_id, '1');
                 } else {
                     $submission_file->move(public_path($projectName), $submissionName);
                     $this->updateSubmissionFile($submission_id, $submissionName);
-                    $this->updateStatus($req->milestone_id,'1');
+                    $this->updateStatus($req->milestone_id, '1');
                 }
-                $response = Controller::returnResponse(200, "submit successful",['submissionId'=>$submission_id]);
+                $response = Controller::returnResponse(200, "submit successful", ['submissionId' => $submission_id]);
                 return (json_encode($response));
             } catch (Exception $error) {
-                $response = Controller::returnResponse(500, "Something went wrong", $error);
+                $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
                 return (json_encode($response));
             }
         }
@@ -148,8 +242,8 @@ class Milestones extends Controller
     {
         milestone_submission::where('id', $submission_id)->update(array("file" => $fileName));
     }
-    function updateStatus($id,$value)
+    function updateStatus($id, $value)
     {
-        Milestone::where('id',$id)->update(['status'=>$value]);
+        Milestone::where('id', $id)->update(['status' => $value]);
     }
 }

@@ -54,19 +54,22 @@ class TasksController extends Controller
         }
         return  ($tasks_details);
     }
-    function updateTasks(Request $req)
+    function updateTasksByMileStoneId($data,$milestone_id)
     {
-        
-        $milestone_id=$req->milestone_id;
-        $tasks_info=$req->tasks;
         $del_tasks=task::where('milestone_id',$milestone_id)->delete();
-       $data=array($req);
-    //    dd($data);
-        foreach ($data as $r)
-        {
-            dd($r->info['milestine_id']);
+        
+        $AssignedTo=new AssignedToController;
+        foreach($data as $task)
+        { 
+            $arr=array(
+            "milestone_id"=>$milestone_id,
+            "name"=>$task['name'],
+            "description"=>$task['description'],
+        );
+            $tasks=task::create($arr);
+           
+            $AssignedTo->Insert($task['assignedTo'],$tasks->id);
+           
         }
-        // $this->Insert($tasks_info,$milestone_id);
-
     }
 }
