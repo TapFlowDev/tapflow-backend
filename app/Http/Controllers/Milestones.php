@@ -49,7 +49,7 @@ class Milestones extends Controller
             }
             return 200;
         } catch (Exception $error) {
-            return 500;
+            return ['code'=>500,"msg"=>$error->getMessage()];
         }
     }
 
