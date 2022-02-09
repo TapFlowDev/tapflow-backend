@@ -197,4 +197,11 @@ class Final_proposals extends Controller
             }
         }
     }
+    //get proposal info with out milestones
+    function getProposalById($id)
+    {
+        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description')
+            ->where('id', $id)->first();
+        return $final_proposal;
+    }
 }

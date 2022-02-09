@@ -39,9 +39,6 @@ class GroupMembersController extends Controller
     {
         return Group_member::select('group_id')->where('user_id', $userId)->get()->first();
     }
-    function getGroupInfoByUserId($userId)
-    {
-    }
     function getTeamMembersByGroupId($id)
     {
         try {

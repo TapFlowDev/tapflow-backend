@@ -109,6 +109,8 @@ Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryByI
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('getProposalByProjectIdAndTeamId', [Final_proposals::class, 'getProposalByProjectIdAndTeamId']);
+    Route::get('deleteMilestone/{id}', [Milestones::class, 'Delete']);
+    Route::post('updateMilestone', [Milestones::class, 'Update']);
 
     // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
     Route::post('submitMilestone', [Milestones::class, 'submitMilestone']);
