@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Http\Controllers\Proposals;
+use App\Http\Controllers\GroupController;
 
 class ProjectController extends Controller
 {
@@ -130,7 +131,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, 'project created successfully', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error->getMessage());
             return json_encode($response);;
         }
     }
@@ -174,8 +175,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "Data Found", $projectsData);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -198,8 +198,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
 
@@ -231,8 +230,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -274,8 +272,8 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+          
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -297,8 +295,8 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -334,8 +332,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -349,10 +346,11 @@ class ProjectController extends Controller
                 $response = Controller::returnResponse(500, "project is not pending", []);
                 return (json_encode($response));
             }
-            $team_id = Group_member::where("user_id", $userData->id)->select('group_id')
-                ->first();
+
+            $GroupControllerObj = new GroupController;
+            $team_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
             $proposalsObj = new Proposals;
-            $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id->group_id);
+            $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
             $proposal_id = $proposal->id;
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
@@ -376,8 +374,8 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+         
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
