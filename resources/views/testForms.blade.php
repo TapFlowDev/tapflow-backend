@@ -2,8 +2,9 @@
 <html>
 
 <body>
-    <form action="/api/updateTeamImage" method="POST" enctype="multipart/form-data">
+    <form action="/api/updateFreelancerImage" method="POST" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="user_id" value="31">
         <input type="file" name="image">
         <br>
         {{-- <input type="file" name="attachments[]">

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Waiting_List;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 
@@ -129,5 +130,8 @@ class AdminConroller extends Controller
             }
         }
         return $users;
+    }
+    function waitingList(){
+        return view('AdminTool.WaitingList.index', ['users'=> Waiting_List::paginate(10)]);
     }
 }

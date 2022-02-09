@@ -18,7 +18,7 @@ use App\Models\Group_member;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Exception;
-
+use App\Http\Controllers\Proposals;
 
 class ProjectController extends Controller
 {
@@ -331,6 +331,48 @@ class ProjectController extends Controller
             }
             $projectData->admins = $admins;
             $projectData->milestones = $milestones;
+            $response = Controller::returnResponse(200, "data found", $projectData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $responseData = $error;
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return (json_encode($response));
+        }
+    }
+    function getAgencyPendingProject(Request $req, $id)
+    {
+        $userData = $req->user();
+
+        try {
+            $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
+            if ($projectData->team_id != '' || $projectData->status > 0) {
+                $response = Controller::returnResponse(500, "project is not pending", []);
+                return (json_encode($response));
+            }
+            $team_id = Group_member::where("user_id", $userData->id)->select('group_id')
+                ->first();
+            $proposalsObj = new Proposals;
+            $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id->group_id);
+            $proposal_id = $proposal->id;
+            $admins = DB::table('group_members')
+                ->join('users', 'group_members.user_id', '=', 'users.id')
+                ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
+                ->where('users.deleted', '=', 0)
+                ->where('users.status', '=', 1)
+                ->where('group_members.group_id', '=', $projectData->company_id)
+                ->where('group_members.privileges', '=', 1)
+                ->get();
+            foreach ($admins as &$admin) {
+                $userData = DB::table('clients')->where('user_id', $admin->id)->get()->first();
+                if (isset($userData->image)) {
+                    $admin->image =  asset('images/users/' . $userData->image);
+                } else {
+                    $admin->image  = asset('images/profile-pic.jpg');
+                }
+            }
+            $projectData->proposal_id = $proposal_id;
+            $projectData->admins = $admins;
+
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {

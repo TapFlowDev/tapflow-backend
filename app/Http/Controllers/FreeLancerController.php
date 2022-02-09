@@ -239,16 +239,16 @@ class FreeLancerController extends Controller
     }
     function updateFreelancerImage(Request $req)
     {
-
+        // ini_set('memory_limit','256M');
         $rules = array(
             "user_id" => "required|exists:users,id",
-            "image" => "required"
+            "image" => "required|mimes:png,jpg,jpeg"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
-        } else {
+        } 
             $id = $req->user_id;
             $user_image = Freelancer::where('user_id', $id)->select('image')->first()->image;
             $image_path = "images/users/" . $user_image;
@@ -264,6 +264,6 @@ class FreeLancerController extends Controller
                 $response=Controller::returnResponse(200,'successful',[]);
                 return json_encode($response);
             }
-        }
+        
     }
 }
