@@ -45,9 +45,10 @@ class Final_proposals extends Controller
                         $del = Final_proposal::where('id',  $final_proposal_id)->delete();
                         $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
                         return json_encode($response);
-                    } elseif ($milestones == 500) {
+
+                    } elseif ($milestones['code'] == 500) {
                         $del = Final_proposal::where('id', $final_proposal_id)->delete();
-                        $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones]);
+                        $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones['msg']]);
                         return json_encode($response);
                     } 
                     // elseif ($milestones == 102) {
