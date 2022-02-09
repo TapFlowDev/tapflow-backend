@@ -239,7 +239,7 @@ class FreeLancerController extends Controller
     }
     function updateFreelancerImage(Request $req)
     {
-
+        ini_set('memory_limit','256M');
         $rules = array(
             "user_id" => "required|exists:users,id",
             "image" => "required|mimes:png,jpg,jpeg"
