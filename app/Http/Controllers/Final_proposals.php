@@ -44,13 +44,13 @@ class Final_proposals extends Controller
                     $final_proposal_id = $final_proposal->id;
                     $milestones = $milestone->Insert($req->milestones, $req->project_id, $final_proposal_id, $req->price);
 
-                    if ($milestones['code'] == 101) {
+                    if ($milestones == 101) {
                         $del = Final_proposal::where('id',  $final_proposal_id)->delete();
-                        $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones['msg']]);
+                        $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
                         return json_encode($response);
-                    } elseif ($milestones['code'] == 500) {
+                    } elseif ($milestones == 500) {
                         $del = Final_proposal::where('id', $final_proposal_id)->delete();
-                        $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones['msg']]);
+                        $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones]);
                         return json_encode($response);
                     }
                     // elseif ($milestones == 102) {
