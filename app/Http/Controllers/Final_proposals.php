@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Final_proposal;
 use Exception;
 use App\Http\Controllers\GroupController;
+use Illuminate\Support\Facades\DB;
+
+use function PHPUnit\Framework\isEmpty;
 
 class Final_proposals extends Controller
 {
@@ -45,12 +48,11 @@ class Final_proposals extends Controller
                         $del = Final_proposal::where('id',  $final_proposal_id)->delete();
                         $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
                         return json_encode($response);
-
                     } elseif ($milestones == 500) {
                         $del = Final_proposal::where('id', $final_proposal_id)->delete();
                         $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones]);
                         return json_encode($response);
-                    } 
+                    }
                     // elseif ($milestones == 102) {
                     //     $del = Final_proposal::where('id', $final_proposal_id)->delete();
                     //     $response = Controller::returnResponse(422, 'the milestone price  should be multiples of 5', ['value' => $milestones]);
@@ -88,6 +90,7 @@ class Final_proposals extends Controller
         $final_proposal->milestones = $milestones;
         return json_encode($final_proposal);
     }
+    //i need to delete every milestone and tasks belong to the same proposal 
     function updateFinalProposal(Request $req)
     {
         $final_proposal_id = $req->final_proposal_id;
@@ -175,23 +178,27 @@ class Final_proposals extends Controller
             $responseData = $validators->errors();
             $response = Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
-        }
-        else
-        {
-            try{
-            $GroupControllerObj = new GroupController;
-            $team_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
-            $milestone = new Milestones;
-            $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description')
-                ->where('project_id', $req->project_id)
-                ->where('team_id',$team_id)
-                ->first();
-                $final_proposal_id=$final_proposal->id;
-            $milestones = $milestone->getMilestoneByProposalId($final_proposal_id);
-            $final_proposal->milestones = $milestones;
-            return json_encode($final_proposal);
-            }catch(Exception $error)
-            {
+        } else {
+            try {
+
+                $GroupControllerObj = new GroupController;
+                $team_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+                $milestone = new Milestones;
+                $final_proposal = DB::table('final_proposals')
+                    ->select('id', 'team_id', 'project_id', 'price', 'days', 'description')
+                    ->where('team_id', '=', $team_id)
+                    ->where('project_id', '=', $req->project_id)
+                    ->first();
+                if ($final_proposal == null) {
+                    $response = Controller::returnResponse(422, 'You did not send any final proposals',[]);
+                    return json_encode($response);
+                } else {
+                    $final_proposal_id = $final_proposal->id;
+                    $milestones = $milestone->getMilestoneByProposalId($final_proposal_id);
+                    $final_proposal->milestones = $milestones;
+                    return json_encode($final_proposal);
+                }
+            } catch (Exception $error) {
                 $response = Controller::returnResponse(500, 'you are trying to get proposal does not belong to you', $error->getMessage());
                 return json_encode($response);
             }

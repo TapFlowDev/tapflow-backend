@@ -67,7 +67,7 @@ class Milestones extends Controller
             'description' => "required",
             'days' => "required",
             'percentage' => "required",
-            
+
         ];
         $validators = Validator::make($req->all(), $rules);
         if ($validators->fails()) {
