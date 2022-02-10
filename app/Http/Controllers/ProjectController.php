@@ -379,4 +379,13 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
+    function getNumberOfProjectForCompany($id)
+    {
+        $projects=DB::table('projects') 
+        -> where('company_id',$id)
+        ->select('id')->get();
+        $numberOfProjects=$projects->count();
+        return($numberOfProjects);
+        
+    }
 }
