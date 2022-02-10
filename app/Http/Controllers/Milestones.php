@@ -48,7 +48,7 @@ class Milestones extends Controller
                     $Tasks->Insert($milestone['tasks'], $milestone_info->id);
                     // } 
                 } else {
-                    return 101;
+                    return ["code"=>'101','msg'=>'Milestone Validation error'];
                 }
             }
             return 200;
