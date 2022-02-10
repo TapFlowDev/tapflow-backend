@@ -21,7 +21,7 @@ class AssignedToController extends Controller
 
         foreach ($data as $a) {
             $arr = array(
-                "user_id" => $a,
+                "user_id" => $a->user_id,
                 "task_id" => $task_id
 
             );
