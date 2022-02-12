@@ -92,30 +92,32 @@ class GroupCategoriesController extends Controller
         if (count($categories) > 0) {
             $team_categories = array();
             foreach ($categories as  $category) {
-                $team_categories[$category->category_id]['id'] = $category->category_id;
-                $team_categories[$category->category_id]['name'] = DB::table('categories')
-                    ->select('name')->where('id', '=', $category->category_id)->first()->name;
-                $img = DB::table('categories')->select('image')
-                    ->where('id', '=', $category->category_id)->first()->image;
-                if ($img != "") {
-                    $team_categories[$category->category_id]['image'] = asset('images/categories/' . DB::table('categories')->select('image')
-                        ->where('id', '=', $category->category_id)->first()->image);
-                } else {
-                    $team_categories[$category->category_id]['image'] = asset('images/profile-pic.jpg');
-                }
-                $sub_image = DB::table('sub_categories')
-                    ->select('image')
-                    ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                if ($sub_image != "") {
-
-                    $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                        ->select('category_id', 'id', 'name', "image")
+                $categoryData = Category::find($category->category_id);
+                if ($categoryData != '') {
+                    $team_categories[$category->category_id]['id'] = $category->category_id;
+                    $team_categories[$category->category_id]['name'] = DB::table('categories')
+                        ->select('name')->where('id', '=', $category->category_id)->first()->name;
+                    $img = DB::table('categories')->select('image')
+                        ->where('id', '=', $category->category_id)->first()->image;
+                    if ($img != "") {
+                        $team_categories[$category->category_id]['image'] = asset('images/categories/' . DB::table('categories')->select('image')
+                            ->where('id', '=', $category->category_id)->first()->image);
+                    } else {
+                        $team_categories[$category->category_id]['image'] = asset('images/profile-pic.jpg');
+                    }
+                    $sub_image = DB::table('sub_categories')
+                        ->select('image')
                         ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                } else {
+                    if ($sub_image != "") {
 
-                    $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                        ->select('category_id', 'id', 'name')
-                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                        $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                            ->select('category_id', 'id', 'name', "image")
+                            ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    } else {
+                        $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                            ->select('category_id', 'id', 'name')
+                            ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    }
                 }
             }
             foreach ($team_categories as $val) {
