@@ -27,6 +27,7 @@ use App\Http\Controllers\GroupMembersController;
 use Illuminate\Support\Facades\Http;
 use App\Models\country;
 use App\Models\User_link;
+use Newsletter;
 
 
 // user types 1,2 1:freelancer 2:client
@@ -82,8 +83,10 @@ class UserController extends Controller
                 $array = array("user_id" => $user->id, 'type_freelancer' => (int)$req->type);
                 if ($req->type == 1) {
                     $freelancer = Freelancer::create($array);
+                    $mailchimpUserType = 'agency-member';
                 } elseif ($req->type == 2) {
                     $freelancer = Client::create($array);
+                    $mailchimpUserType = 'company-member';
                 }
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
@@ -98,11 +101,13 @@ class UserController extends Controller
                     $img->move(public_path($destPath), $imageName);
                     $this->updateFiles($user->id, $imageName, 'image');
                 }
+                Newsletter::subscribeOrUpdate($req->email, ['FNAME'=>$req->first_name, 'LNAME'=>$req->last_name,'ROLE'=>$req->role, "UTYPE"=>$mailchimpUserType], 'Tapflow');
+                // dd(Newsletter::getLastError());
                 $responseData = $this->internal_login($req->email, $req->password);
                 $response = Controller::returnResponse(200, "user added successfully", $responseData);
                 return (json_encode($response));
             } catch (\Exception $error) {
-                $responseData = $error;
+                $responseData = $error->getMessage();
                 $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
                 return (json_encode($response));
             }
