@@ -23,7 +23,9 @@ class ClientsController extends Controller
     {
         $clients = DB::table('clients')
             ->join('users', 'clients.user_id', '=', 'users.id')
-            ->select('users.*', 'clients.*')->paginate(10);
+            ->select('users.*', 'clients.*')
+            ->latest()
+            ->paginate(20);
         // dd($freeLancers);
         $users = $this->getUserData($clients);
 

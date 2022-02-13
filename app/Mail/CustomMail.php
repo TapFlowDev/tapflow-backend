@@ -28,6 +28,6 @@ class CustomMail extends Mailable
      */
     public function build()
     {
-        return $this->subject($this->details['subject'])->markdown('mail.customMail');
+        return $this->from('hamzahshajrawi@gmail.com', 'Tapflow')->subject($this->details['subject'])->markdown('mail.customMail');
     }
 }

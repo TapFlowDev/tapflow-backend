@@ -26,8 +26,9 @@ class TeamsController extends Controller
             ->select('groups.*', 'teams.*')
             ->where('groups.status', '=', 1)
             ->where('groups.deleted', '=', 0)
-            ->orderBy('groups.verified', 'asc')
-            ->paginate(10);
+            // ->orderBy('groups.verified', 'asc')
+            ->latest()
+            ->paginate(20);
         $teamsInfo = $this->getData($teams);
         // return $teamsInfo;
 
@@ -138,7 +139,7 @@ class TeamsController extends Controller
             $group->admin_id = $userInfo->id;
             $group->categories = $groupCatObj->getTeamCategories($group->id);
             if ($group->image != "") {
-                $group->image = asset('images/users/' . $group->image);
+                $group->image = asset('images/companies/' . $group->image);
             } else {
                 $group->image = asset('images/profile-pic.jpg');
             }

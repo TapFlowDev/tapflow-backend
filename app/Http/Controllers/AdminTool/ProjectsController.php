@@ -19,7 +19,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects = $this->getData(Project::latest()->paginate(10));
+        $projects = $this->getData(Project::latest()->paginate(20));
         // return $projects;
         return view('AdminTool.Projects.index', ['projects' => $projects]);
     }

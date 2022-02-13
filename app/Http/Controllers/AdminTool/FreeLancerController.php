@@ -26,6 +26,7 @@ class FreeLancerController extends Controller
             ->select('users.*', 'freelancers.*')
             ->where('users.status', 1)
             ->where('users.deleted', 0)
+            ->latest()
             ->paginate(10);
         $users = $this->getUserData($freeLancers);
         // print_r(json_encode($users));
