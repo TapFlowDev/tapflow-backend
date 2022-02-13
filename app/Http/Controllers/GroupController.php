@@ -240,8 +240,7 @@ class   GroupController extends Controller
     {
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
-            "name" => "required"
+            "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
