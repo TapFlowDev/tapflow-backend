@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\GroupCategoriesController;
+use App\Models\Countries;
 use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Models\Group_member;
@@ -26,8 +27,7 @@ class TeamsController extends Controller
             ->select('groups.*', 'teams.*')
             ->where('groups.status', '=', 1)
             ->where('groups.deleted', '=', 0)
-            // ->orderBy('groups.verified', 'asc')
-            ->latest()
+            ->orderBy('groups.created_at', 'desc')
             ->paginate(20);
         $teamsInfo = $this->getData($teams);
         // return $teamsInfo;
@@ -143,6 +143,13 @@ class TeamsController extends Controller
             } else {
                 $group->image = asset('images/profile-pic.jpg');
             }
+            $country = Countries::find($group->country);
+            if ($country != "") {
+                $group->country = $country->name;
+            } else {
+                $group->country = "Unset";
+            }
+
         }
         return $array;
     }
