@@ -60,8 +60,7 @@ class   GroupController extends Controller
         //check if the team agency or team of freelancers-
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id",
-            "image" => "mimes:png,jpg,jpeg"
+            "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id"
 
         );
         $validator = Validator::make($req->all(), $rules);
@@ -242,8 +241,7 @@ class   GroupController extends Controller
         $rules = array(
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
-            "name" => "required",
-            "image" => "mimes:png,jpg,jpeg"
+            "name" => "required"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
