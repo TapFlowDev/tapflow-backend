@@ -379,20 +379,28 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-
-    function getCompanyPendingProjects($offset=1){
-        $limit = 4;
-        $page = ($offset - 1) * $limit;
-        $projects = DB::table('projects')
-            ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-            ->leftJoin('final_proposals', 'proposals.project_id', '=', 'final_proposals.proposal_id')
-            ->select('projects.*')
-            ->where('projects.company_id', '=', 7)
-            ->where('projects.status', '=', 0)
-            ->where('proposals.status', '=', 0)
-            // ->where('final_proposals.status', '=', 0)
-            // ->distinct()
-            ->get();
-        return $projects;
+    function getNumberOfProjectForCompany($id)
+    {
+        $projects=DB::table('projects') 
+        -> where('company_id',$id)
+        ->select('id')->get();
+        $numberOfProjects=$projects->count();
+        return($numberOfProjects);
     }
+
+    // function getCompanyPendingProjects($offset=1){
+    //     $limit = 4;
+    //     $page = ($offset - 1) * $limit;
+    //     $projects = DB::table('projects')
+    //         ->join('proposals', 'proposals.project_id', '=', 'projects.id')
+    //         ->leftJoin('final_proposals', 'proposals.project_id', '=', 'final_proposals.proposal_id')
+    //         ->select('projects.*')
+    //         ->where('projects.company_id', '=', 7)
+    //         ->where('projects.status', '=', 0)
+    //         ->where('proposals.status', '=', 0)
+    //         // ->where('final_proposals.status', '=', 0)
+    //         // ->distinct()
+    //         ->get();
+    //     return $projects;
+    // }
 }

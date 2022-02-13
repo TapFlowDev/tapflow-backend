@@ -20,8 +20,7 @@ class TasksController extends Controller
                 "description"=>$task['description'],
             );
                 $tasks=task::create($arr);
-               
-                $AssignedTo->Insert($task['assignedTo'],$tasks->id);
+                $AssignedTo->Insert($task['assignees'],$tasks->id);
                
             }
     }

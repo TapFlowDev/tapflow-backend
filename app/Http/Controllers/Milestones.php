@@ -48,12 +48,12 @@ class Milestones extends Controller
                     $Tasks->Insert($milestone['tasks'], $milestone_info->id);
                     // } 
                 } else {
-                    return 101;
+                    return ["code"=>'101','msg'=>'Milestone Validation error'];
                 }
             }
             return 200;
         } catch (Exception $error) {
-            return 500;
+            return ["code"=>'500','msg'=>$error->getMessage()];
         }
     }
 
@@ -67,7 +67,7 @@ class Milestones extends Controller
             'description' => "required",
             'days' => "required",
             'percentage' => "required",
-            
+
         ];
         $validators = Validator::make($req->all(), $rules);
         if ($validators->fails()) {
