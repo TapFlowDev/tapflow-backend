@@ -42,14 +42,14 @@ class Proposals extends Controller
             $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
             //add send email 
             $details = [
+                'subject' => 'proposal',
                 'url' => 'https://www.tapflow.app',
-                'propsal_id' => $proposal_id,  
-                'subject' => 'proposal'
+                'propsal_id' => $proposal_id  
             ];
             Mail::to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
             return (json_encode($response));
         } catch (Exception $error) {
-            $responseData = array("error" => $error->getMessage(),);
+            $responseData = array("error" => $error->getMessage());
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return (json_encode($response));
         }
