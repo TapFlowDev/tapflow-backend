@@ -388,8 +388,8 @@ class ProjectController extends Controller
         ->select('id')->get();
         $numberOfProjects=$projects->count();
         return($numberOfProjects);
-        
     }
+
     function getClientPendingProjects($company_id, $offset = 1)
     {
         $limit = 4;
@@ -425,5 +425,4 @@ class ProjectController extends Controller
         }
         return $projects;
     }
-
 }

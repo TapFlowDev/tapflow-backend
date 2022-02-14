@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Mail\CustomMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\Mailable;
 use Exception;
 
 class EmailController extends Controller
@@ -24,7 +25,7 @@ class EmailController extends Controller
                 "subject" => $req->subject,
                 "content" => $req->content
             ];
-            Mail::to($req->email)->send(new CustomMail($details));
+            Mail::to('shajrawi98@gmail.com')->send(new CustomMail($details));
             $req->session()->flash('success', 'email sent successfully');
         } catch (\Exception $error) {
             $req->session()->flash('error', 'email was not sent due to and error');

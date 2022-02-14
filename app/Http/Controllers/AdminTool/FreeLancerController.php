@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
+use App\Models\Countries;
 use Illuminate\Http\Request;
 use App\Models\Freelancer;
 use App\Models\User;
@@ -26,6 +27,7 @@ class FreeLancerController extends Controller
             ->select('users.*', 'freelancers.*')
             ->where('users.status', 1)
             ->where('users.deleted', 0)
+            ->orderBy('users.created_at', 'desc')
             ->paginate(10);
         $users = $this->getUserData($freeLancers);
         // print_r(json_encode($users));
@@ -139,7 +141,12 @@ class FreeLancerController extends Controller
                 $user->image = asset('images/profile-pic.jpg');
             }
             // $teamInfo = Team::find($groupId);
-
+            $country = Countries::find($user->country);
+            if ($country != "") {
+                $user->country = $country->name;
+            } else {
+                $user->country = "Unset";
+            }
             $user->first_name = $userInfo->first_name;
             $user->last_name = $userInfo->last_name;
             $user->full_name = $user->first_name . " " . $user->last_name;
