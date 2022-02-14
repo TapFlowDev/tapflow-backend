@@ -14,6 +14,8 @@ use App\Models\projects_category;
 use App\Models\Group;
 use App\Models\Category;
 use App\Models\Company;
+use App\Models\proposal;
+use App\Models\Final_proposal;
 use App\Models\Group_member;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -388,19 +390,39 @@ class ProjectController extends Controller
         return($numberOfProjects);
     }
 
-    // function getCompanyPendingProjects($offset=1){
-    //     $limit = 4;
-    //     $page = ($offset - 1) * $limit;
-    //     $projects = DB::table('projects')
-    //         ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-    //         ->leftJoin('final_proposals', 'proposals.project_id', '=', 'final_proposals.proposal_id')
-    //         ->select('projects.*')
-    //         ->where('projects.company_id', '=', 7)
-    //         ->where('projects.status', '=', 0)
-    //         ->where('proposals.status', '=', 0)
-    //         // ->where('final_proposals.status', '=', 0)
-    //         // ->distinct()
-    //         ->get();
-    //     return $projects;
-    // }
+    function getClientPendingProjects($company_id, $offset = 1)
+    {
+        $limit = 4;
+        $page = ($offset - 1) * $limit;
+        try {
+            $projects = DB::table('projects')
+                ->select('id','user_id','company_id','name','min','max','description','status','days','budget_type','created_at',)
+                ->where('projects.company_id', '=', $company_id)
+                ->where('projects.status', '=', 0)
+                ->distinct()
+                ->latest()->offset($page)->limit($limit)
+                ->get();
+            
+                $projectInfo = $this->getProjectsDetails($projects);
+                $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getProjectsDetails($projects)
+    {
+        
+        foreach ($projects as $keyProj => &$project) {
+            $project->duration = Category::find((int)$project->days)->name;
+            $initial_proposals=  proposal::where('project_id',$project->id)->select('id')->get();
+            $final_proposals=  Final_proposal::where('project_id',$project->id)->select('id')->get();
+            $project->initial_proposal_number=count($initial_proposals);
+            $project->final_proposal_number=count($final_proposals);
+
+        }
+        return $projects;
+    }
 }
