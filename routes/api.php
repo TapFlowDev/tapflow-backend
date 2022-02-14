@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Models\Rate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,7 @@ use  App\Http\Controllers\GroupMembersController;
 use  App\Http\Controllers\TasksController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\Milestones;
+use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
 
 // use App\Http\Controllers\PaymentController;
@@ -99,6 +101,7 @@ Route::get('getTimeDurations', [CategoriesController::class, 'getTimeDurations']
 Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies']);
 Route::get('getSectors', [CategoriesController::class, 'getSectors']);
 Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
+Route::get('deleteMilestonesByProposalId/{id}', [Milestones::class, 'deleteMilestonesByProposalId']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
@@ -166,4 +169,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('updateClientBio', [ClientController::class, 'update_Bio']);
     Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
     Route::post('createProject', [ProjectController::class, 'Insert']);
+    Route::get('postedProjects/{company_id}/{offset}', [ProjectController::class, 'getClientPendingProjects']);
 });

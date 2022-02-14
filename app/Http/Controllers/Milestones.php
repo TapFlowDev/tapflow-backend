@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Final_proposals;
+use Illuminate\Support\Facades\DB;
 
 class Milestones extends Controller
 {
@@ -23,11 +24,12 @@ class Milestones extends Controller
     function Insert($data, $project_id, $final_proposal_id, $final_price)
 
     {
-
+    //    dd(count($data));
         $Tasks = new TasksController;
-
+      
         try {
             foreach ($data as $milestone) {
+              
                 $arr = array(
                     "project_id" => $project_id,
                     "final_proposal_id" => $final_proposal_id,
@@ -245,5 +247,25 @@ class Milestones extends Controller
     function updateStatus($id, $value)
     {
         Milestone::where('id', $id)->update(['status' => $value]);
+    }
+    function deleteMilestonesByProposalId($id)
+
+    {   
+        $tasksObj=new TasksController;
+        $milestone_ids=DB::table('milestones')
+       -> where('final_proposal_id',$id)->select('id')->get();
+       if($milestone_ids->isEmpty())
+       {
+           
+       }
+       else{ 
+        foreach($milestone_ids as $milestone_id)
+        {   
+           
+        $tasksObj->deleteTasksByMilestoneId($milestone_id->id);
+        Milestone::where('id',$milestone_id->id)->delete();
+        }
+    }
+        
     }
 }

@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\task;
+use App\Models\Assigned_task;
 use App\Http\Controllers\AssignedToController;
+use Illuminate\Support\Facades\DB;
+
+use function PHPUnit\Framework\isEmpty;
+
 class TasksController extends Controller
 {
     //add row 
@@ -70,5 +75,32 @@ class TasksController extends Controller
             $AssignedTo->Insert($task['assignedTo'],$tasks->id);
            
         }
+    }
+    function deleteTasksByMilestoneId($id)
+    {   
+        $assignedToObj=new AssignedToController;
+         
+        // $tasks_ids=DB::table('tasks')
+        // ->where('milestone_id','=',$id)
+        // ->select('id')
+        // ->get();
+        $tasks_ids=task::where('milestone_id','=',$id)
+        ->select('id')
+        ->get();
+        
+       if($tasks_ids->isEmpty())
+       {
+           
+       }
+       else{   
+           foreach($tasks_ids as $task_id)
+
+        {    
+            // dd($task_id->id);
+            Assigned_task::where('task_id', $task_id->id)->delete();
+           task::where('id',$task_id->id)->delete();
+        }
+       }
+     
     }
 }
