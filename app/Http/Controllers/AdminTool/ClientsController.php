@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Models\Group;
 use App\Models\Company;
+use App\Models\Countries;
 use App\Models\Group_member;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Echo_;
@@ -23,7 +24,9 @@ class ClientsController extends Controller
     {
         $clients = DB::table('clients')
             ->join('users', 'clients.user_id', '=', 'users.id')
-            ->select('users.*', 'clients.*')->paginate(10);
+            ->select('users.*', 'clients.*')
+            ->orderBy('users.created_at', 'desc')
+            ->paginate(20);
         // dd($freeLancers);
         $users = $this->getUserData($clients);
 
@@ -128,6 +131,12 @@ class ClientsController extends Controller
                 $user->image = asset('images/profile-pic.jpg');
             }
             // $teamInfo = Team::find($groupId);
+            $country = Countries::find($user->country);
+            if ($country != "") {
+                $user->country = $country->name;
+            } else {
+                $user->country = "Unset";
+            }
 
             $user->first_name = $userInfo->first_name;
             $user->last_name = $userInfo->last_name;

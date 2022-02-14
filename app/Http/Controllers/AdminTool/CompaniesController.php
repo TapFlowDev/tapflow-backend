@@ -25,7 +25,9 @@ class CompaniesController extends Controller
     {
         $companies = $this->getData(DB::table('companies')
             ->join('groups', 'companies.group_id', '=', 'groups.id')
-            ->select('groups.*', 'companies.*')->paginate(10));
+            ->select('groups.*', 'companies.*')
+            ->orderBy('groups.created_at', 'desc')
+            ->paginate(20));
 
         return view('AdminTool.Companies.index', ['users' => $companies]);
     }
@@ -114,7 +116,7 @@ class CompaniesController extends Controller
             $group->admin_id = $userInfo->id;
             $group->categories = $groupCatObj->getTeamCategories($group->id);
             if ($group->image != "") {
-                $group->image = asset('images/users/' . $group->image);
+                $group->image = asset('images/companies/' . $group->image);
             } else {
                 $group->image = asset('images/profile-pic.jpg');
             }

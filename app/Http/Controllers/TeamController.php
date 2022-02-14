@@ -129,7 +129,7 @@ class TeamController extends Controller
     {
         $rules = array(
             "group_id" => "required|exists:groups,id",
-            "image" => "required"
+            "image" => "required|mimes:png,jpg,jpeg"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {

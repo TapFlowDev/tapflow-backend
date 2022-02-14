@@ -68,7 +68,7 @@ Route::post('Withdraw', [WalletsTransactionsController::class, 'withdraw']);
 Route::post('updateFinalProposal', [Final_proposals::class, 'updateFinalProposal']);
 Route::post('updateTasks', [TasksController::class, 'updateTasks']);
 // Route::post('checkoutPayment', [PaymentController::class, 'checkout']);
-
+// Route::get('companyPendingProjects/{offset}', [ProjectController::class, 'getCompanyPendingProjects']);
 
 // apis does not need user token 
 Route::post('newRegister', [UserController::class, 'newRegister']);

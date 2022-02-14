@@ -11,6 +11,8 @@ use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use App\Models\proposal;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ProposalMail;
 class Proposals extends Controller
 {
     //add row 
@@ -38,9 +40,16 @@ class Proposals extends Controller
             $proposal_id = $proposal->id;
             $responseData = array("proposal_id" => $proposal_id);
             $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
+            //add send email 
+            $details = [
+                'subject' => 'proposal',
+                'url' => 'https://www.tapflow.app',
+                'propsal_id' => $proposal_id  
+            ];
+            Mail::to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
             return (json_encode($response));
         } catch (Exception $error) {
-            $responseData = array("error" => $error,);
+            $responseData = array("error" => $error->getMessage());
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return (json_encode($response));
         }
