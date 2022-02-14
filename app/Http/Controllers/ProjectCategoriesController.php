@@ -3,26 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\projects_category;
 use Exception;
 use Illuminate\Support\Facades\DB;
+
 class ProjectCategoriesController extends Controller
 {
     //add row 
     function Insert(Request $req)
     {
-
     }
     //update row according to row id
     function Update($id)
     {
-
     }
     //delete row according to row id
     function Delete($id)
     {
-
     }
     function addMultiRows($info)
     {
@@ -33,7 +32,7 @@ class ProjectCategoriesController extends Controller
             return 500;
         }
     }
-    
+
     function updateProjectCategories(Request $req)
     {
         $project_id = $req->project_id;
@@ -61,30 +60,33 @@ class ProjectCategoriesController extends Controller
         if (count($categories) > 0) {
             $project_categories = array();
             foreach ($categories as  $category) {
-                $project_categories[$category->category_id]['id'] = $category->category_id;
-                $project_categories[$category->category_id]['name'] = DB::table('categories')
-                    ->select('name')->where('id', '=', $category->category_id)->first()->name;
-                $img = DB::table('categories')->select('image')
-                    ->where('id', '=', $category->category_id)->first()->image;
-                if ($img != "") {
-                    $project_categories[$category->category_id]['image'] = asset('images/categories/' . DB::table('categories')->select('image')
-                        ->where('id', '=', $category->category_id)->first()->image);
-                } else {
-                    $project_categories[$category->category_id]['image'] = "Null";
-                }
-                $sub_image = DB::table('sub_categories')
-                    ->select('image')
-                    ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                if ($sub_image != "") {
-
-                    $project_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                        ->select('category_id', 'id', 'name', "image")
+                $categoryData = Category::find($category->category_id);
+                if ($categoryData != '') {
+                    $project_categories[$category->category_id]['id'] = $category->category_id;
+                    $project_categories[$category->category_id]['name'] = DB::table('categories')
+                        ->select('name')->where('id', '=', $category->category_id)->first()->name;
+                    $img = DB::table('categories')->select('image')
+                        ->where('id', '=', $category->category_id)->first()->image;
+                    if ($img != "") {
+                        $project_categories[$category->category_id]['image'] = asset('images/categories/' . DB::table('categories')->select('image')
+                            ->where('id', '=', $category->category_id)->first()->image);
+                    } else {
+                        $project_categories[$category->category_id]['image'] = "Null";
+                    }
+                    $sub_image = DB::table('sub_categories')
+                        ->select('image')
                         ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                } else {
+                    if ($sub_image != "") {
 
-                    $project_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                        ->select('category_id', 'id', 'name')
-                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                        $project_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                            ->select('category_id', 'id', 'name', "image")
+                            ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    } else {
+
+                        $project_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                            ->select('category_id', 'id', 'name')
+                            ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    }
                 }
             }
             foreach ($project_categories as $val) {
