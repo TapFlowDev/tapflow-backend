@@ -48,7 +48,7 @@ class Proposals extends Controller
             Mail::to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
             return (json_encode($response));
         } catch (Exception $error) {
-            $responseData = array("error" => $error,);
+            $responseData = array("error" => $error->getMessage(),);
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return (json_encode($response));
         }
