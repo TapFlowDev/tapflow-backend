@@ -43,7 +43,8 @@ class Proposals extends Controller
             //add send email 
             $details = [
                 'url' => 'https://www.tapflow.app',
-                'propsal_id' => $proposal_id  
+                'propsal_id' => $proposal_id,  
+                'subject' => 'proposal'
             ];
             Mail::to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
             return (json_encode($response));
