@@ -10,4 +10,11 @@ class Requirement extends Model
 {
   
     use HasApiTokens, HasFactory, Notifiable;
+    
+    protected $fillable=
+    [
+        "project_id",
+        "user_id",
+        "description"
+    ];
 }
