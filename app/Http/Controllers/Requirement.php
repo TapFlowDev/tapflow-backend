@@ -42,7 +42,8 @@ class Requirement extends Controller
     }
     function getRequirementsByProjectId($id)
     {
-      $requirements=requirementModel::where('project_id',$id)->select('description');
+      $requirements=requirementModel::where('project_id',$id)->select('description')->get();
+     
       return ($requirements);
     }
 }
