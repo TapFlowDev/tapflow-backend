@@ -172,5 +172,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
     Route::post('createProject', [ProjectController::class, 'Insert']);
     Route::get('postedProjects/{company_id}/{offset}', [ProjectController::class, 'getCompanyPendingProjects']);
-    Route::get('postedProjectDetails/{project_id}/{company_id}', [ProjectController::class, 'getCompanyPendingProjects']);
+    Route::get('postedProjectDetails/{project_id}/{company_id}', [ProjectController::class, 'getCompanyPendingProjectDetails']);
 });
