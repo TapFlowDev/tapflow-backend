@@ -25,7 +25,8 @@ class EmailController extends Controller
                 "subject" => $req->subject,
                 "content" => $req->content
             ];
-            Mail::to('shajrawi98@gmail.com')->send(new CustomMail($details));
+            Mail::to($req->email)->send(new CustomMail($details));
+            // Mail::mailer('smtp2')->to($req->email)->send(new CustomMail($details));
             $req->session()->flash('success', 'email sent successfully');
         } catch (\Exception $error) {
             $req->session()->flash('error', 'email was not sent due to and error');

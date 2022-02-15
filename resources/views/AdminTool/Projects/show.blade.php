@@ -99,6 +99,51 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            @if ($status == 1)
+                                <h3>Agency who took project</h3>
+                            @else
+                                <h3>Agencis who's intrested in this project</h3>
+                            @endif
+                        </div>
+                        <div class="row">
+                            @if ($status == 1)
+                                <div class="col-lg-4">
+                                    <div class="card mb-3 card-projects">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <a href="{{ route('AdminTool.agencies.show', $teams->id) }}"
+                                                    class="project-card-href">
+                                                    <div class="col-sm-12 project-card">
+                                                        <p> Agency name:</p> 
+                                                        <h6 class="mb-0">{{ $teams->name }}</h6>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                @foreach ($teams as $team)
+                                <div class="col-lg-4">
+                                    <div class="card mb-3 card-projects">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <a href="{{ route('AdminTool.agencies.show', $team->id) }}"
+                                                    class="project-card-href">
+                                                    <div class="col-sm-12 project-card">
+                                                        <p> Agency name:</p>
+                                                        <h6 class="mb-0">{{ $team->name }}</h6>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            @endif
+
+                        </div>
                     </div>
                 </div>
             </div>
