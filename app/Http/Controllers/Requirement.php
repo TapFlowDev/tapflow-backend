@@ -27,7 +27,7 @@ class Requirement extends Controller
           'user_id'=>$user_id,
           'description'=>$requirement,
         );
-        requirementModel::create([]);
+        requirementModel::create($arr);
       }
     }
     //update row according to row id
