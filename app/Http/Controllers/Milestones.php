@@ -163,6 +163,7 @@ class Milestones extends Controller
     {
 
         $mPrice = $final_price * ($percentage / 100);
+        $mPrice=number_format($mPrice,2);
         return $mPrice;
     }
     private function dividableBy5($number)
