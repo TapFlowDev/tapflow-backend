@@ -4,11 +4,14 @@ namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProjectCategoriesController;
+use App\Http\Controllers\Proposals;
+use App\Http\Controllers\AdminTool\TeamsController;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Group;
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\proposal;
 
 class ProjectsController extends Controller
 {
@@ -53,9 +56,24 @@ class ProjectsController extends Controller
      */
     public function show($id)
     {
+        $teamObj = new TeamsController;
         $project = $this->getData(Project::where('id', '=', $id)->get())->first();
         //return $project;
-        return view("AdminTool.Projects.show", ['project' => $project]);
+        if ($project->team_id != '') {
+            $teams = $teamObj->getTeamById($project->team_id);
+            $status = 1;
+        } else {
+            $status = 0;
+            $teamsIds = proposal::select('team_id')->where('project_id', '=', $id)->distinct()->pluck('team_id');
+            foreach ($teamsIds as $teamId) {
+                $teamInfo = $teamObj->getTeamById($teamId);
+                if ($teamInfo != '') {
+                    $teams[] = $teamInfo;
+                }
+            }
+            // return $teams;
+        }
+        return view("AdminTool.Projects.show", ['project' => $project, 'status'=>$status, 'teams'=>$teams]);
     }
 
     /**

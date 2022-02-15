@@ -28,7 +28,7 @@ class FreeLancerController extends Controller
             ->where('users.status', 1)
             ->where('users.deleted', 0)
             ->orderBy('users.created_at', 'desc')
-            ->paginate(10);
+            ->paginate(20);
         $users = $this->getUserData($freeLancers);
         // print_r(json_encode($users));
 

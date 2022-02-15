@@ -28,6 +28,7 @@ class CustomMail extends Mailable
      */
     public function build()
     {
-        return $this->subject($this->details['subject'])->markdown('mail.customMail');
+        // $this->setMailFromSupport();
+        return $this->from('noreply@tapflow.app', 'Tapflow-noreply')->subject($this->details['subject'])->markdown('mail.customMail');
     }
 }

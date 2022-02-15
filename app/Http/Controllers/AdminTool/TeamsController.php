@@ -153,4 +153,13 @@ class TeamsController extends Controller
         }
         return $array;
     }
+    function getTeamById($id){
+        $team = DB::table('teams')
+            ->join('groups', 'teams.group_id', '=', 'groups.id')
+            ->select('groups.*', 'teams.*')
+            ->where('groups.id', $id)
+            ->get();
+        $teamInfo = $this->getData($team)->first();
+        return $teamInfo;
+    }
 }

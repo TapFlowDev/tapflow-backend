@@ -14,7 +14,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ProposalMail;
-
+use App\Models\Group;
 class Proposals extends Controller
 {
     //add row 
@@ -38,16 +38,23 @@ class Proposals extends Controller
         }
 
         try {
+            // $userData = $req->user();
             $proposal = proposal::create($req->all());
             $proposal_id = $proposal->id;
             $responseData = array("proposal_id" => $proposal_id);
             $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
             //add send email 
+
+            $projectData = Project::find($req->project_id);
+            $teamData = Group::find($req->team_id);
+            $companyData = Group::find($projectData->company_id);
             $details = [
-                'subject' => 'proposal',
-                'url' => 'https://www.tapflow.app',
-                'propsal_id' => $proposal_id
+                'subject' => 'New project application.',
+                'project_name' => $projectData->name,
+                'team_name' => $teamData->name,
+                'company_name' => $companyData->name 
             ];
+            
             Mail::to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
             return (json_encode($response));
         } catch (Exception $error) {
