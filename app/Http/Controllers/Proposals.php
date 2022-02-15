@@ -9,10 +9,12 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use App\Models\proposal;
+use App\Models\Project;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ProposalMail;
+
 class Proposals extends Controller
 {
     //add row 
@@ -44,7 +46,7 @@ class Proposals extends Controller
             $details = [
                 'subject' => 'proposal',
                 'url' => 'https://www.tapflow.app',
-                'propsal_id' => $proposal_id  
+                'propsal_id' => $proposal_id
             ];
             Mail::to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
             return (json_encode($response));
@@ -62,14 +64,43 @@ class Proposals extends Controller
     function Delete($id)
     {
     }
-    function getProposalByProjectAndTeamId($project_id,$team_id)
+    function getProposalByProjectAndTeamId($project_id, $team_id)
     {
-    
-        $proposal=DB::table('proposals')
-        ->where('project_id','=',$project_id)
-        ->where('team_id','=',$team_id)
-        ->first();
-       
+
+        $proposal = DB::table('proposals')
+            ->where('project_id', '=', $project_id)
+            ->where('team_id', '=', $team_id)
+            ->first();
+
         return $proposal;
+    }
+    function getProjectProposalsById(Request $req, $project_id, $offset)
+    {
+        $userData = $req->user();
+        $project = Project::where('id', $project_id)->select('user_id')->first();
+        $GroupControllerObj = new GroupController;
+        $project_group_id = $GroupControllerObj->getGroupIdByUserId($project->user_id);
+        $user_group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+        if ($user_group_id == $project_group_id) {
+            $limit = 4;
+            $page = ($offset - 1) * $limit;
+            try {
+                $proposals = DB::table('proposals')
+                    ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
+                    ->where('project_id', $project_id)
+                    ->distinct()
+                    ->latest()->offset($page)->limit($limit)
+                    ->get();
+
+                $response = Controller::returnResponse(200, "successful", $proposals);
+                return (json_encode($response));
+            } catch (Exception $error) {
+                $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+            return (json_encode($response));
+        }
     }
 }

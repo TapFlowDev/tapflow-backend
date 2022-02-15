@@ -323,7 +323,7 @@ class Final_proposals extends Controller
        $GroupControllerObj = new GroupController;
         $project_group_id = $GroupControllerObj->getGroupIdByUserId($project->user_id);  
         $user_group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
-        if($user_group_id == $user_group_id)
+        if($user_group_id == $project_group_id)
         {
         $limit = 4;
         $page = ($offset - 1) * $limit;
