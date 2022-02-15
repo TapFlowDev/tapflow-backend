@@ -61,7 +61,7 @@ use phpDocumentor\Reflection\ProjectFactory;
 // for testing test
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
-Route::get('getProjectProposalsById/{id}', [Final_proposals::class, 'getProjectProposalsById']);
+Route::get('getProjectProposalsById/{id}/{offset}', [Final_proposals::class, 'getProjectProposalsById']);
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
