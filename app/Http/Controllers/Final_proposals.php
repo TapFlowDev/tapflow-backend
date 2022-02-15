@@ -320,4 +320,23 @@ class Final_proposals extends Controller
         $response = Controller::returnResponse(200, 'final proposal '.$final_proposal_id.' updated', []);
         return ["code"=>'200','msg'=>'success'];
     }
+    
+    //get all the final proposals for a specific project
+    function getProjectProposalsById($id)
+    {
+        $final_proposal_ids=Final_proposal::where('project_id',$id)->select('id')->get();
+        $proposals=array();
+        // dd($final_proposal_ids);
+        foreach($final_proposal_ids as $f_id)
+        {
+            // $limit = 4;
+            // $page = ($offset - 1) * $limit;
+            $proposal=DB:: table('final_proposals')
+            ->select('id', 'team_id', 'project_id', 'price', 'days', 'description','status')
+            ->where('id', $id)
+            ->first();
+            array_push($proposals,json_decode($proposal));
+        }
+        return ($proposals);
+    }
 }
