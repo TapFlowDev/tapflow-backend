@@ -39,7 +39,7 @@ class Final_proposals extends Controller
             try {
                 $ifExist=$this->checkIfProposalExists( $req->project_id,$req->team_id);
                  
-                // if ($ifExist['exist'] =='0') {
+                if ($ifExist['exist'] =='0') {
                     $price = $req->price;
                 $dividable = fmod($price, 5);
                 if ($dividable == 0) {
@@ -47,11 +47,11 @@ class Final_proposals extends Controller
                     $final_proposal_id = $final_proposal->id;
                     $milestones = $milestone->Insert($req->milestones, $req->project_id, $final_proposal_id, $req->price);
 
-                    if ($milestones == 101) {
+                    if ($milestones['code'] == 101) {
                         $del = Final_proposal::where('id',  $final_proposal_id)->delete();
                         $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
                         return json_encode($response);
-                    } elseif ($milestones == 500) {
+                    } elseif ($milestones['code'] == 500) {
                         $del = Final_proposal::where('id', $final_proposal_id)->delete();
                         $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones]);
                         return json_encode($response);
@@ -71,11 +71,18 @@ class Final_proposals extends Controller
                     $response = Controller::returnResponse(422, 'the price should be multiples of 5', []);
                     return json_encode($response);
                 }
-                // } else {
-                //    $proposal= $this->getProposalDetailsById($ifExist['final_proposal_id']);
-                //     $response = Controller::returnResponse(422, 'You already have proposal ',["final_proposal_id"=>$proposal]);
-                //     return json_encode($response);
-                // }
+                } else {
+                   $proposal=json_decode( $this->getProposalDetailsById($ifExist['final_proposal_id']));
+                   $status=$proposal->status;
+                    if($status == -1)
+                    {
+                       $a= $this->updateFinalProposalInternal($req,$ifExist['final_proposal_id']);
+                       return $a;;
+                    }
+                    else{
+                    $response = Controller::returnResponse(422, 'You already have proposal ',["final_proposal_id"=>$proposal]);
+                    return json_encode($response);}
+                }
                
             } catch (Exception $error) {
                 $response = Controller::returnResponse(500, 'something wrong', $error->getMessage());
@@ -94,7 +101,7 @@ class Final_proposals extends Controller
     function getProposalDetailsById($id)
     {
         $milestone = new Milestones;
-        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description')
+        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description','status')
             ->where('id', $id)->first();
         $milestones = $milestone->getMilestoneByProposalId($id);
         $final_proposal->milestones = $milestones;
@@ -103,11 +110,15 @@ class Final_proposals extends Controller
     //i need to delete every milestone and tasks belong to the same proposal 
     function updateFinalProposal(Request $req)
     
-    {
+    {   
+        
         $milestoneObj = new Milestones;
         $milestones=$req->milestones;
         $final_proposal_id = $req->final_proposal_id;
-        $project_id=Final_proposal::where('id', $final_proposal_id)->select('project_id')->first();   
+        
+
+        $project_id=Final_proposal::where('id', $final_proposal_id)->select('project_id')->first();  
+       
         Final_proposal::where('id', $final_proposal_id)
         ->update(["title"=>$req->title , "price"=>$req->price ,
         "description"=>$req->description,"days"=>$req->days,"starting_date"=>$req->starting_date]);
@@ -117,11 +128,12 @@ class Final_proposals extends Controller
         
         if( $milestones == null )
         {
-            $msg= "null ";
+            $response = Controller::returnResponse(200, 'final proposal updated', ["milestones"=>'empty']);
+                return json_encode($response);
         }
         else
         {
-           
+
             $milestones = $milestoneObj->Insert($req->milestones, $project_id->project_id, $final_proposal_id, $req->price);
             $msg="add";
             if ($milestones == 101) {
@@ -135,8 +147,8 @@ class Final_proposals extends Controller
             }
         }
        
-       
-        return ('success'.$msg);
+        $response = Controller::returnResponse(200, 'final proposal updated', []);
+                return json_encode($response);
     }
     function saveFinalProposal(Request $req)
     { 
@@ -171,16 +183,16 @@ class Final_proposals extends Controller
                         $dividable = fmod($price, 5);
                         if ($dividable == 0) {
     
-                            $final_proposal = Final_proposal::create($req->except(['milestones']));
+                            $final_proposal = Final_proposal::create($req->except(['milestones']))+['status'=>'-1'];
                             $final_proposal_id = $final_proposal->id;
                             if ($req->milestones != ' ' || $req->milestones != null) {
                                 $milestones = $milestone->Insert($req->milestones, $req->project_id, $final_proposal_id, $req->price);
                             }
-                            if ($milestones == 101) {
+                            if ($milestones['code'] == 101) {
                                 $del = Final_proposal::where('id',  $final_proposal_id)->delete();
                                 $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
                                 return json_encode($response);
-                            } elseif ($milestones == 500) {
+                            } elseif ($milestones['code'] == 500) {
                                 $del = Final_proposal::where('id', $final_proposal_id)->delete();
                                 $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones]);
                                 return json_encode($response);
@@ -197,11 +209,11 @@ class Final_proposals extends Controller
                         if ($req->milestones != ' ' || $req->milestones != null) {
                             $milestones = $milestone->Insert($req->milestones, $req->project_id, $final_proposal_id, $req->price);
                         }
-                        if ($milestones == 101) {
+                        if ($milestones['code']== 101) {
                             $del = Final_proposal::where('id',  $final_proposal_id)->delete();
                             $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
                             return json_encode($response);
-                        } elseif ($milestones == 500) {
+                        } elseif ($milestones['code'] == 500) {
                             $del = Final_proposal::where('id', $final_proposal_id)->delete();
                             $response = Controller::returnResponse(500, 'something wrong', ["error" => 'save milestone', 'value' => $milestones]);
                             return json_encode($response);
@@ -276,5 +288,36 @@ class Final_proposals extends Controller
                      return ['exist'=>1 ,"final_proposal_id"=>$final_proposal_id->id];
                      }
     }
-
+    function updateFinalProposalInternal($req,$final_proposal_id)
+    
+    {   
+        $milestoneObj = new Milestones;
+        $milestones=$req->milestones;
+        $project_id=Final_proposal::where('id', $final_proposal_id)->select('project_id')->first();  
+        Final_proposal::where('id', $final_proposal_id)
+        ->update(["title"=>$req->title , "price"=>$req->price ,
+        "description"=>$req->description,"days"=>$req->days,"starting_date"=>$req->starting_date]);
+        $milestoneObj-> deleteMilestonesByProposalId($final_proposal_id);
+        if( $milestones == null )
+        {
+            $response = Controller::returnResponse(200, 'final proposal '.$final_proposal_id.' updated', ["milestones"=>'empty']);
+                return json_encode($response);
+        }
+        else
+        {
+            $milestones = $milestoneObj->Insert($req->milestones, $project_id->project_id, $final_proposal_id, $req->price);
+            $msg="add";
+            if ($milestones['code'] == 101) {
+                $del = Final_proposal::where('id',  $final_proposal_id)->delete();
+                $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
+                return ["code"=>'101','msg'=>'Milestone Validation error'];
+            } elseif ($milestones['code'] == 500) {
+                $del = Final_proposal::where('id', $final_proposal_id)->delete();
+                $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones]);
+                return ["code"=>'500','msg'=>$milestones['msg']];
+            }
+        }
+        $response = Controller::returnResponse(200, 'final proposal '.$final_proposal_id.' updated', []);
+        return ["code"=>'200','msg'=>'success'];
+    }
 }

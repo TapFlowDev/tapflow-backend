@@ -17,7 +17,6 @@ use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\AgencyTargetsController;
 use Illuminate\Support\Facades\DB;
 use App\Models\Group_member;
-use Newsletter;
 
 
 use Exception;
@@ -61,7 +60,6 @@ class   GroupController extends Controller
         $rules = array(
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id"
-
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -69,7 +67,6 @@ class   GroupController extends Controller
             return json_encode($response);
         } else {
             // $group = new Group;
-            $userData = $req->user();
             $type = 1;
             $teamObj = new TeamController;
             $groupCategoryObj = new GroupCategoriesController;
@@ -216,8 +213,6 @@ class   GroupController extends Controller
 
                 // return (json_encode($response));
 
-                $mailchimpUserType = 'agency-member';
-                Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
                 $responseData = array(
                     "group_id" => $group_id
                 );
@@ -241,7 +236,9 @@ class   GroupController extends Controller
         $rules = array(
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
-            "link" => "required"
+            "name" => "required",
+            "link" => "required",
+            // "image" => "mimes:jpeg,png,jpg|max:15000"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -256,7 +253,6 @@ class   GroupController extends Controller
         $membersObj = new GroupMembersController;
 
         try {
-            $userData = $req->user();
             $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
 
             $group_id = $group->id;
@@ -322,9 +318,6 @@ class   GroupController extends Controller
             $responseData = array(
                 "group_id" => $group_id
             );
-            $mailchimpUserType = 'agency-member';
-            Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
-           
             $response = Controller::returnResponse(200, 'company added successfully', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
