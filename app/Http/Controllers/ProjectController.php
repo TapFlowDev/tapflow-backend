@@ -437,14 +437,21 @@ class ProjectController extends Controller
         }
         return $projects;
     }
-    function getCompanyPendingProjectDetails(Request $req, $company_id, $offset = 1)
+    function getCompanyPendingProjectDetails(Request $req, $project_id,$company_id)
     {
         $userData = $req->user();
         $GroupControllerObj = new GroupController;
         $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
         if ($group_id == $company_id) 
+        {       try{
+               $project= $this->getPendingProjectInfo($project_id);
+               $response = Controller::returnResponse(200, "successful", $project);
+               return (json_encode($response));
+        }catch(Exception $error)
         {
-
+            $response = Controller::returnResponse(500, "Something Wrong", $error->getMessage());
+            return (json_encode($response));
+        }
         } 
         else {
             $response = Controller::returnResponse(422, "You are trying to get another company data", []);
@@ -454,6 +461,10 @@ class ProjectController extends Controller
     function getPendingProjectInfo($id)
     {
         $project=Project::find($id);
-        // $requirements=Requirement::where('project_id',$project->id)->select('re')
+        $requirementsObj= new Requirement;
+        $projectCategoriesObj = new ProjectCategoriesController;
+        $project->requirements=$requirementsObj->getRequirementsByProjectId($id);
+        $project->categories = $projectCategoriesObj->getProjectCategories($id);
+        return $project;
     }
 }
