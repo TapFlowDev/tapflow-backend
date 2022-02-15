@@ -61,6 +61,8 @@ use phpDocumentor\Reflection\ProjectFactory;
 // for testing test
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+Route::get('getProjectProposalsById/{id}', [Final_proposals::class, 'getProjectProposalsById']);
+Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
@@ -169,5 +171,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('updateClientBio', [ClientController::class, 'update_Bio']);
     Route::post('addClientInfo', [ClientController::class, 'Insert_client']);
     Route::post('createProject', [ProjectController::class, 'Insert']);
-    Route::get('postedProjects/{company_id}/{offset}', [ProjectController::class, 'getClientPendingProjects']);
+    Route::get('postedProjects/{company_id}/{offset}', [ProjectController::class, 'getCompanyPendingProjects']);
+    Route::get('postedProjectDetails/{project_id}/{company_id}', [ProjectController::class, 'getCompanyPendingProjectDetails']);
 });
