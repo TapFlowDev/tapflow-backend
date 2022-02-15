@@ -40,6 +40,7 @@ class ProjectController extends Controller
             "max" => "numeric|multiple_of:5",
             "days" => "required|exists:categories,id",
         );
+        return($req->requirements_description);
         $userObj = new UserController;
         $groupMemberObj = new GroupMembersController;
         $requirementObj = new Requirement;
@@ -71,7 +72,7 @@ class ProjectController extends Controller
             $project = Project::create($req->except(['requirements_description']) + ["company_id" => $userGroupInfo->group_id]);
             $project_id = $project->id;
             $reqs=$requirementObj->Insert($req->requirements_description,$project_id,$req->user_id);
-            return($req->requirements_description);
+           
             // if (!isset($req->postman)) {
             //     $postman = 0;
             // } else {
