@@ -24,6 +24,7 @@ use Exception;
 use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Requirement;
+use App\Http\Controllers\ClientController;
 
 class ProjectController extends Controller
 {
@@ -463,8 +464,24 @@ class ProjectController extends Controller
         $project=Project::find($id);
         $requirementsObj= new Requirement;
         $projectCategoriesObj = new ProjectCategoriesController;
+        $clientControllersObj = new ClientController;
         $project->requirements=$requirementsObj->getRequirementsByProjectId($id);
         $project->categories = $projectCategoriesObj->getProjectCategories($id);
+        $project->duration = Category::find((int)$project->days)->name;
+        $user =json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
+        $final_ids=Final_proposal::where('project_id',$id);
+        $no_finals=$final_ids->count(); 
+        $init_ids=proposal::where('project_id',$id);
+        $no_init=$init_ids->count();
+        $project->final_proposals_number=$no_finals;
+        $project->initial_proposals_number=$no_init;
+        $project->admin=array(
+            "id"=>$user->id,
+            "first_name"=>$user->first_name,
+            "last_name"=>$user->last_name,
+            "role"=>$user->role,
+            "image"=>$user->image,
+        );
         return $project;
     }
 }
