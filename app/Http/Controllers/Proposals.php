@@ -81,7 +81,7 @@ class Proposals extends Controller
 
         return $proposal;
     }
-    function getProjectProposalsById(Request $req, $project_id, $offset)
+    function getProjectProposalsById(Request $req, $project_id, $offset,$limit)
     {
         $userData = $req->user();
         $project = Project::where('id', $project_id)->select('user_id')->first();
@@ -89,7 +89,7 @@ class Proposals extends Controller
         $project_group_id = $GroupControllerObj->getGroupIdByUserId($project->user_id);
         $user_group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
         if ($user_group_id == $project_group_id) {
-            $limit = 4;
+            
             $page = ($offset - 1) * $limit;
             try {
                 $proposals = DB::table('proposals')
