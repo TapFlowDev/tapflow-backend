@@ -394,14 +394,14 @@ class ProjectController extends Controller
         return ($numberOfProjects);
     }
 
-    function getCompanyPendingProjects(Request $req, $company_id, $offset = 1)
+    function getCompanyPendingProjects(Request $req, $company_id, $offset = 1,$limit)
     {
         $userData = $req->user();
         $GroupControllerObj = new GroupController;
         $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
         if ($group_id == $company_id) {
 
-            $limit = 4;
+             
             $page = ($offset - 1) * $limit;
             try {
                 $projects = DB::table('projects')
