@@ -337,7 +337,7 @@ class Final_proposals extends Controller
     }
 
     //get all the final proposals for a specific project
-    function getProjectProposalsById(Request $req, $project_id, $offset)
+    function getProjectProposalsById(Request $req, $project_id, $offset,$limit)
     {
         $userData=$req->user();
        $project=Project::where('id',$project_id)->select('user_id')->first();
@@ -346,11 +346,11 @@ class Final_proposals extends Controller
         $user_group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
         if($user_group_id == $project_group_id)
         {
-        $limit = 4;
+       
         $page = ($offset - 1) * $limit;
         try{
         $proposals = DB::table('final_proposals')
-            ->select('id', 'team_id', 'project_id', 'price', 'days', 'description', 'status')
+            ->select('id', 'team_id', 'project_id', 'price', 'days', 'description', 'status','created_at')
             ->where('project_id', $project_id)
             ->distinct()
             ->latest()->offset($page)->limit($limit)
