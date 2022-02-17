@@ -212,7 +212,8 @@ class   GroupController extends Controller
                 // ));
 
                 // return (json_encode($response));
-
+                // $mailchimpUserType = 'agency-member';
+                // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
                 $responseData = array(
                     "group_id" => $group_id
                 );
@@ -318,6 +319,9 @@ class   GroupController extends Controller
             $responseData = array(
                 "group_id" => $group_id
             );
+            // $mailchimpUserType = 'agency-member';
+            // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+           
             $response = Controller::returnResponse(200, 'company added successfully', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
