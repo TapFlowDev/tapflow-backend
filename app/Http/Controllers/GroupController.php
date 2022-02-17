@@ -361,9 +361,17 @@ class   GroupController extends Controller
         ->join('teams','groups.id','=','teams.group_id')
         ->where('groups.id','=',$id)
         ->select('groups.name','teams.image')
-        ->get();
+        ->first();
+        
+        if($info->image == null)
+        {
+            return $info; 
+        }
+        else{
         $image= asset('images/companies/' . $info->image);
+        
         $info->image=$image;
         return $info;
+        }
     }
 }
