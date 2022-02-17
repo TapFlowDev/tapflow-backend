@@ -103,7 +103,6 @@ Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies
 Route::get('getSectors', [CategoriesController::class, 'getSectors']);
 Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 Route::get('deleteMilestonesByProposalId/{id}', [Milestones::class, 'deleteMilestonesByProposalId']);
-Route::get('getGroupNameAndImage/{id}', [GroupController::class, 'getGroupNameAndImage']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
