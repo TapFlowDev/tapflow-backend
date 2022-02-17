@@ -189,6 +189,8 @@ class Milestones extends Controller
                 "milestone_id" => $milestone->id,
                 "milestone_name" => $milestone->name,
                 "milestone_description" => $milestone->description,
+                "percentage" => $milestone->percentage,
+                "price" => $milestone->price,
                 "tasks" => ($tasks),
 
             ));
