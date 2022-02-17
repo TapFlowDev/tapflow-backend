@@ -357,10 +357,13 @@ class   GroupController extends Controller
     }
     function getGroupNameAndImage($id)
     {
-      return  DB::table('groups')
+       $info= DB::table('groups')
         ->join('teams','groups.id','=','teams.group_id')
         ->where('groups.id','=',$id)
         ->select('groups.name','teams.image')
         ->get();
+        $image= asset('images/companies/' . $info->image);
+        $info->image=$image;
+        return $info;
     }
 }
