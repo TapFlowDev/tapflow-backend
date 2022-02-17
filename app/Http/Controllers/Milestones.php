@@ -272,4 +272,13 @@ class Milestones extends Controller
     }
         
     }
+    function getDownPaymentByProposalId($id)
+    {
+        $downPayment=DB::table('milestones')
+        ->where('final_proposal_id',"=",$id)
+        ->where('description',"=","down payment")
+        ->select('name','description','percentage','price')
+        ->get();
+        return($downPayment);
+    }
 }
