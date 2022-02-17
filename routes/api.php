@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Models\Rate;
 use Illuminate\Http\Request;
@@ -103,6 +104,7 @@ Route::get('getAgencyTargets', [CategoriesController::class, 'getTargetCompanies
 Route::get('getSectors', [CategoriesController::class, 'getSectors']);
 Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 Route::get('deleteMilestonesByProposalId/{id}', [Milestones::class, 'deleteMilestonesByProposalId']);
+Route::get('getGroupNameAndImage/{id}', [GroupController::class, 'getGroupNameAndImage']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
