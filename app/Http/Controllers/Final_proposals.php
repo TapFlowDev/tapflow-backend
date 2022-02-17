@@ -149,7 +149,7 @@ class Final_proposals extends Controller
             return json_encode($response);
         } else {
 
-            $milestones = $milestoneObj->Insert($req->milestones, $project_id->project_id, $final_proposal_id, $req->price);
+            $milestones = $milestoneObj->Insert($req->milestones, $project_id['project_id'], $final_proposal_id, $req->price);
             $msg = "add";
             if ($milestones['code'] == 101) {
                 $del = Final_proposal::where('id',  $final_proposal_id)->delete();
@@ -237,7 +237,9 @@ class Final_proposals extends Controller
                     $response = Controller::returnResponse(200, 'saved', []);
                     return json_encode($response);
                 } else {
-                  $this->updateFinalProposal($req);
+                    $req->final_proposal_id=$final_prop->id;
+                  $update=$this->updateFinalProposal($req);
+                  return $update;
                 }
             } catch (Exception $error) {
                 $response = Controller::returnResponse(500, 'something wrong', $error->getMessage());
