@@ -98,6 +98,10 @@ class Proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
+                    foreach ($proposals as$proposal)
+                    {
+                        $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
+                    }
 
                 $response = Controller::returnResponse(200, "successful", $proposals);
                 return (json_encode($response));

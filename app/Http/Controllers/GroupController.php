@@ -355,4 +355,12 @@ class   GroupController extends Controller
             ->first()->group_id;
         return $group_id;
     }
+    function getGroupNameAndImage($id)
+    {
+      return  DB::table('groups')
+        ->join('teams','groups.id','=','teams.group_id')
+        ->where('groups.id','=',$id)
+        ->select('groups.name','teams.image')
+        ->get();
+    }
 }
