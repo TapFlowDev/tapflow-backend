@@ -203,17 +203,17 @@ class Final_proposals extends Controller
                             }
                             if ((int)$milestones['code'] == 101) {
                                 $del = Final_proposal::where('id',  $final_proposal_id)->delete();
-                                $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
+                                $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', []);
                                 return json_encode($response);
                             } elseif ((int)$milestones['code'] == 500) {
                                 $del = Final_proposal::where('id', $final_proposal_id)->delete();
-                                $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones]);
+                                $response = Controller::returnResponse(500, 'something wrong', []);
                                 return json_encode($response);
                             }
                             $responseData = array(
                                 "Final_proposal_id" => $final_proposal_id,
                             );
-                            $response = Controller::returnResponse(200, 'Final proposal saved successfully', [$responseData, 'value' => $milestones]);
+                            $response = Controller::returnResponse(200, 'Final proposal saved successfully', []);
                             return (json_encode($response));
                         }
                     } else {
@@ -224,17 +224,17 @@ class Final_proposals extends Controller
                         }
                         if ((int)$milestones['code'] == 101) {
                             $del = Final_proposal::where('id',  $final_proposal_id)->delete();
-                            $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
+                            $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', []);
                             return json_encode($response);
                         } elseif ((int)$milestones['code'] == 500) {
                             $del = Final_proposal::where('id', $final_proposal_id)->delete();
-                            $response = Controller::returnResponse(500, 'something wrong', ["error" => 'save milestone', 'value' => $milestones]);
+                            $response = Controller::returnResponse(500, 'something wrong', []);
                             return json_encode($response);
                         }
                         $responseData = array(
                             "Final_proposal_id" => $final_proposal_id,
                         );
-                        $response = Controller::returnResponse(200, 'Final proposal save successfully', [$responseData, 'value' => $milestones]);
+                        $response = Controller::returnResponse(200, 'Final proposal save successfully', []);
                         return (json_encode($response));
                     }
                 }
