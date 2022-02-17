@@ -365,6 +365,8 @@ class   GroupController extends Controller
         
         if($info->image == null)
         {
+            $image= asset('images/profile-pic.jpg');
+            $info->image=$image;
             return $info; 
         }
         else{
