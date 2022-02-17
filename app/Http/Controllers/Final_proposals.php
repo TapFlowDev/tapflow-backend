@@ -350,7 +350,7 @@ class Final_proposals extends Controller
         $page = ($offset - 1) * $limit;
         try{
         $proposals = DB::table('final_proposals')
-            ->select('id', 'team_id', 'project_id', 'price', 'days', 'description', 'status','created_at')
+            ->select('id', 'team_id', 'project_id', 'title','price', 'days', 'description', 'status','created_at')
             ->where('project_id', $project_id)
             ->distinct()
             ->latest()->offset($page)->limit($limit)
