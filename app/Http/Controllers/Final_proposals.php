@@ -32,7 +32,8 @@ class Final_proposals extends Controller
                 "price" => "required",
                 "days" => "required",
                 "starting_date" => "required|date",
-                "milestones" => "required"
+                "milestones" => "required",
+                "down_payment" => "required" //value 0=>no down payment 1=>there is down payment
             );
             $validators = Validator::make($req->all(), $rules);
             if ($validators->fails()) {
@@ -350,7 +351,7 @@ class Final_proposals extends Controller
         $page = ($offset - 1) * $limit;
         try{
         $proposals = DB::table('final_proposals')
-            ->select('id', 'team_id', 'project_id', 'title','price', 'days', 'description', 'status','created_at')
+            ->select('id', 'team_id', 'project_id', 'title','price', "down_payment",'days', 'description', 'status','created_at')
             ->where('project_id', $project_id)
             ->distinct()
             ->latest()->offset($page)->limit($limit)
@@ -358,7 +359,19 @@ class Final_proposals extends Controller
             $milestone = new Milestones;
         foreach ($proposals as $proposal) 
         {
-            $proposal->milestones= $milestone->getMilestoneByProposalId($proposal->id);
+            $is_down_payment=$proposal->down_payment;
+            if($is_down_payment ==1 )
+            {
+               $proposal->down_payment_details= $milestone->getDownPaymentByProposalId($proposal->id);
+               
+               $milestones_array= $milestone->getMilestoneByProposalId($proposal->id);
+               $proposal->milestones= array_slice($milestones_array,1);
+            }
+            else
+            {
+                $proposal->milestones= $milestone->getMilestoneByProposalId($proposal->id);
+            }
+           
         }
         $response = Controller::returnResponse(200, "successful", $proposals);
             return (json_encode($response));
