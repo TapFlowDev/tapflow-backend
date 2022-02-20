@@ -237,7 +237,9 @@ class Final_proposals extends Controller
                     $response = Controller::returnResponse(200, 'saved', []);
                     return json_encode($response);
                 } else {
-                    $req->final_proposal_id=$final_prop->id;
+                    $req['final_proposal_id']=$final_prop->id;
+              
+                
                   $update=$this->updateFinalProposal($req);
                   return $update;
                 }
