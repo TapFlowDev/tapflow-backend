@@ -74,7 +74,7 @@ class ProjectsController extends Controller
 
         $userGroupInfo = Group_member::where('group_id', '=', $req->company_id)->get()->first();
         $userInfo = $userObj->getUserById($userGroupInfo->user_id);
-        $project = Project::create($req->except(['requirements_description', 'categories']) + ["user_id" => $userGroupInfo->user_id, 'budget_type'=>0, 'status' => -1]);
+        $project = Project::create($req->except(['requirements_description', 'categories']) + ["user_id" => $userGroupInfo->user_id, 'budget_type' => 0, 'status' => -1]);
         $project_id = $project->id;
         $reqs = $requirementObj->Insert($req->requirements_description, $project_id, $userGroupInfo->user_id);
         $cats = $req->categories;
@@ -195,14 +195,19 @@ class ProjectsController extends Controller
         $project = $this->getData(Project::where('id', '=', $id)->get())->first();
         $teamsIds = $request->teamsIds;
         //return $project;
-        foreach ($teamsIds as $teamId) {
-            $teamInfo = $teamObj->getTeamById($teamId);
-            if ($teamInfo != '') {
-                $teams[] = $teamInfo;
+        try {
+            foreach ($teamsIds as $teamId) {
+                $teamInfo = $teamObj->getTeamById($teamId);
+                if ($teamInfo != '') {
+                    $teams[] = $teamInfo;
+                }
             }
+            $emailSent = $emailObj->sendEmailToAgencies($teams, $project);
+            $request->session()->flash('success', 'email sent successfully');
+        } catch (\Exception $error) {
+            $request->session()->flash('error', 'email was not sent due to an error');
         }
-        // return $teams;
-        return $emailObj->sendEmailToAgencies($teams, $project);
+        return redirect()->back();
     }
 
     function getSubCategoriesByParent($category_id)
