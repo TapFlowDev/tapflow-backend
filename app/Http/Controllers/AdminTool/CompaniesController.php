@@ -26,6 +26,7 @@ class CompaniesController extends Controller
         $companies = $this->getData(DB::table('companies')
             ->join('groups', 'companies.group_id', '=', 'groups.id')
             ->select('groups.*', 'companies.*')
+            ->where('groups.type', '<>', -1)
             ->orderBy('groups.created_at', 'desc')
             ->paginate(20));
 

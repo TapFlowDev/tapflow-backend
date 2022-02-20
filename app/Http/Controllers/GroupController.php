@@ -17,7 +17,7 @@ use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\AgencyTargetsController;
 use Illuminate\Support\Facades\DB;
 use App\Models\Group_member;
-
+use Newsletter;
 
 use Exception;
 
@@ -238,7 +238,7 @@ class   GroupController extends Controller
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
             "name" => "required",
-            "link" => "required",
+            // "link" => "required",
             // "image" => "mimes:jpeg,png,jpg|max:15000"
         );
         $validator = Validator::make($req->all(), $rules);

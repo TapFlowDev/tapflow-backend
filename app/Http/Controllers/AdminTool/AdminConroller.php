@@ -63,8 +63,8 @@ class AdminConroller extends Controller
     public function show($id)
     {
         $member = User::select('users.*')
-        ->where('users.id', $id)
-        ->get();
+            ->where('users.id', $id)
+            ->get();
         $memberInfo = $this->getUserData($member)->first();
         //  return $memberInfo;
 
@@ -119,19 +119,21 @@ class AdminConroller extends Controller
     {
         return view('AdminTool.login');
     }
-    private function getUserData($users){
+    private function getUserData($users)
+    {
         foreach ($users as $key => &$user) {
 
             $user->full_name = $user->first_name . " " . $user->last_name;
-            if($user->image != ""){
+            if ($user->image != "") {
                 $user->image = asset('images/users/' . $user->image);
-            }else{
+            } else {
                 $user->image = asset('images/profile-pic.jpg');
             }
         }
         return $users;
     }
-    function waitingList(){
-        return view('AdminTool.WaitingList.index', ['users'=> Waiting_List::paginate(10)]);
+    function waitingList()
+    {
+        return view('AdminTool.WaitingList.index', ['users' => Waiting_List::paginate(10)]);
     }
 }

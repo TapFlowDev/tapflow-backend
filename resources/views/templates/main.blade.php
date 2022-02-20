@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+        integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Tapflow Admin Tool') }}</title>
@@ -22,7 +22,12 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
     <!-- js -->
+    
+    <script src="https://phpcoder.tech/multiselect/js/jquery.multiselect.js"></script>
+<link rel="stylesheet" href="https://phpcoder.tech/multiselect/css/jquery.multiselect.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css">
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/chosen.jquery.min.js') }}" defer></script>
 
 
 </head>
@@ -47,7 +52,8 @@
                         <span class="icon"><i class="fas fa-file" aria-hidden="true"></i></span>
                         <span class="title">Projects</span>
                     </a>
-                </li><li>
+                </li>
+                <li>
                     <a href="/AdminTool/categoryTypes/1/categories">
                         <span class="icon"><i class="fas fa-book" aria-hidden="true"></i></span>
                         <span class="title">Categories</span>
@@ -94,6 +100,26 @@
                     </ul>
                 </li>
                 <li>
+                    <a href="#">
+                        <span class="icon"><i class="fas fa-folder-minus"></i></span>
+                        <span class="title dropdown-toggle">Dummy Data</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a href="/AdminTool/dummyCompanies">
+                                <span class="icon"></span>
+                                <span class="title">Dummy Companies</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/AdminTool/dummyProjects">
+                                <span class="icon"></span>
+                                <span class="title">Dummy Projects</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
                     <a href="/AdminTool/users">
                         <span class="icon"><i class="fas fa-user-cog"></i></span>
                         <span class="title">Other Users</span>
@@ -128,7 +154,7 @@
                     @auth
                         {{-- <a href="{{ url('/home') }}">Home</a> --}}
                         <a href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                document.getElementById('logout-form').submit();">Logout</a>
+                                                        document.getElementById('logout-form').submit();">Logout</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
@@ -166,8 +192,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
         integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous">
     </script>
 </body>
 
