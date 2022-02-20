@@ -326,15 +326,16 @@ class Final_proposals extends Controller
             return json_encode($response);
         } else {
             $milestones_add = $milestoneObj->Insert($req->milestones, $project_id->project_id, $final_proposal_id, $req->price);
+            
             $msg = "add";
             if ( $milestones_add['code'] == 101) {
                 $del = Final_proposal::where('id',  $final_proposal_id)->delete();
                 $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['message' => $milestones_add['msg']]);
-                return ["code" => '101', 'msg' => 'Milestone Validation error'];
+                return ["code" => 101, 'msg' => 'Milestone Validation error'];
             } elseif ( $milestones_add['code'] == 500) {
                 $del = Final_proposal::where('id', $final_proposal_id)->delete();
                 $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones_add['msg']]);
-                return ["code" => '500', 'msg' => $milestones_add['msg']];
+                return ["code" => 500, 'msg' => $milestones_add['msg']];
             }
         }
         $response = Controller::returnResponse(200, 'final proposal ' . $final_proposal_id . ' updated', []);
