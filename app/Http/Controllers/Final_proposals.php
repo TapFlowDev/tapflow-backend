@@ -394,7 +394,7 @@ class Final_proposals extends Controller
                     ->latest()->offset($page)->limit($limit)
                     ->get();
                 $milestone = new Milestones;
-                // $counter=0;
+                $counter=0;
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
                     $is_down_payment = $proposal->down_payment;
@@ -405,31 +405,24 @@ class Final_proposals extends Controller
                         $proposal->milestones = array_slice($milestones_array, 1);
                     } else {
                         $milestones_array = $milestone->getMilestoneByProposalId($proposal->id);
-                        // $m_ids=array();
-                        // array_push($m_ids,$milestones_array[$counter]['milestone_id']);
+                        $m_ids=array();
+                        array_push($m_ids,$milestones_array[$counter]['milestone_id']);
                         $proposal->milestones = $milestones_array;
 
                         // ('users')->join('freelancers', 'users.id', '=', 'freelancers.user_id')
-                        // // $c=0;
-                        // // foreach($m_ids as$mid){
-                        // // $all_people= Db:: table('tasks')
-                        // // ->join('assigned_tasks','tasks.id','=','assigned_tasks.task_id')
-                        // // ->join('users','assigned_tasks.user_id','=','users.id')
-                        // // ->join('freelancers', 'users.id', '=', 'freelancers.user_id')
-                        // // ->where('tasks.milestone_id','=',$mid)
-                        // // ->select('users.first_name','users.last_name','freelancers.image' )
-                        // // ->get();
-
-                        // // if (isset($all_people[$c]->image)) {
-                        // //     $all_people[$c]->image =  asset('images/users/' . $all_people->image);
-                        // // } else {
-                        // //     $all_people[$c]->image  = asset('images/profile-pic.jpg');
-                        // // }
-
-                        // // }   
-                        // // $all_people=array($all_people);
-                        // // $all_people=array_unique($all_people);
-                        // // $proposal->all_people= $all_people;
+                        $c=0;
+                        foreach($m_ids as$mid){
+                        $all_people= Db:: table('tasks')
+                        ->join('assigned_tasks','tasks.id','=','assigned_tasks.task_id')
+                        ->join('users','assigned_tasks.user_id','=','users.id')
+                        ->join('freelancers', 'users.id', '=', 'freelancers.user_id')
+                        ->where('tasks.milestone_id','=',$mid)
+                        ->select('users.id','users.first_name','users.last_name','freelancers.image' )
+                        ->get();
+                        }   
+                        // $all_people=array($all_people);
+                        // $all_people=array_unique($all_people);
+                        $proposal->all_people= $all_people;
                     }
                 }
                 $response = Controller::returnResponse(200, "successful", $proposals);
