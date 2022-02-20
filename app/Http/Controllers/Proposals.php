@@ -33,7 +33,7 @@ class Proposals extends Controller
         $ifExist = $this->checkIfProposalExists($req->project_id, $req->team_id);
         if($ifExist['exist']==1){
             $proposal = proposal::find($ifExist['proposal_id']);
-            $response = Controller::returnResponse(422, 'You already have applied to this project', ["propsal" => $proposal]);
+            $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposal]);
             return json_encode($response);
         }
         $validators = Validator::make($req->all(), $rules);
