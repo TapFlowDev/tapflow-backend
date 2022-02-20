@@ -244,13 +244,13 @@ class Final_proposals extends Controller
                     return json_encode($response);
                 } else {
                     
-              
+               
                 
                   $update=$this->updateFinalProposalInternal($req,$final_prop->id);
                   return $update;
                 }
             } catch (Exception $error) {
-                $response = Controller::returnResponse(500, 'something wrong save', $error->getMessage());
+                $response = Controller::returnResponse(500, 'something wrong save' .'********'.$final_prop->id, $error->getMessage());
                 return json_encode($response);
             }
         }
