@@ -137,6 +137,7 @@ class TeamsController extends Controller
             $userInfo = User::find($admin->user_id);
             $group->admin_name = $userInfo->first_name . " " . $userInfo->last_name;
             $group->admin_id = $userInfo->id;
+            $group->admin_email = $userInfo->email;
             $group->categories = $groupCatObj->getTeamCategories($group->id);
             if ($group->image != "") {
                 $group->image = asset('images/companies/' . $group->image);
@@ -160,6 +161,15 @@ class TeamsController extends Controller
             ->where('groups.id', $id)
             ->get();
         $teamInfo = $this->getData($team)->first();
+        return $teamInfo;
+    }
+    function getAllTeams(){
+        $team = DB::table('teams')
+            ->join('groups', 'teams.group_id', '=', 'groups.id')
+            ->select('groups.*', 'teams.*')
+            ->where('groups.status', 1)
+            ->get();
+        $teamInfo = $this->getData($team);
         return $teamInfo;
     }
 }

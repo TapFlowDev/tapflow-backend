@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Mail\CustomMail;
+use App\Mail\ProjectMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Mail\Mailable;
 use Exception;
@@ -26,12 +27,25 @@ class EmailController extends Controller
                 "content" => $req->content
             ];
             Mail::to($req->email)->send(new CustomMail($details));
-            // Mail::mailer('smtp2')->to($req->email)->send(new CustomMail($details));
             $req->session()->flash('success', 'email sent successfully');
         } catch (\Exception $error) {
             $req->session()->flash('error', 'email was not sent due to and error');
         }
         // Mail::to($req->email)->send(new CustomMail($details));
         return redirect()->back();
+    }
+    function sendEmailToAgencies($agencies, $project){
+        foreach($agencies as $agency){
+            $details = [
+                "subject" => 'Match Project',
+                "name" => $agency->admin_name,
+                "project" => $project
+            ];
+            Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProjectMail($details));
+            break;
+        }
+        return $details;
+        // return 1;
+
     }
 }
