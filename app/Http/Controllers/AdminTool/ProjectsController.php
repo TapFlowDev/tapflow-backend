@@ -172,7 +172,7 @@ class ProjectsController extends Controller
                 $project->duration = "unset";
             }
             if ($company_details->image != "") {
-                $company_details->image = asset('images/users/' . $company_details->image);
+                $company_details->image = asset('images/companies/' . $company_details->image);
             } else {
                 $company_details->image = asset('images/profile-pic.jpg');
             }
