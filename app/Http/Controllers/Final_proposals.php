@@ -51,19 +51,11 @@ class Final_proposals extends Controller
                         $milestones = $milestone->Insert($req->milestones, $req->project_id, $final_proposal_id, $req->price);
 
                         if ($milestones['code'] == 101) {
-                            Final_proposal::where('id', $final_proposal_id)
-                                ->update([
-                                    "title" => $req->title, "price" => $req->price,
-                                    "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
-                                ]);
+                            Final_proposal::where('id', $final_proposal_id)->delete();
                             $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones]);
                             return json_encode($response);
                         } elseif ($milestones['code'] == 500) {
-                            Final_proposal::where('id', $final_proposal_id)
-                                ->update([
-                                    "title" => $req->title, "price" => $req->price,
-                                    "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
-                                ]);
+                            Final_proposal::where('id', $final_proposal_id)->delete();
                             $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones]);
                             return json_encode($response);
                         }
