@@ -30,6 +30,12 @@ class Proposals extends Controller
             "to" => "required",
             "our_offer" => "required"
         );
+        $ifExist = $this->checkIfProposalExists($req->project_id, $req->team_id);
+        if($ifExist['exist']==1){
+            $proposal = proposal::find($ifExist['proposal_id']);
+            $response = Controller::returnResponse(422, 'You already have applied to this project', ["propsal" => $proposal]);
+            return json_encode($response);
+        }
         $validators = Validator::make($req->all(), $rules);
         if ($validators->fails()) {
             $responseData = $validators->errors();
@@ -112,6 +118,19 @@ class Proposals extends Controller
         } else {
             $response = Controller::returnResponse(422, "You are trying to get another company data", []);
             return (json_encode($response));
+        }
+    }
+    function checkIfProposalExists($project_id, $team_id)
+    {
+        $final_proposal_id = DB::table('proposals')
+            ->select('id')
+            ->where('team_id', '=', $team_id)
+            ->where('project_id', '=', $project_id)
+            ->first();
+        if ($final_proposal_id == null) {
+            return ['exist' => 0];
+        } else {
+            return ['exist' => 1, "proposal_id" => $final_proposal_id->id];
         }
     }
 }
