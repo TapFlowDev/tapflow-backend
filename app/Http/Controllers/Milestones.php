@@ -54,7 +54,7 @@ class Milestones extends Controller
                     return ['code'=>101,'msg'=>'Milestone Validation error'];
                 }
             }
-            return 200;
+            return ['code'=>200,'msg'=>'success'];
         } catch (Exception $error) {
             return ['code'=>500,'msg'=>$error->getMessage()];
         }
