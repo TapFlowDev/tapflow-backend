@@ -46,14 +46,12 @@ class TasksController extends Controller
         
         foreach ($tasks as $task)
         {
-            
            $assigned= $AssignedTo->getAssignedByTaskId($task->id);
            array_push($tasks_details,array(
             "task_id"=>$task->id,
             "task_name"=>$task->name,
             "task_description"=>$task->description,
             "assigned"=>($assigned),
-           
         ));
         }
         return  ($tasks_details);
