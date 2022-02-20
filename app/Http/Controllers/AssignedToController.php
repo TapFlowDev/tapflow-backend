@@ -39,6 +39,7 @@ class AssignedToController extends Controller
     function getAssignedByTaskId($id)
     {
         $assigned = Assigned_task::where('task_id', $id)->get();
+        
         if ($assigned != '') {
             foreach ($assigned as &$user) {
                 $userData = DB::table('users')->join('freelancers', 'users.id', '=', 'freelancers.user_id')
