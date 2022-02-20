@@ -131,7 +131,7 @@ class Final_proposals extends Controller
         $milestoneObj = new Milestones;
         $milestones = $req->milestones;
         $final_proposal_id = $req->final_proposal_id;
-
+        try{
 
         $project_id = Final_proposal::where('id', $final_proposal_id)->select('project_id')->first();
 
@@ -164,7 +164,13 @@ class Final_proposals extends Controller
 
         $response = Controller::returnResponse(200, 'final proposal updated', []);
         return json_encode($response);
+    }catch(Exception $error)
+    {
+        $response = Controller::returnResponse(500, 'something wrong update', $error->getMessage());
+        return json_encode($response);
     }
+    }
+
     function saveFinalProposal(Request $req)
     {
         $milestone = new Milestones;
@@ -244,7 +250,7 @@ class Final_proposals extends Controller
                   return $update;
                 }
             } catch (Exception $error) {
-                $response = Controller::returnResponse(500, 'something wrong', $error->getMessage());
+                $response = Controller::returnResponse(500, 'something wrong save', $error->getMessage());
                 return json_encode($response);
             }
         }
