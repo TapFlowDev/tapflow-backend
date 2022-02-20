@@ -187,7 +187,7 @@ class Final_proposals extends Controller
             $response = Controller::returnResponse(101, "Validation Error", $responseData);
             return (json_encode($response));
         } else {
-            try {
+            // try {
                 $final_prop = DB::table('final_proposals')
                     ->select('id', 'team_id', 'project_id', 'price', 'days', 'description')
                     ->where('team_id', '=', $req->team_id)
@@ -243,16 +243,13 @@ class Final_proposals extends Controller
                     $response = Controller::returnResponse(200, 'saved', []);
                     return json_encode($response);
                 } else {
-                    
-               
-                
                   $update=$this->updateFinalProposalInternal($req,$final_prop->id);
                   return $update;
                 }
-            } catch (Exception $error) {
-                $response = Controller::returnResponse(500, 'something wrong save' .'********'.$final_prop->id, $error->getMessage());
-                return json_encode($response);
-            }
+            // } catch (Exception $error) {
+            //     $response = Controller::returnResponse(500, 'something wrong save', $error->getMessage());
+            //     return json_encode($response);
+            // }
         }
     }
     function getProposalByProjectIdAndTeamId(Request $req)
