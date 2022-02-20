@@ -420,8 +420,8 @@ class Final_proposals extends Controller
                         ->select('users.id','users.first_name','users.last_name','freelancers.image' )
                         ->get();
                         }   
-                        // $all_people=array($all_people);
-                        // $all_people=array_unique($all_people);
+                        $all_people=array($all_people);
+                        $all_people=array_unique($all_people);
                         $proposal->all_people= $all_people;
                     }
                 }
