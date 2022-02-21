@@ -4,6 +4,15 @@
         <div class="row">
             <div class="col-12">
                 <div class="content-container">
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @elseif (session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                    @endif
                     <div class="col-lg-12">
                         <div class="card mb-3">
                             <div class="card-body">

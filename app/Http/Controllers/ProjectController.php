@@ -244,19 +244,21 @@ class ProjectController extends Controller
     private function getProjectsInfo($projects)
     {
         $projectCategoriesObj = new ProjectCategoriesController;
+        $requirementsObj = new Requirement;
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
             // dd($company_image);
             if (isset($company_image)) {
-                $project->company_image = asset('images/companies/') . $company_image;
+                $project->company_image = asset("images/companies/" . $company_image);
             } else {
                 $project->company_image = asset('images/profile-pic.jpg');
             }
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
             $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
+            $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
         }
         return $projects;
     }

@@ -29,7 +29,7 @@ class EmailController extends Controller
             Mail::to($req->email)->send(new CustomMail($details));
             $req->session()->flash('success', 'email sent successfully');
         } catch (\Exception $error) {
-            $req->session()->flash('error', 'email was not sent due to and error');
+            $req->session()->flash('error', 'email was not sent due to an error');
         }
         // Mail::to($req->email)->send(new CustomMail($details));
         return redirect()->back();
@@ -42,9 +42,8 @@ class EmailController extends Controller
                 "project" => $project
             ];
             Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProjectMail($details));
-            break;
         }
-        return $details;
+        return 1;
         // return 1;
 
     }
