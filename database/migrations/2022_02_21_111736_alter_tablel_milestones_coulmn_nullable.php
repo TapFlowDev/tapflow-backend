@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterTablelTasks extends Migration
+class AlterTablelMilestonesCoulmnNullable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,11 +14,12 @@ class AlterTablelTasks extends Migration
     public function up()
     {
         //
-          //
-          Schema::table('tasks', function (Blueprint $table) {
+        Schema::table('milestones', function (Blueprint $table) {
            
             $table->string('name')->nullable()->change();
             $table->string('description')->nullable()->change();
+            $table->string('percentage')->nullable()->change();
+            $table->string('days')->nullable()->change();
           
         });
     }
@@ -31,9 +32,11 @@ class AlterTablelTasks extends Migration
     public function down()
     {
         //
-        Schema::table('tasks', function (Blueprint $table) {
+        Schema::table('milestones', function (Blueprint $table) {
             $table->dropColumn('name');
             $table->dropColumn('description');
+            $table->dropColumn('percentage');
+            $table->dropColumn('days');
         });
     }
 }
