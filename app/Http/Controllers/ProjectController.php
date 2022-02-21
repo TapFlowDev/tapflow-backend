@@ -151,9 +151,9 @@ class ProjectController extends Controller
     {
     }
 
-    function exploreProject(Request $req, $offset = 1)
+    function exploreProject(Request $req, $offset = 1,$limit=4)
     {
-        $limit = 4;
+       
         $page = ($offset - 1) * $limit;
         try {
 
