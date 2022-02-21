@@ -281,9 +281,8 @@ class ProjectController extends Controller
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
             $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
-
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
-            // $project->admin_info = $admin_info;
+            $project->admin_info = $admin_info;
             return $projects;
         }
     }
