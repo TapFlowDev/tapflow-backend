@@ -191,7 +191,7 @@ class Milestones extends Controller
                 "milestone_description" => $milestone->description,
                 "percentage" => $milestone->percentage,
                 "price" => $milestone->price,
-                "days" => $milestone->price,
+                "days" => $milestone->days,
                 "tasks" => ($tasks),
 
             ));
