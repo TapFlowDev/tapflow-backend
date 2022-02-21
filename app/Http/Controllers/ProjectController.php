@@ -276,6 +276,7 @@ class ProjectController extends Controller
             $project->admin_info = $admin_info;
         return $projects;
     }
+}
     function getAgencyPendingProjects($agency_id, $offset = 1)
     {
         $limit = 4;
