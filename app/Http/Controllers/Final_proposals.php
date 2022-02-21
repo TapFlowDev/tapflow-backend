@@ -302,10 +302,19 @@ class Final_proposals extends Controller
                     $final_proposal_id = $ifExist['final_proposal_id'];
                     $milestones = $milestone->getMilestoneByProposalId($final_proposal_id);
                     $final_proposal = DB::table('final_proposals')
-                        ->select('id', 'title', 'team_id', 'project_id', 'price', 'days', 'description', 'starting_date', 'status')
+                        ->select('id', 'title', 'team_id', 'project_id', 'price', 'days', 'description', 'starting_date', 'down_payment', 'status')
                         ->where('id', '=', $final_proposal_id)
                         ->first();
                     $final_proposal->milestones = $milestones;
+                    $is_down_payment = $final_proposal->down_payment;
+                    if ($is_down_payment == 1) {
+                        $final_proposal->down_payment_details = $milestone->getDownPaymentByProposalId($final_proposal->id);
+                        $milestones_array = $milestone->getMilestoneByProposalId($final_proposal->id);
+                        // dd($milestones_array['tasks']);
+                        $final_proposal->milestones = array_slice($milestones_array, 1);
+                    } else {
+                        $final_proposal->milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
+                    }
                     return json_encode($final_proposal);
                 }
             } catch (Exception $error) {
@@ -394,7 +403,7 @@ class Final_proposals extends Controller
                     ->latest()->offset($page)->limit($limit)
                     ->get();
                 $milestone = new Milestones;
-                $counter=0;
+                $counter = 0;
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
                     $is_down_payment = $proposal->down_payment;
@@ -405,24 +414,24 @@ class Final_proposals extends Controller
                         $proposal->milestones = array_slice($milestones_array, 1);
                     } else {
                         $milestones_array = $milestone->getMilestoneByProposalId($proposal->id);
-                        $m_ids=array();
-                        array_push($m_ids,$milestones_array[$counter]['milestone_id']);
+                        $m_ids = array();
+                        array_push($m_ids, $milestones_array[$counter]['milestone_id']);
                         $proposal->milestones = $milestones_array;
 
                         // ('users')->join('freelancers', 'users.id', '=', 'freelancers.user_id')
-                        $c=0;
-                        foreach($m_ids as$mid){
-                        $all_people= Db:: table('tasks')
-                        ->join('assigned_tasks','tasks.id','=','assigned_tasks.task_id')
-                        ->join('users','assigned_tasks.user_id','=','users.id')
-                        ->join('freelancers', 'users.id', '=', 'freelancers.user_id')
-                        ->where('tasks.milestone_id','=',$mid)
-                        ->select('users.id','users.first_name','users.last_name','freelancers.image' )
-                        ->get();
-                        }   
-                        $all_people=array($all_people);
-                        $all_people=array_unique($all_people);
-                        $proposal->all_people= $all_people;
+                        $c = 0;
+                        foreach ($m_ids as $mid) {
+                            $all_people = Db::table('tasks')
+                                ->join('assigned_tasks', 'tasks.id', '=', 'assigned_tasks.task_id')
+                                ->join('users', 'assigned_tasks.user_id', '=', 'users.id')
+                                ->join('freelancers', 'users.id', '=', 'freelancers.user_id')
+                                ->where('tasks.milestone_id', '=', $mid)
+                                ->select('users.id', 'users.first_name', 'users.last_name', 'freelancers.image')
+                                ->get();
+                        }
+                        $all_people = array($all_people);
+                        $all_people = array_unique($all_people);
+                        $proposal->all_people = $all_people;
                     }
                 }
                 $response = Controller::returnResponse(200, "successful", $proposals);
