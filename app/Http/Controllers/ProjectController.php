@@ -261,15 +261,11 @@ class ProjectController extends Controller
             } else {
                 $admin_info['image'] = asset('images/profile-pic.jpg');
             }
-            if (isset($company_field_id) && $company_field_id != null && gettype($company_field_id) == 'integer') {
+            if ($company_field_id !='' && $company_field_id != null ) {
                 $project->company_field = Category::find((int)$company_field_id)->name;
-            } else {
-                $project->company_field = $company_field_id;
-            }
-            if (isset($company_sector_id) && $company_sector_id != null && gettype($company_sector_id) == 'integer') {
+            } 
+            if ($company_sector_id!='' && $company_sector_id != null ) {
                 $project->company_sector = Category::find((int)$company_sector_id)->name;
-            } else {
-                $project->company_sector = $company_sector_id;
             }
 
             // dd($company_image);
