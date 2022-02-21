@@ -72,7 +72,7 @@ class ProjectController extends Controller
             // print_r($data);
             $project = Project::create($req->except(['requirements_description']) + ["company_id" => $userGroupInfo->group_id]);
             $project_id = $project->id;
-            $reqs=$requirementObj->Insert(json_decode($req->requirements_description),$project_id,$req->user_id);
+            $reqs = $requirementObj->Insert(json_decode($req->requirements_description), $project_id, $req->user_id);
             // if (!isset($req->postman)) {
             //     $postman = 0;
             // } else {
@@ -152,9 +152,9 @@ class ProjectController extends Controller
     {
     }
 
-    function exploreProject(Request $req, $offset = 1,$limit=4)
+    function exploreProject(Request $req, $offset = 1, $limit = 4)
     {
-       
+
         $page = ($offset - 1) * $limit;
         try {
 
@@ -253,14 +253,25 @@ class ProjectController extends Controller
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
-            $user_info=json_decode($clientObj->get_client_info($project->user_id));
-            $admin_info=array('first_name'=>$user_info->first_name,"role"=>$user_info->role);
+            $user_info = json_decode($clientObj->get_client_info($project->user_id));
+
+            $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
                 $admin_info['image'] = asset("images/companies/" . $user_info->image);
             } else {
                 $admin_info['image'] = asset('images/profile-pic.jpg');
             }
-          
+            if (isset($company_field_id) && $company_field_id != null && gettype($company_field_id) == 'integer') {
+                $project->company_field = Category::find((int)$company_field_id)->name;
+            } else {
+                $project->company_field = $company_field_id;
+            }
+            if (isset($company_sector_id) && $company_sector_id != null && gettype($company_sector_id) == 'integer') {
+                $project->company_sector = Category::find((int)$company_sector_id)->name;
+            } else {
+                $project->company_sector = $company_sector_id;
+            }
+
             // dd($company_image);
             if (isset($company_image)) {
                 $project->company_image = asset("images/companies/" . $company_image);
@@ -270,13 +281,12 @@ class ProjectController extends Controller
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
             $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
-            $project->company_field = Category::find((int)$company_field_id)->name;
-            $project->company_sector = Category::find((int)$company_sector_id)->name;
+
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
-            $project->admin_info = $admin_info;
-        return $projects;
+            // $project->admin_info = $admin_info;
+            return $projects;
+        }
     }
-}
     function getAgencyPendingProjects($agency_id, $offset = 1)
     {
         $limit = 4;
@@ -412,14 +422,14 @@ class ProjectController extends Controller
         return ($numberOfProjects);
     }
 
-    function getCompanyPendingProjects(Request $req, $company_id, $offset = 1,$limit)
+    function getCompanyPendingProjects(Request $req, $company_id, $offset = 1, $limit)
     {
         $userData = $req->user();
         $GroupControllerObj = new GroupController;
         $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
         if ($group_id == $company_id) {
 
-             
+
             $page = ($offset - 1) * $limit;
             try {
                 $projects = DB::table('projects')
@@ -455,49 +465,47 @@ class ProjectController extends Controller
         }
         return $projects;
     }
-    function getCompanyPendingProjectDetails(Request $req, $project_id,$company_id)
+    function getCompanyPendingProjectDetails(Request $req, $project_id, $company_id)
     {
         $userData = $req->user();
         $GroupControllerObj = new GroupController;
         $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
-        if ($group_id == $company_id) 
-        {       try{
-               $project= $this->getPendingProjectInfo($project_id);
-               $response = Controller::returnResponse(200, "successful", $project);
-               return (json_encode($response));
-        }catch(Exception $error)
-        {
-            $response = Controller::returnResponse(500, "Something Wrong", $error->getMessage());
-            return (json_encode($response));
-        }
-        } 
-        else {
+        if ($group_id == $company_id) {
+            try {
+                $project = $this->getPendingProjectInfo($project_id);
+                $response = Controller::returnResponse(200, "successful", $project);
+                return (json_encode($response));
+            } catch (Exception $error) {
+                $response = Controller::returnResponse(500, "Something Wrong", $error->getMessage());
+                return (json_encode($response));
+            }
+        } else {
             $response = Controller::returnResponse(422, "You are trying to get another company data", []);
             return (json_encode($response));
         }
     }
     function getPendingProjectInfo($id)
     {
-        $project=Project::find($id);
-        $requirementsObj= new Requirement;
+        $project = Project::find($id);
+        $requirementsObj = new Requirement;
         $projectCategoriesObj = new ProjectCategoriesController;
         $clientControllersObj = new ClientController;
-        $project->requirements=$requirementsObj->getRequirementsByProjectId($id);
+        $project->requirements = $requirementsObj->getRequirementsByProjectId($id);
         $project->categories = $projectCategoriesObj->getProjectCategories($id);
         $project->duration = Category::find((int)$project->days)->name;
-        $user =json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
-        $final_ids=Final_proposal::where('project_id',$id);
-        $no_finals=$final_ids->count(); 
-        $init_ids=proposal::where('project_id',$id);
-        $no_init=$init_ids->count();
-        $project->final_proposals_number=$no_finals;
-        $project->initial_proposals_number=$no_init;
-        $project->admin=array(
-            "id"=>$user->id,
-            "first_name"=>$user->first_name,
-            "last_name"=>$user->last_name,
-            "role"=>$user->role,
-            "image"=>$user->image,
+        $user = json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
+        $final_ids = Final_proposal::where('project_id', $id);
+        $no_finals = $final_ids->count();
+        $init_ids = proposal::where('project_id', $id);
+        $no_init = $init_ids->count();
+        $project->final_proposals_number = $no_finals;
+        $project->initial_proposals_number = $no_init;
+        $project->admin = array(
+            "id" => $user->id,
+            "first_name" => $user->first_name,
+            "last_name" => $user->last_name,
+            "role" => $user->role,
+            "image" => $user->image,
         );
         return $project;
     }
