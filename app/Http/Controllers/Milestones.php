@@ -35,7 +35,7 @@ class Milestones extends Controller
                     "final_proposal_id" => $final_proposal_id,
                     "name" => $milestone['milestone_name'],
                     "days" => $milestone['days'],
-                    "description" => $milestone['description'],
+                    "description" => $milestone['milestone_description'],
                     "percentage" => $milestone['percentage'],
                 );
                 $percentage = $milestone['percentage'];
