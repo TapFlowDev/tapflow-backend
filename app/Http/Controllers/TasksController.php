@@ -49,8 +49,8 @@ class TasksController extends Controller
            $assigned= $AssignedTo->getAssignedByTaskId($task->id);
            array_push($tasks_details,array(
             "task_id"=>$task->id,
-            "task_name"=>$task->name,
-            "task_description"=>$task->description,
+            "name"=>$task->name,
+            "description"=>$task->description,
             "assigned"=>($assigned),
         ));
         }
