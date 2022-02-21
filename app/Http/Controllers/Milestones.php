@@ -33,7 +33,7 @@ class Milestones extends Controller
                 $arr = array(
                     "project_id" => $project_id,
                     "final_proposal_id" => $final_proposal_id,
-                    "name" => $milestone['name'],
+                    "name" => $milestone['milestone_name'],
                     "days" => $milestone['days'],
                     "description" => $milestone['description'],
                     "percentage" => $milestone['percentage'],
