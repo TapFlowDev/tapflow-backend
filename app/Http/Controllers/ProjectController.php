@@ -26,6 +26,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
 
+
 class ProjectController extends Controller
 {
     //add row 
@@ -245,10 +246,21 @@ class ProjectController extends Controller
     {
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
+        $clientObj = new ClientController;
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
+            $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
+            $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
+            $user_info=json_decode($clientObj->get_client_info($project->user_id));
+            $admin_info=array('first_name'=>$user_info->first_name,"role"=>$user_info->role);
+            if (isset($user_info->image)) {
+                $admin_info['image'] = asset("images/companies/" . $user_info->image);
+            } else {
+                $admin_info['image'] = asset('images/profile-pic.jpg');
+            }
+          
             // dd($company_image);
             if (isset($company_image)) {
                 $project->company_image = asset("images/companies/" . $company_image);
@@ -258,8 +270,10 @@ class ProjectController extends Controller
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
             $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
+            $project->company_field = Category::find((int)$company_field_id)->name;
+            $project->company_sector = Category::find((int)$company_sector_id)->name;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
-        }
+            $project->admin_info = $admin_info;
         return $projects;
     }
     function getAgencyPendingProjects($agency_id, $offset = 1)
