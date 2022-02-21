@@ -51,7 +51,7 @@ class TasksController extends Controller
             "task_id"=>$task->id,
             "name"=>$task->name,
             "description"=>$task->description,
-            "assigned"=>($assigned),
+            "assignees"=>($assigned),
         ));
         }
         return  ($tasks_details);
