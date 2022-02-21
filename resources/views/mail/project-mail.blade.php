@@ -11,8 +11,7 @@
 <body style="font-family: Helvetica,Arial,sans-serif;">
     <h1 style="color: black; font-weight: bold;">Hey {{ $details['name'] }}</h1>
     <p style="color: black;">
-        We think that your agency is the right fit for a project. Please check the project details below, click
-        the to apply.
+        We think that your agency is the right fit for a project. Please check the project details below:
         <br>
         <br>
     </p>
@@ -46,7 +45,7 @@
         <br>
         <a href="https://www.tapflow.app/a-user/main/project/{{ $details['project']['id'] }}" target="_blank"
             style="padding: 8px 12px; border: 1px solid #e66c0d;border-radius: 10px;font-family: Helvetica, Arial, sans-serif;font-size: medium; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; background-color: #e66c0d">
-            View Project
+            View & Apply
         </a>
 
 
