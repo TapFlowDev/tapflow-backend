@@ -90,7 +90,9 @@ class Final_proposals extends Controller
                     "price" => "required",
                     "days" => "required",
                     "starting_date" => "required|date",
+                    "down_payment" => "required",
                     "milestones" => "required"
+                    
                 );
                 $validators = Validator::make($req->all(), $rules);
                 if ($validators->fails()) {
@@ -139,7 +141,7 @@ class Final_proposals extends Controller
             Final_proposal::where('id', $final_proposal_id)
                 ->update([
                     "title" => $req->title, "price" => $req->price,
-                    "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
+                    "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date,"down_payment"=>$req->down_payment
                 ]);
             $milestoneObj->deleteMilestonesByProposalId($req->final_proposal_id);
 
@@ -156,7 +158,7 @@ class Final_proposals extends Controller
                     Final_proposal::where('id', $final_proposal_id)
                         ->update([
                             "title" => $req->title, "price" => $req->price,
-                            "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
+                            "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date,"down_payment"=>$req->down_payment
                         ]);
                     $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['value' => $milestones_add['msg']]);
                     return json_encode($response);
@@ -164,7 +166,7 @@ class Final_proposals extends Controller
                     Final_proposal::where('id', $final_proposal_id)
                         ->update([
                             "title" => $req->title, "price" => $req->price,
-                            "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
+                            "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date,"down_payment"=>$req->down_payment
                         ]);
                     $response = Controller::returnResponse(500, 'something wrong', ["error" => 'add milestone', 'value' => $milestones_add['msg']]);
                     return json_encode($response);
@@ -216,7 +218,7 @@ class Final_proposals extends Controller
                             Final_proposal::where('id', $final_proposal_id)
                                 ->update([
                                     "title" => $req->title, "price" => $req->price,
-                                    "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
+                                    "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date,"down_payment"=>$req->down_payment
                                 ]);
                             $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', []);
                             return json_encode($response);
@@ -224,7 +226,7 @@ class Final_proposals extends Controller
                             Final_proposal::where('id', $final_proposal_id)
                                 ->update([
                                     "title" => $req->title, "price" => $req->price,
-                                    "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
+                                    "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date,"down_payment"=>$req->down_payment
                                 ]);
                             $response = Controller::returnResponse(500, 'something wrong', ['msg' => $milestones['msg']]);
                             return json_encode($response);
@@ -352,7 +354,7 @@ class Final_proposals extends Controller
         Final_proposal::where('id', $final_proposal_id)
             ->update([
                 "title" => $req->title, "price" => $req->price,
-                "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
+                "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date,"down_payment"=>$req->down_payment
             ]);
         $milestoneObj->deleteMilestonesByProposalId($final_proposal_id);
         if ($milestones == null) {
@@ -366,7 +368,7 @@ class Final_proposals extends Controller
                 Final_proposal::where('id', $final_proposal_id)
                     ->update([
                         "title" => $req->title, "price" => $req->price,
-                        "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date
+                        "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date,"down_payment"=>$req->down_payment
                     ]);
                 $response = Controller::returnResponse(422, 'the milestone percentage  should be multiples of 5', ['message' => $milestones_add['msg']]);
                 return ["code" => 101, 'msg' => 'Milestone Validation error'];
