@@ -143,7 +143,7 @@ class FreeLancerController extends Controller
             $response = Controller::returnResponse(200, 'data found', $user);
             return json_encode($response);
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
         }
     }
