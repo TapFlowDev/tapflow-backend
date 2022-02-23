@@ -270,8 +270,6 @@ class   GroupController extends Controller
             $teamArr['employees_number'] = $req->employees_number;
             $teamArr['field'] = $req->field;
             $teamArr['sector'] = $req->sector;
-            $teamArr['BA'] = $req->needs;
-            $teamArr['design'] = $req->design;
 
             $teamInfo = $teamObj->Insert($teamArr);
             $membersObj->Insert($group_id, $userId, 1);

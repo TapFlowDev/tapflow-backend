@@ -21,7 +21,5 @@ class Company extends Model
         'employees_number',
         'field',
         'sector',
-        'BA',
-        'design'
     ];
 }

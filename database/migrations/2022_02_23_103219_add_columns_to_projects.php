@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNewColumnsToCompanies extends Migration
+class AddColumnsToProjects extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddNewColumnsToCompanies extends Migration
      */
     public function up()
     {
-        Schema::table('companies', function (Blueprint $table) {
-            $table->integer('BA')->default('0')->after('sector');
+        Schema::table('projects', function (Blueprint $table) {
+            $table->integer('BA')->default('0')->after('status');
             $table->integer('design')->default('0')->after('BA');
         });
     }
@@ -26,7 +26,7 @@ class AddNewColumnsToCompanies extends Migration
      */
     public function down()
     {
-        Schema::table('companies', function (Blueprint $table) {
+        Schema::table('projects', function (Blueprint $table) {
             $table->dropColumn('BA');
             $table->dropColumn('design');
         });
