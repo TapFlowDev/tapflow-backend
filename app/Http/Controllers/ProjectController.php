@@ -25,7 +25,7 @@ use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
-
+use App\Models\Team;
 
 class ProjectController extends Controller
 {
@@ -263,10 +263,10 @@ class ProjectController extends Controller
             } else {
                 $admin_info['image'] = asset('images/profile-pic.jpg');
             }
-            if ($company_field_id !='' && $company_field_id != null ) {
+            if ($company_field_id != '' && $company_field_id != null) {
                 $project->company_field = Category::find((int)$company_field_id)->name;
-            } 
-            if ($company_sector_id!='' && $company_sector_id != null ) {
+            }
+            if ($company_sector_id != '' && $company_sector_id != null) {
                 $project->company_sector = Category::find((int)$company_sector_id)->name;
             }
 
@@ -502,6 +502,119 @@ class ProjectController extends Controller
             "first_name" => $user->first_name,
             "last_name" => $user->last_name,
             "role" => $user->role,
+            "image" => $user->image,
+        );
+        return $project;
+    }
+    function getCompanyActiveProjects(Request $req, $company_id, $offset, $limit)
+    {
+        $userData = $req->user();
+        try {
+            $page = ($offset - 1) * $limit;
+            $GroupControllerObj = new GroupController;
+            $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+            if ($group_id == $company_id) {
+                $projects = DB::table('projects')
+                    ->where('company_id', '=', $company_id)
+                    ->where('status', '=', 1)
+                    ->select('projects.*')
+                    ->distinct()
+                    ->latest()->offset($page)->limit($limit)
+                    ->get();
+                $projects_info=$this->getCompanyActiveProjectsInfo($projects);
+                $response = Controller::returnResponse(200, "successful", $projects_info);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getCompanyActiveProjectsInfo($projects)
+    {
+        foreach ($projects as $keyProj => &$project) 
+        {
+            $project->agency_name = Group::find($project->team_id)->name;
+            $agency_image =  Team::select('image')->where('group_id', $project->team_id)->get()->first()->image;
+            $project->company_name = Group::find($project->company_id)->name;
+            $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
+            if (isset($agency_image)) {
+                $project->agency_image= asset("images/companies/" . $agency_image);
+            } else {
+                $project->agency_image = asset('images/profile-pic.jpg');
+            }
+            if (isset( $company_image)) {
+                $project->company_image = asset("images/companies/" . $company_image);
+            } else {
+                $project->company_image= asset('images/profile-pic.jpg');
+            }
+        }
+        return $projects;
+    }
+    function getCompanyActiveProjectDetails(Request $req, $project_id, $company_id)
+    {
+        $userData = $req->user();
+        try {
+            $GroupControllerObj = new GroupController;
+            $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+            if ($group_id == $company_id) 
+            {
+                $project_info=$this->getCompanyActiveProjectDetailsInfo($project_id);
+                $response = Controller::returnResponse(200, "successful", $project_info);
+            return (json_encode($response));
+            }
+            else
+            {
+                $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+                return (json_encode($response));
+            }
+        }catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getCompanyActiveProjectDetailsInfo($id)
+    {
+        $project = Project::find($id);
+        $requirementsObj = new Requirement;
+        $projectCategoriesObj = new ProjectCategoriesController;
+        $teamControllersObj = new TeamController;
+        $proposalsControllersObj = new Proposals;
+        $freelancersControllersObj = new FreeLancerController;
+        $finalProposalControllersObj = new Final_proposals;
+        
+        $project->requirements = $requirementsObj->getRequirementsByProjectId($id);
+        $project->categories = $projectCategoriesObj->getProjectCategories($id);
+        $project->duration = Category::find((int)$project->days)->name;
+        $user_id =$proposalsControllersObj->getProposalByProjectAndTeamId((int)$project->id,$project->team_id)->user_id;
+        $user =json_decode($freelancersControllersObj->get_freelancer_info($user_id))->data;
+        $team =$teamControllersObj->get_team_info($project->team_id);
+        $project->final_proposal=$finalProposalControllersObj->getProposalDetailsByProject_id($project->id);
+        
+        if (isset($user->image)) {
+            $user->image= asset("images/users/" . $user->image);
+        } else {
+            $user->image = asset('images/profile-pic.jpg');
+        }if (isset($team->image)) {
+            $team->image= asset("images/companies/" . $team->image);
+        } else {
+            $team->image = asset('images/profile-pic.jpg');
+        }
+     
+        $project->admin = array(
+            "id" => $user->id,
+            "first_name" => $user->first_name,
+            "last_name" => $user->last_name,
+            "role" => $user->role,
+            "image" => $user->image,
+        ); 
+        $project->agency_info = array(
+            "id" => $team->id,
+            "name" => $team->name,
             "image" => $user->image,
         );
         return $project;
