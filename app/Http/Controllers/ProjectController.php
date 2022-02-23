@@ -41,6 +41,8 @@ class ProjectController extends Controller
             "min" => "numeric|multiple_of:5",
             "max" => "numeric|multiple_of:5",
             "days" => "required|exists:categories,id",
+            "needs" => "required",
+            "design" => "required"
         );
         $userObj = new UserController;
         $groupMemberObj = new GroupMembersController;
