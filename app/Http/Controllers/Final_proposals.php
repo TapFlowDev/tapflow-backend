@@ -120,7 +120,7 @@ class Final_proposals extends Controller
     function getProposalDetailsById($id)
     {
         $milestone = new Milestones;
-        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description', 'status')
+        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description','down_payment', 'status')
             ->where('id', $id)->first();
         $milestones = $milestone->getMilestoneByProposalId($id);
         $final_proposal->milestones = $milestones;
@@ -328,7 +328,7 @@ class Final_proposals extends Controller
     //get proposal info with out milestones
     function getProposalById($id)
     {
-        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description')
+        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description','down_payment')
             ->where('id', $id)->first();
         return $final_proposal;
     }
@@ -446,5 +446,22 @@ class Final_proposals extends Controller
             $response = Controller::returnResponse(422, "You are trying to get another company data", []);
             return (json_encode($response));
         }
+    }
+    private function updateQuery($req,$final_proposal_id)
+    {
+        Final_proposal::where('id', $final_proposal_id)
+        ->update([
+            "title" => $req->title, "price" => $req->price,
+            "description" => $req->description, "days" => $req->days, "starting_date" => $req->starting_date,"down_payment"=>$req->down_payment
+        ]);
+    }
+    function getProposalDetailsByProject_id($project_id)
+    {
+        $milestone = new Milestones;
+        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description','down_payment', 'status')
+            ->where('id', $project_id)->first();
+        $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
+        $final_proposal->milestones = $milestones;
+        return($final_proposal);
     }
 }
