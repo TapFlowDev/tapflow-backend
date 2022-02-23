@@ -145,6 +145,8 @@ class   GroupController extends Controller
                 $teamArr['country'] = $req->country;
                 $teamArr['employees_number'] = $req->employees_number;
                 $teamArr['field'] = $req->field;
+                $teamArr['BA'] = $req->analysis;
+                $teamArr['design'] = $req->design;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
@@ -268,6 +270,8 @@ class   GroupController extends Controller
             $teamArr['employees_number'] = $req->employees_number;
             $teamArr['field'] = $req->field;
             $teamArr['sector'] = $req->sector;
+            $teamArr['BA'] = $req->needs;
+            $teamArr['design'] = $req->design;
 
             $teamInfo = $teamObj->Insert($teamArr);
             $membersObj->Insert($group_id, $userId, 1);
@@ -321,7 +325,7 @@ class   GroupController extends Controller
             );
             // $mailchimpUserType = 'agency-member';
             // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
-           
+
             $response = Controller::returnResponse(200, 'company added successfully', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
@@ -357,23 +361,21 @@ class   GroupController extends Controller
     }
     function getGroupNameAndImage($id)
     {
-       $info= DB::table('groups')
-        ->join('teams','groups.id','=','teams.group_id')
-        ->where('groups.id','=',$id)
-        ->select('groups.name','teams.image')
-        ->first();
-        
-        if($info->image == null)
-        {
-            $image= asset('images/profile-pic.jpg');
-            $info->image=$image;
-            return $info; 
-        }
-        else{
-        $image= asset('images/companies/' . $info->image);
-        
-        $info->image=$image;
-        return $info;
+        $info = DB::table('groups')
+            ->join('teams', 'groups.id', '=', 'teams.group_id')
+            ->where('groups.id', '=', $id)
+            ->select('groups.name', 'teams.image')
+            ->first();
+
+        if ($info->image == null) {
+            $image = asset('images/profile-pic.jpg');
+            $info->image = $image;
+            return $info;
+        } else {
+            $image = asset('images/companies/' . $info->image);
+
+            $info->image = $image;
+            return $info;
         }
     }
 }

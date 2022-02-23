@@ -21,6 +21,8 @@ class Team extends Model
         'link',
         'country',
         'employees_number',
-        'field'
+        'field',
+        'BA',
+        'design'
     ];
 }
