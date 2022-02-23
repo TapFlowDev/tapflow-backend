@@ -163,6 +163,7 @@ class ClientController extends Controller
         foreach ($users as $keyUser => &$user) {
             $categories = $userCategoryObj->getUserCategoriesByUserId($user->id);
             $user->categories = $categories;
+            $user->privileges =$membersObj->getUserPrivileges($user->id);
             $links = User_link::select('link')->where('user_id', $user->id)->get();
             if (count($links) > 0) {
                 // $user->links = $links;
