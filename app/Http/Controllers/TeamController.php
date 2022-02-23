@@ -73,7 +73,7 @@ class TeamController extends Controller
             return json_encode($response);
         }
     }
-    private function get_team_info($id)
+   function get_team_info($id)
     {
         $team = DB::table('groups')
             ->Join('teams', 'groups.id', '=', 'teams.group_id')
