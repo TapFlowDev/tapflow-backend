@@ -20,6 +20,8 @@ class Project extends Model
         "description",
         "days",
         "deleted",
-        "status"
+        "status",
+        'BA',
+        'design'
     ];
 }

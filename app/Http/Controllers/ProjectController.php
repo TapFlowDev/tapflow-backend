@@ -70,7 +70,7 @@ class ProjectController extends Controller
         try {
             $ProjectCategoriesObj = new ProjectCategoriesController;
             // print_r($data);
-            $project = Project::create($req->except(['requirements_description']) + ["company_id" => $userGroupInfo->group_id]);
+            $project = Project::create($req->except(['requirements_description', 'needs', 'design']) + ["company_id" => $userGroupInfo->group_id, 'BA' =>$req->needs, 'design' => $req->design]);
             $project_id = $project->id;
             $reqs = $requirementObj->Insert(json_decode($req->requirements_description), $project_id, $req->user_id);
             // if (!isset($req->postman)) {
