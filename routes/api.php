@@ -176,5 +176,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('postedProjectDetails/{project_id}/{company_id}', [ProjectController::class, 'getCompanyPendingProjectDetails']);
     Route::get('getProjectFinalProposalsById/{id}/{offset}/{limit}', [Final_proposals::class, 'getProjectProposalsById']);
     Route::get('getProjectProposalsById/{id}/{offset}/{limit}', [Proposals::class, 'getProjectProposalsById']);
-    Route::get('getCompanyActiveProjectDetails/{project_id}/{company_id}/', [ProjectController::class, 'getCompanyActiveProjectDetails']);
+    Route::get('getCompanyActiveProjects/{company_id}/{offset}/{limit}', [ProjectController::class, 'getCompanyActiveProjects']);
+    Route::get('getCompanyActiveProjectDetails/{project_id}/{company_id}', [ProjectController::class, 'getCompanyActiveProjectDetails']);
 });
