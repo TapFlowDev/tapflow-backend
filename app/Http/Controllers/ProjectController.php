@@ -179,7 +179,7 @@ class ProjectController extends Controller
                 return $query->where('min', '>=', $min);
             })->when($duration, function ($query, $duration) {
                 return $query->whereIn('days', $duration);
-            })->where('status', '<', 1)->distinct()->latest()->offset($page)->limit($limit)->get();
+            })->where('status', '<', 1)->where('id', '<>', 23)->distinct()->latest()->offset($page)->limit($limit)->get();
             // return $projects;
             $projectsData = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "Data Found", $projectsData);
