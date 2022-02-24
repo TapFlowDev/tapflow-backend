@@ -41,7 +41,7 @@ class ProjectController extends Controller
             "min" => "numeric|multiple_of:5",
             "max" => "numeric|multiple_of:5",
             "days" => "required|exists:categories,id",
-            "analysis" => "required",
+            "needs" => "required",
             "design" => "required"
         );
         $userObj = new UserController;
@@ -72,7 +72,7 @@ class ProjectController extends Controller
         try {
             $ProjectCategoriesObj = new ProjectCategoriesController;
             // print_r($data);
-            $project = Project::create($req->except(['requirements_description', 'needs', 'design']) + ["company_id" => $userGroupInfo->group_id, 'BA' =>$req->analysis, 'design' => $req->design]);
+            $project = Project::create($req->except(['requirements_description', 'needs', 'design']) + ["company_id" => $userGroupInfo->group_id, 'BA' =>$req->needs, 'design' => $req->design]);
             $project_id = $project->id;
             $reqs = $requirementObj->Insert(json_decode($req->requirements_description), $project_id, $req->user_id);
             // if (!isset($req->postman)) {
