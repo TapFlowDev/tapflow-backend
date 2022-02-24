@@ -61,7 +61,8 @@ class Proposals extends Controller
                 'company_name' => $companyData->name 
             ];
             
-            Mail::to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+            Mail::to('abed@tapflow.app')->send(new ProposalMail($details));
+            Mail::to('naser@tapflow.app')->send(new ProposalMail($details));
             return (json_encode($response));
         } catch (Exception $error) {
             $responseData = array("error" => $error->getMessage());
