@@ -60,7 +60,7 @@ class GroupMembersController extends Controller
         if ($member === null) {
             return (0);
         } else {
-            return ($member->privileges);
+            return ((int)$member->privileges);
         }
     }
     function getUserPrivileges($user_id)
