@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Models\projects_category;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use App\Models\Category;
 
 class ProjectCategoriesController extends Controller
 {
