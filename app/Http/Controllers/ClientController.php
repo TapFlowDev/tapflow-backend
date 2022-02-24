@@ -165,7 +165,7 @@ class ClientController extends Controller
             $user->categories = $categories;
             $user->privileges =$membersObj->checkIfExists($user->id);
           
-           $$user->privileges=$privileges;
+           
             $links = User_link::select('link')->where('user_id', $user->id)->get();
             if (count($links) > 0) {
                 // $user->links = $links;
