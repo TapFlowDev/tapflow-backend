@@ -281,8 +281,8 @@ class ProjectController extends Controller
             $project->duration = Category::find((int)$project->days)->name;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
             $project->admin_info = $admin_info;
-            return $projects;
         }
+        return $projects;
     }
     function getAgencyPendingProjects($agency_id, $offset = 1)
     {
