@@ -114,7 +114,6 @@ class GroupCategoriesController extends Controller
                             ->select('category_id', 'id', 'name', "image")
                             ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
                     } else {
-
                         $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
                             ->select('category_id', 'id', 'name')
                             ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();

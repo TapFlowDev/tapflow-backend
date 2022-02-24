@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\projects_category;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
+
 class ProjectCategoriesController extends Controller
 {
     //add row 
