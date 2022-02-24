@@ -4,6 +4,15 @@
         <div class="row">
             <div class="col-12">
                 <div class="content-container">
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @elseif (session('error'))
+                        <div class="alert alert-danger" role="alert">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     <h1>Recommend Project</h1>
                     <div class="row">
                         <div class="col-6">
@@ -34,15 +43,16 @@
                                 @csrf
                                 <div class="mb-3">
                                     <h5>Project Categories:</h5>
-                                    @if(count($agencies)>0)
-                                    <select data-placeholder="Choose Agencis" multiple class="chosen-select" name='teamsIds[]'>
-                                        @foreach ($agencies as $team )
-                                        <option value="{{ $team->id }}"> {{ $team->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <button type="submit" class="btn btn-success mt-3">Send Emails</button>
+                                    @if (count($agencies) > 0)
+                                        <select data-placeholder="Choose Agencis" multiple class="chosen-select"
+                                            name='teamsIds[]'>
+                                            @foreach ($agencies as $team)
+                                                <option value="{{ $team->id }}"> {{ $team->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="btn btn-success mt-3">Send Emails</button>
                                     @else
-                                    No Data
+                                        No Data
                                     @endif
                                 </div>
 
