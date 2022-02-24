@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\GroupCategoriesController;
+use App\Models\Countries;
 use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Models\Group_member;
@@ -26,8 +27,8 @@ class TeamsController extends Controller
             ->select('groups.*', 'teams.*')
             ->where('groups.status', '=', 1)
             ->where('groups.deleted', '=', 0)
-            ->orderBy('groups.verified', 'asc')
-            ->paginate(10);
+            ->orderBy('groups.created_at', 'desc')
+            ->paginate(20);
         $teamsInfo = $this->getData($teams);
         // return $teamsInfo;
 
@@ -136,13 +137,39 @@ class TeamsController extends Controller
             $userInfo = User::find($admin->user_id);
             $group->admin_name = $userInfo->first_name . " " . $userInfo->last_name;
             $group->admin_id = $userInfo->id;
+            $group->admin_email = $userInfo->email;
             $group->categories = $groupCatObj->getTeamCategories($group->id);
             if ($group->image != "") {
-                $group->image = asset('images/users/' . $group->image);
+                $group->image = asset('images/companies/' . $group->image);
             } else {
                 $group->image = asset('images/profile-pic.jpg');
             }
+            $country = Countries::find($group->country);
+            if ($country != "") {
+                $group->country = $country->name;
+            } else {
+                $group->country = "Unset";
+            }
+
         }
         return $array;
+    }
+    function getTeamById($id){
+        $team = DB::table('teams')
+            ->join('groups', 'teams.group_id', '=', 'groups.id')
+            ->select('groups.*', 'teams.*')
+            ->where('groups.id', $id)
+            ->get();
+        $teamInfo = $this->getData($team)->first();
+        return $teamInfo;
+    }
+    function getAllTeams(){
+        $team = DB::table('teams')
+            ->join('groups', 'teams.group_id', '=', 'groups.id')
+            ->select('groups.*', 'teams.*')
+            ->where('groups.status', 1)
+            ->get();
+        $teamInfo = $this->getData($team);
+        return $teamInfo;
     }
 }

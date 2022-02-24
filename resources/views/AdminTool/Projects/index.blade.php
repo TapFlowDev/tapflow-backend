@@ -26,16 +26,22 @@
                                             role="button">{{ $project->company_name }}
                                         </a>
                                     </td>
-                                    <td>@if ($project->status == 0)
-                                        Pending
-                                    @elseif ($project->status == 1)
-                                        Active
-                                    @elseif ($project->status == 2)
-                                        Finished
-                                    @endif</td>
+                                    <td>
+                                        @if ($project->status == 0)
+                                            Pending
+                                        @elseif ($project->status == 1)
+                                            Active
+                                        @elseif ($project->status == 2)
+                                            Finished
+                                        @endif
+                                    </td>
                                     <td>
                                         <a class="btn btn-sm btn-primary"
-                                            href="{{ route('AdminTool.projects.show', $project->id) }}" role="button">View</a>
+                                            href="{{ route('AdminTool.projects.show', $project->id) }}"
+                                            role="button">View</a>
+                                        <a class="btn btn-sm btn-primary"
+                                            href="{{ route('AdminTool.recommendProject.show', $project->id) }}"
+                                            role="button">Recommend Project</a>
                                         {{-- <button class="btn btn-sm btn-danger" 
                                 onclick="event.preventDefault();
                                 document.getElementById('delete-project-form-{{ $project->id }}').submit()">Delete</button>

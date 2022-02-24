@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Requirement as requirementModel ;
 use Illuminate\Http\Request;
 /*
   $table->integer('id')->autoIncrement();
@@ -15,9 +16,19 @@ use Illuminate\Http\Request;
 class Requirement extends Controller
 {
     //add row 
-    function Insert(Request $req)
+    function Insert($data,$project_id,$user_id)
     {
+      
+      foreach($data as $requirement)
 
+      {
+        $arr=array(
+          'project_id'=>$project_id,
+          'user_id'=>$user_id,
+          'description'=>$requirement,
+        );
+        requirementModel::create($arr);
+      }
     }
     //update row according to row id
     function Update($id)
@@ -28,5 +39,11 @@ class Requirement extends Controller
     function Delete($id)
     {
 
+    }
+    function getRequirementsByProjectId($id)
+    {
+      $requirements=requirementModel::where('project_id',$id)->select('description')->get();
+     
+      return ($requirements);
     }
 }

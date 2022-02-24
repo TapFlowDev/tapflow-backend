@@ -19,6 +19,7 @@ class Final_proposal extends Model
         "status",//1 => sent, 2=> rejected, 3=>accepted 
         "title",
         "starting_date",
+        "down_payment",//value 0=>no down payment 1=>there is down payment
 
     ];
 }

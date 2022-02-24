@@ -20,6 +20,6 @@ class Company extends Model
         'country',
         'employees_number',
         'field',
-        'sector'
+        'sector',
     ];
 }

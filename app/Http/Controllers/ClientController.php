@@ -108,7 +108,7 @@ class ClientController extends Controller
             return json_encode($response);
         } catch (Exception $error) {
 
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
         }
     }
@@ -163,6 +163,9 @@ class ClientController extends Controller
         foreach ($users as $keyUser => &$user) {
             $categories = $userCategoryObj->getUserCategoriesByUserId($user->id);
             $user->categories = $categories;
+            $user->privileges =$membersObj->checkIfExists($user->id);
+          
+           
             $links = User_link::select('link')->where('user_id', $user->id)->get();
             if (count($links) > 0) {
                 // $user->links = $links;

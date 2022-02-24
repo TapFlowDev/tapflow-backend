@@ -10,6 +10,7 @@ use App\Http\Controllers\GroupCategoriesController;
 use App\Http\Controllers\NewCountriesController;
 use App\Http\Controllers\GroupsLinksController;
 use App\Http\Controllers\GroupMembersController;
+use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -40,6 +41,8 @@ class CompanyController extends Controller
         $GroupMembersController = new GroupMembersController;
         $GroupCategoriesController = new GroupCategoriesController;
         $NewCountriesController = new NewCountriesController;
+        $ProjectControllerObj = new ProjectController;
+        $projectsNo = $ProjectControllerObj->getNumberOfProjectForCompany($id);
         $links = $linksController->get_group_links($id);
         $teamMembers = $GroupMembersController->getCompanyMembersByGroupId($id);
         $cats = $GroupCategoriesController->getTeamCategories($id);
@@ -51,6 +54,7 @@ class CompanyController extends Controller
         } else {
             $info->image = asset('images/companies/' . $info->image);
         }
+        $info->projectsNo = $projectsNo;
         $info->links = $links;
         $info->teamMembers = $teamMembers;
         $info->categories = $cats;

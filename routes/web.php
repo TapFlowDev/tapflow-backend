@@ -15,6 +15,8 @@ use App\Http\Controllers\AdminTool\AnnouncementsController;
 use App\Http\Controllers\AdminTool\DashboardController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\AdminTool\CategoryTypesController;
+use App\Http\Controllers\AdminTool\DummyCompaines;
+use App\Http\Controllers\AdminTool\DummyProjects;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
@@ -59,21 +61,26 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('categories.subCategories', AdminSubCategoryController::class)->shallow();
     Route::resource('/announcements', AnnouncementsController::class);
     Route::resource('/projects', ProjectsController::class);
+    Route::resource('/dummyCompanies', DummyCompaines::class);
+    Route::resource('/dummyProjects', DummyProjects::class);
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
     Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
     Route::post('sendEmail',[EmailController::class, 'send'])->name('sendEmail.send');
+    Route::get('/recommendProject/{id}',[ProjectsController::class, 'recommendProject'])->name('recommendProject.show');
+    Route::post('/filterAgenciesByProjectCategories',[ProjectsController::class, 'filterAgenciesByProjectCategories'])->name('filterAgenciesByProjectCategories.filter');
+    Route::post('sendEmailAgencies/{id}',[ProjectsController::class, 'sendAgenciesEmail'])->name('sendEmailAgencies.send');
     
 });
 Route::get('/r', function (Request $request) {
     return redirect('/api/r/'.$request->r);
 });
-Route::get('/testForms', function () {
-    return view('testForms');
-});
-Route::get('/checkout', function () {
-    return view('checkout');
-});
+// Route::get('/testForms', function () {
+//     return view('testForms');
+// });
+// Route::get('/checkout', function () {
+//     return view('checkout');
+// });
 
-Route::get('/testForms', function(){
-    return view('testForms');
-});
+// Route::get('/testForms', function(){
+//     return view('testForms');
+// });

@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\task;
+use App\Models\Assigned_task;
 use App\Http\Controllers\AssignedToController;
+use Illuminate\Support\Facades\DB;
+
+use function PHPUnit\Framework\isEmpty;
+
 class TasksController extends Controller
 {
     //add row 
@@ -20,8 +25,7 @@ class TasksController extends Controller
                 "description"=>$task['description'],
             );
                 $tasks=task::create($arr);
-               
-                $AssignedTo->Insert($task['assignedTo'],$tasks->id);
+                $AssignedTo->Insert($task['assignees'],$tasks->id);
                
             }
     }
@@ -42,31 +46,59 @@ class TasksController extends Controller
         
         foreach ($tasks as $task)
         {
-            
            $assigned= $AssignedTo->getAssignedByTaskId($task->id);
            array_push($tasks_details,array(
             "task_id"=>$task->id,
-            "task_name"=>$task->name,
-            "task_description"=>$task->description,
-            "assigned"=>($assigned),
-           
+            "name"=>$task->name,
+            "description"=>$task->description,
+            "assignees"=>($assigned),
         ));
         }
         return  ($tasks_details);
     }
-    function updateTasks(Request $req)
+    function updateTasksByMileStoneId($data,$milestone_id)
     {
-        
-        $milestone_id=$req->milestone_id;
-        $tasks_info=$req->tasks;
         $del_tasks=task::where('milestone_id',$milestone_id)->delete();
-       $data=array($req);
-    //    dd($data);
-        foreach ($data as $r)
-        {
-            dd($r->info['milestine_id']);
+        
+        $AssignedTo=new AssignedToController;
+        foreach($data as $task)
+        { 
+            $arr=array(
+            "milestone_id"=>$milestone_id,
+            "name"=>$task['name'],
+            "description"=>$task['description'],
+        );
+            $tasks=task::create($arr);
+           
+            $AssignedTo->Insert($task['assignedTo'],$tasks->id);
+           
         }
-        // $this->Insert($tasks_info,$milestone_id);
+    }
+    function deleteTasksByMilestoneId($id)
+    {   
+        $assignedToObj=new AssignedToController;
+         
+        // $tasks_ids=DB::table('tasks')
+        // ->where('milestone_id','=',$id)
+        // ->select('id')
+        // ->get();
+        $tasks_ids=task::where('milestone_id','=',$id)
+        ->select('id')
+        ->get();
+        
+       if($tasks_ids->isEmpty())
+       {
+           
+       }
+       else{   
+           foreach($tasks_ids as $task_id)
 
+        {    
+            // dd($task_id->id);
+            Assigned_task::where('task_id', $task_id->id)->delete();
+           task::where('id',$task_id->id)->delete();
+        }
+       }
+     
     }
 }

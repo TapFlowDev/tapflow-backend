@@ -18,9 +18,10 @@ class Project extends Model
         "min",
         "max",
         "description",
-        "requirements_description",
         "days",
         "deleted",
-        "status"
+        "status",
+        'BA',
+        'design'
     ];
 }

@@ -143,7 +143,7 @@ class FreeLancerController extends Controller
             $response = Controller::returnResponse(200, 'data found', $user);
             return json_encode($response);
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
         }
     }
@@ -242,7 +242,7 @@ class FreeLancerController extends Controller
         // ini_set('memory_limit','256M');
         $rules = array(
             "user_id" => "required|exists:users,id",
-            "image" => "required|mimes:png,jpg,jpeg"
+            "image" => "required|mimes:png,jpg,jpeg|max:5000"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {

@@ -73,7 +73,7 @@ class TeamController extends Controller
             return json_encode($response);
         }
     }
-    private function get_team_info($id)
+   function get_team_info($id)
     {
         $team = DB::table('groups')
             ->Join('teams', 'groups.id', '=', 'teams.group_id')
@@ -129,7 +129,7 @@ class TeamController extends Controller
     {
         $rules = array(
             "group_id" => "required|exists:groups,id",
-            "image" => "required"
+            "image" => "required|mimes:png,jpg,jpeg"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {

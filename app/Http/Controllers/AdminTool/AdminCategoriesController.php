@@ -13,7 +13,7 @@ class AdminCategoriesController extends Controller
 {
     public function index($categoryType)
     {
-        return view('AdminTool.Categories.index', ['categories' => Category::where('type', $categoryType)->paginate(10), 'categoryType' => $categoryType]);
+        return view('AdminTool.Categories.index', ['categories' => Category::where('type', $categoryType)->orderBy('id', 'asc')->paginate(20), 'categoryType' => $categoryType]);
     }
     //add row 
     function Insert(Request $req)

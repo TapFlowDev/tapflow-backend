@@ -16,7 +16,8 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\AgencyTargetsController;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Group_member;
+use Newsletter;
 
 use Exception;
 
@@ -58,7 +59,9 @@ class   GroupController extends Controller
         //check if the team agency or team of freelancers-
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id"
+            "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id",
+            "analysis" => "required",
+            "design" => "required"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -135,7 +138,6 @@ class   GroupController extends Controller
                             }
                         }
                     }
-                    
                 }
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
@@ -145,6 +147,8 @@ class   GroupController extends Controller
                 $teamArr['country'] = $req->country;
                 $teamArr['employees_number'] = $req->employees_number;
                 $teamArr['field'] = $req->field;
+                $teamArr['BA'] = $req->analysis;
+                $teamArr['design'] = $req->design;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
@@ -212,7 +216,8 @@ class   GroupController extends Controller
                 // ));
 
                 // return (json_encode($response));
-
+                // $mailchimpUserType = 'agency-member';
+                // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
                 $responseData = array(
                     "group_id" => $group_id
                 );
@@ -226,7 +231,7 @@ class   GroupController extends Controller
                 // ));
 
                 // return (json_encode($response));
-                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
                 return json_encode($response);
             }
         }
@@ -237,7 +242,7 @@ class   GroupController extends Controller
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
             "name" => "required",
-            "link" => "required",
+            // "link" => "required",
             // "image" => "mimes:jpeg,png,jpg|max:15000"
         );
         $validator = Validator::make($req->all(), $rules);
@@ -318,6 +323,9 @@ class   GroupController extends Controller
             $responseData = array(
                 "group_id" => $group_id
             );
+            // $mailchimpUserType = 'agency-member';
+            // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+
             $response = Controller::returnResponse(200, 'company added successfully', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
@@ -329,7 +337,7 @@ class   GroupController extends Controller
 
             // return (json_encode($response));
 
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
         }
     }
@@ -344,5 +352,30 @@ class   GroupController extends Controller
     function getGroupById($id)
     {
         return Group::find($id);
+    }
+    function getGroupIdByUserId($user_id)
+    {
+        $group_id = Group_member::where("user_id", $user_id)->select('group_id')
+            ->first()->group_id;
+        return $group_id;
+    }
+    function getGroupNameAndImage($id)
+    {
+        $info = DB::table('groups')
+            ->join('teams', 'groups.id', '=', 'teams.group_id')
+            ->where('groups.id', '=', $id)
+            ->select('groups.name', 'teams.image')
+            ->first();
+
+        if ($info->image == null) {
+            $image = asset('images/profile-pic.jpg');
+            $info->image = $image;
+            return $info;
+        } else {
+            $image = asset('images/companies/' . $info->image);
+
+            $info->image = $image;
+            return $info;
+        }
     }
 }

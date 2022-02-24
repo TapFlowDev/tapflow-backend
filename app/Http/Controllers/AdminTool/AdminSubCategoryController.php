@@ -25,7 +25,29 @@ class AdminSubCategoryController extends Controller
     public function store(Request $request)
     {
         // $validatedData = $request->validated();
-        SubCategory::create($request->except(['_token', 'image']));
+        $category = SubCategory::create($request->except(['_token', 'image']));
+        $categoryId = $category->id;
+        $parentCategoryId = $category->category_id;
+        if ($request->hasFile('image')) {
+            $destPath = 'images/categories';
+            $ext = $request->file('image')->extension();
+            // $image = $request->file('image');
+            $imageName = "category-" . $parentCategoryId . "-". $categoryId . "." . $ext;
+            // $path = $request->file('image')->storeAs($destPath, $imageName);
+            $request->image->move(public_path($destPath), $imageName);
+            // $path = $request->file('image')->storeAs($imageName);
+            SubCategory::where('id', $categoryId)->update(array('image' => $imageName));
+        }
+        if ($request->hasFile('image_2')) {
+            $destPath = 'images/categories';
+            $ext = $request->file('image_2')->extension();
+            // $image = $request->file('image');
+            $imageName = "category-2-" . $parentCategoryId . "-". $categoryId . "." . $ext;
+            // $path = $request->file('image')->storeAs($destPath, $imageName);
+            $request->image_2->move(public_path($destPath), $imageName);
+            // $path = $request->file('image')->storeAs($imageName);
+            SubCategory::where('id', $categoryId)->update(array('image_2' => $imageName));
+        }
         return redirect('/AdminTool/categories/'.$request->category_id.'/subCategories');
     }
     public function edit($id)
@@ -39,6 +61,28 @@ class AdminSubCategoryController extends Controller
         // dd($request);
         $category = SubCategory::findOrfail($id);
         $category->update($request->except(['_token', 'category_id', 'image']));
+        $categoryId = $category->id;
+        $parentCategoryId = $category->category_id;
+        if ($request->hasFile('image')) {
+            $destPath = 'images/categories';
+            $ext = $request->file('image')->extension();
+            // $image = $request->file('image');
+            $imageName = "category-" . $parentCategoryId . "-". $categoryId . "." . $ext;
+            // $path = $request->file('image')->storeAs($destPath, $imageName);
+            $request->image->move(public_path($destPath), $imageName);
+            // $path = $request->file('image')->storeAs($imageName);
+            SubCategory::where('id', $categoryId)->update(array('image' => $imageName));
+        }
+        if ($request->hasFile('image_2')) {
+            $destPath = 'images/categories';
+            $ext = $request->file('image_2')->extension();
+            // $image = $request->file('image');
+            $imageName = "category-2-" . $parentCategoryId . "-". $categoryId . "." . $ext;
+            // $path = $request->file('image')->storeAs($destPath, $imageName);
+            $request->image_2->move(public_path($destPath), $imageName);
+            // $path = $request->file('image')->storeAs($imageName);
+            SubCategory::where('id', $categoryId)->update(array('image_2' => $imageName));
+        }
         return redirect('/AdminTool/categories/'.$request->category_id.'/subCategories');
     }
     public function destroy($id)

@@ -14,11 +14,18 @@ use App\Models\projects_category;
 use App\Models\Group;
 use App\Models\Category;
 use App\Models\Company;
+use App\Models\proposal;
+use App\Models\Final_proposal;
 use App\Models\Group_member;
+use App\Models\Requirement as requirementModel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Http\Controllers\Proposals;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\Requirement;
+use App\Http\Controllers\ClientController;
+use App\Models\Team;
 
 class ProjectController extends Controller
 {
@@ -34,9 +41,12 @@ class ProjectController extends Controller
             "min" => "numeric|multiple_of:5",
             "max" => "numeric|multiple_of:5",
             "days" => "required|exists:categories,id",
+            "needs" => "required",
+            "design" => "required"
         );
         $userObj = new UserController;
         $groupMemberObj = new GroupMembersController;
+        $requirementObj = new Requirement;
         $userInfo = $userObj->getUserById($req->user_id);
         $userGroupInfo = $groupMemberObj->getMemberInfoByUserId($req->user_id);
         if ($userGroupInfo == '') {
@@ -62,8 +72,9 @@ class ProjectController extends Controller
         try {
             $ProjectCategoriesObj = new ProjectCategoriesController;
             // print_r($data);
-            $project = Project::create($req->all() + ["company_id" => $userGroupInfo->group_id]);
+            $project = Project::create($req->except(['requirements_description', 'needs', 'design']) + ["company_id" => $userGroupInfo->group_id, 'BA' =>$req->needs, 'design' => $req->design]);
             $project_id = $project->id;
+            $reqs = $requirementObj->Insert(json_decode($req->requirements_description), $project_id, $req->user_id);
             // if (!isset($req->postman)) {
             //     $postman = 0;
             // } else {
@@ -130,8 +141,8 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, 'project created successfully', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error);
-            return json_encode($response);;
+            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error->getMessage());
+            return json_encode($response);
         }
     }
     //update row according to row id
@@ -143,9 +154,9 @@ class ProjectController extends Controller
     {
     }
 
-    function exploreProject(Request $req, $offset = 1)
+    function exploreProject(Request $req, $offset = 1, $limit = 4)
     {
-        $limit = 4;
+
         $page = ($offset - 1) * $limit;
         try {
 
@@ -168,14 +179,13 @@ class ProjectController extends Controller
                 return $query->where('min', '>=', $min);
             })->when($duration, function ($query, $duration) {
                 return $query->whereIn('days', $duration);
-            })->where('status', '=', 0)->distinct()->latest()->offset($page)->limit($limit)->get();
+            })->where('status', '<', 1)->distinct()->latest()->offset($page)->limit($limit)->get();
             // return $projects;
             $projectsData = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "Data Found", $projectsData);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -198,8 +208,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
 
@@ -231,27 +240,47 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
     private function getProjectsInfo($projects)
     {
         $projectCategoriesObj = new ProjectCategoriesController;
+        $requirementsObj = new Requirement;
+        $clientObj = new ClientController;
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
+            $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
+            $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
+            $user_info = json_decode($clientObj->get_client_info($project->user_id));
+
+            $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
+            if (isset($user_info->image)) {
+                $admin_info['image'] = asset("images/companies/" . $user_info->image);
+            } else {
+                $admin_info['image'] = asset('images/profile-pic.jpg');
+            }
+            if ($company_field_id != '' && $company_field_id != null) {
+                $project->company_field = Category::find((int)$company_field_id)->name;
+            }
+            if ($company_sector_id != '' && $company_sector_id != null) {
+                $project->company_sector = Category::find((int)$company_sector_id)->name;
+            }
+
             // dd($company_image);
             if (isset($company_image)) {
-                $project->company_image = asset('images/companies/') . $company_image;
+                $project->company_image = asset("images/companies/" . $company_image);
             } else {
                 $project->company_image = asset('images/profile-pic.jpg');
             }
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
             $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
+            $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            $project->admin_info = $admin_info;
         }
         return $projects;
     }
@@ -274,8 +303,8 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -297,8 +326,8 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -334,8 +363,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -349,10 +377,11 @@ class ProjectController extends Controller
                 $response = Controller::returnResponse(500, "project is not pending", []);
                 return (json_encode($response));
             }
-            $team_id = Group_member::where("user_id", $userData->id)->select('group_id')
-                ->first();
+
+            $GroupControllerObj = new GroupController;
+            $team_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
             $proposalsObj = new Proposals;
-            $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id->group_id);
+            $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
             $proposal_id = $proposal->id;
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
@@ -376,9 +405,218 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
-            $responseData = $error;
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
+    }
+    function getNumberOfProjectForCompany($id)
+    {
+        $projects = DB::table('projects')
+            ->where('company_id', $id)
+            ->select('id')->get();
+        $numberOfProjects = $projects->count();
+        return ($numberOfProjects);
+    }
+
+    function getCompanyPendingProjects(Request $req, $company_id, $offset = 1, $limit)
+    {
+        $userData = $req->user();
+        $GroupControllerObj = new GroupController;
+        $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+        if ($group_id == $company_id) {
+
+
+            $page = ($offset - 1) * $limit;
+            try {
+                $projects = DB::table('projects')
+                    ->select('id', 'user_id', 'company_id', 'name', 'min', 'max', 'description', 'status', 'days', 'budget_type', 'created_at',)
+                    ->where('projects.company_id', '=', $company_id)
+                    ->where('projects.status', '=', 0)
+                    ->distinct()
+                    ->latest()->offset($page)->limit($limit)
+                    ->get();
+
+                $projectInfo = $this->getProjectsDetails($projects);
+                $response = Controller::returnResponse(200, "data found", $projectInfo);
+                return (json_encode($response));
+            } catch (\Exception $error) {
+
+                $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+            return (json_encode($response));
+        }
+    }
+    function getProjectsDetails($projects)
+    {
+
+        foreach ($projects as $keyProj => &$project) {
+            $project->duration = Category::find((int)$project->days)->name;
+            $initial_proposals =  proposal::where('project_id', $project->id)->select('id')->get();
+            $final_proposals =  Final_proposal::where('project_id', $project->id)->select('id')->get();
+            $project->initial_proposal_number = count($initial_proposals);
+            $project->final_proposal_number = count($final_proposals);
+        }
+        return $projects;
+    }
+    function getCompanyPendingProjectDetails(Request $req, $project_id, $company_id)
+    {
+        $userData = $req->user();
+        $GroupControllerObj = new GroupController;
+        $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+        if ($group_id == $company_id) {
+            try {
+                $project = $this->getPendingProjectInfo($project_id);
+                $response = Controller::returnResponse(200, "successful", $project);
+                return (json_encode($response));
+            } catch (Exception $error) {
+                $response = Controller::returnResponse(500, "Something Wrong", $error->getMessage());
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+            return (json_encode($response));
+        }
+    }
+    function getPendingProjectInfo($id)
+    {
+        $project = Project::find($id);
+        $requirementsObj = new Requirement;
+        $projectCategoriesObj = new ProjectCategoriesController;
+        $clientControllersObj = new ClientController;
+        $project->requirements = $requirementsObj->getRequirementsByProjectId($id);
+        $project->categories = $projectCategoriesObj->getProjectCategories($id);
+        $project->duration = Category::find((int)$project->days)->name;
+        $user = json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
+        $final_ids = Final_proposal::where('project_id', $id);
+        $no_finals = $final_ids->count();
+        $init_ids = proposal::where('project_id', $id);
+        $no_init = $init_ids->count();
+        $project->final_proposals_number = $no_finals;
+        $project->initial_proposals_number = $no_init;
+        $project->admin = array(
+            "id" => $user->id,
+            "first_name" => $user->first_name,
+            "last_name" => $user->last_name,
+            "role" => $user->role,
+            "image" => $user->image,
+        );
+        return $project;
+    }
+    function getCompanyActiveProjects(Request $req, $company_id, $offset, $limit)
+    {
+        $userData = $req->user();
+        try {
+            $page = ($offset - 1) * $limit;
+            $GroupControllerObj = new GroupController;
+            $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+            if ($group_id == $company_id) {
+                $projects = DB::table('projects')
+                    ->where('company_id', '=', $company_id)
+                    ->where('status', '=', 1)
+                    ->select('projects.*')
+                    ->distinct()
+                    ->latest()->offset($page)->limit($limit)
+                    ->get();
+                $projects_info=$this->getCompanyActiveProjectsInfo($projects);
+                $response = Controller::returnResponse(200, "successful", $projects_info);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getCompanyActiveProjectsInfo($projects)
+    {
+        foreach ($projects as $keyProj => &$project) 
+        {
+            $project->agency_name = Group::find($project->team_id)->name;
+            $agency_image =  Team::select('image')->where('group_id', $project->team_id)->get()->first()->image;
+            $project->company_name = Group::find($project->company_id)->name;
+            $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
+            if (isset($agency_image)) {
+                $project->agency_image= asset("images/companies/" . $agency_image);
+            } else {
+                $project->agency_image = asset('images/profile-pic.jpg');
+            }
+            if (isset( $company_image)) {
+                $project->company_image = asset("images/companies/" . $company_image);
+            } else {
+                $project->company_image= asset('images/profile-pic.jpg');
+            }
+        }
+        return $projects;
+    }
+    function getCompanyActiveProjectDetails(Request $req, $project_id, $company_id)
+    {
+        $userData = $req->user();
+        try {
+            $GroupControllerObj = new GroupController;
+            $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+            if ($group_id == $company_id) 
+            {
+                $project_info=$this->getCompanyActiveProjectDetailsInfo($project_id);
+                $response = Controller::returnResponse(200, "successful", $project_info);
+            return (json_encode($response));
+            }
+            else
+            {
+                $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+                return (json_encode($response));
+            }
+        }catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getCompanyActiveProjectDetailsInfo($id)
+    {
+        $project = Project::find($id);
+        $requirementsObj = new Requirement;
+        $projectCategoriesObj = new ProjectCategoriesController;
+        $teamControllersObj = new TeamController;
+        $proposalsControllersObj = new Proposals;
+        $freelancersControllersObj = new FreeLancerController;
+        $finalProposalControllersObj = new Final_proposals;
+        
+        $project->requirements = $requirementsObj->getRequirementsByProjectId($id);
+        $project->categories = $projectCategoriesObj->getProjectCategories($id);
+        $project->duration = Category::find((int)$project->days)->name;
+        $user_id =$proposalsControllersObj->getProposalByProjectAndTeamId((int)$project->id,$project->team_id)->user_id;
+        $user =json_decode($freelancersControllersObj->get_freelancer_info($user_id))->data;
+        $team =$teamControllersObj->get_team_info($project->team_id);
+        $project->final_proposal=$finalProposalControllersObj->getProposalDetailsByProject_id($project->id);
+        
+        if (isset($user->image)) {
+            $user->image= asset("images/users/" . $user->image);
+        } else {
+            $user->image = asset('images/profile-pic.jpg');
+        }if (isset($team->image)) {
+            $team->image= asset("images/companies/" . $team->image);
+        } else {
+            $team->image = asset('images/profile-pic.jpg');
+        }
+     
+        $project->admin = array(
+            "id" => $user->id,
+            "first_name" => $user->first_name,
+            "last_name" => $user->last_name,
+            "role" => $user->role,
+            "image" => $user->image,
+        ); 
+        $project->agency_info = array(
+            "id" => $team->id,
+            "name" => $team->name,
+            "image" => $user->image,
+        );
+        return $project;
     }
 }

@@ -39,9 +39,6 @@ class GroupMembersController extends Controller
     {
         return Group_member::select('group_id')->where('user_id', $userId)->get()->first();
     }
-    function getGroupInfoByUserId($userId)
-    {
-    }
     function getTeamMembersByGroupId($id)
     {
         try {
@@ -63,7 +60,7 @@ class GroupMembersController extends Controller
         if ($member === null) {
             return (0);
         } else {
-            return ($member->privileges);
+            return ((int)$member->privileges);
         }
     }
     function getUserPrivileges($user_id)
