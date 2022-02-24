@@ -110,4 +110,4 @@
         var elem = document.getElementById(id);
         return elem.parentNode.removeChild(elem);
       }
-    </script
+    </script>

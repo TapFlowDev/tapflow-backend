@@ -66,6 +66,8 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
     Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
     Route::post('sendEmail',[EmailController::class, 'send'])->name('sendEmail.send');
+    Route::get('/recommendProject/{id}',[ProjectsController::class, 'recommendProject'])->name('recommendProject.show');
+    Route::post('/filterAgenciesByProjectCategories',[ProjectsController::class, 'filterAgenciesByProjectCategories'])->name('filterAgenciesByProjectCategories.filter');
     Route::post('sendEmailAgencies/{id}',[ProjectsController::class, 'sendAgenciesEmail'])->name('sendEmailAgencies.send');
     
 });

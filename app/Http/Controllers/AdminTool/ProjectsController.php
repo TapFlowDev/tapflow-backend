@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\proposal;
 use App\Models\SubCategory;
+use Illuminate\Support\Facades\DB;
 
 class ProjectsController extends Controller
 {
@@ -214,4 +215,41 @@ class ProjectsController extends Controller
     {
         return SubCategory::where('category_id', $category_id)->get();
     }
+
+    function recommendProject($id, Request $req)
+    {
+        $projectCatObj = new ProjectCategoriesController;
+
+        $project = Project::find($id);
+        $categories = Category::where('type', 1)->get();
+
+        foreach ($categories as $key => &$value) {
+            $value->subs = $this->getSubCategoriesByParent($value->id);
+        }
+        if ($req->subs != '') {
+            $projectCategories = $req->subs;
+            $agencies = DB::table('groups_categories')
+            ->join('groups', 'groups_categories.group_id', '=', 'groups.id')
+            ->select('groups.*')
+            ->whereIn('groups_categories.sub_category_id', $projectCategories)
+            ->where('groups.status', '=', 1)
+            ->distinct()
+            ->get();
+        } else {
+            $projectCategories = DB::table('projects_categories')->select('sub_category_id')->where('project_id', '=', $id)->pluck('sub_category_id')->toArray();
+            $agencies =  DB::table('projects_categories')
+                ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
+                ->join('groups', 'groups_categories.group_id', '=', 'groups.id')
+                ->select('groups.*')
+                ->where('projects_categories.project_id', '=', $id)
+                ->where('groups.status', '=', 1)
+                ->distinct()
+                ->get();
+        }
+        // dd($agencies);   
+        return view('AdminTool.Projects.recommendProject', ['categories' => $categories, 'agencies' => $agencies, 'projectCategories' => $projectCategories, 'project' => $project]);
+
+        // return $projects;
+    }
+  
 }
