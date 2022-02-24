@@ -109,7 +109,6 @@ Route::get('getGroupNameAndImage/{id}', [GroupController::class, 'getGroupNameAn
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
 
-Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
 
 // Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
 Route::get('getNumberOfProjectForCompany/{id}', [ProjectController::class, 'getNumberOfProjectForCompany']);
@@ -121,6 +120,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
     Route::post('submitMilestone', [Milestones::class, 'submitMilestone']);
+    Route::get('getClientInfo/{id}', [ClientController::class, 'get_client_info']);
     Route::get('getFreelancerInfo/{id}', [FreeLancerController::class, 'get_freelancer_info']);
     Route::get('getTeamInfo/{id}', [TeamController::class, 'get_team']);
     Route::get('getCompanyInfo/{id}', [CompanyController::class, 'getCompany']);
