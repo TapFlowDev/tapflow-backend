@@ -264,10 +264,10 @@ class ProjectController extends Controller
                 $admin_info['image'] = asset('images/profile-pic.jpg');
             }
             if ($company_field_id != '' && $company_field_id != null) {
-                $project->company_field = Category::find((int)$company_field_id)->name;
+                // $project->company_field = Category::find((int)$company_field_id)->name;
             }
             if ($company_sector_id != '' && $company_sector_id != null) {
-                $project->company_sector = Category::find((int)$company_sector_id)->name;
+                // $project->company_sector = Category::find((int)$company_sector_id)->name;
             }
 
             // dd($company_image);
@@ -279,7 +279,7 @@ class ProjectController extends Controller
             $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
             $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
-            $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            // $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
             $project->admin_info = $admin_info;
         }
         return $projects;
