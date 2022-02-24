@@ -60,7 +60,7 @@ class   GroupController extends Controller
         $rules = array(
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id",
-            "needs" => "required",
+            "analysis" => "required",
             "design" => "required"
         );
         $validator = Validator::make($req->all(), $rules);
