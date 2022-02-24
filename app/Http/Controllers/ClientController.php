@@ -98,7 +98,7 @@ class ClientController extends Controller
     //add row 
     function get_client_info($id)
     {
-        // try {
+        try {
             $user = $user = DB::table('users')
                 ->leftJoin('clients', 'users.id', '=', 'clients.user_id')
                 ->where('users.id', $id)
@@ -106,11 +106,11 @@ class ClientController extends Controller
             $user = $this->getUserInfo($user)->first();
             $response = Controller::returnResponse(200, 'user information found', $user);
             return json_encode($response);
-        // } catch (Exception $error) {
+        } catch (Exception $error) {
 
-        //     $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
-        //     return json_encode($response);
-        // }
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
     }
     //update row according to row id
     function Update($id)
@@ -163,7 +163,7 @@ class ClientController extends Controller
         foreach ($users as $keyUser => &$user) {
             $categories = $userCategoryObj->getUserCategoriesByUserId($user->id);
             $user->categories = $categories;
-            $user->privileges =$membersObj->getUserPrivileges($user->id)->privileges;
+            $user->privileges =$membersObj->checkIfExists($user->id)->privileges;
             $links = User_link::select('link')->where('user_id', $user->id)->get();
             if (count($links) > 0) {
                 // $user->links = $links;
