@@ -11,7 +11,7 @@
                                 <th scope="col">#id</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Company Name</th>
-                                <th scope="col">Status</th>
+                                {{-- <th scope="col">Status</th> --}}
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -26,7 +26,7 @@
                                             role="button">{{ $project->company_name }}
                                         </a>
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         @if ($project->status == 0)
                                             Pending
                                         @elseif ($project->status == 1)
@@ -34,12 +34,12 @@
                                         @elseif ($project->status == 2)
                                             Finished
                                         @endif
-                                    </td>
+                                    </td> --}}
                                     <td>
                                         <a class="btn btn-sm btn-primary"
                                             href="{{ route('AdminTool.projects.show', $project->id) }}"
                                             role="button">View</a>
-                                        <a class="btn btn-sm btn-primary"
+                                        <a class="btn btn-sm btn-info"
                                             href="{{ route('AdminTool.recommendProject.show', $project->id) }}"
                                             role="button">Recommend Project</a>
                                         {{-- <button class="btn btn-sm btn-danger" 

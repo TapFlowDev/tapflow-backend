@@ -107,6 +107,15 @@ class CompaniesController extends Controller
     {
         //
     }
+    function getCompanyById($id){
+        $teams = DB::table('companies')
+            ->join('groups', 'companies.group_id', '=', 'groups.id')
+            ->select('groups.*', 'companies.*')
+            ->where('groups.id', $id)
+            ->get();
+        $teamsInfo = $this->getData($teams)->first();
+        return $teamsInfo;
+    }
     private function getData($array)
     {
         $groupCatObj = new GroupCategoriesController;
@@ -115,6 +124,7 @@ class CompaniesController extends Controller
             $userInfo = User::find($admin->user_id);
             $group->admin_name = $userInfo->first_name . " " . $userInfo->last_name;
             $group->admin_id = $userInfo->id;
+            $group->admin_email = $userInfo->email;
             $group->categories = $groupCatObj->getTeamCategories($group->id);
             if ($group->image != "") {
                 $group->image = asset('images/companies/' . $group->image);

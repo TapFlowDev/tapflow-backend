@@ -64,7 +64,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/dummyCompanies', DummyCompaines::class);
     Route::resource('/dummyProjects', DummyProjects::class);
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
-    Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
+    // Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
     Route::post('sendEmail',[EmailController::class, 'send'])->name('sendEmail.send');
     Route::get('/recommendProject/{id}',[ProjectsController::class, 'recommendProject'])->name('recommendProject.show');
     Route::post('/filterAgenciesByProjectCategories',[ProjectsController::class, 'filterAgenciesByProjectCategories'])->name('filterAgenciesByProjectCategories.filter');
