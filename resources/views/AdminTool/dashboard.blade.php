@@ -27,11 +27,11 @@
             <div class="col-12 col-lg-3">
                 <div class="card">
                     <div>
-                        <div class="numbers">{{ $stats['waitingList'] }}</div>
-                        <div class="cardName">Waiting</div>
+                        <div class="numbers">{{ $stats['projectRequests'] }}</div>
+                        <div class="cardName">Project Requests</div>
                     </div>
                     <div class="iconBox">
-                        <i class="far fa-address-book"></i>
+                        <i class="far fa-folder-open"></i>
                     </div>
                 </div>
             </div>
