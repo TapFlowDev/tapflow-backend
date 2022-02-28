@@ -61,7 +61,7 @@ use phpDocumentor\Reflection\ProjectFactory;
 // });
 // for testing test
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
-Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
@@ -166,6 +166,10 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyActiveProjects/{agency_id}/{offset}', [ProjectController::class, 'getAgencyActiveProjects']);
     Route::get('getAgencyActiveProject/{id}', [ProjectController::class, 'getAgencyActiveProject']);
     Route::get('getAgencyPendingProject/{id}', [ProjectController::class, 'getAgencyPendingProject']);
+    Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+    Route::post('updateMilestone', [Milestones::class, 'updateMilestone']);
+    Route::post('addMilestone', [Milestones::class, 'Insert']);
+    Route::post('deleteMilestone', [Milestones::class, 'deleteMilestone']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
@@ -178,4 +182,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('getProjectProposalsById/{id}/{offset}/{limit}', [Proposals::class, 'getProjectProposalsById']);
     Route::get('getCompanyActiveProjects/{company_id}/{offset}/{limit}', [ProjectController::class, 'getCompanyActiveProjects']);
     Route::get('getCompanyActiveProjectDetails/{project_id}/{company_id}', [ProjectController::class, 'getCompanyActiveProjectDetails']);
+
 });
+
