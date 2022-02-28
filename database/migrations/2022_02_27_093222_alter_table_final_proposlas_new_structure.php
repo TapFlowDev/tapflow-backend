@@ -19,7 +19,7 @@ class AlterTableFinalProposlasNewStructure extends Migration
             $table->renameColumn('days','hours')->nullable();
             $table->string('down_payment_value')->nullable()->after('down_payment');
             $table->string('user_id')->nullable()->after('project_id');
-            $table->string('hourly_rate')->nullable()->after('hours');
+            $table->string('hourly_rate')->nullable()->after('days');
           
         });
 
