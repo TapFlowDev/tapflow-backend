@@ -90,15 +90,15 @@ class CompanyController extends Controller
 
         return ($team);
     }
-    function updateCompanyBio(Request $req, $id)
+    function updateCompanyBio(Request $req)
     {
         try {
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
-                if ($userData['group_id'] == $id) {
+                if ($userData['group_id'] == $req->id) {
                     if ($userData['privileges'] == 1) {
 
-                        Company::where('group_id', $id)->update(['bio' => $req->bio]);
+                        Company::where('group_id', $req->id)->update(['bio' => $req->bio]);
                         $response = Controller::returnResponse(200, "successful", []);
                         return (json_encode($response));
                     } else {
@@ -118,15 +118,15 @@ class CompanyController extends Controller
             return (json_encode($response));
         }
     }
-    function updateBasicInfo(Request $req, $id)
+    function updateBasicInfo(Request $req)
     {
         try {
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
-                if ($userData['group_id'] == $id) {
+                if ($userData['group_id'] == $req->id) {
                     if ($userData['privileges'] == 1) {
-                        Group::where('id', $id)->update(['name' => $req->name]);
-                        Company::where('group_id', $id)->update(['field' => $req->filed, 'sector' => $req->sector]);
+                        Group::where('id', $req->id)->update(['name' => $req->name]);
+                        Company::where('group_id', $req->id)->update(['field' => $req->filed, 'sector' => $req->sector]);
                         $response = Controller::returnResponse(200, "successful", []);
                         return (json_encode($response));
                     } else {
@@ -146,15 +146,15 @@ class CompanyController extends Controller
             return (json_encode($response));
         }
     }
-    function updateLink(Request $req, $id)
+    function updateLink(Request $req)
     {
         try {
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
-                if ($userData['group_id'] == $id) {
+                if ($userData['group_id'] == $req->id) {
                     if ($userData['privileges'] == 1) {
 
-                        Company::where('group_id', $id)->update(['link' => $req->link]);
+                        Company::where('group_id', $req->id)->update(['link' => $req->link]);
                         $response = Controller::returnResponse(200, "successful", []);
                         return (json_encode($response));
                     } else {
