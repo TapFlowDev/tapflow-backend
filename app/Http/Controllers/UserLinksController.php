@@ -39,8 +39,8 @@ class UserLinksController extends Controller
         }
         else{
             try{
-        $links=$req->links;
-      
+        if(isset($req->links)){ $links=$req->links;}
+        else{User_link::where('user_id',$req->user_id)->delete();}
         User_link::where('user_id',$req->user_id)->delete();
         if(count($links)==0){
             $response = Controller::returnResponse(200, 'deleted successfully', []);
