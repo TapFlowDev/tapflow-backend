@@ -30,8 +30,6 @@ class UserLinksController extends Controller
     {
         $rules=array(
             "user_id"=>"required|exists:users,id",
-            "links"=>"required|array"
-          
         );
         $validator=Validator::make($req->all(),$rules);
         if($validator->fails()){
