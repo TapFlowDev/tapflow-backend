@@ -200,9 +200,9 @@ class Final_proposals extends Controller
         $final_proposal->milestones = $milestones;
         return($final_proposal);
     }
-    function createEmptyFinalProposal($hourly_rate,$num_hours)
+    function createEmptyFinalProposal($hourly_rate,$num_hours,$proposal_id)
     {
-        $final_proposal=Final_proposal::create(['hourly_rate'=>$hourly_rate,'hours'=>$num_hours,'status'=>-1]);
+        $final_proposal=Final_proposal::create(['hourly_rate'=>$hourly_rate,'hours'=>$num_hours,'proposal_id'=>$proposal_id,'status'=>-1]);
         return $final_proposal->id;
     }
 }
