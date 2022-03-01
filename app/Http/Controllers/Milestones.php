@@ -43,10 +43,10 @@ class Milestones extends Controller
                         if ($userData['privileges'] == 1) {
                             $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
                             if ($finalProposal['exist'] == 0) {
-                                $final_proposal_id=$finalProposalObj->createEmptyFinalProposal($req->hourly_rate,$req->num_hours);
+                                $new_final_proposal_id=$finalProposalObj->createEmptyFinalProposal($req->hourly_rate,$req->num_hours,$req->proposal_id);
                                 $data = array(
                                     "project_id" => $req->project_id,
-                                    "final_proposal_id" => $final_proposal_id,
+                                    "final_proposal_id" => $new_final_proposal_id,
                                     "hours" => $req->milestone_num_hours,
                                     "price" => $req->milestone_price,
                                     "name" => $req->milestone_name,
