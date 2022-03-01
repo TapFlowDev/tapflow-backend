@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Models\Rate;
@@ -184,6 +185,8 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('getProjectProposalsById/{id}/{offset}/{limit}', [Proposals::class, 'getProjectProposalsById']);
     Route::get('getCompanyActiveProjects/{company_id}/{offset}/{limit}', [ProjectController::class, 'getCompanyActiveProjects']);
     Route::get('getCompanyActiveProjectDetails/{project_id}/{company_id}', [ProjectController::class, 'getCompanyActiveProjectDetails']);
-
+    Route::post('updateCompanyBio', [CompanyController::class, 'updateCompanyBio']);
+    Route::post('updateBasicInfo', [CompanyController::class, 'updateBasicInfo']);
+    Route::post('updateLink', [CompanyController::class, 'updateLink']);
 });
 

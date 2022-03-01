@@ -11,6 +11,7 @@ use App\Http\Controllers\NewCountriesController;
 use App\Http\Controllers\GroupsLinksController;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\ProjectController;
+use App\Models\Group;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -88,5 +89,89 @@ class CompanyController extends Controller
             ->first();
 
         return ($team);
+    }
+    function updateCompanyBio(Request $req, $id)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $id) {
+                    if ($userData['privileges'] == 1) {
+
+                        Company::where('group_id', $id)->update(['bio' => $req->bio]);
+                        $response = Controller::returnResponse(200, "successful", []);
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized this function for admins only", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "the user does not have company", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function updateBasicInfo(Request $req, $id)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $id) {
+                    if ($userData['privileges'] == 1) {
+                        Group::where('id', $id)->update(['name' => $req->name]);
+                        Company::where('group_id', $id)->update(['field' => $req->filed, 'sector' => $req->sector]);
+                        $response = Controller::returnResponse(200, "successful", []);
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized this function for admins only", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "the user does not have company", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function updateLink(Request $req, $id)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $id) {
+                    if ($userData['privileges'] == 1) {
+
+                        Company::where('group_id', $id)->update(['link' => $req->link]);
+                        $response = Controller::returnResponse(200, "successful", []);
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized this function for admins only", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "the user does not have company", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 }
