@@ -274,7 +274,7 @@ class CompanyController extends Controller
                 if ($userData['exist'] == 1) {
                     if ($userData['group_id'] == $req->id) {
                         if ($userData['privileges'] == 1) {
-                            Company::where('group_id', $req->id)->update(['field' => $req->filed, 'sector' => $req->sector]);
+                            Company::where('group_id', $req->id)->update(['field' => $req->field, 'sector' => $req->sector]);
                             $response = Controller::returnResponse(200, "successful", []);
                             return (json_encode($response));
                         } else {
