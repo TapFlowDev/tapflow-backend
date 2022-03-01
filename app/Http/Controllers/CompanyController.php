@@ -149,7 +149,7 @@ class CompanyController extends Controller
                     if ($userData['group_id'] == $req->id) {
                         if ($userData['privileges'] == 1) {
                             Group::where('id', $req->id)->update(['name' => $req->name]);
-                            Company::where('group_id', $req->id)->update(['field' => $req->filed, 'sector' => $req->sector]);
+                            Company::where('group_id', $req->id)->update(['country' => $req->country]);
                             $response = Controller::returnResponse(200, "successful", []);
                             return (json_encode($response));
                         } else {
@@ -239,6 +239,45 @@ class CompanyController extends Controller
                                 $response=Controller::returnResponse(200,'successful',[]);
                                 return json_encode($response);
                             }
+                        } else {
+                            $response = Controller::returnResponse(422, "Unauthorized this function for admins only", []);
+                            return (json_encode($response));
+                        }
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "the user does not have company", []);
+                    return (json_encode($response));
+                }
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function updateFieldSector(Request $req)
+    {
+        try {
+            $rules = array(
+                "id" => "required",
+                "field" => "required",
+                "sector" => "required",
+            );
+            $validators = Validator::make($req->all(), $rules);
+            if ($validators->fails()) {
+                $responseData = $validators->errors();
+                $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                return (json_encode($response));
+            } else {
+                $userData = Controller::checkUser($req);
+                if ($userData['exist'] == 1) {
+                    if ($userData['group_id'] == $req->id) {
+                        if ($userData['privileges'] == 1) {
+                            Company::where('group_id', $req->id)->update(['field' => $req->filed, 'sector' => $req->sector]);
+                            $response = Controller::returnResponse(200, "successful", []);
+                            return (json_encode($response));
                         } else {
                             $response = Controller::returnResponse(422, "Unauthorized this function for admins only", []);
                             return (json_encode($response));

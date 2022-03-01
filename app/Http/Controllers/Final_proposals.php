@@ -155,19 +155,17 @@ class Final_proposals extends Controller
             $page = ($offset - 1) * $limit;
             try {
                 $proposals = DB::table('final_proposals')
-                    ->select('final_proposals .*')
-                    ->makeHidden(['updated_at'])
+                    ->select('final_proposals.*')
                     ->where('project_id', $project_id)
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
                 $milestone = new Milestones;
-                $counter = 0;
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
                     $milestones_array = $milestone->getMilestoneByProposalId($proposal->id);
                     $m_ids = array();
-                    array_push($m_ids, $milestones_array[$counter]['milestone_id']);
+                    array_push($m_ids, $milestones_array[0]['milestone_id']);
                     $proposal->milestones = $milestones_array;
                     foreach ($m_ids as $mid) {
                         $all_people = Db::table('tasks')
@@ -181,7 +179,7 @@ class Final_proposals extends Controller
                     $all_people = array($all_people);
                     $all_people = array_unique($all_people);
                     $proposal->all_people = $all_people;
-                    $counter++;
+                   
                 }
                 $response = Controller::returnResponse(200, "successful", $proposals);
                 return (json_encode($response));
