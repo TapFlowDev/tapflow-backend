@@ -57,7 +57,7 @@ class UserLinksController extends Controller
             }
             catch(Exception $error)
             {
-                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+                $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
                 return json_encode($response);
             }
     }
