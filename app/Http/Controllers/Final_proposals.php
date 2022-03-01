@@ -195,8 +195,7 @@ class Final_proposals extends Controller
     function getProposalDetailsByProject_id($project_id)
     {
         $milestone = new Milestones;
-        $final_proposal = Final_proposal::select('id', 'team_id', 'project_id', 'price', 'days', 'description','down_payment', 'status')
-            ->where('id', $project_id)->first();
+        $final_proposal = $this->selectQuery( $project_id);
         $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
         $final_proposal->milestones = $milestones;
         return($final_proposal);
