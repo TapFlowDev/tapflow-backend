@@ -226,7 +226,7 @@ class CompanyController extends Controller
                 if ($userData['exist'] == 1) {
                     if ($userData['group_id'] == $req->id) {
                         if ($userData['privileges'] == 1) {
-                            $company_image = Company::where('id', $req->id)->select('image')->first()->image;
+                            $company_image = Company::where('group_id', $req->id)->select('image')->first()->image;
                             $image_path = "images/companies/" . $company_image;
                              File::delete(public_path($image_path));
                             if ($req->hasFile('image')) {
