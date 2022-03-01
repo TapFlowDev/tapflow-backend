@@ -15,7 +15,7 @@ use App\Models\Group;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\File;
 class CompanyController extends Controller
 {
     //add row 
@@ -191,6 +191,54 @@ class CompanyController extends Controller
                             Company::where('group_id', $req->id)->update(['link' => $req->link]);
                             $response = Controller::returnResponse(200, "successful", []);
                             return (json_encode($response));
+                        } else {
+                            $response = Controller::returnResponse(422, "Unauthorized this function for admins only", []);
+                            return (json_encode($response));
+                        }
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "the user does not have company", []);
+                    return (json_encode($response));
+                }
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function updateCompanyImage(Request $req)
+    {
+        try {
+            $rules = array(
+                "id" => "required|exists:users,id",
+                "image" => "required|mimes:png,jpg,jpeg|max:5000"
+            );
+            $validators = Validator::make($req->all(), $rules);
+            if ($validators->fails()) {
+                $responseData = $validators->errors();
+                $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                return (json_encode($response));
+            } else {
+                $userData = Controller::checkUser($req);
+                if ($userData['exist'] == 1) {
+                    if ($userData['group_id'] == $req->id) {
+                        if ($userData['privileges'] == 1) {
+                            $company_image = Company::where('id', $req->id)->select('image')->first()->image;
+                            $image_path = "images/users/" . $company_image;
+                             File::delete(public_path($image_path));
+                            if ($req->hasFile('image')) {
+                                $destPath = 'images/companies';
+                                $ext = $req->file('image')->extension();
+                                $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                                $img = $req->image;
+                                $img->move(public_path($destPath), $imageName);
+                                $this->updateFiles($req->id, $imageName, 'image');
+                                $response=Controller::returnResponse(200,'successful',[]);
+                                return json_encode($response);
+                            }
                         } else {
                             $response = Controller::returnResponse(422, "Unauthorized this function for admins only", []);
                             return (json_encode($response));

@@ -188,5 +188,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('updateCompanyBio', [CompanyController::class, 'updateCompanyBio']);
     Route::post('updateBasicInfo', [CompanyController::class, 'updateBasicInfo']);
     Route::post('updateLink', [CompanyController::class, 'updateLink']);
+    Route::post('updateClientImage', [ClientController::class, 'updateClientImage']);
 });
 
