@@ -35,7 +35,7 @@ class Controller extends BaseController
             if ($member === null) {
                 return ['exist' => 0];
             } else {
-                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges];
+                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges,"type"=>$userData['type']];
             }
         } catch (Exception  $error) {
             $response = Controller::returnResponse(500, "check user error", $error->getMessage());
