@@ -213,7 +213,7 @@ class CompanyController extends Controller
     {
         try {
             $rules = array(
-                "id" => "required|exists:users,id",
+                "id" => "required|exists:groups,id",
                 "image" => "required|mimes:png,jpg,jpeg|max:5000"
             );
             $validators = Validator::make($req->all(), $rules);
@@ -227,11 +227,10 @@ class CompanyController extends Controller
                     if ($userData['group_id'] == $req->id) {
                         if ($userData['privileges'] == 1) {
                             $company_image = Company::where('id', $req->id)->select('image')->first()->image;
-                            $image_path = "images/users/" . $company_image;
+                            $image_path = "images/companies/" . $company_image;
                              File::delete(public_path($image_path));
                             if ($req->hasFile('image')) {
                                 $destPath = 'images/companies';
-                                $ext = $req->file('image')->extension();
                                 $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
                                 $img = $req->image;
                                 $img->move(public_path($destPath), $imageName);

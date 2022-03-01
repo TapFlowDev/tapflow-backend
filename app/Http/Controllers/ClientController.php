@@ -218,9 +218,7 @@ class ClientController extends Controller
              File::delete(public_path($image_path));
             if ($req->hasFile('image')) {
                 $destPath = 'images/users';
-                $ext = $req->file('image')->extension();
                 $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
-                // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
                 $img = $req->image;
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($id, $imageName, 'image');
