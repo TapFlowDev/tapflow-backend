@@ -40,13 +40,19 @@ class UserLinksController extends Controller
         else{
             try{
         $links=$req->links;
-        $del_links=User_link::where('user_id',$req->user_id)->delete();
+      
+        User_link::where('user_id',$req->user_id)->delete();
+        if(count($links)==0){
+            $response = Controller::returnResponse(200, 'deleted successfully', []);
+            return json_encode($response);
+        }
+        else{
         foreach($links as $link)
         {
-            $add_links=User_link::create(["user_id"=>$req->user_id,"link"=>$link]);
+            User_link::create(["user_id"=>$req->user_id,"link"=>$link]);
         }
-        
-        $response = Controller::returnResponse(200, 'updated successfully', $Array=array());
+        }
+        $response = Controller::returnResponse(200, 'updated successfully', []);
         return json_encode($response);
             }
             catch(Exception $error)
