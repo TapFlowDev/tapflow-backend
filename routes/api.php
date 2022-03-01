@@ -137,7 +137,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
     Route::post('removeUser', [GroupMembersController::class, 'removeUserFromGroup']);
     Route::get('project/{id}', [ProjectController::class, 'getProject']);
-    Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
     // Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     // Route::post('saveImage', [ImagesController::class, 'Insert']);
 });
@@ -170,6 +169,9 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('updateMilestone', [Milestones::class, 'updateMilestone']);
     Route::post('addMilestone', [Milestones::class, 'Insert']);
     Route::post('deleteMilestone', [Milestones::class, 'deleteMilestone']);
+    Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
+    Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
+
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
