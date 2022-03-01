@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Models\User_link;
+use Illuminate\Support\Facades\File;
 
 class ClientController extends Controller
 {
@@ -144,9 +145,19 @@ class ClientController extends Controller
     function update_Bio(Request $req)
     {
         try {
-            $client = Client::where('user_id', $req->user_id)->update(['bio' => $req->bio]);
+            $rules = array(
+                "id" => "required|exists:users,id",
+                "bio" => "required"
+            );
+            $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            return json_encode($response);
+        }else{
+             Client::where('user_id', $req->user_id)->update(['bio' => $req->bio]);
             $response = Controller::returnResponse(200, 'User information updated successfully', array());
             return json_encode($response);
+        }
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
@@ -188,5 +199,38 @@ class ClientController extends Controller
             }
         }
         return $users;
+    }
+    function updateClientImage(Request $req)
+    {
+         try {
+            $rules = array(
+                "id" => "required|exists:users,id",
+                "image" => "required|mimes:png,jpg,jpeg|max:5000"
+            );
+            $validator = Validator::make($req->all(), $rules);
+        if ($validator->fails()) {
+            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            return json_encode($response);
+        }else{
+            $id = $req->user_id;
+            $user_image = Client::where('user_id', $id)->select('image')->first()->image;
+            $image_path = "images/users/" . $user_image;
+             File::delete(public_path($image_path));
+            if ($req->hasFile('image')) {
+                $destPath = 'images/users';
+                $ext = $req->file('image')->extension();
+                $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+                // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+                $img = $req->image;
+                $img->move(public_path($destPath), $imageName);
+                $this->updateFiles($id, $imageName, 'image');
+                $response=Controller::returnResponse(200,'successful',[]);
+                return json_encode($response);
+            }
+        }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
     }
 }
