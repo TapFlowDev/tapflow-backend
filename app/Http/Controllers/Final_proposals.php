@@ -205,7 +205,7 @@ class Final_proposals extends Controller
     }
     function createEmptyFinalProposal($hourly_rate,$num_hours)
     {
-        $final_proposal=Final_proposal::create(['hourly_rate'=>$hourly_rate,'hours'=>$num_hours]);
+        $final_proposal=Final_proposal::create(['hourly_rate'=>$hourly_rate,'hours'=>$num_hours,'status'=>-1]);
         return $final_proposal->id;
     }
 }
