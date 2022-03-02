@@ -195,7 +195,6 @@ class Final_proposals extends Controller
     {
         $milestone = new Milestones;
         $final_proposal = $this->selectQuery( $project_id);
-        dd($final_proposal);
         $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
         $final_proposal->milestones = $milestones;
         return($final_proposal);
