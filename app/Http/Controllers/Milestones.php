@@ -58,7 +58,9 @@ class Milestones extends Controller
                                     "name" => $req->milestone_name,
                                     "description" => $req->milestone_description,
                                 );
+                                return (count($req->tasks));
                                 $milestone = Milestone::create($data);
+                                
                                 $tasks = $Tasks->Insert($req->tasks, $milestone->id);
                                 if ($tasks['code'] == 500) {
                                     $response = Controller::returnResponse(500, "something went wrong", $tasks['msg']);
@@ -78,7 +80,9 @@ class Milestones extends Controller
                                     "name" => $req->milestone_name,
                                     "description" => $req->milestone_description,
                                 );
+                                return (count($req->tasks));
                                 $milestone = Milestone::create($data);
+                                
                                 $tasks = $Tasks->Insert($req->tasks, $milestone->id);
                                 if ($tasks['code'] == 500) {
                                     $response = Controller::returnResponse(500, "something went wrong", $tasks['msg']);
