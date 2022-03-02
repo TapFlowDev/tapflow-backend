@@ -264,7 +264,8 @@ class Milestones extends Controller
                             "milestone_name" => $milestone->name,
                             "milestone_description" => $milestone->description,
                             "milestone_price" => $milestone->price,
-                            "milestone_hours" => $milestone->days,
+                            "milestone_hours" => $milestone->hours,
+                            "milestone_status" => $milestone->status,
                             "tasks" => ($tasks),
                         ));
                     }
