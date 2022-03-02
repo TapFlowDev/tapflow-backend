@@ -58,7 +58,7 @@ class Milestones extends Controller
                                     "name" => $req->milestone_name,
                                     "description" => $req->milestone_description,
                                 );
-                                return (count($req->tasks));
+                               
                                 $milestone = Milestone::create($data);
                                 
                                 $tasks = $Tasks->Insert($req->tasks, $milestone->id);
@@ -80,7 +80,7 @@ class Milestones extends Controller
                                     "name" => $req->milestone_name,
                                     "description" => $req->milestone_description,
                                 );
-                                return (count($req->tasks));
+                                
                                 $milestone = Milestone::create($data);
                                 
                                 $tasks = $Tasks->Insert($req->tasks, $milestone->id);
