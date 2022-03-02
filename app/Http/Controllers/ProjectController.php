@@ -596,7 +596,7 @@ class ProjectController extends Controller
         $team =$teamControllersObj->get_team_info($project->team_id);
         $final_proposal=$finalProposalControllersObj->getProposalDetailsByProject_id($id);
        
-        $project->final_proposal=$final_proposal;
+        $project->contract=$final_proposal;
         $user =json_decode($freelancersControllersObj->get_freelancer_info($final_proposal->user_id))->data;
         if (isset($user->image)) {
             $user->image= asset("images/users/" . $user->image);
