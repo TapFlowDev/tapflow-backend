@@ -238,9 +238,8 @@ class Final_proposals extends Controller
                        $final_proposal=DB:: table('final_proposals')
                        ->where('project_id','=',$project_id)
                        ->where('team_id','=',$team_id)
-                       
                        ->first();
-                       $final_proposal['num_hours']=$final_proposal->hours;
+                       $final_proposal->num_hours=$final_proposal->hours;
                        $response = Controller::returnResponse(200, 'successful ', $final_proposal);
                         return json_encode($response);
 
