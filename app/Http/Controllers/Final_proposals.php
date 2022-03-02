@@ -127,8 +127,7 @@ class Final_proposals extends Controller
     private function selectQuery($id)
     {
         $final_proposal = Final_proposal::where('id', $id)
-            ->first()
-            ->makeHidden(['created_at', 'updated_at']);
+            ->first();
         return $final_proposal;
     }
     function getProposalDetailsById($id)
