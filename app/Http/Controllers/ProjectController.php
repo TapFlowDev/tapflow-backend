@@ -559,7 +559,7 @@ class ProjectController extends Controller
     function getCompanyActiveProjectDetails(Request $req, $project_id, $company_id)
     {
         $userData = $req->user();
-        try {
+        // try {
             $GroupControllerObj = new GroupController;
             $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
             if ($group_id == $company_id) 
@@ -573,11 +573,11 @@ class ProjectController extends Controller
                 $response = Controller::returnResponse(422, "You are trying to get another company data", []);
                 return (json_encode($response));
             }
-        }catch(Exception $error)
-        {
-            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
-            return (json_encode($response));
-        }
+        // }catch(Exception $error)
+        // {
+        //     $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+        //     return (json_encode($response));
+        // }
     }
     private function getCompanyActiveProjectDetailsInfo($id)
     {
@@ -585,7 +585,6 @@ class ProjectController extends Controller
         $requirementsObj = new Requirement;
         $projectCategoriesObj = new ProjectCategoriesController;
         $teamControllersObj = new TeamController;
-        $proposalsControllersObj = new Proposals;
         $freelancersControllersObj = new FreeLancerController;
         $finalProposalControllersObj = new Final_proposals;
         
