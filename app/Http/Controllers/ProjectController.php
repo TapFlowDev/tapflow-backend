@@ -581,7 +581,7 @@ class ProjectController extends Controller
     }
     private function getCompanyActiveProjectDetailsInfo($id)
     {
-        $project = Project::find($id);
+        $project = Project::where('id',$id)->first();
         $requirementsObj = new Requirement;
         $projectCategoriesObj = new ProjectCategoriesController;
         $teamControllersObj = new TeamController;
