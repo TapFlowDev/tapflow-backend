@@ -205,4 +205,39 @@ class Final_proposals extends Controller
         $final_proposal=Final_proposal::create(['hourly_rate'=>$hourly_rate,'hours'=>$num_hours,'proposal_id'=>$proposal_id,'status'=>-1,'team_id'=>$team_id,'project_id'=>$project_id]);
         return $final_proposal->id;
     }
+    function getFinalProposalByProjectIdAndTeamId(Request $req,$project_id,$team_id)
+    {
+        $userData = Controller::checkUser($req);
+        $proposalObj = new Proposals;
+        if ($userData['privileges'] == 1) {
+            $team_id = $userData['group_id'];
+            if ($userData['group_id'] == $team_id) {
+                $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
+                if ($init_proposal['exist'] == 1) {
+                    if ($init_proposal['proposal']->status == 1) {
+                      
+                       $final_proposal=DB:: table('final_proposals')
+                       ->where('project_id','=',$project_id)
+                       ->where('team_id','=',$team_id)
+                       ->first();
+                       $response = Controller::returnResponse(200, 'successful ', $final_proposal);
+                        return json_encode($response);
+
+                    } else {
+                        $response = Controller::returnResponse(422, 'your initial proposal status not accepted ', []);
+                        return json_encode($response);
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, 'you do not have initial proposal ', []);
+                    return json_encode($response);
+                }
+            } else {
+                $response = Controller::returnResponse(422, 'Unauthorized you are trying to access another agency proposal ', []);
+                return json_encode($response);
+            }
+        } else {
+            $response = Controller::returnResponse(422, 'Unauthorized action this action for admins only or you do not have team', []);
+            return json_encode($response);
+        }  
+    }
 }
