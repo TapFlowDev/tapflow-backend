@@ -167,7 +167,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('getAgencyActiveProject/{id}', [ProjectController::class, 'getAgencyActiveProject']);
     Route::get('getAgencyPendingProject/{id}', [ProjectController::class, 'getAgencyPendingProject']);
     Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
-    Route::post('getFinalProposalByProjectIdAndTeamId', [Final_proposals::class, 'getFinalProposalByProjectIdAndTeamId']);
+    Route::post('getFinalProposalByProjectIdAndTeamId/{project_id}/{team_id}', [Final_proposals::class, 'getFinalProposalByProjectIdAndTeamId']);
     Route::post('updateMilestone', [Milestones::class, 'updateMilestone']);
     Route::post('addMilestone', [Milestones::class, 'Insert']);
     Route::post('deleteMilestone', [Milestones::class, 'deleteMilestone']);
