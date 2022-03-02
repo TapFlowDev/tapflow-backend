@@ -127,7 +127,8 @@ class Final_proposals extends Controller
     private function selectQuery($id)
     {
         $final_proposal = Final_proposal::where('id', $id)
-            ->first();
+            ->first()
+            ->makeHidden(['created_at', 'updated_at']);
         return $final_proposal;
     }
     function getProposalDetailsById($id)
@@ -194,7 +195,9 @@ class Final_proposals extends Controller
     function getProposalDetailsByProject_id($project_id)
     {
         $milestone = new Milestones;
-        $final_proposal = $this->selectQuery( $project_id);
+        $final_proposal = Final_proposal::where('project_id',$project_id)
+        ->select('*')
+        ->first();
         $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
         $final_proposal->milestones = $milestones;
         return($final_proposal);
