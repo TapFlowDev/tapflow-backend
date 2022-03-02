@@ -383,7 +383,7 @@ class ProjectController extends Controller
             $proposalsObj = new Proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
             $proposal_id = $proposal->id;
-            $proposal_id = $proposal->status;
+            $proposal_status = $proposal->status;
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
