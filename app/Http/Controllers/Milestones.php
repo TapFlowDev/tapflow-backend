@@ -198,16 +198,16 @@ class Milestones extends Controller
             ->makeHidden(['created_at', 'updated_at']);
         return $milestones;
     }
-    function getMilestones(Request $req)
+    function getMilestones(Request $req, $id)
     {
         try {
             $finalProposalObj = new Final_proposals;
             $Tasks = new TasksController;
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
-                $finalProposal = $finalProposalObj->getProposalById($req->final_proposal_id);
+                $finalProposal = $finalProposalObj->getProposalById($id);
                 if ($userData['group_id'] == $finalProposal['team_id']) {
-                    $milestones =  Milestone::where('final_proposal_id', $req->final_proposal_id)
+                    $milestones =  Milestone::where('final_proposal_id', $id)
                         ->get()
                         ->makeHidden(['created_at', 'updated_at']);
                     $milestones_details = [];
