@@ -383,6 +383,7 @@ class ProjectController extends Controller
             $proposalsObj = new Proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
             $proposal_id = $proposal->id;
+            $proposal_id = $proposal->status;
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -399,7 +400,8 @@ class ProjectController extends Controller
                     $admin->image  = asset('images/profile-pic.jpg');
                 }
             }
-            $projectData->proposal = $proposal;
+            $projectData->proposal_id = $proposal_id;
+            $projectData->proposal_status = $proposal_status;
             $projectData->admins = $admins;
 
             $response = Controller::returnResponse(200, "data found", $projectData);
