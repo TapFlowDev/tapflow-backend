@@ -43,10 +43,16 @@ class Milestones extends Controller
                         if ($userData['privileges'] == 1) {
                             $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
                             if ($finalProposal['exist'] == 0) {
-                                $new_final_proposal_id=$finalProposalObj->createEmptyFinalProposal($req->hourly_rate,$req->num_hours,$req->proposal_id,$req->team_id,$req->project_id);
+                                $new_final_proposal=$finalProposalObj->createEmptyFinalProposal($req->hourly_rate,$req->num_hours,$req->proposal_id,$req->team_id,$req->project_id);
+                                if($new_final_proposal['code']==422 ||$new_final_proposal['code']== 500)
+                                {
+                                    $response = Controller::returnResponse($new_final_proposal['code'], 'error generating final proposal', $new_final_proposal['msg']);
+                                    return json_encode($response);
+                                }
+                                elseif($new_final_proposal['code'] == 200){
                                 $data = array(
                                     "project_id" => $req->project_id,
-                                    "final_proposal_id" => $new_final_proposal_id,
+                                    "final_proposal_id" => $new_final_proposal['msg'],
                                     "hours" => $req->milestone_num_hours,
                                     "price" => $req->milestone_price,
                                     "name" => $req->milestone_name,
@@ -60,6 +66,7 @@ class Milestones extends Controller
                                 }
                                 $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
                                 return (json_encode($response));
+                            }
                             }
                              else {
                                 $final_proposal_id = $finalProposal['final_proposal_id'];

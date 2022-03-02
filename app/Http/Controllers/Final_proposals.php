@@ -202,8 +202,27 @@ class Final_proposals extends Controller
     }
     function createEmptyFinalProposal($hourly_rate,$num_hours,$proposal_id,$team_id,$project_id)
     {
-        $final_proposal=Final_proposal::create(['hourly_rate'=>$hourly_rate,'hours'=>$num_hours,'proposal_id'=>$proposal_id,'status'=>-1,'team_id'=>$team_id,'project_id'=>$project_id]);
-        return $final_proposal->id;
+        try{
+        $proposalObj = new Proposals;
+        $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
+        if ($init_proposal['exist'] == 1) {
+            if ($init_proposal['proposal']->status == 1) {
+                $final_proposal=Final_proposal::create(['hourly_rate'=>$hourly_rate,'hours'=>$num_hours,'proposal_id'=>$proposal_id,'status'=>-1,'team_id'=>$team_id,'project_id'=>$project_id]);
+                return ['code'=>200 , 'msg'=>$final_proposal->id];
+            }
+            else {
+                
+                return ['code'=>422 , 'msg'=>'your initial proposal status not accepted'];
+            }
+        }
+        else {
+         
+           return ['code'=>422 , 'msg'=>'you do not have initial proposal'];
+        }
+    }catch(Exception $error)
+    {
+        return ['code'=>500 , 'msg'=>$error->getMessage()];
+    }
     }
     function getFinalProposalByProjectIdAndTeamId(Request $req,$project_id,$team_id)
     {
