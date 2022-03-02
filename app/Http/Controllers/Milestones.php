@@ -43,7 +43,7 @@ class Milestones extends Controller
                         if ($userData['privileges'] == 1) {
                             $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
                             if ($finalProposal['exist'] == 0) {
-                                $new_final_proposal=$finalProposalObj->createEmptyFinalProposal($req->hourly_rate,$req->num_hours,$req->proposal_id,$req->team_id,$req->project_id);
+                                $new_final_proposal=$finalProposalObj->createEmptyFinalProposal($req->hourly_rate,$req->num_hours,$req->proposal_id,$req->team_id,$req->project_id,$userData['user_id']);
                                 if($new_final_proposal['code']==422 ||$new_final_proposal['code']== 500)
                                 {
                                     $response = Controller::returnResponse($new_final_proposal['code'], 'error generating final proposal', $new_final_proposal['msg']);

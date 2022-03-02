@@ -592,11 +592,11 @@ class ProjectController extends Controller
         $project->requirements = $requirementsObj->getRequirementsByProjectId($id);
         $project->categories = $projectCategoriesObj->getProjectCategories($id);
         $project->duration = Category::find((int)$project->days)->name;
-        $user_id =$proposalsControllersObj->getProposalByProjectAndTeamId((int)$project->id,$project->team_id)->user_id;
-        $user =json_decode($freelancersControllersObj->get_freelancer_info($user_id))->data;
+        // $user_id =$proposalsControllersObj->getProposalByProjectAndTeamId((int)$project->id,$project->team_id)->user_id;
+       
         $team =$teamControllersObj->get_team_info($project->team_id);
         $project->final_proposal=$finalProposalControllersObj->getProposalDetailsByProject_id($project->id);
-        
+        $user =json_decode($freelancersControllersObj->get_freelancer_info($project->final_proposal->user_id))->data;
         if (isset($user->image)) {
             $user->image= asset("images/users/" . $user->image);
         } else {
