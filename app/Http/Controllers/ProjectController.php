@@ -292,6 +292,7 @@ class ProjectController extends Controller
             $projects = DB::table('projects')
                 ->join('proposals', 'projects.id', '=', 'proposals.project_id')
                 ->select('projects.*')
+                ->select('proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->where('proposals.status', '<', 2)
                 ->where('projects.status', '=', 0)
