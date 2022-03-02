@@ -226,6 +226,7 @@ class Final_proposals extends Controller
     }
     function getFinalProposalByProjectIdAndTeamId(Request $req,$project_id,$team_id)
     {
+        try{
         $userData = Controller::checkUser($req);
         $proposalObj = new Proposals;
         if ($userData['privileges'] == 1) {
@@ -259,5 +260,10 @@ class Final_proposals extends Controller
             $response = Controller::returnResponse(422, 'Unauthorized action this action for admins only or you do not have team', []);
             return json_encode($response);
         }  
+    }catch(Exception $error)
+    {
+        $response = Controller::returnResponse(500, 'something went wrong', $error->getMessage());
+        return json_encode($response);
     }
+}
 }
