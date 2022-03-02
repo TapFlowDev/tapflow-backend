@@ -292,7 +292,6 @@ class ProjectController extends Controller
             $projects = DB::table('projects')
                 ->join('proposals', 'projects.id', '=', 'proposals.project_id')
                 ->select('projects.*')
-                ->select('proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->where('proposals.status', '<', 2)
                 ->where('projects.status', '=', 0)
@@ -400,7 +399,7 @@ class ProjectController extends Controller
                     $admin->image  = asset('images/profile-pic.jpg');
                 }
             }
-            $projectData->proposal_id = $proposal_id;
+            $projectData->proposal = $proposal;
             $projectData->admins = $admins;
 
             $response = Controller::returnResponse(200, "data found", $projectData);
