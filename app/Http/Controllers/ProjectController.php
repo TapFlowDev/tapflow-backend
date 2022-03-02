@@ -399,7 +399,7 @@ class ProjectController extends Controller
                     $admin->image  = asset('images/profile-pic.jpg');
                 }
             }
-            $projectData->proposal_id = $proposal_id;
+            $projectData->proposal = $proposal;
             $projectData->admins = $admins;
 
             $response = Controller::returnResponse(200, "data found", $projectData);
