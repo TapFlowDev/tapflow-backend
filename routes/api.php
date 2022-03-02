@@ -172,8 +172,6 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addMilestone', [Milestones::class, 'Insert']);
     Route::post('deleteMilestone', [Milestones::class, 'deleteMilestone']);
     Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
-  
-
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
