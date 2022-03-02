@@ -154,7 +154,7 @@ class ClientController extends Controller
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
         }else{
-             Client::where('user_id', $req->user_id)->update(['bio' => $req->bio]);
+             Client::where('user_id', $req->id)->update(['bio' => $req->bio]);
             $response = Controller::returnResponse(200, 'User information updated successfully', array());
             return json_encode($response);
         }
@@ -212,7 +212,7 @@ class ClientController extends Controller
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
         }else{
-            $id = $req->user_id;
+            $id = $req->id;
             $user_image = Client::where('user_id', $id)->select('image')->first()->image;
             $image_path = "images/users/" . $user_image;
              File::delete(public_path($image_path));
