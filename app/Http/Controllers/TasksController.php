@@ -29,7 +29,7 @@ class TasksController extends Controller
                     "description" => $task['task_description'],
                 );
                 $tasks = task::create($arr);
-                $assignees = $AssignedTo->Insert($task['assignees'], $tasks->id);
+                $assignees = $AssignedTo->Insert($task['task_assignees'], $tasks->id);
                 if ($assignees['code'] == 500) {
                     return ['code' => 500, 'msg' => $assignees['msg']];
                 }
