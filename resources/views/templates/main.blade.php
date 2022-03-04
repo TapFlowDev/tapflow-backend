@@ -125,12 +125,12 @@
                         <span class="title">Other Users</span>
                     </a>
                 </li>
-                <li>
+                {{-- <li>
                     <a href="/AdminTool/waitingList">
                         <span class="icon"><i class="fas fa-address-book"></i></span>
                         <span class="title">Waiting List</span>
                     </a>
-                </li>
+                </li> --}}
                 <li>
                     <a href="/AdminTool/announcements">
                         <span class="icon"><i class="fas fa-scroll"></i></span>

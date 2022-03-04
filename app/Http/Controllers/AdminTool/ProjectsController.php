@@ -118,8 +118,8 @@ class ProjectsController extends Controller
             }
             // return $teams;
         }
-        $allTeams = $teamObj->getAllTeams();
-        return view("AdminTool.Projects.show", ['project' => $project, 'status' => $status, 'teams' => $teams, 'allTeams' => $allTeams]);
+        // $allTeams = $teamObj->getAllTeams();
+        return view("AdminTool.Projects.show", ['project' => $project, 'status' => $status, 'teams' => $teams]);
     }
 
     /**
@@ -163,23 +163,28 @@ class ProjectsController extends Controller
     private function getData($array)
     {
         $projectCatObj = new ProjectCategoriesController;
+        $companyObj = new CompaniesController;
         foreach ($array as $keyP => &$project) {
             $duration = Category::find((int)$project->days);
             $company = Group::find($project->company_id);
-            $company_details = Company::where("group_id", "=", $project->company_id)->get()->first();
+            // $company_details = Company::where("group_id", "=", $project->company_id)->get()->first();
+            $company_details = $companyObj->getCompanyById($project->company_id);
             if ($project->budget_type < 1) {
                 $project->duration = $duration->name;
             } else {
                 $project->duration = "unset";
             }
-            if ($company_details->image != "") {
-                $company_details->image = asset('images/companies/' . $company_details->image);
-            } else {
-                $company_details->image = asset('images/profile-pic.jpg');
-            }
+            // if ($company_details->image != "") {
+            //     $company_details->image = asset('images/companies/' . $company_details->image);
+            // } else {
+            //     $company_details->image = asset('images/profile-pic.jpg');
+            // }
             $project->company_name = $company->name;
             $project->company_image = $company_details->image;
             $project->categories = $projectCatObj->getProjectCategories($project->id);
+            $project->admin_name = $company_details->admin_name;
+            $project->admin_id = $company_details->admin_id;
+            $project->admin_email = $company_details->admin_email;
             // $str = $project->requirements_description;
             // // $requirements_description = json_decode($str, TRUE);
 
@@ -214,6 +219,11 @@ class ProjectsController extends Controller
     function getSubCategoriesByParent($category_id)
     {
         return SubCategory::where('category_id', $category_id)->get();
+    }
+
+    function getProjectRequests(){
+        $projects = DB::table('projects')->join('proposals', 'projects.id', '=','proposals.project_id')->where('projects.status', '<>', -1)->count();
+        return $projects;
     }
 
     function recommendProject($id, Request $req)

@@ -20,6 +20,29 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-3">
+                                        <h6 class="mb-0">Admin Name</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <a class="team-name-link" href="{{ route('AdminTool.clients.show', $project->admin_id)}}" target="_blanck"
+                                            role="button">{{ $project->admin_name }}
+                                        </a>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Admin Email</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+
+                                        <a class="team-name-link" href="mailto:{{ $project->admin_email }}" target="_blanck"
+                                            role="button">{{ $project->admin_email }}
+                                        </a>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
                                         <h6 class="mb-0">Created</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
