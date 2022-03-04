@@ -18,6 +18,8 @@ use App\Http\Controllers\AdminTool\CategoryTypesController;
 use App\Http\Controllers\AdminTool\DummyCompaines;
 use App\Http\Controllers\AdminTool\DummyProjects;
 use App\Http\Controllers\AdminTool\ProjectsController;
+use App\Http\Controllers\MailChimpController;
+use App\Http\Controllers\NotificationsSettings;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
@@ -77,9 +79,15 @@ Route::get('/r', function (Request $request) {
 // Route::get('/testForms', function () {
 //     return view('testForms');
 // });
-// Route::get('/checkout', function () {
-//     return view('checkout');
-// });
+Route::get('/checkout', function () {
+     return view('checkout');
+ });
+Route::get('/donePayment', function () {
+     return view('donePayment');
+ });
+ Route::get('/mailchimptest', [MailChimpController::class, 'test']);
+
+ Route::get('/notifications', [NotificationsSettings::class, 'test']);
 
 // Route::get('/testForms', function(){
 //     return view('testForms');
