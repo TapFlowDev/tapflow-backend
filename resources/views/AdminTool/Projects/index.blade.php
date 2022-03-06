@@ -58,7 +58,7 @@
                                                 action="{{ route('AdminTool.verifyProject.update', $project->id) }}" method="POST"
                                                 style="display: none;">
                                                 @csrf
-                                                @method('PATCH')
+                                                @method('POST')
                                                 <input type="hidden" name="verify" value="1">
 
                                             </form>
@@ -70,7 +70,7 @@
                                                 action="{{ route('AdminTool.verifyProject.update', $project->id) }}" method="POST"
                                                 style="display: none;">
                                                 @csrf
-                                                @method('PATCH')
+                                                @method('POST')
                                                 <input type="hidden" name="verify" value="0">
 
                                             </form>
