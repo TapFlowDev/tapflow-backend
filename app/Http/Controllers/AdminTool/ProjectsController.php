@@ -265,6 +265,6 @@ class ProjectsController extends Controller
   function  verifyProject(Request $request,$id)
   {
     Project::where('id', $id)->update(['verified'=>(int)$request->verify]);
-    return redirect('/AdminTool/Projects');
+    return redirect('/AdminTool/projects');
   }
 }
