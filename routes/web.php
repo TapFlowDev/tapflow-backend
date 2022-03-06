@@ -73,6 +73,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::get('/recommendProject/{id}',[ProjectsController::class, 'recommendProject'])->name('recommendProject.show');
     Route::post('/filterAgenciesByProjectCategories',[ProjectsController::class, 'filterAgenciesByProjectCategories'])->name('filterAgenciesByProjectCategories.filter');
     Route::post('sendEmailAgencies/{id}',[ProjectsController::class, 'sendAgenciesEmail'])->name('sendEmailAgencies.send');
+    Route::post('verifyProject/{id}',[ProjectsController::class, 'verifyProject'])->name('verifyProject.update');
     
 });
 Route::get('/r', function (Request $request) {
