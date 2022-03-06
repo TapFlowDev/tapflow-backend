@@ -261,5 +261,10 @@ class ProjectsController extends Controller
 
         // return $projects;
     }
-  
+
+  function  verifyProject(Request $request,$id)
+  {
+    Project::where('id', $id)->update(['verified'=>(int)$request->verify]);
+    return redirect()->back();
+  }
 }

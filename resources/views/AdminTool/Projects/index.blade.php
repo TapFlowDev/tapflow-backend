@@ -15,7 +15,7 @@
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                            <tbody>
                             @foreach ($projects as $project)
                                 <tr>
                                     <th scope="row">{{ $project->id }}</th>
@@ -50,6 +50,33 @@
                             @csrf
                             @method("DELETE")
                             </form> --}}
+                                    </td>
+                                    <td>
+                                    @if ($projects->verified == 0)
+                                            <button class="btn btn-sm btn-success"
+                                                onclick="event.preventDefault();
+                                                            document.getElementById('verifyProject-form-{{ $project->id }}').submit()">Verify</button>
+                                            <form id="verifyTeam-user-form-{{ $project->id }}"
+                                                action="{{ route('AdminTool.verifyProject.update', $user->id) }}" method="POST"
+                                                style="display: none;">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="verify" value="1">
+
+                                            </form>
+                                        @elseif ($projects->verified == 1)
+                                            <button class="btn btn-sm btn-danger"
+                                                onclick="event.preventDefault();
+                                                        document.getElementById('verifyProject-user-form-{{ $project->id }}').submit()">Unverify</button>
+                                            <form id="verifyTeam-project-form-{{ $project->id }}"
+                                                action="{{ route('AdminTool.verifyProject.update', $project->id) }}" method="POST"
+                                                style="display: none;">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="verify" value="0">
+
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
