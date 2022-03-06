@@ -50,13 +50,11 @@
                             @csrf
                             @method("DELETE")
                             </form> --}}
-                                    </td>
-                                    <td>
-                                    @if ($project->verified == 0)
+                            @if ($project->verified == 0)
                                             <button class="btn btn-sm btn-success"
                                                 onclick="event.preventDefault();
                                                             document.getElementById('verifyProject-form-{{ $project->id }}').submit()">Verify</button>
-                                            <form id="verifyTeam-user-form-{{ $project->id }}"
+                                            <form id="verifyProject-form-{{ $project->id }}"
                                                 action="{{ route('AdminTool.verifyProject.update', $project->id) }}" method="POST"
                                                 style="display: none;">
                                                 @csrf
@@ -67,8 +65,8 @@
                                         @elseif ($project->verified == 1)
                                             <button class="btn btn-sm btn-danger"
                                                 onclick="event.preventDefault();
-                                                        document.getElementById('verifyProject-user-form-{{ $project->id }}').submit()">Unverify</button>
-                                            <form id="verifyTeam-project-form-{{ $project->id }}"
+                                                        document.getElementById('verifyProject-form-{{ $project->id }}').submit()">Unverify</button>
+                                            <form id="verifyProject-form-{{ $project->id }}"
                                                 action="{{ route('AdminTool.verifyProject.update', $project->id) }}" method="POST"
                                                 style="display: none;">
                                                 @csrf
@@ -78,6 +76,7 @@
                                             </form>
                                         @endif
                                     </td>
+                                   
                                 </tr>
                             @endforeach
 
