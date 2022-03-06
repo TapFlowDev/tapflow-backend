@@ -35,7 +35,11 @@ class Controller extends BaseController
             if ($member === null) {
                 return ['exist' => 0];
             } else {
-                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges,"type"=>$userData['type']];
+                $verified= DB::table('groups')
+                ->where('id','=',$member->group_id)
+                ->select('verified')
+                ->first();
+                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges,"type"=>$userData['type'],'verified'=>$verified];
             }
         } catch (Exception  $error) {
             $response = Controller::returnResponse(500, "check user error", $error->getMessage());
