@@ -467,20 +467,29 @@ class ProjectController extends Controller
     }
     function getCompanyPendingProjectDetails(Request $req, $project_id, $company_id)
     {
-        $userData = $req->user();
-        $GroupControllerObj = new GroupController;
-        $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
-        if ($group_id == $company_id) {
-            try {
-                $project = $this->getPendingProjectInfo($project_id);
-                $response = Controller::returnResponse(200, "successful", $project);
-                return (json_encode($response));
-            } catch (Exception $error) {
-                $response = Controller::returnResponse(500, "Something Wrong", $error->getMessage());
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $company_id) {
+                    $isExist = $this->ifExist($project_id);
+                    if ($isExist['exist'] == 1) {
+                        $project = $this->getPendingProjectInfo($project_id);
+                        $response = Controller::returnResponse(200, "successful", $project);
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, "this project does not exist", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "trying to get data for another company", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "the user does not have company", []);
                 return (json_encode($response));
             }
-        } else {
-            $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "Something Wrong", $error->getMessage());
             return (json_encode($response));
         }
     }
