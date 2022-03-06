@@ -33,6 +33,7 @@ use  App\Http\Controllers\WalletsTransactionsController;
 use  App\Http\Controllers\GroupMembersController;
 use  App\Http\Controllers\TasksController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\FormOptionsController;
 use App\Http\Controllers\Milestones;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
@@ -106,6 +107,7 @@ Route::get('getSectors', [CategoriesController::class, 'getSectors']);
 Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 Route::get('deleteMilestonesByProposalId/{id}', [Milestones::class, 'deleteMilestonesByProposalId']);
 Route::get('getGroupNameAndImage/{id}', [GroupController::class, 'getGroupNameAndImage']);
+Route::get('getQuestions', [FormOptionsController::class, 'getData']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
