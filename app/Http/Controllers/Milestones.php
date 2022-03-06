@@ -258,7 +258,7 @@ class Milestones extends Controller
                         ->makeHidden(['created_at', 'updated_at']);
                     $milestones_details = [];
                     foreach ($milestones as $milestone) {
-                        $tasks = $Tasks->getTaskByMilestoneId($milestone->id);
+                        // $tasks = $Tasks->getTaskByMilestoneId($milestone->id);
                         array_push($milestones_details, array(
                             "milestone_id" => $milestone->id,
                             "milestone_name" => $milestone->name,
@@ -266,7 +266,7 @@ class Milestones extends Controller
                             "milestone_price" => $milestone->price,
                             "milestone_hours" => $milestone->hours,
                             "milestone_status" => $milestone->status,
-                            "tasks" => ($tasks),
+                            // "tasks" => ($tasks),
                         ));
                     }
                     return $milestones_details;
