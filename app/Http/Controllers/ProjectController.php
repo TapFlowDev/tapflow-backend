@@ -179,7 +179,7 @@ class ProjectController extends Controller
                 return $query->where('min', '>=', $min);
             })->when($duration, function ($query, $duration) {
                 return $query->whereIn('days', $duration);
-            })->where('status', '<', 1)->distinct()->latest()->offset($page)->limit($limit)->get();
+            })->where('status', '<', 1)->where('verified','=',1)->distinct()->latest()->offset($page)->limit($limit)->get();
             // return $projects;
             $projectsData = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "Data Found", $projectsData);
@@ -432,9 +432,10 @@ class ProjectController extends Controller
             $page = ($offset - 1) * $limit;
             try {
                 $projects = DB::table('projects')
-                    ->select('id', 'user_id', 'company_id', 'name', 'min', 'max', 'description', 'status', 'days', 'budget_type', 'created_at',)
+                    ->select('id', 'user_id', 'company_id', 'name', 'min', 'max', 'description', 'status', 'days', 'budget_type','verified','created_at',)
                     ->where('projects.company_id', '=', $company_id)
                     ->where('projects.status', '=', 0)
+                    
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
