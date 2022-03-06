@@ -170,7 +170,7 @@ class ProjectsController extends Controller
             // $company_details = Company::where("group_id", "=", $project->company_id)->get()->first();
             $company_details = $companyObj->getCompanyById($project->company_id);
             if ($project->budget_type < 1) {
-                // $project->duration = $duration->name;
+                $project->duration = $duration->name;
             } else {
                 $project->duration = "unset";
             }
@@ -181,7 +181,7 @@ class ProjectsController extends Controller
             // }
             $project->company_name = $company->name;
             $project->company_image = $company_details->image;
-            // $project->categories = $projectCatObj->getProjectCategories($project->id);
+            $project->categories = $projectCatObj->getProjectCategories($project->id);
             $project->admin_name = $company_details->admin_name;
             $project->admin_id = $company_details->admin_id;
             $project->admin_email = $company_details->admin_email;
