@@ -287,7 +287,7 @@ private function downPaymentHandler($data,$proposal_id)
             $milestone_id=$milestone['milestone_id'];
             Milestone::where('id',$milestone_id)->update(['down_payment'=>1]);
         }
-        $sum=fmod($sum,2);
+        $sum=number_format($sum,2);
         
         Final_proposal::where('id',$proposal_id)->update(['down_payment'=>444444,'down_payment_value'=>$sum]);
         
