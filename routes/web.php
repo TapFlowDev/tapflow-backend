@@ -15,6 +15,7 @@ use App\Http\Controllers\AdminTool\AnnouncementsController;
 use App\Http\Controllers\AdminTool\DashboardController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\AdminTool\CategoryTypesController;
+use App\Http\Controllers\AdminTool\ClientsRequests;
 use App\Http\Controllers\AdminTool\DummyCompaines;
 use App\Http\Controllers\AdminTool\DummyProjects;
 use App\Http\Controllers\AdminTool\ProjectsController;
@@ -67,6 +68,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/dummyCompanies', DummyCompaines::class);
     Route::resource('/dummyProjects', DummyProjects::class);
     Route::resource('/formOptions', FromOptions::class);
+    Route::resource('/clientsRequests', ClientsRequests::class);
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
     // Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
     Route::post('sendEmail',[EmailController::class, 'send'])->name('sendEmail.send');
