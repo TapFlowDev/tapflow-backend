@@ -164,6 +164,7 @@ class ProjectsController extends Controller
     {
         $projectCatObj = new ProjectCategoriesController;
         $companyObj = new CompaniesController;
+        $requirementsObj = new Requirement;
         foreach ($array as $keyP => &$project) {
             $duration = Category::find((int)$project->days);
             $company = Group::find($project->company_id);
@@ -185,6 +186,8 @@ class ProjectsController extends Controller
             $project->admin_name = $company_details->admin_name;
             $project->admin_id = $company_details->admin_id;
             $project->admin_email = $company_details->admin_email;
+            $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+
             // $str = $project->requirements_description;
             // // $requirements_description = json_decode($str, TRUE);
 

@@ -71,15 +71,15 @@
 </div>
 <div class="mb-3" id="projReq">
     <label for="requirements_description" class="form-label">Project Requirements:</label>
-    <div class="row" id="dynamicInput[0]">
+    <div>
+        <button type="button" class="btn btn-outline-success mt-4" onClick="addInput();">Add</button>
+    </div>
+    {{-- <div class="row" id="dynamicInput[0]">
         <div class="col-8">
             Entry 1<br><input type="text" class="form-control" name="requirements_description[]"> 
         </div>
-        <div class="col-4">
-            <button type="button" class="btn btn-outline-success mt-4" onClick="addInput();">Add</button>
-
-        </div>
-    </div>
+        
+    </div> --}}
 @error('requirements_description')
     <span class="invalid-feedback" style="display: block;" role="alert">
         {{ $message }}
@@ -99,9 +99,10 @@
     
     function addInput(){
         var newdiv = document.createElement('div');
-        newdiv.id = dynamicInput[counter];
+        newdiv.id = counter;
         newdiv.classList.add('row');
-        newdiv.innerHTML = "<div class='col-8'> Entry "  + (counter + 1) + "<br><input type='text' class='form-control' name='requirements_description[]'> </div> <div class='col-4'> <button type='button' class='btn btn-outline-danger mt-4' onClick='removeInput("+dynamicInput[counter]+");'>Remove</button></div>";
+        newdiv.classList.add('mt-2');
+        newdiv.innerHTML = "<div class='col-8'> Entry "  + (counter) + "<br><input type='text' class='form-control' name='requirements_description[]'> </div> <div class='col-4'> <button type='button' class='btn btn-outline-danger mt-4' onClick='removeInput("+counter+");'>Remove</button></div>";
         document.getElementById('projReq').appendChild(newdiv);
         counter++;
     }

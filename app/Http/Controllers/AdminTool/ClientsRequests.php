@@ -64,8 +64,7 @@ class ClientsRequests extends Controller
             $count++;
         }
         $info->answers = $userAnswers;
-        return $info;
-        // return view('AdminTool.ClientsRequests.show',  ['info' => $info]);
+        return view('AdminTool.ClientsRequests.show',  ['info' => $info]);
     }
 
     /**
