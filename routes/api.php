@@ -142,6 +142,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
     Route::post('removeUser', [GroupMembersController::class, 'removeUserFromGroup']);
     Route::get('project/{id}', [ProjectController::class, 'getProject']);
+    Route::get('getFullFinalProposalById/{id}', [Final_proposals::class, 'getFullFinalProposalById']);
     // Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     // Route::post('saveImage', [ImagesController::class, 'Insert']);
 });
@@ -195,5 +196,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('updateCompanyImage', [CompanyController::class, 'updateCompanyImage']);
     Route::post('updateClientImage', [ClientController::class, 'updateClientImage']);
     Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
+    
 });
 
