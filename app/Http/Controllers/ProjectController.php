@@ -641,4 +641,9 @@ class ProjectController extends Controller
             return ['exist' => 1, 'project' => $project];
         }
     }
+    function getProjectCompanyId($id)
+    {
+        $company_id = Project::where('id', $id)->select('company_id')->first();
+        return($company_id->company_id);
+    }
 }
