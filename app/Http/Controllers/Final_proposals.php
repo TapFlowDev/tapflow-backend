@@ -289,7 +289,7 @@ private function downPaymentHandler($data,$proposal_id)
         }
         $sum=number_format($sum,2);
         
-        Final_proposal::where('id',$proposal_id)->update(['down_payment'=>444444,'down_payment_value'=>$sum]);
+        Final_proposal::where('id',$proposal_id)->update(['down_payment'=>1,'down_payment_value'=>$sum]);
         
         
     }
