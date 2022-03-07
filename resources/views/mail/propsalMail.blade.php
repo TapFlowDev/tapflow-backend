@@ -3,7 +3,7 @@
     <body style="font-family: Helvetica,Arial,sans-serif;">
         <h1 style="color: black; font-weight: bold;">Hey {{ $details['admin_name'] }},</h1>
         <p style="color: black;">
-            You have received a new initial proposal from "{{ $details['team_info']['name'] }}" agency
+            You have received a new initial proposal from {{ $details['team_info']['name'] }}
             <br>
             <br>
         </p>
@@ -34,7 +34,7 @@
                 <td>{{ $details['team_info']['country'] }}</td>
             </tr>
             <tr>
-                <td>No. of employees:</td>
+                <td>Agency size:</td>
                 <td>{{ $details['team_info']['employees_number'] }}</td>
             </tr>
             <tr>
