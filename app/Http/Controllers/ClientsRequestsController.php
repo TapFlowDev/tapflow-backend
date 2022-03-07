@@ -20,7 +20,7 @@ class ClientsRequestsController extends Controller
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
-            $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+            $response = Controller::returnResponse(101, 'Validation Error', ['error' => $validator->errors(), 'req'=>$req]);
             return json_encode($response);
         }
         try {
