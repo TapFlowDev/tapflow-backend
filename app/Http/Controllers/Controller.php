@@ -39,7 +39,8 @@ class Controller extends BaseController
                 ->where('id','=',$member->group_id)
                 ->select('verified')
                 ->first();
-                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges,"type"=>$userData['type'],'verified'=>$verified];
+           
+                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges,"type"=>$userData['type'],'verified'=>$verified->verified];
             }
         } catch (Exception  $error) {
             $response = Controller::returnResponse(500, "check user error", $error->getMessage());
