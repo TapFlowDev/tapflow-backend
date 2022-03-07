@@ -13,6 +13,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupMembersController;
 use App\Models\Group_member;
+use App\Models\Milestone;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Finally_;
 
@@ -49,7 +50,10 @@ class Final_proposals extends Controller
                                 return (json_encode($response));
                             } else {
                                 try {
-                                    $final_proposal = Final_proposal::create($req);
+                                    $price=$this->calculatePrice($req->num_hours,$req->hourly_rate);
+                                    $req['price']=$price;
+                                    $final_proposal = Final_proposal::create($req->except(['down_payment']));
+                                    $this->downPaymentHandler($req->down_payment[0],$final_proposal->id);
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
                                 } catch (Exception $error) {
@@ -63,8 +67,11 @@ class Final_proposals extends Controller
                             $proposal = json_decode($this->getProposalDetailsById($ifExist['final_proposal_id']));
                             $status = $proposal->status;
                             if ($status == -1 || $status == 3) {
+                                $price=$this->calculatePrice($req->num_hours,$req->hourly_rate);
+                                $req['price']=$price;
+                               
                                 $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
-
+                                $this->downPaymentHandler($req->down_payment[0],$ifExist['final_proposal_id']);
                                 if ($update_final == 1) {
                                     $response = Controller::returnResponse(200, 'update data successful', []);
                                     return json_encode($response);
@@ -115,8 +122,6 @@ class Final_proposals extends Controller
             ->where('id', $id)
             ->update([
                 'title' => $data->title, 'price' => $data->price,
-                'down_payment' => $data->down_payment,
-                'down_payment_value' => $data->down_payment_value,
                 'starting_date' => $data->starting_date,
                 'description' => $data->description,
                 'hours' => $data->hours, 'hourly_rate' => $data->hourly_rate,
@@ -269,5 +274,34 @@ class Final_proposals extends Controller
         $response = Controller::returnResponse(500, 'something went wrong', $error->getMessage());
         return json_encode($response);
     }
+}
+private function downPaymentHandler($data,$proposal_id)
+{
+   try{
+    if($data['value'] >0 )
+    {   $sum=0;
+        foreach($data['details'] as $milestone)
+        {
+           
+            $sum+=$milestone['milestone_price'];
+            $milestone_id=$milestone['milestone_id'];
+            Milestone::where('id',$milestone_id)->update(['down_payment'=>1]);
+        }
+        $sum=fmod($sum,2);
+        
+        Final_proposal::where('id',$proposal_id)->update(['down_payment'=>444444,'down_payment_value'=>$sum]);
+        
+        
+    }
+}catch(Exception $error)
+{}
+}
+private function calculatePrice($hours,$hourly_rate)
+{
+    $price=(float)$hourly_rate * (float)$hours;
+ 
+    $price=number_format($price,2);
+   
+    return $price;
 }
 }

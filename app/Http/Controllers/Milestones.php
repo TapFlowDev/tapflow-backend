@@ -55,12 +55,13 @@ class Milestones extends Controller
                                         $deliverables = serialize($req->deliverables);
                                     }
 
-
+                                    $price=$this->calculatePrice($req->hours,$req->hourly_rate);
+                                    $price=fmod($price,2);
                                     $data = array(
                                         "project_id" => $req->project_id,
                                         "final_proposal_id" => $new_final_proposal['msg'],
                                         "hours" => $req->milestone_num_hours,
-                                        "price" => $req->milestone_price,
+                                        "price" => $price,
                                         "name" => $req->milestone_name,
                                         "description" => $req->milestone_description,
                                         "deliverables" => serialize($req->deliverables),
@@ -76,11 +77,13 @@ class Milestones extends Controller
                                 if (count($req->deliverables) >= 0) {
                                     $deliverables = $req->deliverables;
                                 }
+                                $price=$this->calculatePrice($req->hours,$req->hourly_rate);
+                                    $price=fmod($price,2);
                                 $data = array(
                                     "project_id" => $req->project_id,
                                     "final_proposal_id" => $final_proposal_id,
                                     "hours" => $req->milestone_num_hours,
-                                    "price" => $req->milestone_price,
+                                    "price" => $price,
                                     "name" => $req->milestone_name,
                                     "description" => $req->milestone_description,
                                     "deliverables" => serialize($req->deliverables),
@@ -124,9 +127,11 @@ class Milestones extends Controller
                             $response = Controller::returnResponse(422, "you do not have final proposal ", []);
                             return (json_encode($response));
                         } else {
+                            $price=$this->calculatePrice($req->hours,$req->hourly_rate);
+                            $price=fmod($price,2);
                             $milestone = Milestone::where('id', $req->milestone_id)
                                 ->update([
-                                    'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price,
+                                    'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $price,
                                     'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables)
                                 ]);
                             $response = Controller::returnResponse(200, "milestone updated successful", []);
@@ -317,5 +322,11 @@ class Milestones extends Controller
     function updateStatus($id, $value)
     {
         Milestone::where('id', $id)->update(['status' => $value]);
+    }
+    private function calculatePrice($hours,$hourly_rate)
+    {
+        $price=(float)$hourly_rate * (float)$hours;
+        $price=number_format($price,2);
+        return ($price);
     }
 }
