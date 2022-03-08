@@ -37,7 +37,7 @@ class EmailController extends Controller
     function sendEmailToAgencies($agencies, $project){
         foreach($agencies as $agency){
             $details = [
-                "subject" => 'Match Project',
+                "subject" => 'We have found you a great project',
                 "name" => $agency->admin_name,
                 "project" => $project
             ];
