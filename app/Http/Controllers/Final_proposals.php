@@ -13,7 +13,9 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupMembersController;
 use App\Models\Group_member;
+use App\Models\Milestone;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt\Finally_;
 
 use function PHPUnit\Framework\isEmpty;
@@ -49,7 +51,10 @@ class Final_proposals extends Controller
                                 return (json_encode($response));
                             } else {
                                 try {
-                                    $final_proposal = Final_proposal::create($req);
+                                    $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
+                                    $req['price'] = $price;
+                                    $final_proposal = Final_proposal::create($req->except(['down_payment']));
+                                    $this->downPaymentHandler($req->down_payment[0], $final_proposal->id);
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
                                 } catch (Exception $error) {
@@ -63,8 +68,11 @@ class Final_proposals extends Controller
                             $proposal = json_decode($this->getProposalDetailsById($ifExist['final_proposal_id']));
                             $status = $proposal->status;
                             if ($status == -1 || $status == 3) {
-                                $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
+                                $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
+                                $req['price'] = $price;
 
+                                $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
+                                $this->downPaymentHandler($req->down_payment[0], $ifExist['final_proposal_id']);
                                 if ($update_final == 1) {
                                     $response = Controller::returnResponse(200, 'update data successful', []);
                                     return json_encode($response);
@@ -115,8 +123,6 @@ class Final_proposals extends Controller
             ->where('id', $id)
             ->update([
                 'title' => $data->title, 'price' => $data->price,
-                'down_payment' => $data->down_payment,
-                'down_payment_value' => $data->down_payment_value,
                 'starting_date' => $data->starting_date,
                 'description' => $data->description,
                 'hours' => $data->hours, 'hourly_rate' => $data->hourly_rate,
@@ -179,7 +185,6 @@ class Final_proposals extends Controller
                     $all_people = array($all_people);
                     $all_people = array_unique($all_people);
                     $proposal->all_people = $all_people;
-                   
                 }
                 $response = Controller::returnResponse(200, "successful", $proposals);
                 return (json_encode($response));
@@ -195,79 +200,155 @@ class Final_proposals extends Controller
     function getProposalDetailsByProject_id($project_id)
     {
         $milestone = new Milestones;
-        $final_proposal = Final_proposal::where('project_id',$project_id)
-        ->select('id','title','user_id','proposal_id','project_id','team_id',
-        'hours','hourly_rate','price','down_payment','down_payment_value',
-        'starting_date','status','created_at'
-        )->first();
+        $final_proposal = Final_proposal::where('project_id', $project_id)
+            ->select(
+                'id',
+                'title',
+                'user_id',
+                'proposal_id',
+                'project_id',
+                'team_id',
+                'hours',
+                'hourly_rate',
+                'price',
+                'down_payment',
+                'down_payment_value',
+                'starting_date',
+                'status',
+                'created_at'
+            )->first();
         $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
         $final_proposal->milestones = $milestones;
-        return($final_proposal);
+        return ($final_proposal);
     }
-    function createEmptyFinalProposal($hourly_rate,$num_hours,$proposal_id,$team_id,$project_id,$user_id)
+    function createEmptyFinalProposal($hourly_rate, $num_hours, $proposal_id, $team_id, $project_id, $user_id)
     {
-        try{
-        $proposalObj = new Proposals;
-        $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
-        if ($init_proposal['exist'] == 1) {
-            if ($init_proposal['proposal']->status == 1) {
-                $final_proposal=Final_proposal::create(['hourly_rate'=>$hourly_rate,'hours'=>$num_hours,'proposal_id'=>$proposal_id,'status'=>-1,'team_id'=>$team_id,'project_id'=>$project_id,'user_id'=>$user_id]);
-                return ['code'=>200 , 'msg'=>$final_proposal->id];
-            }
-            else {
-                
-                return ['code'=>422 , 'msg'=>'your initial proposal status not accepted'];
-            }
-        }
-        else {
-         
-           return ['code'=>422 , 'msg'=>'you do not have initial proposal'];
-        }
-    }catch(Exception $error)
-    {
-        return ['code'=>500 , 'msg'=>$error->getMessage()];
-    }
-    }
-    function getFinalProposalByProjectIdAndTeamId(Request $req,$project_id,$team_id)
-    {
-        try{
-        $userData = Controller::checkUser($req);
-        $proposalObj = new Proposals;
-        if ($userData['privileges'] == 1) {
-            $team_id = $userData['group_id'];
-            if ($userData['group_id'] == $team_id) {
-                $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
-                if ($init_proposal['exist'] == 1) {
-                    if ($init_proposal['proposal']->status == 1) {
-                      
-                       $final_proposal=DB:: table('final_proposals')
-                       ->where('project_id','=',$project_id)
-                       ->where('team_id','=',$team_id)
-                       ->first();
-                       $final_proposal->num_hours=$final_proposal->hours;
-                       $response = Controller::returnResponse(200, 'successful ', $final_proposal);
-                        return json_encode($response);
+        try {
+            $proposalObj = new Proposals;
+            $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
+            if ($init_proposal['exist'] == 1) {
+                if ($init_proposal['proposal']->status == 1) {
+                    $final_proposal = Final_proposal::create(['hourly_rate' => $hourly_rate, 'hours' => $num_hours, 'proposal_id' => $proposal_id, 'status' => -1, 'team_id' => $team_id, 'project_id' => $project_id, 'user_id' => $user_id]);
+                    return ['code' => 200, 'msg' => $final_proposal->id];
+                } else {
 
+                    return ['code' => 422, 'msg' => 'your initial proposal status not accepted'];
+                }
+            } else {
+
+                return ['code' => 422, 'msg' => 'you do not have initial proposal'];
+            }
+        } catch (Exception $error) {
+            return ['code' => 500, 'msg' => $error->getMessage()];
+        }
+    }
+    function getFinalProposalByProjectIdAndTeamId(Request $req, $project_id, $team_id)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            $proposalObj = new Proposals;
+            if ($userData['privileges'] == 1) {
+                $team_id = $userData['group_id'];
+                if ($userData['group_id'] == $team_id) {
+                    $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
+                    if ($init_proposal['exist'] == 1) {
+                        if ($init_proposal['proposal']->status == 1) {
+
+                            $final_proposal = DB::table('final_proposals')
+                                ->where('project_id', '=', $project_id)
+                                ->where('team_id', '=', $team_id)
+                                ->first();
+                            $final_proposal->num_hours = $final_proposal->hours;
+                            $response = Controller::returnResponse(200, 'successful ', $final_proposal);
+                            return json_encode($response);
+                        } else {
+                            $response = Controller::returnResponse(422, 'your initial proposal status not accepted ', []);
+                            return json_encode($response);
+                        }
                     } else {
-                        $response = Controller::returnResponse(422, 'your initial proposal status not accepted ', []);
+                        $response = Controller::returnResponse(422, 'you do not have initial proposal ', []);
                         return json_encode($response);
                     }
                 } else {
-                    $response = Controller::returnResponse(422, 'you do not have initial proposal ', []);
+                    $response = Controller::returnResponse(422, 'Unauthorized you are trying to access another agency proposal ', []);
                     return json_encode($response);
                 }
             } else {
-                $response = Controller::returnResponse(422, 'Unauthorized you are trying to access another agency proposal ', []);
+                $response = Controller::returnResponse(422, 'Unauthorized action this action for admins only or you do not have team', []);
                 return json_encode($response);
             }
-        } else {
-            $response = Controller::returnResponse(422, 'Unauthorized action this action for admins only or you do not have team', []);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'something went wrong', $error->getMessage());
             return json_encode($response);
-        }  
-    }catch(Exception $error)
-    {
-        $response = Controller::returnResponse(500, 'something went wrong', $error->getMessage());
-        return json_encode($response);
+        }
     }
-}
+    private function downPaymentHandler($data, $proposal_id)
+    {
+        try {
+            if ($data['value'] > 0) {
+                $sum = 0;
+                foreach ($data['details'] as $milestone) {
+                    $sum += $milestone['milestone_price'];
+                    $milestone_id = $milestone['milestone_id'];
+                    Milestone::where('id', $milestone_id)->update(['down_payment' => 1]);
+                }
+                $sum = number_format($sum, 2);
+
+                Final_proposal::where('id', $proposal_id)->update(['down_payment' => 1, 'down_payment_value' => $sum]);
+            }
+        } catch (Exception $error) {
+        }
+    }
+    private function calculatePrice($hours, $hourly_rate)
+    {
+        $price = (float)$hourly_rate * (float)$hours;
+
+        $price = number_format($price, 2);
+
+        return $price;
+    }
+    function getFullFinalProposalById(Request $req, $id)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['privileges'] == 1) {
+
+                $milestone = new Milestones;
+                $projectObj = new ProjectController;
+                $final_proposal = Final_proposal::where('id', $id)
+                    ->select(
+                        'id',
+                        'title',
+                        'user_id',
+                        'proposal_id',
+                        'project_id',
+                        'team_id',
+                        'hours',
+                        'hourly_rate',
+                        'price',
+                        'down_payment',
+                        'down_payment_value',
+                        'starting_date',
+                        'status',
+                        'created_at'
+                    )->first();
+                $company_id = $projectObj->getProjectCompanyId($final_proposal->project_id);
+                if ($company_id == $userData['group_id']) {
+                    $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
+                    $final_proposal->milestones = $milestones;
+                    $response = Controller::returnResponse(200, 'successful', $final_proposal);
+                    return json_encode($response);
+                } else {
+                    $response = Controller::returnResponse(422, 'Unauthorized action you are trying to get another company data', []);
+                    return json_encode($response);
+                }
+            } else {
+                $response = Controller::returnResponse(422, 'Unauthorized action this action for admins only or you do not have team', []);
+                return json_encode($response);
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'something went wrong', $error->getMessage());
+            return json_encode($response);
+        }
+    }
 }
