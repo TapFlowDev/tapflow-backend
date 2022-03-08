@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Final_proposals;
+use App\Models\Final_proposal;
 use Illuminate\Support\Facades\DB;
 
 class Milestones_Copy extends Controller
@@ -24,12 +25,12 @@ class Milestones_Copy extends Controller
     function Insert($data, $project_id, $final_proposal_id, $final_price)
 
     {
-    //    dd(count($data));
+        //    dd(count($data));
         $Tasks = new TasksController;
-      
+
         try {
             foreach ($data as $milestone) {
-              
+
                 $arr = array(
                     "project_id" => $project_id,
                     "final_proposal_id" => $final_proposal_id,
@@ -40,7 +41,7 @@ class Milestones_Copy extends Controller
                 );
                 $percentage = $milestone['percentage'];
                 $dividable = fmod($percentage, 5);
-              
+
                 if ($dividable == 0) {
                     $milestone_price = $this->calculatePrice($percentage, $final_price);
                     // $mp = fmod($milestone_price, 5);
@@ -51,12 +52,12 @@ class Milestones_Copy extends Controller
                     $Tasks->Insert($milestone['tasks'], $milestone_info->id);
                     // } 
                 } else {
-                    return ['code'=>101,'msg'=>'Milestone Validation error'];
+                    return ['code' => 101, 'msg' => 'Milestone Validation error'];
                 }
             }
-            return ['code'=>200,'msg'=>'success'];
+            return ['code' => 200, 'msg' => 'success'];
         } catch (Exception $error) {
-            return ['code'=>500,'msg'=>$error->getMessage()];
+            return ['code' => 500, 'msg' => $error->getMessage()];
         }
     }
 
@@ -101,18 +102,18 @@ class Milestones_Copy extends Controller
                         $milestone_price = $this->calculatePrice($percentage, $proposal_info->price);
                         $milestone = Milestone::where('id', $id)->update([
                             'name' => $req->name,
-                             'description' => $req->description,
-                            'days' => $req->days, 
+                            'description' => $req->description,
+                            'days' => $req->days,
                             'percentage' => $req->percentage,
                             'price' => $milestone_price,
                         ]);
-                  
+
                         $Tasks->updateTasksByMileStoneId($req->tasks, $id);
                     } else {
                         $response = Controller::returnResponse(101, "the milestone percentage  should be multiples of 5", []);
-                    return (json_encode($response));
+                        return (json_encode($response));
                     }
-                   
+
                     $response = Controller::returnResponse(200, "Update milestone: " . $milestone_info->name . ' successfully', []);
                     return (json_encode($response));
                 } else {
@@ -163,7 +164,7 @@ class Milestones_Copy extends Controller
     {
 
         $mPrice = $final_price * ($percentage / 100);
-        $mPrice=number_format($mPrice,2);
+        $mPrice = number_format($mPrice, 2);
         return $mPrice;
     }
     private function dividableBy5($number)
@@ -255,31 +256,26 @@ class Milestones_Copy extends Controller
     }
     function deleteMilestonesByProposalId($id)
 
-    {   
-        $tasksObj=new TasksController;
-        $milestone_ids=DB::table('milestones')
-       -> where('final_proposal_id',$id)->select('id')->get();
-       if($milestone_ids->isEmpty())
-       {
-           
-       }
-       else{ 
-        foreach($milestone_ids as $milestone_id)
-        {   
-           
-        $tasksObj->deleteTasksByMilestoneId($milestone_id->id);
-        Milestone::where('id',$milestone_id->id)->delete();
+    {
+        $tasksObj = new TasksController;
+        $milestone_ids = DB::table('milestones')
+            ->where('final_proposal_id', $id)->select('id')->get();
+        if ($milestone_ids->isEmpty()) {
+        } else {
+            foreach ($milestone_ids as $milestone_id) {
+
+                $tasksObj->deleteTasksByMilestoneId($milestone_id->id);
+                Milestone::where('id', $milestone_id->id)->delete();
+            }
         }
-    }
-        
     }
     function getDownPaymentByProposalId($id)
     {
-        $downPayment=DB::table('milestones')
-        ->where('final_proposal_id',"=",$id)
-        ->where('description',"=","down payment")
-        ->select('name','description','percentage','price')
-        ->get();
-        return($downPayment);
+        $downPayment = DB::table('milestones')
+            ->where('final_proposal_id', "=", $id)
+            ->where('description', "=", "down payment")
+            ->select('name', 'description', 'percentage', 'price')
+            ->get();
+        return ($downPayment);
     }
 }

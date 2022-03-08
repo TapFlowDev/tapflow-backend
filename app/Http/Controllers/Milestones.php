@@ -114,7 +114,7 @@ class Milestones extends Controller
 
     function updateMilestone(Request $req)
     {
-        try {
+        // try {
             $finalProposalObj = new Final_proposals;
             $userData = Controller::checkUser($req);
 
@@ -128,14 +128,20 @@ class Milestones extends Controller
                             return (json_encode($response));
                         } else {
                             $price=$this->calculatePrice($req->hours,$req->hourly_rate);
-                            $price=fmod($price,2);
+                            $req['milestone_price']=$price;
+                            $update=$this->milestoneDownPaymentHandler($req);
+                            if($update['update'] ==1)
+                            {
                             $milestone = Milestone::where('id', $req->milestone_id)
                                 ->update([
-                                    'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $price,
+                                    'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price,
                                     'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables)
                                 ]);
                             $response = Controller::returnResponse(200, "milestone updated successful", []);
                             return (json_encode($response));
+                        }
+                        else{$response = Controller::returnResponse(500, "something wrong down payment handler", $update['msg']);
+                            return (json_encode($response));}
                         }
                     } else {
                         $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
@@ -149,10 +155,10 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
-            return (json_encode($response));
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
+        //     return (json_encode($response));
+        // }
     }
 
     function deleteMilestone(Request $req)
@@ -168,16 +174,13 @@ class Milestones extends Controller
                             $response = Controller::returnResponse(422, "you do not have final proposal ", []);
                             return (json_encode($response));
                         } else {
-                            $Tasks = new TasksController;
-                            $delTasks = $Tasks->deleteTasksByMilestoneId($req->milestone_id);
-                            if ($delTasks['code'] == 500) {
-                                $response = Controller::returnResponse(500, "something went wrong ", $delTasks['msg']);
-                                return (json_encode($response));
-                            } elseif ($delTasks['code'] == 200 || $delTasks['code'] == 201) {
+                              $del=$this->downPaymentDelete($req->milestone_id);
+                              if($del['delete']==1){
                                 $milestone = Milestone::where('id', $req->milestone_id)->delete();
                                 $response = Controller::returnResponse(200, "milestone deleted successful", []);
                                 return (json_encode($response));
-                            }
+                              }else{$response = Controller::returnResponse(500, "something wrong down payment handler", $del['msg']);
+                                return (json_encode($response));}
                         }
                     } else {
                         $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
@@ -330,4 +333,45 @@ class Milestones extends Controller
         $price=number_format($price,2);
         return ($price);
     }
+    private function milestoneDownPaymentHandler($data)
+    {
+        try{
+        $milestone = Milestone::where('id', $data->milestone_id)->select('*')->first();
+        if($milestone === null){return ['update' => 0,'msg'=>'ni milestone with this id'];}
+        
+        if ($milestone->down_payment == 1) {
+            if ($milestone->price == $data->price) {
+                return ['update' => 1];
+            } else {
+                $downPaymentValue = Final_proposal::where('id', $milestone->final_proposal_id)->select('down_payment_value')->first()->down_payment_value;
+                $downPaymentValue = $downPaymentValue - $milestone->price;
+                $downPaymentValue = $downPaymentValue + $data->milestone_price;
+                Final_proposal::where('id', $milestone->final_proposal_id)->update(['down_payment_value' => $downPaymentValue]);
+                return ['update' => 1];
+            }
+        } else {
+            return ['update' => 1];
+        }
+    }catch(Exception $error)
+    {
+        return ['update' => 0,'msg'=>$error->getMessage()];
+    }
+    }
+    private function downPaymentDelete($id)
+    {
+        try{
+        $milestone = Milestone::where('id', $id)->select('*')->first();
+        if ($milestone->down_payment == 1) 
+        {
+            $downPaymentValue = Final_proposal::where('id', $milestone->final_proposal_id)->select('down_payment_value')->first()->down_payment_value;
+            $downPaymentValue = $downPaymentValue - $milestone->price;
+            Final_proposal::where('id', $milestone->final_proposal_id)->update(['down_payment_value' => $downPaymentValue]);
+            return ['delete' => 1];
+        }else{return ['delete' => 1];}
+    }
+    catch(Exception $error)
+    {
+        return ['delete' => 0,'msg'=>$error->getMessage()];
+    }
+}
 }

@@ -72,7 +72,8 @@ class Final_proposals extends Controller
                                 $req['price'] = $price;
 
                                 $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
-                                $this->downPaymentHandler($req->down_payment[0], $ifExist['final_proposal_id']);
+                              
+                                $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
                                 if ($update_final == 1) {
                                     $response = Controller::returnResponse(200, 'update data successful', []);
                                     return json_encode($response);
