@@ -17,7 +17,7 @@ class StaticDataController extends Controller
         //
         $data = $this->getData();
     
-        return view('AdminTool.staticData.index', ['data' => $data]);
+        return view('AdminTool.StaticData.index', ['data' => $data]);
 
     }
 
@@ -29,7 +29,7 @@ class StaticDataController extends Controller
     public function create()
     {
         //
-        return view('AdminTool.staticData.add', []);
+        return view('AdminTool.StaticData.add', []);
     }
 
     /**
@@ -77,7 +77,7 @@ class StaticDataController extends Controller
     {
         //
         $data=$this->getDataById($id);
-        return view('AdminTool.staticData.edit', ["data"=>$data]);
+        return view('AdminTool.StaticData.edit', ["data"=>$data]);
 
     }
 
