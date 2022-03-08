@@ -34,4 +34,13 @@ class FormOptionsController extends Controller
             return json_encode($response);
         }
     }
+    
+    function getLabelById($id){
+        $question = Form_options::find($id);
+        if($question!=''){
+            return $question->label;
+        }else{
+            return null;
+        }
+    }
 }

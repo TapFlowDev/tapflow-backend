@@ -41,7 +41,7 @@ class EmailController extends Controller
                 "name" => $agency->admin_name,
                 "project" => $project
             ];
-            Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProjectMail($details));
+            Mail::mailer('smtp2')->to($agency->admin_email)->send(new ProjectMail($details));
         }
         return 1;
         // return 1;

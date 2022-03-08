@@ -97,7 +97,10 @@
                                         <h6 class="mb-0"> Requirements</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        {{ $project->requirements_description }}
+                                        @foreach ( $project->requirments_description as $requirment )
+                                        {{ $requirment }} @if (!$loop->last),@endif
+                                            
+                                        @endforeach
                                     </div>
                                 </div>
                                 <hr>
