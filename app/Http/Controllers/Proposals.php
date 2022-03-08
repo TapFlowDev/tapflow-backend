@@ -19,65 +19,81 @@ use App\Models\Group;
 use App\Models\Team;
 use App\Models\User;
 
+
 class Proposals extends Controller
 {
     //add row 
     function Insert(Request $req)
     {
-        $rules = array(
-            "team_id" => "required",
-            "user_id" => "required",
-            "project_id" => "required",
-            "price_min" => "required",
-            "price_max" => "required",
-            "from" => "required",
-            "to" => "required",
-            "our_offer" => "required"
-        );
-        $ifExist = $this->checkIfProposalExists($req->project_id, $req->team_id);
-        if($ifExist['exist']==1){
-            $proposal = proposal::find($ifExist['proposal_id']);
-            $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposal]);
-            return json_encode($response);
-        }
-        $validators = Validator::make($req->all(), $rules);
-        if ($validators->fails()) {
-            $responseData = $validators->errors();
-            $response = Controller::returnResponse(101, "Validation Error", $responseData);
-            return (json_encode($response));
-        }
+
 
         try {
-            // $userData = $req->user();
-            $proposal = proposal::create($req->all());
-            $proposal_id = $proposal->id;
-            $responseData = array("proposal_id" => $proposal_id);
-            $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
-            //add send email 
+            $userData = Controller::checkUser($req);
 
-            $projectData = Project::find($req->project_id);
-            $teamData = Group::find($req->team_id);
-            $companyData = Group::find($projectData->company_id);
-            $companyAdminData = User::find($projectData->user_id);
-            $moreTeamData = Team::select('link', 'country', 'employees_number')->where('group_id', '=', $proposal->team_id)->get()->first();
-            $teamInfo['name'] = $teamData->name;
-            $teamInfo['link'] = $moreTeamData->link;
-            $teamInfo['country'] = Countries::find($moreTeamData->country)->name;
-            // $teamInfo['country'] =$moreTeamData->country;
-            $teamInfo['employees_number'] = $moreTeamData->employees_number;
-            $details = [
-                'subject' => 'Initial Proposal '.$projectData->name,
-                'project_name' => $projectData->name,
-                'team_info' => $teamInfo,
-                'admin_name' => $companyAdminData->first_name,
-                'proposal' => $proposal
-            ];
-            
-            Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-            // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-            // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-            // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
-            return (json_encode($response));
+            if ($userData['privileges'] == 1) {
+                if ($userData['group_id'] == $req->team_id) {
+                    if ($userData['verified'] == 1) {
+                        $rules = array(
+                            "team_id" => "required",
+                            "user_id" => "required",
+                            "project_id" => "required",
+                            "price_min" => "required",
+                            "price_max" => "required",
+                            "from" => "required",
+                            "to" => "required",
+                            "our_offer" => "required"
+                        );
+                        $ifExist = $this->checkIfProposalExists($req->project_id, $req->team_id);
+                        if ($ifExist['exist'] == 1) {
+                            $proposal = proposal::find($ifExist['proposal_id']);
+                            $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposal]);
+                            return json_encode($response);
+                        }
+                        $validators = Validator::make($req->all(), $rules);
+                        if ($validators->fails()) {
+                            $responseData = $validators->errors();
+                            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                            return (json_encode($response));
+                        }
+                        $proposal = proposal::create($req->all());
+                        $proposal_id = $proposal->id;
+                        $responseData = array("proposal_id" => $proposal_id);
+                        $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
+                        //add send email 
+                        $projectData = Project::find($req->project_id);
+                        $teamData = Group::find($req->team_id);
+                        $companyData = Group::find($projectData->company_id);
+                        $companyAdminData = User::find($projectData->user_id);
+                        $moreTeamData = Team::select('link', 'country', 'employees_number')->where('group_id', '=', $proposal->team_id)->get()->first();
+                        $teamInfo['name'] = $teamData->name;
+                        $teamInfo['link'] = $moreTeamData->link;
+                        $teamInfo['country'] = Countries::find($moreTeamData->country)->name;
+                        // $teamInfo['country'] =$moreTeamData->country;
+                        $teamInfo['employees_number'] = $moreTeamData->employees_number;
+                        $details = [
+                            'subject' => 'Initial Proposal '.$projectData->name,
+                            'project_name' => $projectData->name,
+                            'team_info' => $teamInfo,
+                            'admin_name' => $companyAdminData->first_name,
+                            'proposal' => $proposal
+                        ];
+                        Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, 'You can not apply now, your agency does not verified yet', []);
+                        return json_encode($response);
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, 'Unauthorized action this you tried to use another team data ', []);
+                    return json_encode($response);
+                }
+            } else {
+                $response = Controller::returnResponse(422, 'Unauthorized action this action for admins only or you do not have team ', []);
+                return json_encode($response);
+            }
         } catch (Exception $error) {
             $responseData = array("error" => $error->getMessage());
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
@@ -102,7 +118,7 @@ class Proposals extends Controller
 
         return $proposal;
     }
-    function getProjectProposalsById(Request $req, $project_id, $offset,$limit)
+    function getProjectProposalsById(Request $req, $project_id, $offset, $limit)
     {
         $userData = $req->user();
         $project = Project::where('id', $project_id)->select('user_id')->first();
@@ -110,7 +126,7 @@ class Proposals extends Controller
         $project_group_id = $GroupControllerObj->getGroupIdByUserId($project->user_id);
         $user_group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
         if ($user_group_id == $project_group_id) {
-            
+
             $page = ($offset - 1) * $limit;
             try {
                 $proposals = DB::table('proposals')
@@ -119,10 +135,9 @@ class Proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
-                    foreach ($proposals as$proposal)
-                    {
-                        $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
-                    }
+                foreach ($proposals as $proposal) {
+                    $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
+                }
 
                 $response = Controller::returnResponse(200, "successful", $proposals);
                 return (json_encode($response));
@@ -137,15 +152,30 @@ class Proposals extends Controller
     }
     function checkIfProposalExists($project_id, $team_id)
     {
-        $final_proposal_id = DB::table('proposals')
+        $proposal_id = DB::table('proposals')
             ->select('id')
             ->where('team_id', '=', $team_id)
             ->where('project_id', '=', $project_id)
             ->first();
-        if ($final_proposal_id == null) {
+        if ($proposal_id == null) {
             return ['exist' => 0];
         } else {
-            return ['exist' => 1, "proposal_id" => $final_proposal_id->id];
+            return ['exist' => 1, "proposal_id" => $proposal_id->id];
+        }
+    }
+    function getProposalInfo($project_id, $team_id)
+    {
+
+        $proposal = DB::table('proposals')
+            ->select('*')
+            ->where('team_id', '=', $team_id)
+            ->where('project_id', '=', $project_id)
+            ->first();
+
+        if ($proposal == null) {
+            return ['exist' => 0];
+        } else {
+            return ['exist' => 1, "proposal" => $proposal];
         }
     }
 }

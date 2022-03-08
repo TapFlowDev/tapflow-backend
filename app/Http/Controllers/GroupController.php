@@ -379,4 +379,13 @@ class   GroupController extends Controller
             return $info;
         }
     }
+    function isGroupVerified($id)
+    {
+       $verified= DB::table('groups')
+        ->where('id','=',$id)
+        ->select('verified')
+        ->first();
+        return $verified;
+
+    }
 }

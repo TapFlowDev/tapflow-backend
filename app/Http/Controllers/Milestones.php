@@ -10,210 +10,275 @@ use Exception;
 use Illuminate\Foundation\Mix;
 use App\Models\milestone_submission;
 use App\Models\Project;
-
 use App\Http\Controllers\TasksController;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Final_proposals;
+use App\Models\Final_proposal;
 use Illuminate\Support\Facades\DB;
 
 class Milestones extends Controller
 {
-    //add row 
-    function Insert($data, $project_id, $final_proposal_id, $final_price)
-
+    function Insert(Request $req)
     {
-    //    dd(count($data));
-        $Tasks = new TasksController;
-      
         try {
-            foreach ($data as $milestone) {
-              
-                $arr = array(
-                    "project_id" => $project_id,
-                    "final_proposal_id" => $final_proposal_id,
-                    "name" => $milestone['milestone_name'],
-                    "days" => $milestone['days'],
-                    "description" => $milestone['milestone_description'],
-                    "percentage" => $milestone['percentage'],
-                );
-                $percentage = $milestone['percentage'];
-                $dividable = fmod($percentage, 5);
-              
-                if ($dividable == 0) {
-                    $milestone_price = $this->calculatePrice($percentage, $final_price);
-                    // $mp = fmod($milestone_price, 5);
+           
+            $finalProposalObj = new Final_proposals;
+            $rules = array(
+                "team_id" => "required|exists:groups,id",
+                "project_id" => "required|exists:projects,id",
+                "milestone_num_hours" => "required",
+                "milestone_price" => "required",
+                "deliverables" => "required",
+            );
+            $validators = Validator::make($req->all(), $rules);
+            if ($validators->fails()) {
+                $responseData = $validators->errors();
+                $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                return (json_encode($response));
+            } else {
+                $userData = Controller::checkUser($req);
+                if ($userData['exist'] == 1) {
+                    if ($userData['group_id'] == $req->team_id) {
+                        if ($userData['privileges'] == 1) {
+                            $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
+                            $deliverables = [];
+                            if ($finalProposal['exist'] == 0) {
+                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->num_hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id']);
+                                if ($new_final_proposal['code'] == 422 || $new_final_proposal['code'] == 500) {
+                                    $response = Controller::returnResponse($new_final_proposal['code'], 'error generating final proposal', $new_final_proposal['msg']);
+                                    return json_encode($response);
+                                } elseif ($new_final_proposal['code'] == 200) {
 
-                    // if ($mp == 0.0) {
-                    $milestone_info = Milestone::create($arr + ["price" => $milestone_price]);
-
-                    $Tasks->Insert($milestone['tasks'], $milestone_info->id);
-                    // } 
-                } else {
-                    return ['code'=>101,'msg'=>'Milestone Validation error'];
-                }
-            }
-            return ['code'=>200,'msg'=>'success'];
-        } catch (Exception $error) {
-            return ['code'=>500,'msg'=>$error->getMessage()];
-        }
-    }
+                                    if (count($req->deliverables) >= 0) {
+                                        $deliverables = serialize($req->deliverables);
+                                    }
 
 
-    //update row according to row id
-    function Update(Request $req)
-    {
-        $rules = [
-            "milestone_id" => "required|exists:milestones,id",
-            'name' => "required|max:255",
-            'description' => "required",
-            'days' => "required",
-            'percentage' => "required",
+                                    $data = array(
+                                        "project_id" => $req->project_id,
+                                        "final_proposal_id" => $new_final_proposal['msg'],
+                                        "hours" => $req->milestone_num_hours,
+                                        "price" => $req->milestone_price,
+                                        "name" => $req->milestone_name,
+                                        "description" => $req->milestone_description,
+                                        "deliverables" => serialize($req->deliverables),
+                                    );
 
-        ];
-        $validators = Validator::make($req->all(), $rules);
-        if ($validators->fails()) {
-            $responseData = $validators->errors();
-            $response = Controller::returnResponse(101, "Validation Error", $responseData);
-            return (json_encode($response));
-        }
-        $Tasks = new TasksController;
-        $userData = $req->user();
-        $groupMemberObj = new GroupMembersController;
-        $userPrivileges = $groupMemberObj->getUserPrivileges($userData->id);
-        if ($userPrivileges->privileges != 1) {
-            $response = Controller::returnResponse(101, "This function for admins only", []);
-            return (json_encode($response));
-        } else {
-            try {
-                $id = $req->milestone_id;
-                $groupObj = new GroupController;
-                $proposalObj = new Final_proposals;
-                $group_id = $groupObj->getGroupIdByUserId($userData->id); //the user who try to dele this milestone
-                $milestone_info = Milestone::where('id', $id)->select('final_proposal_id', 'name')->first();
-                $proposal_info = $proposalObj->getProposalById($milestone_info->final_proposal_id);
-                $team_id = $proposal_info['team_id']; //the team how has this milestone
-                if ($group_id == $team_id) {
-                    $percentage = $req->percentage;
-                    $dividable = fmod($percentage, 5);
-                    if ($dividable == 0.0) {
-                        $milestone_price = $this->calculatePrice($percentage, $proposal_info->price);
-                        $milestone = Milestone::where('id', $id)->update([
-                            'name' => $req->name,
-                             'description' => $req->description,
-                            'days' => $req->days, 
-                            'percentage' => $req->percentage,
-                            'price' => $milestone_price,
-                        ]);
-                  
-                        $Tasks->updateTasksByMileStoneId($req->tasks, $id);
+                                    $milestone = Milestone::create($data);
+
+                                    $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
+                                    return (json_encode($response));
+                                }
+                            } else {
+                                $final_proposal_id = $finalProposal['final_proposal_id'];
+                                if (count($req->deliverables) >= 0) {
+                                    $deliverables = $req->deliverables;
+                                }
+                                $data = array(
+                                    "project_id" => $req->project_id,
+                                    "final_proposal_id" => $final_proposal_id,
+                                    "hours" => $req->milestone_num_hours,
+                                    "price" => $req->milestone_price,
+                                    "name" => $req->milestone_name,
+                                    "description" => $req->milestone_description,
+                                    "deliverables" => serialize($req->deliverables),
+                                );
+
+                                $milestone = Milestone::create($data);
+                                $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
+                                return (json_encode($response));
+                            }
+                        } else {
+                            $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                            return (json_encode($response));
+                        }
                     } else {
-                        $response = Controller::returnResponse(101, "the milestone percentage  should be multiples of 5", []);
-                    return (json_encode($response));
+                        $response = Controller::returnResponse(422, "Unauthorized you are trying to access another agency proposal", []);
+                        return (json_encode($response));
                     }
-                   
-                    $response = Controller::returnResponse(200, "Update milestone: " . $milestone_info->name . ' successfully', []);
-                    return (json_encode($response));
                 } else {
-                    $response = Controller::returnResponse(101, "The milestone you trying to update does not belong to your proposal", []);
+                    $response = Controller::returnResponse(422, "this user does not have team", []);
                     return (json_encode($response));
                 }
-            } catch (Exception $error) {
-                $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
-                return (json_encode($response));
             }
-        }
-    }
-    //delete row according to row id
-    function Delete(Request $req, $id)
-    {
-        $userData = $req->user();
-        $groupMemberObj = new GroupMembersController;
-        $userPrivileges = $groupMemberObj->getUserPrivileges($userData->id);
-
-        if ($userPrivileges->privileges != 1) {
-            $response = Controller::returnResponse(101, "This function for admins only", []);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong milestones controller", $error->getMessage());
             return (json_encode($response));
-        } else {
-            try {
-                $groupObj = new GroupController;
-                $proposalObj = new Final_proposals;
-                $group_id = $groupObj->getGroupIdByUserId($userData->id); //the user who try to dele this milestone
-                $milestone_info = Milestone::where('id', $id)->select('final_proposal_id', 'name')->first();
-
-                $proposal_info = $proposalObj->getProposalById($milestone_info->final_proposal_id);
-                $team_id = $proposal_info['team_id']; //the team how has this milestone
-
-                if ($group_id == $team_id) {
-                    $milestone = Milestone::where('id', $id)->delete();
-                    $response = Controller::returnResponse(200, "Delete milestone: " . $milestone_info->name . ' successfully', []);
-                    return (json_encode($response));
-                } else {
-                    $response = Controller::returnResponse(101, "The milestone you trying to delete does not belong to your proposal", []);
-                    return (json_encode($response));
-                }
-            } catch (Exception $error) {
-                $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
-                return (json_encode($response));
-            }
         }
     }
-    private function calculatePrice($percentage, $final_price)
-    {
 
-        $mPrice = $final_price * ($percentage / 100);
-        $mPrice=number_format($mPrice,2);
-        return $mPrice;
-    }
-    private function dividableBy5($number)
+    function updateMilestone(Request $req)
     {
-        $mod = $number % 5;
-        if ($mod == 0) {
-            return 1;
-        } else {
-            return 0;
+        try {
+            $finalProposalObj = new Final_proposals;
+            $userData = Controller::checkUser($req);
+
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $req->team_id) {
+                    if ($userData['privileges'] == 1) {
+                        $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
+
+                        if ($finalProposal['exist'] == 0) {
+                            $response = Controller::returnResponse(422, "you do not have final proposal ", []);
+                            return (json_encode($response));
+                        } else {
+                            $milestone = Milestone::where('id', $req->milestone_id)
+                                ->update([
+                                    'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price,
+                                    'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables)
+                                ]);
+                            $response = Controller::returnResponse(200, "milestone updated successful", []);
+                            return (json_encode($response));
+                        }
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another agency proposal", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "this user does not have team", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+
+    function deleteMilestone(Request $req)
+    {
+        try {
+            $finalProposalObj = new Final_proposals;
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $req->team_id) {
+                    if ($userData['privileges'] == 1) {
+                        $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
+                        if ($finalProposal['exist'] == 0) {
+                            $response = Controller::returnResponse(422, "you do not have final proposal ", []);
+                            return (json_encode($response));
+                        } else {
+                            $Tasks = new TasksController;
+                            $delTasks = $Tasks->deleteTasksByMilestoneId($req->milestone_id);
+                            if ($delTasks['code'] == 500) {
+                                $response = Controller::returnResponse(500, "something went wrong ", $delTasks['msg']);
+                                return (json_encode($response));
+                            } elseif ($delTasks['code'] == 200 || $delTasks['code'] == 201) {
+                                $milestone = Milestone::where('id', $req->milestone_id)->delete();
+                                $response = Controller::returnResponse(200, "milestone deleted successful", []);
+                                return (json_encode($response));
+                            }
+                        }
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another agency proposal", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "this user does not have team", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function selectQuery($id)
+    {
+        $milestones = Milestone::where('id', $id)
+            ->get()
+            ->makeHidden(['created_at', 'updated_at']);
+        return $milestones;
+    }
+    function getMilestones(Request $req, $id)
+    {
+        try {
+            $finalProposalObj = new Final_proposals;
+            
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                $finalProposal = $finalProposalObj->getProposalById($id);
+                if ($userData['group_id'] == $finalProposal['team_id']) {
+                    $milestones =  Milestone::where('final_proposal_id', $id)
+                        ->get()
+                        ->makeHidden(['created_at', 'updated_at']);
+                    $milestones_details = [];
+                    foreach ($milestones as $milestone) {
+                       
+                        array_push($milestones_details, array(
+                            "milestone_id" => $milestone->id,
+                            "milestone_name" => $milestone->name,
+                            "milestone_description" => $milestone->description,
+                            "milestone_price" => $milestone->price,
+                            "milestone_num_hours" => $milestone->hours,
+                            "deliverables" => unserialize($milestone->deliverables),
+                        ));
+                    }
+                    $response = Controller::returnResponse(200, "successful", $milestones_details);
+                    return (json_encode($response));
+                } else {
+                    $response = Controller::returnResponse(422, "you are trying to access data for another agency", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "this user does not have team", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
+            return (json_encode($response));
         }
     }
     function getMilestoneByProposalId($id)
     {
-        $Tasks = new TasksController;
-        $milestones = Milestone::select('id', 'project_id', 'final_proposal_id', 'name', 'description', 'days', 'percentage', 'price', 'status')
-            ->where('final_proposal_id', $id)->get();
-        $milestones_details = [];
+        try {
+           
+            $milestones =  Milestone::where('final_proposal_id', $id)
+                ->get()
+                ->makeHidden(['created_at', 'updated_at']);
+            $milestones_details = [];
+            foreach ($milestones as $milestone) {
+                array_push($milestones_details, array(
+                    "milestone_id" => $milestone->id,
+                    "milestone_name" => $milestone->name,
+                    "milestone_description" => $milestone->description,
+                    "milestone_price" => $milestone->price,
+                    "milestone_hours" => $milestone->hours,
+                    "milestone_status" => $milestone->status,
+                    "deliverables" => unserialize($milestone->deliverables),
+                ));
+            }
+            return $milestones_details;
+        } catch (Exception $error) {
 
-        foreach ($milestones as $milestone) {
-
-            $tasks = $Tasks->getTaskByMilestoneId($milestone->id);
-            array_push($milestones_details, array(
-                "milestone_id" => $milestone->id,
-                "milestone_name" => $milestone->name,
-                "milestone_description" => $milestone->description,
-                "percentage" => $milestone->percentage,
-                "price" => $milestone->price,
-                "days" => $milestone->days,
-                "tasks" => ($tasks),
-
-            ));
+            return [500, $error->getMessage()];
         }
-        return ($milestones_details);
     }
     function submitMilestone(Request $req)
     {
+        try {
 
-        $rules = [
-            "submission_file" => "mimes:zip,rar |max:35000",
-            'comment' => "required",
-            'project_id' => "required|exists:projects,id",
-            'milestone_id' => "required|exists:milestones,id"
-        ];
-        $validators = Validator::make($req->all(), $rules);
-        if ($validators->fails()) {
-            $responseData = $validators->errors();
-            $response = Controller::returnResponse(101, "Validation Error", $responseData);
-            return (json_encode($response));
-        } else {
-            try {
+            $rules = [
+                "submission_file" => "mimes:zip,rar |max:35000",
+                'comment' => "required",
+                'project_id' => "required|exists:projects,id",
+                'milestone_id' => "required|exists:milestones,id"
+            ];
+            $validators = Validator::make($req->all(), $rules);
+            if ($validators->fails()) {
+                $responseData = $validators->errors();
+                $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                return (json_encode($response));
+            } else {
+
                 if (isset($req->links)) {
                     $links = serialize($req->links);
                 } else {
@@ -239,10 +304,10 @@ class Milestones extends Controller
                 }
                 $response = Controller::returnResponse(200, "submit successful", ['submissionId' => $submission_id]);
                 return (json_encode($response));
-            } catch (Exception $error) {
-                $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
-                return (json_encode($response));
             }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+            return (json_encode($response));
         }
     }
     function updateSubmissionFile($submission_id, $fileName)
@@ -252,34 +317,5 @@ class Milestones extends Controller
     function updateStatus($id, $value)
     {
         Milestone::where('id', $id)->update(['status' => $value]);
-    }
-    function deleteMilestonesByProposalId($id)
-
-    {   
-        $tasksObj=new TasksController;
-        $milestone_ids=DB::table('milestones')
-       -> where('final_proposal_id',$id)->select('id')->get();
-       if($milestone_ids->isEmpty())
-       {
-           
-       }
-       else{ 
-        foreach($milestone_ids as $milestone_id)
-        {   
-           
-        $tasksObj->deleteTasksByMilestoneId($milestone_id->id);
-        Milestone::where('id',$milestone_id->id)->delete();
-        }
-    }
-        
-    }
-    function getDownPaymentByProposalId($id)
-    {
-        $downPayment=DB::table('milestones')
-        ->where('final_proposal_id',"=",$id)
-        ->where('description',"=","down payment")
-        ->select('name','description','percentage','price')
-        ->get();
-        return($downPayment);
     }
 }

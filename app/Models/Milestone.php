@@ -17,9 +17,9 @@ class Milestone extends Model
         "final_proposal_id",
         "name",
         "description",
-        "days",
-        "percentage",
+        "hours",
         "price",
         "status",//1 => submitted, 2=> rejected, 3=>accepted
+        "deliverables"
     ];
 }

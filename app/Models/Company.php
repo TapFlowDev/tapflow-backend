@@ -19,7 +19,7 @@ class Company extends Model
         'link',
         'country',
         'employees_number',
-        'field',
-        'sector',
+        'field',//targets (Early-Stage Startups) category type =>3
+        'sector',//(Crypto / Blockchain ) category type =>4
     ];
 }
