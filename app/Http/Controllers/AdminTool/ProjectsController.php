@@ -249,14 +249,13 @@ class ProjectsController extends Controller
             ->distinct()
             ->get();
         } else {
-            $projectCategories = DB::table('projects_categories')->select('sub_category_id')->where('project_id', '=', $id)->pluck('sub_category_id')->toArray();
-            $agencies =  DB::table('projects_categories')
-                ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
-                ->join('groups', 'groups_categories.group_id', '=', 'groups.id')
-                ->select('groups.*')
-                ->where('projects_categories.project_id', '=', $id)
+            // $projectCategories = DB::table('projects_categories')->select('sub_category_id')->where('project_id', '=', $id)->pluck('sub_category_id')->toArray();
+            $projectCategories = [];
+            $agencies =  DB::table('teams')
+                ->join('groups', 'teams.group_id', '=', 'groups.id')
+                ->select('groups.*', 'teams.*')
                 ->where('groups.status', '=', 1)
-                ->distinct()
+                ->where('groups.deleted', '=', 0)
                 ->get();
         }
         // dd($agencies);   
