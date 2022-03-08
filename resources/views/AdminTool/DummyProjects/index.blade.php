@@ -34,6 +34,9 @@
                                     <td>
                                         <a class="btn btn-sm btn-primary"
                                             href="{{ route('AdminTool.projects.show', $project->id) }}" role="button">View</a>
+                                            <a class="btn btn-sm btn-info"
+                                            href="{{ route('AdminTool.recommendProject.show', $project->id) }}"
+                                            role="button">Recommend Project</a>
                                         {{-- <button class="btn btn-sm btn-danger" 
                                 onclick="event.preventDefault();
                                 document.getElementById('delete-project-form-{{ $project->id }}').submit()">Delete</button>

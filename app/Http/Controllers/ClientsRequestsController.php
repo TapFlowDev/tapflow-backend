@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\FormOptionsController;
+use App\Mail\ApproveClient;
 use App\Models\Clients_requests;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -24,14 +27,15 @@ class ClientsRequestsController extends Controller
             return json_encode($response);
         }
         try {
+            $formOptionsControllerObj = new FormOptionsController;
             $checkEmailInUsers = User::where('email', '=', $req->email)->get()->first();
             if (isset($checkEmailInUsers->email)) {
-                $response = Controller::returnResponse(200, 'You arleady registerd!', []);
+                $response = Controller::returnResponse(200, 'You arleady registerd', []);
                 return json_encode($response);
             }
             $checkEmailInRequests = Clients_requests::where('email', '=', $req->email)->get()->first();
             if (isset($checkEmailInRequests->email)) {
-                $response = Controller::returnResponse(200, 'Our Team will contact you soon', []);
+                $response = Controller::returnResponse(200, 'Our Team will contact you as soon as possible', []);
                 return json_encode($response);
             }
             // return $checkEmailInUsers;
@@ -40,7 +44,28 @@ class ClientsRequestsController extends Controller
             $data['name'] = $req->name;
             $data['answers'] = serialize($req->except('name', 'email'));
             $clientRequest = Clients_requests::create($data);
-            $response = Controller::returnResponse(200, 'Thanks to register our team will contact you soon', []);
+            //set email
+            $arrayQuestions = array();
+            $questions = $req->except('name', 'email');
+            $counter = 0;
+            foreach ($questions as $keyId => $valQ) {
+                $label = $formOptionsControllerObj->getLabelById((int)$keyId);
+                if ($label != '') {
+                    $arrayQuestions[$counter]['label'] = $label;
+                    $arrayQuestions[$counter]['answer'] = $valQ;
+                }
+                $counter++;
+            }
+            $details = [
+                'subject'=> "Client Request(". $req->name .")",
+                'name' => $req->name,
+                'email' => $req->email,
+                'questions' => $arrayQuestions
+            ];
+            // return $details;
+            $response = Controller::returnResponse(200, 'Thanks for registering our team will contact you as soon as possible', []);
+            Mail::to('hamzahshajrawi@gmail.com')->send(new ApproveClient($details));
+            // Mail::to('abed@tapflow.app')->send(new ApproveClient($details));
             return json_encode($response);
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());

@@ -11,7 +11,6 @@
                                 <th scope="col">#id</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Email</th>
-                                <th scope="col">Status</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -21,15 +20,6 @@
                                     <th scope="row">{{ $user->id }}</th>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
-                                    <td>
-                                        @if ($user->status == 0)
-                                            Pending
-                                        @elseif ($user->status == 1)
-                                            Accepted
-                                        @elseif ($user->status == 2)
-                                            Rejected
-                                        @endif
-                                    </td>
                                     <td>
                                         <a class="btn btn-sm btn-primary"
                                             href="{{ route('AdminTool.clientsRequests.show', $user->id) }}"

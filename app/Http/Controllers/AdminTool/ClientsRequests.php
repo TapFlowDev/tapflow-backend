@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ApproveClient;
 use App\Models\Clients_requests;
 use App\Models\Form_options;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ClientsRequests extends Controller
 {

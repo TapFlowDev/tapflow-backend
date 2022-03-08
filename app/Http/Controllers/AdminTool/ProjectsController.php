@@ -224,8 +224,9 @@ class ProjectsController extends Controller
         return SubCategory::where('category_id', $category_id)->get();
     }
 
-    function getProjectRequests(){
-        $projects = DB::table('projects')->join('proposals', 'projects.id', '=','proposals.project_id')->where('projects.status', '<>', -1)->count();
+    function getProjectRequests()
+    {
+        $projects = DB::table('projects')->join('proposals', 'projects.id', '=', 'proposals.project_id')->where('projects.status', '<>', -1)->count();
         return $projects;
     }
 
@@ -242,21 +243,20 @@ class ProjectsController extends Controller
         if ($req->subs != '') {
             $projectCategories = $req->subs;
             $agencies = DB::table('groups_categories')
-            ->join('groups', 'groups_categories.group_id', '=', 'groups.id')
-            ->select('groups.*')
-            ->whereIn('groups_categories.sub_category_id', $projectCategories)
-            ->where('groups.status', '=', 1)
-            ->distinct()
-            ->get();
-        } else {
-            $projectCategories = DB::table('projects_categories')->select('sub_category_id')->where('project_id', '=', $id)->pluck('sub_category_id')->toArray();
-            $agencies =  DB::table('projects_categories')
-                ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
                 ->join('groups', 'groups_categories.group_id', '=', 'groups.id')
                 ->select('groups.*')
-                ->where('projects_categories.project_id', '=', $id)
+                ->whereIn('groups_categories.sub_category_id', $projectCategories)
                 ->where('groups.status', '=', 1)
                 ->distinct()
+                ->get();
+        } else {
+            // $projectCategories = DB::table('projects_categories')->select('sub_category_id')->where('project_id', '=', $id)->pluck('sub_category_id')->toArray();
+            $projectCategories = [];
+            $agencies =  DB::table('teams')
+                ->join('groups', 'teams.group_id', '=', 'groups.id')
+                ->select('groups.*', 'teams.*')
+                ->where('groups.status', '=', 1)
+                ->where('groups.deleted', '=', 0)
                 ->get();
         }
         // dd($agencies);   
@@ -265,9 +265,9 @@ class ProjectsController extends Controller
         // return $projects;
     }
 
-  function  verifyProject(Request $request,$id)
-  {
-    Project::where('id', $id)->update(['verified'=>(int)$request->verify]);
-    return redirect('/AdminTool/projects');
-  }
+    function  verifyProject(Request $request, $id)
+    {
+        Project::where('id', $id)->update(['verified' => (int)$request->verify]);
+        return redirect('/AdminTool/projects');
+    }
 }
