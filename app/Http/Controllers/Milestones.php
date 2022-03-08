@@ -224,6 +224,7 @@ class Milestones extends Controller
                             "milestone_description" => $milestone->description,
                             "milestone_price" => $milestone->price,
                             "milestone_num_hours" => $milestone->hours,
+                            "milestone_down_payment" => $milestone->down_payment,
                             "deliverables" => unserialize($milestone->deliverables),
                         ));
                     }
