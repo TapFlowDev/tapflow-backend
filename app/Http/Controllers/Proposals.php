@@ -14,7 +14,11 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ProposalMail;
+use App\Models\Countries;
 use App\Models\Group;
+use App\Models\Team;
+use App\Models\User;
+
 
 class Proposals extends Controller
 {
@@ -59,14 +63,24 @@ class Proposals extends Controller
                         $projectData = Project::find($req->project_id);
                         $teamData = Group::find($req->team_id);
                         $companyData = Group::find($projectData->company_id);
+                        $companyAdminData = User::find($projectData->user_id);
+                        $moreTeamData = Team::select('link', 'country', 'employees_number')->where('group_id', '=', $proposal->team_id)->get()->first();
+                        $teamInfo['name'] = $teamData->name;
+                        $teamInfo['link'] = $moreTeamData->link;
+                        $teamInfo['country'] = Countries::find($moreTeamData->country)->name;
+                        // $teamInfo['country'] =$moreTeamData->country;
+                        $teamInfo['employees_number'] = $moreTeamData->employees_number;
                         $details = [
-                            'subject' => 'New project application.',
+                            'subject' => 'Initial Proposal '.$projectData->name,
                             'project_name' => $projectData->name,
-                            'team_name' => $teamData->name,
-                            'company_name' => $companyData->name
+                            'team_info' => $teamInfo,
+                            'admin_name' => $companyAdminData->first_name,
+                            'proposal' => $proposal
                         ];
-
-                        Mail::to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
                         return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, 'You can not apply now, your agency does not verified yet', []);
