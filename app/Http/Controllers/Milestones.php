@@ -23,7 +23,7 @@ class Milestones extends Controller
     function Insert(Request $req)
     {
         try {
-           
+
             $finalProposalObj = new Final_proposals;
             $rules = array(
                 "team_id" => "required|exists:groups,id",
@@ -55,8 +55,8 @@ class Milestones extends Controller
                                         $deliverables = serialize($req->deliverables);
                                     }
 
-                                    $price=$this->calculatePrice($req->hours,$req->hourly_rate);
-                                    $price=fmod($price,2);
+                                    $price = $this->calculatePrice($req->hours, $req->hourly_rate);
+                                    $price = fmod($price, 2);
                                     $data = array(
                                         "project_id" => $req->project_id,
                                         "final_proposal_id" => $new_final_proposal['msg'],
@@ -77,8 +77,8 @@ class Milestones extends Controller
                                 if (count($req->deliverables) >= 0) {
                                     $deliverables = $req->deliverables;
                                 }
-                                $price=$this->calculatePrice($req->hours,$req->hourly_rate);
-                                    $price=fmod($price,2);
+                                $price = $this->calculatePrice($req->hours, $req->hourly_rate);
+                                $price = fmod($price, 2);
                                 $data = array(
                                     "project_id" => $req->project_id,
                                     "final_proposal_id" => $final_proposal_id,
@@ -115,23 +115,24 @@ class Milestones extends Controller
     function updateMilestone(Request $req)
     {
         // try {
-            $finalProposalObj = new Final_proposals;
-            $userData = Controller::checkUser($req);
+        $finalProposalObj = new Final_proposals;
+        $userData = Controller::checkUser($req);
 
-            if ($userData['exist'] == 1) {
-                if ($userData['group_id'] == $req->team_id) {
-                    if ($userData['privileges'] == 1) {
-                        $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
+        if ($userData['exist'] == 1) {
+            if ($userData['group_id'] == $req->team_id) {
+                if ($userData['privileges'] == 1) {
+                    $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
 
-                        if ($finalProposal['exist'] == 0) {
-                            $response = Controller::returnResponse(422, "you do not have final proposal ", []);
-                            return (json_encode($response));
-                        } else {
-                            $price=$this->calculatePrice($req->hours,$req->hourly_rate);
-                            $req['milestone_price']=$price;
-                            $update=$this->milestoneDownPaymentHandler($req);
-                            if($update['update'] ==1)
-                            {
+                    if ($finalProposal['exist'] == 0) {
+                        $response = Controller::returnResponse(422, "you do not have final proposal ", []);
+                        return (json_encode($response));
+                    } else {
+                        $price = $this->calculatePrice($req->milestone_num_hours, $req->hourly_rate);
+
+                        $req['milestone_price'] = $price;
+
+                        $update = $this->milestoneDownPaymentHandler($req);
+                        if ($update['update'] == 1) {
                             $milestone = Milestone::where('id', $req->milestone_id)
                                 ->update([
                                     'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price,
@@ -139,22 +140,23 @@ class Milestones extends Controller
                                 ]);
                             $response = Controller::returnResponse(200, "milestone updated successful", []);
                             return (json_encode($response));
+                        } else {
+                            $response = Controller::returnResponse(500, "something wrong down payment handler", $update['msg']);
+                            return (json_encode($response));
                         }
-                        else{$response = Controller::returnResponse(500, "something wrong down payment handler", $update['msg']);
-                            return (json_encode($response));}
-                        }
-                    } else {
-                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
-                        return (json_encode($response));
                     }
                 } else {
-                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another agency proposal", []);
+                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                     return (json_encode($response));
                 }
             } else {
-                $response = Controller::returnResponse(422, "this user does not have team", []);
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another agency proposal", []);
                 return (json_encode($response));
             }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
+        }
         // } catch (Exception $error) {
         //     $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
         //     return (json_encode($response));
@@ -174,13 +176,15 @@ class Milestones extends Controller
                             $response = Controller::returnResponse(422, "you do not have final proposal ", []);
                             return (json_encode($response));
                         } else {
-                              $del=$this->downPaymentDelete($req->milestone_id);
-                              if($del['delete']==1){
+                            $del = $this->downPaymentDelete($req->milestone_id);
+                            if ($del['delete'] == 1) {
                                 $milestone = Milestone::where('id', $req->milestone_id)->delete();
                                 $response = Controller::returnResponse(200, "milestone deleted successful", []);
                                 return (json_encode($response));
-                              }else{$response = Controller::returnResponse(500, "something wrong down payment handler", $del['msg']);
-                                return (json_encode($response));}
+                            } else {
+                                $response = Controller::returnResponse(500, "something wrong down payment handler", $del['msg']);
+                                return (json_encode($response));
+                            }
                         }
                     } else {
                         $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
@@ -210,7 +214,7 @@ class Milestones extends Controller
     {
         try {
             $finalProposalObj = new Final_proposals;
-            
+
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
                 $finalProposal = $finalProposalObj->getProposalById($id);
@@ -220,7 +224,7 @@ class Milestones extends Controller
                         ->makeHidden(['created_at', 'updated_at']);
                     $milestones_details = [];
                     foreach ($milestones as $milestone) {
-                       
+
                         array_push($milestones_details, array(
                             "milestone_id" => $milestone->id,
                             "milestone_name" => $milestone->name,
@@ -249,7 +253,7 @@ class Milestones extends Controller
     function getMilestoneByProposalId($id)
     {
         try {
-           
+
             $milestones =  Milestone::where('final_proposal_id', $id)
                 ->get()
                 ->makeHidden(['created_at', 'updated_at']);
@@ -327,51 +331,62 @@ class Milestones extends Controller
     {
         Milestone::where('id', $id)->update(['status' => $value]);
     }
-    private function calculatePrice($hours,$hourly_rate)
+    private function calculatePrice($hours, $hourly_rate)
     {
-        $price=(float)$hourly_rate * (float)$hours;
-        $price=number_format($price,2);
+        $price = (float)$hourly_rate * (float)$hours;
+        $price = number_format($price, 2, ".", "");
         return ($price);
     }
     private function milestoneDownPaymentHandler($data)
     {
-        try{
-        $milestone = Milestone::where('id', $data->milestone_id)->select('*')->first();
-        if($milestone === null){return ['update' => 0,'msg'=>'ni milestone with this id'];}
-        
-        if ($milestone->down_payment == 1) {
-            if ($milestone->price == $data->price) {
-                return ['update' => 1];
+        try {
+            $milestone = Milestone::where('id', $data->milestone_id)->select('*')->first();
+            if ($milestone === null) {
+                return ['update' => 0, 'msg' => 'nO milestone with this id'];
+            }
+            // $fv=  Final_proposal::where('id', $milestone->final_proposal_id)->select('down_payment_value')->first()->down_payment_value;
+            //   $odl_fv=(float)$fv;
+            if ($milestone->down_payment == 1) {
+
+                if ($milestone->price == $data->milestone_price) {
+
+                    return ['update' => 1];
+                } else {
+
+                    $downPaymentValueOld = (float)Final_proposal::where('id', $milestone->final_proposal_id)->select('down_payment_value')->first()->down_payment_value;
+
+                    $downPaymentValue = ((float)$downPaymentValueOld - (float)$milestone->price) + (float)$data->milestone_price;
+                    $finalDownPaymentValue = (float)number_format($downPaymentValue, 2, '.', '');
+                    // $var=['old price'=>(float)($milestone->price),"new price"=>(float)($data->milestone_price),'dpvo'=>$downPaymentValueOld,'dpvn'=>$$fin];
+                    // dd($var);
+                    Final_proposal::where('id', $milestone->final_proposal_id)->update(['down_payment_value' => (float)$finalDownPaymentValue]);
+                    return ['update' => 1];
+                }
             } else {
-                $downPaymentValue = Final_proposal::where('id', $milestone->final_proposal_id)->select('down_payment_value')->first()->down_payment_value;
-                $downPaymentValue = $downPaymentValue - $milestone->price;
-                $downPaymentValue = $downPaymentValue + $data->milestone_price;
-                Final_proposal::where('id', $milestone->final_proposal_id)->update(['down_payment_value' => $downPaymentValue]);
                 return ['update' => 1];
             }
-        } else {
-            return ['update' => 1];
+        } catch (Exception $error) {
+            return ['update' => 0, 'msg' => $error->getMessage()];
         }
-    }catch(Exception $error)
-    {
-        return ['update' => 0,'msg'=>$error->getMessage()];
-    }
     }
     private function downPaymentDelete($id)
     {
-        try{
-        $milestone = Milestone::where('id', $id)->select('*')->first();
-        if ($milestone->down_payment == 1) 
-        {
-            $downPaymentValue = Final_proposal::where('id', $milestone->final_proposal_id)->select('down_payment_value')->first()->down_payment_value;
-            $downPaymentValue = $downPaymentValue - $milestone->price;
-            Final_proposal::where('id', $milestone->final_proposal_id)->update(['down_payment_value' => $downPaymentValue]);
-            return ['delete' => 1];
-        }else{return ['delete' => 1];}
+        try {
+            $milestone = Milestone::where('id', $id)->select('*')->first();
+            if ($milestone->down_payment == 1) {
+                $downPaymentValue = (float) Final_proposal::where('id', $milestone->final_proposal_id)->select('down_payment_value')->first()->down_payment_value;
+
+                $downPaymentValue = (float) $downPaymentValue - (float) $milestone->price;
+
+                $finalDownPaymentValue = (float)number_format($downPaymentValue, 2, '.', '');
+
+                Final_proposal::where('id', $milestone->final_proposal_id)->update(['down_payment_value' => $finalDownPaymentValue]);
+                return ['delete' => 1];
+            } else {
+                return ['delete' => 1];
+            }
+        } catch (Exception $error) {
+            return ['delete' => 0, 'msg' => $error->getMessage()];
+        }
     }
-    catch(Exception $error)
-    {
-        return ['delete' => 0,'msg'=>$error->getMessage()];
-    }
-}
 }

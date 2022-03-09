@@ -290,7 +290,7 @@ class Final_proposals extends Controller
                     $milestone_id = $milestone['milestone_id'];
                     Milestone::where('id', $milestone_id)->update(['down_payment' => 1]);
                 }
-                $sum = number_format($sum, 2);
+                $sum = number_format($sum, 2,$thousands_separator = "");
 
                 Final_proposal::where('id', $proposal_id)->update(['down_payment' => 1, 'down_payment_value' => $sum]);
             }
