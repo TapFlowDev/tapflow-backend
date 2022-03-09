@@ -64,9 +64,9 @@ class ClientsRequestsController extends Controller
             ];
             // return $details;
             $response = Controller::returnResponse(200, 'Demo requested! Our team will be in touch soon.', []);
-            Mail::to('hamzahshajrawi@gmail.com')->send(new ApproveClient($details));
+            //Mail::to('hamzahshajrawi@gmail.com')->send(new ApproveClient($details));
             Mail::to('naser@tapflow.app')->send(new ApproveClient($details));
-            // Mail::to('abed@tapflow.app')->send(new ApproveClient($details));
+            Mail::to('abed@tapflow.app')->send(new ApproveClient($details));
             return json_encode($response);
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
