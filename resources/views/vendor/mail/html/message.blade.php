@@ -1,8 +1,8 @@
 @component('mail::layout')
 {{-- Header --}}
 @slot('header')
-@component('mail::header', ['url' => 'https://www.tapflow.dev/'])
-<img src="https://www.tapflow.dev/tf.png" alt="Tapflow" width="66" height="70">
+@component('mail::header', ['url' => 'https://www.tapflow.app/'])
+<img src="https://www.tapflow.app/tf.png" alt="Tapflow" width="66" height="70">
 @endcomponent
 @endslot
 
