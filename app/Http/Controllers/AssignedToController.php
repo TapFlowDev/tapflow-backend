@@ -7,26 +7,25 @@ use Illuminate\Http\Request;
 use App\Models\Assigned_task;
 use Faker\Provider\ar_JO\Person;
 use Illuminate\Support\Facades\DB;
-
+use Exception;
 class AssignedToController extends Controller
 {
     //add row 
     function Insert($data, $task_id)
-
-
     {
-
-
-        $t = new Assigned_task;
-
+        try{
         foreach ($data as $a) {
             $arr = array(
                 "user_id" => $a['user_id'],
                 "task_id" => $task_id
-
             );
-            $ass = Assigned_task::create($arr);
+            $assigned = Assigned_task::create($arr);
         }
+        return ['code'=>200 , 'msg'=>'successful'];
+    }catch(Exception $error)
+    {
+        return ['code'=>500 ,'msg'=>'assigned to controller: '.$error->getMessage()];
+    }
     }
     //update row according to row id
     function Update($id)

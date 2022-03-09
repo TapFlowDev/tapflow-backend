@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Models\Rate;
@@ -23,6 +24,7 @@ use  App\Http\Controllers\GroupsLinksController;
 use  App\Http\Controllers\GroupCategoriesController;
 use  App\Http\Controllers\UserCategoriesController;
 use  App\Http\Controllers\AnnouncementsController;
+use App\Http\Controllers\ClientsRequestsController;
 use  App\Http\Controllers\ContactUsController;
 use  App\Http\Controllers\WalletsController;
 use  App\Http\Controllers\ResetPasswordController;
@@ -32,7 +34,9 @@ use  App\Http\Controllers\WalletsTransactionsController;
 use  App\Http\Controllers\GroupMembersController;
 use  App\Http\Controllers\TasksController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\FormOptionsController;
 use App\Http\Controllers\Milestones;
+use App\Http\Controllers\ContentDataController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
 
@@ -61,7 +65,7 @@ use phpDocumentor\Reflection\ProjectFactory;
 // });
 // for testing test
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
-Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
@@ -78,6 +82,7 @@ Route::post('newLogin', [UserController::class, 'newLogin']);
 Route::post('register', [UserController::class, 'Register']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
+Route::post('addRequest', [ClientsRequestsController::class, 'Insert']);
 
 // Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
 
@@ -105,6 +110,8 @@ Route::get('getSectors', [CategoriesController::class, 'getSectors']);
 Route::get('getCountryById/{id}', [NewCountriesController::class, 'getCountryById']);
 Route::get('deleteMilestonesByProposalId/{id}', [Milestones::class, 'deleteMilestonesByProposalId']);
 Route::get('getGroupNameAndImage/{id}', [GroupController::class, 'getGroupNameAndImage']);
+Route::get('getQuestions', [FormOptionsController::class, 'getData']);
+Route::get('getDemoLink', [ContentDataController::class, 'getDemoLink']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
@@ -137,7 +144,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('acceptOrRefuseInvitation', [InviteUsersController::class, 'updateInvitation']);
     Route::post('removeUser', [GroupMembersController::class, 'removeUserFromGroup']);
     Route::get('project/{id}', [ProjectController::class, 'getProject']);
-    Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
+    Route::get('getFullFinalProposalById/{id}', [Final_proposals::class, 'getFullFinalProposalById']);
     // Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     // Route::post('saveImage', [ImagesController::class, 'Insert']);
 });
@@ -166,6 +173,12 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyActiveProjects/{agency_id}/{offset}', [ProjectController::class, 'getAgencyActiveProjects']);
     Route::get('getAgencyActiveProject/{id}', [ProjectController::class, 'getAgencyActiveProject']);
     Route::get('getAgencyPendingProject/{id}', [ProjectController::class, 'getAgencyPendingProject']);
+    Route::post('addFinalProposal', [Final_proposals::class, 'Insert']);
+    Route::get('getFinalProposalByProjectIdAndTeamId/{project_id}/{team_id}', [Final_proposals::class, 'getFinalProposalByProjectIdAndTeamId']);
+    Route::post('updateMilestone', [Milestones::class, 'updateMilestone']);
+    Route::post('addMilestone', [Milestones::class, 'Insert']);
+    Route::post('deleteMilestone', [Milestones::class, 'deleteMilestone']);
+    Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
@@ -178,4 +191,13 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('getProjectProposalsById/{id}/{offset}/{limit}', [Proposals::class, 'getProjectProposalsById']);
     Route::get('getCompanyActiveProjects/{company_id}/{offset}/{limit}', [ProjectController::class, 'getCompanyActiveProjects']);
     Route::get('getCompanyActiveProjectDetails/{project_id}/{company_id}', [ProjectController::class, 'getCompanyActiveProjectDetails']);
+    Route::post('updateCompanyBio', [CompanyController::class, 'updateCompanyBio']);
+    Route::post('updateBasicInfo', [CompanyController::class, 'updateBasicInfo']);
+    Route::post('updateLink', [CompanyController::class, 'updateLink']);
+    Route::post('updateFieldSector', [CompanyController::class, 'updateFieldSector']);
+    Route::post('updateCompanyImage', [CompanyController::class, 'updateCompanyImage']);
+    Route::post('updateClientImage', [ClientController::class, 'updateClientImage']);
+    Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
+    
 });
+

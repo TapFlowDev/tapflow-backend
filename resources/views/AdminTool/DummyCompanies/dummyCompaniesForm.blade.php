@@ -24,6 +24,16 @@
     @enderror
 </div>
 <div class="mb-3">
+    <label for="role" class="form-label">Role * </label>
+    <input type="text" name="role" class="form-control" id="role" aria-describedby="emailHelp"
+        value="{{ old('role') }}@isset($user) {{ $user->role }} @endisset" required>
+    @error('role')
+        <span class="invalid-feedback" style="display: block;" role="alert">
+            {{ $message }}
+        </span>
+    @enderror
+</div>
+<div class="mb-3">
     <label for="email" class="form-label">Email address *</label>
     <input type="email" name="email" class="form-control" id="user_email" aria-describedby="emailHelp"
         value="{{ old('email') }} @isset($user) {{ $user->email }} @endisset" required>
@@ -72,26 +82,59 @@
     @enderror
 </div>
 <div class="mb-3">
-    <label for="bio" class="form-label">Company Bio</label>
-        <textarea  name="bio" class="form-control" id="content" rows="4" aria-describedby="emailHelp" >{{ old('bio') }}@isset($user){{ $user->bio }}@endisset</textarea>
-    @error('bio')
+    <label for="field" class="form-label">Company Type *</label>
+    <select data-placeholder="Choose Agencis" class="form-control" name='field'>
+        @foreach ($targets as $sub)
+            <option value="{{ $sub->id }}" > {{ $sub->name }}</option>
+        @endforeach
+    </select>
+    @error('field')
         <span class="invalid-feedback" style="display: block;" role="alert">
             {{ $message }}
         </span>
     @enderror
+</div>
+<div class="mb-3">
+    <label for="sector" class="form-label">Company Industry *</label>
+    <select data-placeholder="Choose Agencis" class="form-control" name='sector'>
+        @foreach ($industry as $sub)
+            <option value="{{ $sub->id }}" > {{ $sub->name }}</option>
+        @endforeach
+    </select>
+    @error('sector')
+        <span class="invalid-feedback" style="display: block;" role="alert">
+            {{ $message }}
+        </span>
+    @enderror
+</div>
+<div class="mb-3">
+    <label for="bio" class="form-label">Company Bio</label>
+    <textarea name="bio" class="form-control" id="content" rows="4" aria-describedby="emailHelp">{{ old('bio') }}@isset($user)
+{{ $user->bio }}
+@endisset</textarea>
+@error('bio')
+    <span class="invalid-feedback" style="display: block;" role="alert">
+        {{ $message }}
+    </span>
+@enderror
 </div>
 <div class="mb-4">
-    <label for="formFile" class="form-label">Company Image</label>
-    <input class="form-control-file" name="company_image" type="file" id="company_image">
-    @isset($user->company_image)
-        <a class="" style="color:black" target="_blanck"
-            href="{{ asset('images/companies/' . $users->company_image) }}" role="">View
-            Image</a>
-    @endisset
-    @error('image')
-        <span class="invalid-feedback" style="display: block;" role="alert">
-            {{ $message }}
-        </span>
-    @enderror
+<label for="formFile" class="form-label">Company Image</label>
+<input class="form-control-file" name="company_image" type="file" id="company_image">
+@isset($user->company_image)
+    <a class="" style="color:black" target="_blanck"
+        href="{{ asset('images/companies/' . $users->company_image) }}" role="">View
+        Image</a>
+@endisset
+@error('image')
+    <span class="invalid-feedback" style="display: block;" role="alert">
+        {{ $message }}
+    </span>
+@enderror
 </div>
 <button type="submit" class="btn btn-primary">Submit</button>
+<script type="text/javascript">
+    $(function() {
+        $(".chosen-select").chosen();
+    });
+</script>

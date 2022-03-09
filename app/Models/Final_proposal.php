@@ -15,11 +15,15 @@ class Final_proposal extends Model
         "project_id",
         "price",
         "description",
-        "days",
+        "hours",
+        "hourly_rate",
         "status",//1 => sent, 2=> rejected, 3=>accepted 
         "title",
         "starting_date",
         "down_payment",//value 0=>no down payment 1=>there is down payment
+        "down_payment_value",//value 0=>no down payment 1=>there is down payment
+        "user_id",
+        "type"
 
     ];
 }
