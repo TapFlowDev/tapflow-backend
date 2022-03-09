@@ -63,7 +63,7 @@ class ClientsRequestsController extends Controller
                 'questions' => $arrayQuestions
             ];
             // return $details;
-            $response = Controller::returnResponse(200, 'Thanks for registering our team will contact you as soon as possible', []);
+            $response = Controller::returnResponse(200, 'Demo requested! Our team will be in touch soon.', []);
             Mail::to('hamzahshajrawi@gmail.com')->send(new ApproveClient($details));
             // Mail::to('abed@tapflow.app')->send(new ApproveClient($details));
             return json_encode($response);
