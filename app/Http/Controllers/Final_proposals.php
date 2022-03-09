@@ -290,7 +290,7 @@ class Final_proposals extends Controller
                     $milestone_id = $milestone['milestone_id'];
                     Milestone::where('id', $milestone_id)->update(['down_payment' => 1]);
                 }
-                $sum = number_format($sum, 2,$thousands_separator = "");
+                $sum = number_format($sum, 2, '.', '');
 
                 Final_proposal::where('id', $proposal_id)->update(['down_payment' => 1, 'down_payment_value' => $sum]);
             }
@@ -301,7 +301,7 @@ class Final_proposals extends Controller
     {
         $price = (float)$hourly_rate * (float)$hours;
 
-        $price = number_format($price, 2);
+        $price = number_format($price, 2, '.', '');
 
         return $price;
     }
