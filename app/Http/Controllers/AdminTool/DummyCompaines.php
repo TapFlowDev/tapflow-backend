@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Group;
@@ -38,7 +39,9 @@ class DummyCompaines extends Controller
      */
     public function create()
     {
-        return view('AdminTool.DummyCompanies.add');
+        $targets = Category::where('type', '=', 3)->get();
+        $industry = Category::where('type', '=', 4)->get();
+        return view('AdminTool.DummyCompanies.add', ['industry'=>$industry, 'targets'=>$targets]);
     }
 
     /**
@@ -58,7 +61,7 @@ class DummyCompaines extends Controller
         ]);
         $teamObj = new CompanyController;
 
-        $user = User::create($req->only('first_name', 'last_name', 'email', 'password') + ['name' => $req->first_name . " " . $req->last_name, 'type' => -1]);
+        $user = User::create($req->only('first_name', 'last_name', 'email', 'password', 'role') + ['name' => $req->first_name . " " . $req->last_name, 'type' => -1]);
         $array = array("user_id" => $user->id, 'type_freelancer' => 2);
         $client = Client::create($array);
         if ($req->hasFile('image')) {
@@ -81,8 +84,8 @@ class DummyCompaines extends Controller
         // $teamArr['link'] = $req->link;
         // $teamArr['country'] = $req->country;
         // $teamArr['employees_number'] = $req->employees_number;
-        // $teamArr['field'] = $req->field;
-        // $teamArr['sector'] = $req->sector;
+        $teamArr['field'] = $req->field;
+        $teamArr['sector'] = $req->sector;
         Company::create($teamArr);
         $groupMemberData = [
             "group_id" => $group->id,
