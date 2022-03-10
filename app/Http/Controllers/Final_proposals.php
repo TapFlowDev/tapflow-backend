@@ -344,7 +344,7 @@ class Final_proposals extends Controller
                     $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
                     $agency=$team->get_team_info($final_proposal->team_id);
                     $final_proposal->milestones = $milestones;
-                    $agency['image']=asset('images/companies/' . $agency->image);
+                    $agency->image=asset('images/companies/' . $agency->image);
                     $final_proposal->agency_info = $agency;
                     $response = Controller::returnResponse(200, 'successful', $final_proposal);
                     return json_encode($response);
