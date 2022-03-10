@@ -54,7 +54,10 @@ class Final_proposals extends Controller
                                     $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                     $req['price'] = $price;
                                     $final_proposal = Final_proposal::create($req->except(['down_payment']));
-                                    $this->downPaymentHandler($req->down_payment[0], $final_proposal->id);
+                                    if($req->down_payment['status']==1){
+                                    $this->downPaymentHandler($req->down_payment[0], $final_proposal->id);}
+                                    else{Final_proposal::where('id',$final_proposal->id)->update(['down_payment'=>0]);
+                                        Milestone::where('final_proposal_id',$final_proposal->id)->update(['down_payment' => 0]);}
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
                                 } catch (Exception $error) {
@@ -72,9 +75,10 @@ class Final_proposals extends Controller
                                 $req['price'] = $price;
 
                                 $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
-                              
+                                if($req->down_payment['status']==1){
                                 $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
-                                
+                                }else{Final_proposal::where('id',$ifExist['final_proposal_id'])->update(['down_payment'=>0]);
+                                    Milestone::where('final_proposal_id', $ifExist['final_proposal_id'])->update(['down_payment' => 0]);}
                                     $response = Controller::returnResponse(200, 'update data successful', []);
                                     return json_encode($response);
                                 
@@ -285,6 +289,7 @@ class Final_proposals extends Controller
         try {
             if ($data['value'] > 0) {
                 $sum = 0;
+                Milestone::where('final_proposal_id', $proposal_id)->update(['down_payment' => 0]);
                 foreach ($data['details'] as $milestone) {
                     $sum += $milestone['milestone_price'];
                     $milestone_id = $milestone['milestone_id'];
