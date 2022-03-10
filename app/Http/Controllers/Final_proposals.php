@@ -59,7 +59,7 @@ class Final_proposals extends Controller
                                     $final_proposal = Final_proposal::create($req->except(['down_payment']));
                                     if($req->down_payment['status']==1){
                                     $this->downPaymentHandler($req->down_payment[0], $final_proposal->id);}
-                                    else{Final_proposal::where('id',$final_proposal->id)->update(['down_payment'=>0]);
+                                    else{Final_proposal::where('id',$final_proposal->id)->update(['down_payment'=>0,'down_payment_value'=>0.00]);
                                         Milestone::where('final_proposal_id',$final_proposal->id)->update(['down_payment' => 0]);}
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
@@ -80,7 +80,7 @@ class Final_proposals extends Controller
                                 $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
                                 if($req->down_payment['status']==1){
                                 $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
-                                }else{Final_proposal::where('id',$ifExist['final_proposal_id'])->update(['down_payment'=>0]);
+                                }else{Final_proposal::where('id',$ifExist['final_proposal_id'])->update(['down_payment'=>0,'down_payment_value'=>0.00]);
                                     Milestone::where('final_proposal_id', $ifExist['final_proposal_id'])->update(['down_payment' => 0]);}
                                     $response = Controller::returnResponse(200, 'update data successful', []);
                                     return json_encode($response);
