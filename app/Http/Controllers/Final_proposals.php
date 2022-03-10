@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\AdminTool\TeamsController;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -320,7 +320,7 @@ class Final_proposals extends Controller
             if ($userData['privileges'] == 1) {
 
                 $milestone = new Milestones;
-                $team= new TeamsController;
+                $team= new TeamController;
                 $projectObj = new ProjectController;
                 $final_proposal = Final_proposal::where('id', $id)
                     ->select(
