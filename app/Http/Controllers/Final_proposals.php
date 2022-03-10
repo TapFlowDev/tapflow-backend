@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\AdminTool\TeamsController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,8 +13,10 @@ use Exception;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupMembersController;
+use App\Http\Controllers\TeamController;
 use App\Models\Group_member;
 use App\Models\Milestone;
+use App\Models\Team;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt\Finally_;
@@ -317,6 +320,7 @@ class Final_proposals extends Controller
             if ($userData['privileges'] == 1) {
 
                 $milestone = new Milestones;
+                $team= new TeamsController;
                 $projectObj = new ProjectController;
                 $final_proposal = Final_proposal::where('id', $id)
                     ->select(
@@ -338,7 +342,9 @@ class Final_proposals extends Controller
                 $company_id = $projectObj->getProjectCompanyId($final_proposal->project_id);
                 if ($company_id == $userData['group_id']) {
                     $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
+                    $agency=$team->get_team_info($final_proposal->team_id);
                     $final_proposal->milestones = $milestones;
+                    $final_proposal->agency_info = $agency;
                     $response = Controller::returnResponse(200, 'successful', $final_proposal);
                     return json_encode($response);
                 } else {
