@@ -322,23 +322,7 @@ class Final_proposals extends Controller
                 $milestone = new Milestones;
                 $team= new TeamController;
                 $projectObj = new ProjectController;
-                $final_proposal = Final_proposal::where('id', $id)
-                    ->select(
-                        'id',
-                        'title',
-                        'user_id',
-                        'proposal_id',
-                        'project_id',
-                        'team_id',
-                        'hours',
-                        'hourly_rate',
-                        'price',
-                        'down_payment',
-                        'down_payment_value',
-                        'starting_date',
-                        'status',
-                        'created_at'
-                    )->first();
+                $final_proposal = $this->selectQuery($id);
                 $company_id = $projectObj->getProjectCompanyId($final_proposal->project_id);
                 if ($company_id == $userData['group_id']) {
                     $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
