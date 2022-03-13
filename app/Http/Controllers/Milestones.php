@@ -78,12 +78,12 @@ class Milestones extends Controller
                                     $deliverables = $req->deliverables;
                                 }
                                 $price = $this->calculatePrice($req->hours, $req->hourly_rate);
-                                $price = fmod($price, 2);
+                                $req['milestone_price'] = $price;
                                 $data = array(
                                     "project_id" => $req->project_id,
                                     "final_proposal_id" => $final_proposal_id,
                                     "hours" => $req->milestone_num_hours,
-                                    "price" => $price,
+                                    "price" => $req->milestone_price,
                                     "name" => $req->milestone_name,
                                     "description" => $req->milestone_description,
                                     "deliverables" => serialize($req->deliverables),
