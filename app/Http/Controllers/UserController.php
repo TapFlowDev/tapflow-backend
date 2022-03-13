@@ -374,5 +374,6 @@ class UserController extends Controller
     function checkTokenExpiration(Request $req)
     {
         $response = Controller::returnResponse(200, 'Valid Token', []);
+        return (json_encode($response));
     }
 }
