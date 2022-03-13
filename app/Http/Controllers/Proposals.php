@@ -72,11 +72,12 @@ class Proposals extends Controller
                         $teamInfo['employees_number'] = $moreTeamData->employees_number;
                         $estPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
                         $details = [
-                            'subject' => 'Initial Proposal '.$projectData->name,
+                            'subject' => 'Initial Proposal ' . $projectData->name,
                             'project_name' => $projectData->name,
                             'team_info' => $teamInfo,
                             'admin_name' => $companyAdminData->first_name,
-                            'proposal' => $proposal
+                            'proposal' => $proposal,
+                            'est' => $estPrice
                         ];
                         Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
                         // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
@@ -179,9 +180,10 @@ class Proposals extends Controller
             return ['exist' => 1, "proposal" => $proposal];
         }
     }
-    private function calculateEstimatedPrice($from, $to, $min, $max){
+    private function calculateEstimatedPrice($from, $to, $min, $max)
+    {
         $estimatedPrice['min'] = $from * $min;
         $estimatedPrice['max'] = $to * $max;
         return $estimatedPrice;
-    } 
+    }
 }
