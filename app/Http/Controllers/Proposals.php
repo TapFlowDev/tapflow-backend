@@ -79,10 +79,10 @@ class Proposals extends Controller
                             'proposal' => $proposal,
                             'est' => $estPrice
                         ];
-                        Mail::mailer('smtp2')->to('shajrawi98@hotmail.com')->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+                        //Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
                         return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, 'You can not apply now, your agency does not verified yet', []);
