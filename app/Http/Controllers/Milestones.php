@@ -54,9 +54,8 @@ class Milestones extends Controller
                                     if (count($req->deliverables) >= 0) {
                                         $deliverables = serialize($req->deliverables);
                                     }
-
-                                    $price = $this->calculatePrice($req->hours, $req->hourly_rate);
-                                    $price = fmod($price, 2);
+                                    $price = $this->calculatePrice($req->milestone_num_hours, $req->hourly_rate);
+                                    $req['milestone_price'] = $price;
                                     $data = array(
                                         "project_id" => $req->project_id,
                                         "final_proposal_id" => $new_final_proposal['msg'],
@@ -77,7 +76,7 @@ class Milestones extends Controller
                                 if (count($req->deliverables) >= 0) {
                                     $deliverables = $req->deliverables;
                                 }
-                                $price = $this->calculatePrice($req->hours, $req->hourly_rate);
+                                $price = $this->calculatePrice($req->milestone_num_hours, $req->hourly_rate);
                                 $req['milestone_price'] = $price;
                                 $data = array(
                                     "project_id" => $req->project_id,
