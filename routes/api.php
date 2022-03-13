@@ -137,7 +137,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('logout', [UserController::class, 'newLogout']);
     Route::post('UpdateUserInfo', [UserController::class, 'UpdateUserInfo']);
     Route::post('updateUserLinks', [UserLinksController::class, 'update_links']);
-    Route::get('checkTokenExpiration', [UserLinksController::class, 'checkTokenExpiration']);
+    Route::get('checkTokenExpiration', [UserController::class, 'checkTokenExpiration']);
     Route::post('updateUserCategories', [UserCategoriesController::class, 'updateUserCategories']);
     Route::post('updateAttachment', [UserAttachmentsController::class, 'update_attachment']);
     Route::post('joinWithCode', [InviteUsersController::class, 'joinGroupByCode']);
