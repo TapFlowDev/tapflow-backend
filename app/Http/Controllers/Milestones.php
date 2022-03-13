@@ -388,4 +388,5 @@ class Milestones extends Controller
             return ['delete' => 0, 'msg' => $error->getMessage()];
         }
     }
+    // monthly milestones
 }
