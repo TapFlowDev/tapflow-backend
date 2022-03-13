@@ -388,5 +388,34 @@ class Milestones extends Controller
             return ['delete' => 0, 'msg' => $error->getMessage()];
         }
     }
+    function SubmitFinal ($data,$final_proposal_id)
+    {
+        try{
+        Milestone::where('final_proposal_id',$final_proposal_id)->delete();
+        foreach($data as $milestone)
+        {
+            if (count($milestone->deliverables) >= 0) {
+                $deliverables = serialize($milestone->deliverables);
+            }
+            $price = $this->calculatePrice($milestone->milestone_num_hours, $milestone->hourly_rate);
+            $req['milestone_price'] = $price;
+            $data = array(
+                "project_id" => $milestone->project_id,
+                "final_proposal_id" =>$final_proposal_id,
+                "hours" => $milestone->milestone_num_hours,
+                "price" => $price,
+                "name" => $milestone->milestone_name,
+                "description" => $milestone->milestone_description,
+                "deliverables" => serialize($milestone->deliverables),
+            );
+
+            $milestone = Milestone::create($data);
+        }
+        ['code'=>200,'msg'=>'successful'];
+    }catch(Exception $error)
+    {
+       ['code'=>500,'msg'=>$error->getMessage()];
+    }
+    }
     // monthly milestones
 }

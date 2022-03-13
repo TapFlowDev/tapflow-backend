@@ -43,9 +43,10 @@ class Final_proposals extends Controller
                                 "team_id" => "required|exists:groups,id",
                                 "project_id" => "required|exists:projects,id",
                                 "proposal_id" => "required|exists:proposals,id",
-                                "hourly_rate" => "required",
+                               "hourly_rate" => "required|numeric",
                                 "starting_date" => "required|date",
-                                "down_payment" => "required" //value 0=>no down payment 1=>there is down payment
+                                "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
+                                "type" => "required" //1=>regular milestones ,2=>monthly based milestones
                             );
                             $validators = Validator::make($req->all(), $rules);
                             if ($validators->fails()) {
@@ -57,10 +58,12 @@ class Final_proposals extends Controller
                                     $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                     $req['price'] = $price;
                                     $final_proposal = Final_proposal::create($req->except(['down_payment']));
-                                    if($req->down_payment['status']==1){
-                                    $this->downPaymentHandler($req->down_payment[0], $final_proposal->id);}
-                                    else{Final_proposal::where('id',$final_proposal->id)->update(['down_payment'=>0,'down_payment_value'=>0.00]);
-                                        Milestone::where('final_proposal_id',$final_proposal->id)->update(['down_payment' => 0]);}
+                                    if ($req->down_payment['status'] == 1) {
+                                        $this->downPaymentHandler($req->down_payment, $final_proposal->id);
+                                    } else {
+                                        Final_proposal::where('id', $final_proposal->id)->update(['down_payment' => 0, 'down_payment_value' => 0.00]);
+                                        Milestone::where('final_proposal_id', $final_proposal->id)->update(['down_payment' => 0]);
+                                    }
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
                                 } catch (Exception $error) {
@@ -78,13 +81,14 @@ class Final_proposals extends Controller
                                 $req['price'] = $price;
 
                                 $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
-                                if($req->down_payment['status']==1){
-                                $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
-                                }else{Final_proposal::where('id',$ifExist['final_proposal_id'])->update(['down_payment'=>0,'down_payment_value'=>0.00]);
-                                    Milestone::where('final_proposal_id', $ifExist['final_proposal_id'])->update(['down_payment' => 0]);}
-                                    $response = Controller::returnResponse(200, 'update data successful', []);
-                                    return json_encode($response);
-                                
+                                if ($req->down_payment['status'] == 1) {
+                                    $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
+                                } else {
+                                    Final_proposal::where('id', $ifExist['final_proposal_id'])->update(['down_payment' => 0, 'down_payment_value' => 0.00]);
+                                    Milestone::where('final_proposal_id', $ifExist['final_proposal_id'])->update(['down_payment' => 0]);
+                                }
+                                $response = Controller::returnResponse(200, 'update data successful', []);
+                                return json_encode($response);
                             } else {
                                 $responseData = $this->selectQuery($ifExist['final_proposal_id']);
                                 $response = Controller::returnResponse(200, 'You already have proposal', $responseData);
@@ -320,7 +324,7 @@ class Final_proposals extends Controller
             if ($userData['privileges'] == 1) {
 
                 $milestone = new Milestones;
-                $team= new TeamController;
+                $team = new TeamController;
                 $projectObj = new ProjectController;
                 $final_proposal = Final_proposal::where('id', $id)
                     ->select(
@@ -343,9 +347,9 @@ class Final_proposals extends Controller
                 $company_id = $projectObj->getProjectCompanyId($final_proposal->project_id);
                 if ($company_id == $userData['group_id']) {
                     $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
-                    $agency=$team->get_team_info($final_proposal->team_id);
+                    $agency = $team->get_team_info($final_proposal->team_id);
                     $final_proposal->milestones = $milestones;
-                    $agency->image=asset('images/companies/' . $agency->image);
+                    $agency->image = asset('images/companies/' . $agency->image);
                     $final_proposal->agency_info = $agency;
                     $response = Controller::returnResponse(200, 'successful', $final_proposal);
                     return json_encode($response);
@@ -359,6 +363,119 @@ class Final_proposals extends Controller
             }
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'something went wrong', $error->getMessage());
+            return json_encode($response);
+        }
+    }
+    function submitFinalProposal(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        $proposalObj = new Proposals;
+        if ($userData['privileges'] == 1) {
+            $team_id = $userData['group_id'];
+            if ($userData['group_id'] == $req->team_id) {
+                $init_proposal = $proposalObj->getProposalInfo($req->project_id, $team_id);
+                if ($init_proposal['exist'] == 1) {
+                    if ($init_proposal['proposal']->status == 1) {
+                        $req['user_id'] = $userData['user_id'];
+                        $ifExist = $this->checkIfExists($req->project_id,  $team_id);
+                        if ($ifExist['exist'] == '0') {
+                            $rules = array(
+                                "title" => "required",
+                                "team_id" => "required|exists:groups,id",
+                                "project_id" => "required|exists:projects,id",
+                                "proposal_id" => "required|exists:proposals,id",
+                                "hourly_rate" => "required|numeric",
+                                "starting_date" => "required|date",
+                                "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
+                                "type" => "required", //1=>regular milestones ,2=>monthly based milestones
+                                "milestones" => "required"
+                            );
+                            $validators = Validator::make($req->all(), $rules);
+                            if ($validators->fails()) {
+                                $responseData = $validators->errors();
+                                $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                                return (json_encode($response));
+                            } else {
+                                try {
+                                    $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
+                                    $req['price'] = $price;
+                                    $final_proposal = Final_proposal::create($req->except(['down_payment']));
+                                    if ($req->down_payment['status'] == 1) {
+                                        $this->downPaymentHandler($req->down_payment, $final_proposal->id);
+                                    } else {
+                                        Final_proposal::where('id', $final_proposal->id)->update(['down_payment' => 0, 'down_payment_value' => 0.00]);
+                                        Milestone::where('final_proposal_id', $final_proposal->id)->update(['down_payment' => 0]);
+                                    }
+                                    $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
+                                    return (json_encode($response));
+                                } catch (Exception $error) {
+                                    $response = Controller::returnResponse(500, 'something wrong', $error->getMessage());
+                                    return json_encode($response);
+                                }
+                            }
+                        }
+                        //if the proposal exists
+                        else {
+                            $rules = array(
+                                "title" => "required",
+                                "team_id" => "required|exists:groups,id",
+                                "project_id" => "required|exists:projects,id",
+                                "proposal_id" => "required|exists:proposals,id",
+                               "hourly_rate" => "required|numeric",
+                                "starting_date" => "required|date",
+                                "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
+                                "type" => "required", //1=>regular milestones ,2=>monthly based milestones
+                                "milestones" => "required"
+
+                            );
+                            $validators = Validator::make($req->all(), $rules);
+                            if ($validators->fails()) {
+                                $responseData = $validators->errors();
+                                $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                                return (json_encode($response));
+                            } else {
+                                $proposal = json_decode($this->getProposalDetailsById($ifExist['final_proposal_id']));
+                                $status = $proposal->status;
+                                if ($status == -1 || $status == 3) {
+                                    $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
+                                    $req['price'] = $price;
+                                    $milestones = new Milestones;
+                                    $milestones->SubmitFinal($req->milestones, $ifExist['final_proposal_id']);
+                                    if ($milestones['code'] == 200) {
+                                        if ($req->down_payment['status'] == 1) {
+                                            $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
+                                        } else {
+                                            Final_proposal::where('id', $ifExist['final_proposal_id'])->update(['down_payment' => 0, 'down_payment_value' => 0.00]);
+                                            Milestone::where('final_proposal_id', $ifExist['final_proposal_id'])->update(['down_payment' => 0]);
+                                        }
+                                        $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
+                                        $response = Controller::returnResponse(200, 'update data successful', []);
+                                        return json_encode($response);
+                                    } else {
+                                        $response = Controller::returnResponse(500, 'something went wrong ', $milestones['msg']);
+                                        return json_encode($response);
+                                    }
+                                } else {
+                                    $responseData = $this->selectQuery($ifExist['final_proposal_id']);
+                                    $response = Controller::returnResponse(200, 'You already have proposal', $responseData);
+                                    return json_encode($response);
+                                }
+                            }
+                        }
+                    } else {
+                        $response = Controller::returnResponse(422, 'your initial proposal status not accepted ', []);
+                        return json_encode($response);
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, 'you do not have initial proposal ', []);
+                    return json_encode($response);
+                }
+            } else {
+                $response = Controller::returnResponse(422, 'Unauthorized you are trying to access another agency proposal ', []);
+                return json_encode($response);
+            }
+        } else {
+            $response = Controller::returnResponse(422, 'Unauthorized action this action for admins only or you do not have team', []);
             return json_encode($response);
         }
     }
