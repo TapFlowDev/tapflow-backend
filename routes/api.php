@@ -146,6 +146,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('removeUser', [GroupMembersController::class, 'removeUserFromGroup']);
     Route::get('project/{id}', [ProjectController::class, 'getProject']);
     Route::get('getFullFinalProposalById/{id}', [Final_proposals::class, 'getFullFinalProposalById']);
+    Route::post('submitFinalProposal', [Final_proposals::class, 'submitFinalProposal']);
     // Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     // Route::post('saveImage', [ImagesController::class, 'Insert']);
 });
