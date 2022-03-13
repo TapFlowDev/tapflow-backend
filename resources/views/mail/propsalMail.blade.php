@@ -1,45 +1,68 @@
 @component('mail::message')
 
     <body style="font-family: Helvetica,Arial,sans-serif;">
-        <h1 style="color: black; font-weight: bold;">Hey {{ $details['admin_name'] }},</h1>
-        <p style="color: black;">
-            You have received a new initial proposal from {{ $details['team_info']['name'] }}
-            <br>
-            <br>
-        </p>
-        <p style="color: black; font-weight: bold;">
-            Here is the proposal:
-        </p>
-        <table role="presentation" style="border:'0'; color:black;  font-size: medium" cellspacing="0" width="100%">
+        <table role="presentation" style="border:'0'; color:black;" cellspacing="0" width="100%">
             <tr>
-                <td>Project Name:</td>
-                <td>{{ $details['project_name'] }}</td>
+                <td>
+                    <h2 style="color: black;">Hey {{ $details['admin_name'] }},</h2>
+                </td>
             </tr>
             <tr>
-                <td>Estimated price:</td>
-                <td>${{ $details['proposal']['price_min'] }} - ${{ $details['proposal']['price_max'] }} </td>
+                <td>
+                    <p style="color: black;">You have received a new initial proposal from
+                        {{ $details['team_info']['name'] }}</p>
+                </td>
             </tr>
             <tr>
-                <td>Why us:</td>
-                <td>{{ $details['proposal']['our_offer'] }}</td>
+                <td>
+                    <p style="color: black; font-weight: bold; font-size: medium;">Here is the proposal:</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="color: black; font-weight: bold; font-size: small;">Project Name:</p>
+                    <p style="color: black; font-size: small;">{{ $details['project_name'] }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="color: black; font-weight: bold; font-size: small;">Estimated price:</p>
+                    <p style="color: black; font-size: small;">${{ $details['est']['min'] }} -
+                        ${{ $details['est']['max'] }} </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="color: black; font-weight: bold; font-size: small;">Why us:</p>
+                    <p style="color: black; font-size: small;">{{ $details['proposal']['our_offer'] }}</p>
+                </td>
             </tr>
         </table>
-        <br>
-        <p style="color: black; font-weight: bold;">
-            Some info about the agency:
-        </p>
         <table role="presentation" style="border:'0'; color:black;  font-size: medium" cellspacing="0" width="100%">
             <tr>
-                <td>Country:</td>
-                <td>{{ $details['team_info']['country'] }}</td>
+                <td>
+                    <p style="color: black; font-weight: bold;">Some info about the agency:</p>
+                </td>
             </tr>
             <tr>
-                <td>Agency size:</td>
-                <td>{{ $details['team_info']['employees_number'] }}</td>
+                <td>
+                    <p style="color: black; font-weight: bold; font-size: small;">Country:</p>
+                    <p style="color: black;  font-size: small;">{{ $details['team_info']['country'] }}</p>
+                </td>
             </tr>
             <tr>
-                <td>Website:</td>
-                <td>{{ $details['team_info']['link'] }}</td>
+                <td>
+                    <p style="color: black; font-weight: bold; font-size: small;">Agency size:</p>
+                    <p style="color: black;  font-size: small;">
+                        {{ $details['team_info']['employees_number'] }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="color: black; font-weight: bold; font-size: small;">Website:</p>
+                    <p style="color: black;  font-size: small;">
+                        {{ $details['team_info']['link'] }}</p>
+                </td>
             </tr>
         </table>
         <br>
