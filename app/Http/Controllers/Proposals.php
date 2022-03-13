@@ -70,8 +70,7 @@ class Proposals extends Controller
                         $teamInfo['country'] = Countries::find($moreTeamData->country)->name;
                         // $teamInfo['country'] =$moreTeamData->country;
                         $teamInfo['employees_number'] = $moreTeamData->employees_number;
-                        $estPrice = $this->calculateEstimatedPrice($$proposal->from, $proposal->to, $proposal->price_mic, $proposal->price_max);
-                        $response = Controller::returnResponse(200, "proposal added successfully", $estPrice);
+                        $estPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
                         $details = [
                             'subject' => 'Initial Proposal '.$projectData->name,
                             'project_name' => $projectData->name,
@@ -184,5 +183,5 @@ class Proposals extends Controller
         $estimatedPrice['min'] = $from * $min;
         $estimatedPrice['max'] = $to * $max;
         return $estimatedPrice;
-    }
+    } 
 }
