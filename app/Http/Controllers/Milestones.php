@@ -89,6 +89,7 @@ class Milestones extends Controller
                                 );
 
                                 $milestone = Milestone::create($data);
+                                // $FP=Final_proposal::where('id',$finalProposal['final_proposal_id'])->update('')
                                 $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
                                 return (json_encode($response));
                             }

@@ -480,4 +480,9 @@ class Final_proposals extends Controller
             return json_encode($response);
         }
     }
+    // function updateHoursAndPrice($hours,$hourly_rate)
+    // {
+    //     $price=$this->calculatePrice($hours,$hourly_rate);
+    //     Final_proposal::
+    // }
 }

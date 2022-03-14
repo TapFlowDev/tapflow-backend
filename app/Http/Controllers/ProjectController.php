@@ -383,6 +383,7 @@ class ProjectController extends Controller
             $team_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
             $proposalsObj = new Proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
+            dd($proposal);
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
             $proposal_type = $proposal->type;
