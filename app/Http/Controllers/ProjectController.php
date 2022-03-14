@@ -385,7 +385,7 @@ class ProjectController extends Controller
             $FProposalsObj = new Final_proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
             $FProposal = $FProposalsObj->getProposalType($projectData->id, $team_id);
-            dd($FProposal);
+           
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
             $final_proposal_type = $FProposal;
@@ -407,9 +407,9 @@ class ProjectController extends Controller
             }
             $projectData->proposal_id = $proposal_id;
             $projectData->proposal_status = $proposal_status;
-            $projectData->proposal_type = $proposal_type;
+            $projectData->final_proposal_type = $final_proposal_type;
             $projectData->admins = $admins;
-
+         
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
