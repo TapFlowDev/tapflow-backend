@@ -40,7 +40,7 @@ class ResetPasswordController extends Controller
             {
             $urlll="client/reset-password?t=";
             }
-            elseif($userData['type']=1)
+            elseif($userData['type']==1)
             {
                 $urlll="reset-password?t=";
             }
