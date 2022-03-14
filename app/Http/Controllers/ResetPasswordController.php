@@ -19,7 +19,7 @@ class ResetPasswordController extends Controller
     function sendLinkResetPassword(Request $request)
     {
         $userData=Controller::checkUser($request);
-        dd($userData['type']);
+        dd($userData);
         try {
             $rules = array(
                 "email" => "email|required|exists:users,email"
