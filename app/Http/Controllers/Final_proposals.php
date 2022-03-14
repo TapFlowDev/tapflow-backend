@@ -80,10 +80,20 @@ class Final_proposals extends Controller
                             if ($status == -1 || $status == 3) {
                                 $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                 $req['price'] = $price;
-                               $MP=$milestoneObj->updateMilestonesPrices($req->num_hours,$req->hourly_rate,$ifExist['final_proposal_id']);
-                               if ($MP['code'] == 500) {
-                                $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
-                                return (json_encode($response));
+                                if ($finalProposal['type']==1){
+                                    $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                                    if ($MP['code'] == 500) {
+                                        $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                        return (json_encode($response));
+                                    }
+                                }
+                                elseif($finalProposal['type']==2){
+                                    $MP = $this->updateMilestonesMonthly($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                                    if ($MP['code'] == 500) {
+                                        $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                        return (json_encode($response));
+                                    }
+                                }
                             } 
                                $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
                                 if ($req->down_payment['status'] == 1) {
@@ -120,14 +130,14 @@ class Final_proposals extends Controller
     function checkIfExists($project_id, $team_id)
     {
         $final_proposal_id = DB::table('final_proposals')
-            ->select('id')
+            ->select('id','type')
             ->where('team_id', '=', $team_id)
             ->where('project_id', '=', $project_id)
             ->first();
         if ($final_proposal_id == null) {
             return ['exist' => 0];
         } else {
-            return ['exist' => 1, "final_proposal_id" => $final_proposal_id->id];
+            return ['exist' => 1, "final_proposal_id" => $final_proposal_id->id,'type'=>$final_proposal_id->type];
         }
     }
     //this query used to update final proposal data and keep proposal id the same
