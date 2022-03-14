@@ -57,7 +57,7 @@ class Final_proposals extends Controller
                                 try {
                                     $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                     $req['price'] = $price;
-                                    $final_proposal = Final_proposal::create($req->except(['down_payment']));
+                                    $final_proposal = Final_proposal::create($req->except(['down_payment'])+['status'=>-1]);
                                     if ($req->down_payment['status'] == 1) {
                                         $this->downPaymentHandler($req->down_payment, $final_proposal->id);
                                     } else {
