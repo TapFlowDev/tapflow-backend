@@ -224,6 +224,7 @@ class Final_proposals extends Controller
                 'down_payment',
                 'down_payment_value',
                 'starting_date',
+                'type',
                 'status',
                 'created_at'
             )->first();
@@ -342,6 +343,7 @@ class Final_proposals extends Controller
                         'down_payment_value',
                         'description',
                         'starting_date',
+                        'type',
                         'status',
                         'created_at'
                     )->first();
@@ -479,6 +481,16 @@ class Final_proposals extends Controller
             $response = Controller::returnResponse(422, 'Unauthorized action this action for admins only or you do not have team', []);
             return json_encode($response);
         }
+    }
+    function getProposalType($project_id,$team_id)
+    {
+        
+        $final_proposal = DB::table('final_proposals')
+        ->where('project_id', '=', $project_id)
+        ->where('team_id', '=', $team_id)
+        ->select('type')
+        ->first();
+        return $final_proposal->type;
     }
     // function updateHoursAndPrice($hours,$hourly_rate)
     // {
