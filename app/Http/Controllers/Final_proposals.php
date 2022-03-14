@@ -80,21 +80,20 @@ class Final_proposals extends Controller
                             if ($status == -1 || $status == 3) {
                                 $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                 $req['price'] = $price;
-                                if ($finalProposal['type']==1){
-                                    $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                                if ($ifExist['type']==1){
+                                    $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $ifExist['final_proposal_id']);
                                     if ($MP['code'] == 500) {
                                         $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                         return (json_encode($response));
                                     }
                                 }
-                                elseif($finalProposal['type']==2){
-                                    $MP = $this->updateMilestonesMonthly($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                                elseif($ifExist['type']==2){
+                                    $MP = $this->updateMilestonesMonthly($req->num_hours,$req->hourly_rate, $ifExist['final_proposal_id']);
                                     if ($MP['code'] == 500) {
                                         $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                         return (json_encode($response));
                                     }
-                                }
-                            } 
+                                } 
                                $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
                                 if ($req->down_payment['status'] == 1) {
                                     $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
