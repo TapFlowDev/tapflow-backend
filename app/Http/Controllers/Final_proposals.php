@@ -29,6 +29,7 @@ class Final_proposals extends Controller
     {
         $userData = Controller::checkUser($req);
         $proposalObj = new Proposals;
+        $milestoneObj = new Milestones;
         if ($userData['privileges'] == 1) {
             $team_id = $userData['group_id'];
             if ($userData['group_id'] == $req->team_id) {
@@ -79,8 +80,12 @@ class Final_proposals extends Controller
                             if ($status == -1 || $status == 3) {
                                 $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                 $req['price'] = $price;
-
-                                $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
+                               $MP=$milestoneObj->updateMilestonesPrices($req->num_hours,$req->hourly_rate,$ifExist['final_proposal_id']);
+                               if ($MP['code'] == 500) {
+                                $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                return (json_encode($response));
+                            } 
+                               $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
                                 if ($req->down_payment['status'] == 1) {
                                     $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
                                 } else {
@@ -505,6 +510,15 @@ class Final_proposals extends Controller
             $type = $final_proposal->type;
         }
         return $type;
+    }
+    function updateHoursPrice($hours,$hourly_rate,$final_proposal_id)
+    {
+        try {
+        $price=$this->calculatePrice($hours,$hourly_rate);
+        Final_proposal::where('id',$final_proposal_id)->update(['hours'=>$hours,'hourly_rate'=>$hourly_rate,'price'=>$price]);
+         }catch (Exception $error) {
+            return ['code' => 500, 'msg' => $error->getMessage()];
+        }
     }
     // function updateHoursAndPrice($hours,$hourly_rate)
     // {

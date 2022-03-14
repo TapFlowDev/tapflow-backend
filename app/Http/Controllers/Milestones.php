@@ -88,7 +88,7 @@ class Milestones extends Controller
                                     "description" => $req->milestone_description,
                                     "deliverables" => serialize($req->deliverables),
                                 );
-                                $MP = $this->updateMilestonesPrices($req->hourly_rate, $finalProposal['final_proposal_id']);
+                                $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
                                 if ($MP['code'] == 500) {
                                     $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                     return (json_encode($response));
@@ -138,7 +138,7 @@ class Milestones extends Controller
 
                         $update = $this->milestoneDownPaymentHandler($req);
                         if ($update['update'] == 1) {
-                            $MP = $this->updateMilestonesPrices($req->hourly_rate, $finalProposal['final_proposal_id']);
+                            $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
                             if ($MP['code'] == 500) {
                                 $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                 return (json_encode($response));
@@ -426,10 +426,12 @@ class Milestones extends Controller
             ['code' => 500, 'msg' => $error->getMessage()];
         }
     }
-    function updateMilestonesPrices($hourly_rate, $final_proposal_id)
+    function updateMilestonesPrices($hours,$hourly_rate, $final_proposal_id)
     {
         try {
+            $FPOBJ=new Final_proposals;
             $milestones = Milestone::where('final_proposal_id', $final_proposal_id)->select('id', 'hours')->get();
+            $FPOBJ->updateHoursPrice($hours,$hourly_rate,$final_proposal_id);
             foreach ($milestones as $m) {
                 $hours = (int)$m->hours;
                 $price = $this->calculatePrice($hours, $hourly_rate);
@@ -440,5 +442,19 @@ class Milestones extends Controller
             return ['code' => 500, 'msg' => $error->getMessage()];
         }
     }
-    // monthly milestones
+    function updateMilestonesMonthly($hours, $hourly_rate, $final_proposal_id)
+
+    {
+        try {
+            $FPOBJ=new Final_proposals;
+            $milestones = Milestone::where('final_proposal_id', $final_proposal_id)->select('id', 'hours')->get();
+            $FPOBJ->updateHoursPrice($hours,$hourly_rate,$final_proposal_id);
+            $price = $this->calculatePrice($hours, $hourly_rate);
+            Milestone::where('final_proposal_id', $final_proposal_id)->update(['price' => $price, 'hours' => $hours]);
+
+            return ['code' => 200, 'msg' => 'successfully'];
+        } catch (Exception $error) {
+            return ['code' => 500, 'msg' => $error->getMessage()];
+        }
+    }
 }
