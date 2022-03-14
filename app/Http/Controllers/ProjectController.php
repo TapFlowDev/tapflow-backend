@@ -382,7 +382,7 @@ class ProjectController extends Controller
             $GroupControllerObj = new GroupController;
             $team_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
             $proposalsObj = new Proposals;
-            $FProposalsObj = new Proposals;
+            $FProposalsObj = new Final_proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
             $FProposal = $FProposalsObj->getProposalType($projectData->id, $team_id);
             dd($FProposal);
