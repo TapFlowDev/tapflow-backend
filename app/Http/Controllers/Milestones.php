@@ -17,6 +17,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Final_proposals;
 use App\Models\Final_proposal;
 use Illuminate\Support\Facades\DB;
+use Money\Exchange;
 
 class Milestones extends Controller
 {
@@ -45,7 +46,7 @@ class Milestones extends Controller
                             $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
                             $deliverables = [];
                             if ($finalProposal['exist'] == 0) {
-                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->num_hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id'],$req->type);
+                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->num_hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id'], $req->type);
                                 if ($new_final_proposal['code'] == 422 || $new_final_proposal['code'] == 500) {
                                     $response = Controller::returnResponse($new_final_proposal['code'], 'error generating final proposal', $new_final_proposal['msg']);
                                     return json_encode($response);
@@ -87,7 +88,11 @@ class Milestones extends Controller
                                     "description" => $req->milestone_description,
                                     "deliverables" => serialize($req->deliverables),
                                 );
-
+                                $MP = $this->updateMilestonesPrices($req->hourly_rate, $finalProposal['final_proposal_id']);
+                                if ($MP['code'] == 500) {
+                                    $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                    return (json_encode($response));
+                                }
                                 $milestone = Milestone::create($data);
                                 // $FP=Final_proposal::where('id',$finalProposal['final_proposal_id'])->update('')
                                 $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
@@ -133,6 +138,11 @@ class Milestones extends Controller
 
                         $update = $this->milestoneDownPaymentHandler($req);
                         if ($update['update'] == 1) {
+                            $MP = $this->updateMilestonesPrices($req->hourly_rate, $finalProposal['final_proposal_id']);
+                            if ($MP['code'] == 500) {
+                                $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                return (json_encode($response));
+                            }
                             $milestone = Milestone::where('id', $req->milestone_id)
                                 ->update([
                                     'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price,
@@ -414,6 +424,20 @@ class Milestones extends Controller
             ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
             ['code' => 500, 'msg' => $error->getMessage()];
+        }
+    }
+    function updateMilestonesPrices($hourly_rate, $final_proposal_id)
+    {
+        try {
+            $milestones = Milestone::where('final_proposal_id', $final_proposal_id)->select('id', 'hours')->get();
+            foreach ($milestones as $m) {
+                $hours = (int)$m->hours;
+                $price = $this->calculatePrice($hours, $hourly_rate);
+                Milestone::where('id', $m->id)->update(['price' => $price]);
+            }
+            return ['code' => 200, 'msg' => 'successfully'];
+        } catch (Exception $error) {
+            return ['code' => 500, 'msg' => $error->getMessage()];
         }
     }
     // monthly milestones
