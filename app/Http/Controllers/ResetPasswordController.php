@@ -100,7 +100,7 @@ class ResetPasswordController extends Controller
             $response = Controller::returnResponse(200, "password changed successfully", array());
             return json_encode($response);
         } catch (Exception $error) {
-            $responseData = array("error" => $error);
+            $responseData = array("error" => $error->getMessage());
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return json_encode($response);
         }
