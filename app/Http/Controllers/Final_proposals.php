@@ -43,7 +43,7 @@ class Final_proposals extends Controller
                                 "team_id" => "required|exists:groups,id",
                                 "project_id" => "required|exists:projects,id",
                                 "proposal_id" => "required|exists:proposals,id",
-                               "hourly_rate" => "required|numeric",
+                                "hourly_rate" => "required|numeric",
                                 "starting_date" => "required|date",
                                 "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
                                 "type" => "required" //1=>regular milestones ,2=>monthly based milestones
@@ -57,7 +57,7 @@ class Final_proposals extends Controller
                                 try {
                                     $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                     $req['price'] = $price;
-                                    $final_proposal = Final_proposal::create($req->except(['down_payment'])+['status'=>-1]);
+                                    $final_proposal = Final_proposal::create($req->except(['down_payment']) + ['status' => -1]);
                                     if ($req->down_payment['status'] == 1) {
                                         $this->downPaymentHandler($req->down_payment, $final_proposal->id);
                                     } else {
@@ -232,14 +232,14 @@ class Final_proposals extends Controller
         $final_proposal->milestones = $milestones;
         return ($final_proposal);
     }
-    function createEmptyFinalProposal($hourly_rate, $num_hours, $proposal_id, $team_id, $project_id, $user_id,$type)
+    function createEmptyFinalProposal($hourly_rate, $num_hours, $proposal_id, $team_id, $project_id, $user_id, $type)
     {
         try {
             $proposalObj = new Proposals;
             $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
             if ($init_proposal['exist'] == 1) {
                 if ($init_proposal['proposal']->status == 1) {
-                    $final_proposal = Final_proposal::create(['hourly_rate' => $hourly_rate, 'hours' => $num_hours, 'proposal_id' => $proposal_id, 'status' => -1, 'team_id' => $team_id, 'project_id' => $project_id, 'user_id' => $user_id,'type'=>$type]);
+                    $final_proposal = Final_proposal::create(['hourly_rate' => $hourly_rate, 'hours' => $num_hours, 'proposal_id' => $proposal_id, 'status' => -1, 'team_id' => $team_id, 'project_id' => $project_id, 'user_id' => $user_id, 'type' => $type]);
                     return ['code' => 200, 'msg' => $final_proposal->id];
                 } else {
 
@@ -352,7 +352,16 @@ class Final_proposals extends Controller
                     $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
                     $agency = $team->get_team_info($final_proposal->team_id);
                     $final_proposal->milestones = $milestones;
-                    $agency->image = asset('images/companies/' . $agency->image);
+
+                    if ($agency->image == null) {
+                        $image = asset('images/profile-pic.jpg');
+                        $agency->image = $image;
+                    } else {
+                        $image = asset('images/companies/' . $agency->image);
+
+                        $agency->image = $image;
+                    }
+
                     $final_proposal->agency_info = $agency;
                     $response = Controller::returnResponse(200, 'successful', $final_proposal);
                     return json_encode($response);
@@ -424,7 +433,7 @@ class Final_proposals extends Controller
                                 "team_id" => "required|exists:groups,id",
                                 "project_id" => "required|exists:projects,id",
                                 "proposal_id" => "required|exists:proposals,id",
-                               "hourly_rate" => "required|numeric",
+                                "hourly_rate" => "required|numeric",
                                 "starting_date" => "required|date",
                                 "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
                                 "type" => "required", //1=>regular milestones ,2=>monthly based milestones
@@ -482,19 +491,19 @@ class Final_proposals extends Controller
             return json_encode($response);
         }
     }
-    function getProposalType($project_id,$team_id)
+    function getProposalType($project_id, $team_id)
     {
-        
+
         $final_proposal = DB::table('final_proposals')
-        ->where('project_id', '=', $project_id)
-        ->where('team_id', '=', $team_id)
-        ->select('type')
-        ->first();
-        if($final_proposal === null)
-        {
-            $type ="0";
+            ->where('project_id', '=', $project_id)
+            ->where('team_id', '=', $team_id)
+            ->select('type')
+            ->first();
+        if ($final_proposal === null) {
+            $type = "0";
+        } else {
+            $type = $final_proposal->type;
         }
-        else{$type=$final_proposal->type;}
         return $type;
     }
     // function updateHoursAndPrice($hours,$hourly_rate)
