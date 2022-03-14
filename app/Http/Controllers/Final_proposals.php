@@ -78,7 +78,7 @@ class Final_proposals extends Controller
                             $proposal = json_decode($this->getProposalDetailsById($ifExist['final_proposal_id']));
                             $status = $proposal->status;
                             if ($status == -1 || $status == 3) {
-                                $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
+                                $price = $this->calculatePrice($req->hours, $req->hourly_rate);
                                 $req['price'] = $price;
                                 if ($ifExist['type']==1){
                                     $MP = $milestoneObj->updateMilestonesPrices($req->hours,$req->hourly_rate, $ifExist['final_proposal_id']);
@@ -423,7 +423,7 @@ class Final_proposals extends Controller
                                 return (json_encode($response));
                             } else {
                                 try {
-                                    $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
+                                    $price = $this->calculatePrice($req->hours, $req->hourly_rate);
                                     $req['price'] = $price;
                                     $final_proposal = Final_proposal::create($req->except(['down_payment']));
                                     if ($req->down_payment['status'] == 1) {
