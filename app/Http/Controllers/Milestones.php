@@ -45,7 +45,7 @@ class Milestones extends Controller
                             $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
                             $deliverables = [];
                             if ($finalProposal['exist'] == 0) {
-                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->num_hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id']);
+                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->num_hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id'],$req->type);
                                 if ($new_final_proposal['code'] == 422 || $new_final_proposal['code'] == 500) {
                                     $response = Controller::returnResponse($new_final_proposal['code'], 'error generating final proposal', $new_final_proposal['msg']);
                                     return json_encode($response);
@@ -388,34 +388,32 @@ class Milestones extends Controller
             return ['delete' => 0, 'msg' => $error->getMessage()];
         }
     }
-    function SubmitFinal ($data,$final_proposal_id)
+    function SubmitFinal($data, $final_proposal_id)
     {
-        try{
-        Milestone::where('final_proposal_id',$final_proposal_id)->delete();
-        foreach($data as $milestone)
-        {
-            if (count($milestone->deliverables) >= 0) {
-                $deliverables = serialize($milestone->deliverables);
-            }
-            $price = $this->calculatePrice($milestone->milestone_num_hours, $milestone->hourly_rate);
-            $req['milestone_price'] = $price;
-            $data = array(
-                "project_id" => $milestone->project_id,
-                "final_proposal_id" =>$final_proposal_id,
-                "hours" => $milestone->milestone_num_hours,
-                "price" => $price,
-                "name" => $milestone->milestone_name,
-                "description" => $milestone->milestone_description,
-                "deliverables" => serialize($milestone->deliverables),
-            );
+        try {
+            Milestone::where('final_proposal_id', $final_proposal_id)->delete();
+            foreach ($data as $milestone) {
+                if (count($milestone->deliverables) >= 0) {
+                    $deliverables = serialize($milestone->deliverables);
+                }
+                $price = $this->calculatePrice($milestone->milestone_num_hours, $milestone->hourly_rate);
+                $req['milestone_price'] = $price;
+                $data = array(
+                    "project_id" => $milestone->project_id,
+                    "final_proposal_id" => $final_proposal_id,
+                    "hours" => $milestone->milestone_num_hours,
+                    "price" => $price,
+                    "name" => $milestone->milestone_name,
+                    "description" => $milestone->milestone_description,
+                    "deliverables" => serialize($milestone->deliverables),
+                );
 
-            $milestone = Milestone::create($data);
+                $milestone = Milestone::create($data);
+            }
+            ['code' => 200, 'msg' => 'successful'];
+        } catch (Exception $error) {
+            ['code' => 500, 'msg' => $error->getMessage()];
         }
-        ['code'=>200,'msg'=>'successful'];
-    }catch(Exception $error)
-    {
-       ['code'=>500,'msg'=>$error->getMessage()];
-    }
     }
     // monthly milestones
 }
