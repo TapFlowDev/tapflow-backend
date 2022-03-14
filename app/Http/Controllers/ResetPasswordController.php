@@ -18,8 +18,8 @@ class ResetPasswordController extends Controller
 {
     function sendLinkResetPassword(Request $request)
     {
-        $userData=Controller::checkUser($request);
-        dd($userData);
+        $userData=$this->checkUserType($request->email);
+        
         try {
             $rules = array(
                 "email" => "email|required|exists:users,email"
@@ -37,6 +37,8 @@ class ResetPasswordController extends Controller
                 'token' => $token,
                 'created_at' => Carbon::now()
             ]);
+            $userData=$this->checkUserType($request->email);
+            dd($userData);
             if($userData['type']==2)
             {
             $urlll="client/reset-password?t=";
@@ -105,5 +107,9 @@ class ResetPasswordController extends Controller
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return json_encode($response);
         }
+    }
+    private function checkUserType($email)
+    {
+       return User::where('email',$email)->select('type')->first()->type;
     }
 }
