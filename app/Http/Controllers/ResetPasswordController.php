@@ -40,16 +40,16 @@ class ResetPasswordController extends Controller
             {
             $urlll="client/reset-password?t=";
             }
-            elseif($userData['type']==1)
+            elseif($userData['type']=1)
             {
                 $urlll="reset-password?t=";
             }
             if (env('APP_ENV') == 'local') {
                 $url = env('APP_URL') . $urlll . $token;
             } elseif (env('APP_ENV') == 'dev') {
-                $url = "https://www.tapflow.dev $urlll" . $token;
+                $url = "https://www.tapflow.dev/".$urlll. $token;
             } else {
-                $url = "https://www.tapflow.app $urlll" . $token;
+                $url = "https://www.tapflow.app/".$urlll . $token;
             }
             $details = [
                 'url' => $url
@@ -59,7 +59,7 @@ class ResetPasswordController extends Controller
 
             return json_encode($response);
         } catch (Exception $error) {
-            $responseData = array("error" => $error->getMessage());
+            $responseData = array("error" => $error,);
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return json_encode($response);
         }
@@ -100,7 +100,7 @@ class ResetPasswordController extends Controller
             $response = Controller::returnResponse(200, "password changed successfully", array());
             return json_encode($response);
         } catch (Exception $error) {
-            $responseData = array("error" => $error->getMessage());
+            $responseData = array("error" => $error);
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return json_encode($response);
         }
