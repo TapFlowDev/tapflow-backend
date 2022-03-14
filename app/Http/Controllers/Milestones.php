@@ -88,10 +88,19 @@ class Milestones extends Controller
                                     "description" => $req->milestone_description,
                                     "deliverables" => serialize($req->deliverables),
                                 );
-                                $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
-                                if ($MP['code'] == 500) {
-                                    $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
-                                    return (json_encode($response));
+                                if ($finalProposal['type']==1){
+                                    $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                                    if ($MP['code'] == 500) {
+                                        $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                        return (json_encode($response));
+                                    }
+                                }
+                                elseif($finalProposal['type']==2){
+                                    $MP = $this->updateMilestonesMonthly($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                                    if ($MP['code'] == 500) {
+                                        $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                        return (json_encode($response));
+                                    }
                                 }
                                 $milestone = Milestone::create($data);
                                 // $FP=Final_proposal::where('id',$finalProposal['final_proposal_id'])->update('')
@@ -138,11 +147,20 @@ class Milestones extends Controller
 
                         $update = $this->milestoneDownPaymentHandler($req);
                         if ($update['update'] == 1) {
+                            if ($finalProposal['type']==1){
                             $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
                             if ($MP['code'] == 500) {
                                 $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                 return (json_encode($response));
                             }
+                        }
+                        elseif($finalProposal['type']==2){
+                            $MP = $this->updateMilestonesMonthly($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                            if ($MP['code'] == 500) {
+                                $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                return (json_encode($response));
+                            }
+                        }
                             $milestone = Milestone::where('id', $req->milestone_id)
                                 ->update([
                                     'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price,
