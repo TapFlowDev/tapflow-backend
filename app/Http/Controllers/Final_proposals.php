@@ -490,8 +490,12 @@ class Final_proposals extends Controller
         ->where('team_id', '=', $team_id)
         ->select('type')
         ->first();
-     
-        return $final_proposal->type;
+        if($final_proposal === null)
+        {
+            $type ="0";
+        }
+        else{$type=$final_proposal->type;}
+        return $type;
     }
     // function updateHoursAndPrice($hours,$hourly_rate)
     // {
