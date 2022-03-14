@@ -382,11 +382,13 @@ class ProjectController extends Controller
             $GroupControllerObj = new GroupController;
             $team_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
             $proposalsObj = new Proposals;
+            $FProposalsObj = new Proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
-            dd($proposal);
+            $FProposal = $FProposalsObj->getProposalType($projectData->id, $team_id);
+            dd($FProposal);
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
-            $proposal_type = $proposal->type;
+            $final_proposal_type = $FProposal;
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
