@@ -89,14 +89,14 @@ class Milestones extends Controller
                                     "deliverables" => serialize($req->deliverables),
                                 );
                                 if ($finalProposal['type']==1){
-                                    $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                                    $MP = $this->updateMilestonesPrices($req->hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
                                     if ($MP['code'] == 500) {
                                         $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                         return (json_encode($response));
                                     }
                                 }
                                 elseif($finalProposal['type']==2){
-                                    $MP = $this->updateMilestonesMonthly($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                                    $MP = $this->updateMilestonesMonthly($req->hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
                                     if ($MP['code'] == 500) {
                                         $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                         return (json_encode($response));
@@ -148,14 +148,14 @@ class Milestones extends Controller
                         $update = $this->milestoneDownPaymentHandler($req);
                         if ($update['update'] == 1) {
                             if ($finalProposal['type']==1){
-                            $MP = $this->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                            $MP = $this->updateMilestonesPrices($req->hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
                             if ($MP['code'] == 500) {
                                 $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                 return (json_encode($response));
                             }
                         }
                         elseif($finalProposal['type']==2){
-                            $MP = $this->updateMilestonesMonthly($req->num_hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
+                            $MP = $this->updateMilestonesMonthly($req->hours,$req->hourly_rate, $finalProposal['final_proposal_id']);
                             if ($MP['code'] == 500) {
                                 $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                 return (json_encode($response));
