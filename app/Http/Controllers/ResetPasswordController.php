@@ -18,6 +18,7 @@ class ResetPasswordController extends Controller
 {
     function sendLinkResetPassword(Request $request)
     {
+        $userData=Controller::checkUser($request);
         try {
             $rules = array(
                 "email" => "email|required|exists:users,email"
@@ -35,12 +36,20 @@ class ResetPasswordController extends Controller
                 'token' => $token,
                 'created_at' => Carbon::now()
             ]);
+            if($userData['type']==2)
+            {
+            $urlll="client/reset-password?t=";
+            }
+            elseif($userData['type']=1)
+            {
+                $urlll="reset-password?t=";
+            }
             if (env('APP_ENV') == 'local') {
-                $url = env('APP_URL') . "/reset-password?t=" . $token;
+                $url = env('APP_URL') . $urlll . $token;
             } elseif (env('APP_ENV') == 'dev') {
-                $url = "https://www.tapflow.dev/reset-password?t=" . $token;
+                $url = "https://www.tapflow.dev $urlll" . $token;
             } else {
-                $url = "https://www.tapflow.app/reset-password?t=" . $token;
+                $url = "https://www.tapflow.app $urlll" . $token;
             }
             $details = [
                 'url' => $url
