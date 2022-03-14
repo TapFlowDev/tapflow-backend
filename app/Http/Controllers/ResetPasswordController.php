@@ -18,7 +18,7 @@ class ResetPasswordController extends Controller
 {
     function sendLinkResetPassword(Request $request)
     {
-        $userData=$this->checkUserType($request->email);
+        
         
         try {
             $rules = array(
@@ -37,13 +37,13 @@ class ResetPasswordController extends Controller
                 'token' => $token,
                 'created_at' => Carbon::now()
             ]);
-            $userData=$this->checkUserType($request->email);
-            dd($userData);
-            if($userData['type']==2)
+            $userType=$this->checkUserType($request->email);
+       
+            if($userType==2)
             {
             $urlll="client/reset-password?t=";
             }
-            elseif($userData['type']=1)
+            elseif($userType=1)
             {
                 $urlll="reset-password?t=";
             }
