@@ -81,14 +81,14 @@ class Final_proposals extends Controller
                                 $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                 $req['price'] = $price;
                                 if ($ifExist['type']==1){
-                                    $MP = $milestoneObj->updateMilestonesPrices($req->num_hours,$req->hourly_rate, $ifExist['final_proposal_id']);
+                                    $MP = $milestoneObj->updateMilestonesPrices($req->hours,$req->hourly_rate, $ifExist['final_proposal_id']);
                                     if ($MP['code'] == 500) {
                                         $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                         return (json_encode($response));
                                     }
                                 }
                                 elseif($ifExist['type']==2){
-                                    $MP = $milestoneObj->updateMilestonesMonthly($req->num_hours,$req->hourly_rate, $ifExist['final_proposal_id']);
+                                    $MP = $milestoneObj->updateMilestonesMonthly($req->hours,$req->hourly_rate, $ifExist['final_proposal_id']);
                                     if ($MP['code'] == 500) {
                                         $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                         return (json_encode($response));
