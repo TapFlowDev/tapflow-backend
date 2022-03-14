@@ -136,6 +136,7 @@ class Final_proposals extends Controller
                 'description' => $data->description,
                 'hours' => $data->hours, 'hourly_rate' => $data->hourly_rate,
                 'user_id' => $data->user_id,
+                'type' => $data->type,
             ]);
         return $update;
     }
@@ -230,14 +231,14 @@ class Final_proposals extends Controller
         $final_proposal->milestones = $milestones;
         return ($final_proposal);
     }
-    function createEmptyFinalProposal($hourly_rate, $num_hours, $proposal_id, $team_id, $project_id, $user_id)
+    function createEmptyFinalProposal($hourly_rate, $num_hours, $proposal_id, $team_id, $project_id, $user_id,$type)
     {
         try {
             $proposalObj = new Proposals;
             $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
             if ($init_proposal['exist'] == 1) {
                 if ($init_proposal['proposal']->status == 1) {
-                    $final_proposal = Final_proposal::create(['hourly_rate' => $hourly_rate, 'hours' => $num_hours, 'proposal_id' => $proposal_id, 'status' => -1, 'team_id' => $team_id, 'project_id' => $project_id, 'user_id' => $user_id]);
+                    $final_proposal = Final_proposal::create(['hourly_rate' => $hourly_rate, 'hours' => $num_hours, 'proposal_id' => $proposal_id, 'status' => -1, 'team_id' => $team_id, 'project_id' => $project_id, 'user_id' => $user_id,'type'=>$type]);
                     return ['code' => 200, 'msg' => $final_proposal->id];
                 } else {
 
