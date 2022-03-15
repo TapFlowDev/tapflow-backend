@@ -100,6 +100,7 @@ class Milestones extends Controller
                                     "name" => $req->milestone_name,
                                     "description" => $req->milestone_description,
                                     "deliverables" => serialize($req->deliverables),
+                                    "is_valid" => $isValid
                                 );
                                 if ($finalProposal['type'] == 1) {
                                     $MP = $this->updateMilestonesPrices($req->hours, $req->hourly_rate, $finalProposal['final_proposal_id']);
@@ -172,10 +173,17 @@ class Milestones extends Controller
                                     return (json_encode($response));
                                 }
                             }
+
+                            $countDeliverables = "";
+                            if (count($req->deliverables) > 0) {
+                                $countDeliverables = "1";
+                            }
+                            $isValidArray = array($req->milestone_name, $req->milestone_description, $countDeliverables, $req->milestone_price, $req->milestone_num_hours);
+                            $isValid = $this->checkIsValid($isValidArray);
                             $milestone = Milestone::where('id', $req->milestone_id)
                                 ->update([
                                     'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price,
-                                    'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables)
+                                    'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables), 'is_valid'=>$isValid
                                 ]);
                             $response = Controller::returnResponse(200, "milestone updated successful", []);
                             return (json_encode($response));
@@ -489,9 +497,9 @@ class Milestones extends Controller
     }
     function checkIsValid($milestones)
     {
-        if(!in_array("", $milestones)){
+        if (!in_array("", $milestones)) {
             return 1;
-        }else{
+        } else {
             return 0;
         }
     }
