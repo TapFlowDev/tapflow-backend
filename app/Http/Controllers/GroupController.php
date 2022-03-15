@@ -149,6 +149,8 @@ class   GroupController extends Controller
                 $teamArr['field'] = $req->field;
                 $teamArr['BA'] = $req->analysis;
                 $teamArr['design'] = $req->design;
+                $teamArr['minPerHour'] = $req->minPerHour;
+                $teamArr['maxPerHour'] = $req->maxPerHour;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
