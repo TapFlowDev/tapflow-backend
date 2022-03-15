@@ -36,7 +36,7 @@ class ContentDataController extends Controller
     function getTerms()
     {
         try {
-            $data = static_data::where('id', 2)->select('link')->first();
+            $data = static_data::where('id', 2)->select('big_text')->first();
             $big_text = $data->big_text;
             $response = Controller::returnResponse(200, 'success', $big_text);
             return json_encode($response);
