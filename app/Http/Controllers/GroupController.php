@@ -61,7 +61,9 @@ class   GroupController extends Controller
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id",
             "analysis" => "required",
-            "design" => "required"
+            "design" => "required",
+            "minPerHour" => "numeric",
+            "maxPerHour" => "numeric"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
