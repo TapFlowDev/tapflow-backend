@@ -611,14 +611,14 @@ class ProjectController extends Controller
         $project->contract = $final_proposal;
         $user = json_decode($freelancersControllersObj->get_freelancer_info($final_proposal->user_id))->data;
         if (isset($user->image)) {
-            $user->image = asset("images/users/" . $user->image);
+            $user->image = asset("/images/users/" . $user->image);
         } else {
-            $user->image = asset('images/profile-pic.jpg');
+            $user->image = asset('/images/profile-pic.jpg');
         }
         if (isset($team->image)) {
-            $team->image = asset("images/companies/" . $team->image);
+            $team->image = asset("/images/companies/" . $team->image);
         } else {
-            $team->image = asset('images/profile-pic.jpg');
+            $team->image = asset('/images/profile-pic.jpg');
         }
 
         $project->admin = array(
