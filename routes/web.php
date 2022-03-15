@@ -20,6 +20,8 @@ use App\Http\Controllers\AdminTool\DummyCompaines;
 use App\Http\Controllers\AdminTool\DummyProjects;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Http\Controllers\AdminTool\FromOptions;
+use App\Http\Controllers\AdminTool\InitialProposals;
+use App\Http\Controllers\AdminTool\NotificationSettings;
 use App\Http\Controllers\AdminTool\StaticDataController;
 use App\Http\Controllers\MailChimpController;
 use App\Http\Controllers\NotificationsSettings;
@@ -71,32 +73,34 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/formOptions', FromOptions::class);
     Route::resource('/clientsRequests', ClientsRequests::class);
     Route::resource('/staticData', StaticDataController::class);
+    Route::resource('/notificationSettings', NotificationSettings::class);
+    Route::resource('/initialProposals', InitialProposals::class);
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
     // Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
-    Route::post('sendEmail',[EmailController::class, 'send'])->name('sendEmail.send');
-    Route::get('/recommendProject/{id}',[ProjectsController::class, 'recommendProject'])->name('recommendProject.show');
-    Route::post('/filterAgenciesByProjectCategories',[ProjectsController::class, 'filterAgenciesByProjectCategories'])->name('filterAgenciesByProjectCategories.filter');
-    Route::post('sendEmailAgencies/{id}',[ProjectsController::class, 'sendAgenciesEmail'])->name('sendEmailAgencies.send');
-    Route::post('verifyProject/{id}',[ProjectsController::class, 'verifyProject'])->name('verifyProject.update');
-    Route::get('hideContent/{id}',[StaticDataController::class, 'hideContent'])->name('hideContent.hideContent');
-    Route::get('showContent/{id}',[StaticDataController::class, 'showContent'])->name('showContent.showContent');
-    
+    Route::post('sendEmail', [EmailController::class, 'send'])->name('sendEmail.send');
+    Route::get('/recommendProject/{id}', [ProjectsController::class, 'recommendProject'])->name('recommendProject.show');
+    Route::post('/filterAgenciesByProjectCategories', [ProjectsController::class, 'filterAgenciesByProjectCategories'])->name('filterAgenciesByProjectCategories.filter');
+    Route::post('sendEmailAgencies/{id}', [ProjectsController::class, 'sendAgenciesEmail'])->name('sendEmailAgencies.send');
+    Route::post('verifyProject/{id}', [ProjectsController::class, 'verifyProject'])->name('verifyProject.update');
+    Route::get('hideContent/{id}', [StaticDataController::class, 'hideContent'])->name('hideContent.hideContent');
+    Route::get('showContent/{id}', [StaticDataController::class, 'showContent'])->name('showContent.showContent');
 });
 Route::get('/r', function (Request $request) {
-    return redirect('/api/r/'.$request->r);
+    return redirect('/api/r/' . $request->r);
 });
 // Route::get('/testForms', function () {
 //     return view('testForms');
 // });
 Route::get('/checkout', function () {
-     return view('checkout');
- });
+    return view('checkout');
+});
 Route::get('/donePayment', function () {
-     return view('donePayment');
- });
- Route::get('/mailchimptest', [MailChimpController::class, 'test']);
+    return view('donePayment');
+});
+Route::get('/mailchimptest', [MailChimpController::class, 'test']);
 
- Route::get('/notifications', [NotificationsSettings::class, 'test']);
+// Route::get('/notifications', [NotificationsSettings::class, 'test']);
+// Route::get('/testEst', [Proposals::class, 'testPropsal']);
 
 // Route::get('/testForms', function(){
 //     return view('testForms');
