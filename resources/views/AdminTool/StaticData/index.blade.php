@@ -11,6 +11,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">#id</th>
+                                    <th scope="col">Title</th>
                                     <th scope="col">Image</th>
                                     <th scope="col">Link</th>
                                     <th scope="col">Text</th>
@@ -21,14 +22,13 @@
                                 @foreach ($data as $info)
                                     <tr>
                                         <th scope="row">{{$info->id }}</th>
+                                        <td>{{$info->title }}</td>
                                         <td>{{$info->image }}</td>
                                         <td>{{$info->link }}</td>
                                         <td>{{$info->text }}</td>
                                         <td>
                                             <a class="btn btn-sm btn-primary"
                                                 href="{{ route('AdminTool.staticData.edit',$info->id) }}" role="button">edit</a>
-                                        </td> 
-                                        <td>
                                         @if ($info->hidden==0)
                                             <a class="btn btn-sm btn-danger"
                                                 href="{{ route('AdminTool.hideContent.hideContent',$info->id) }}" role="button">hide</a>
