@@ -151,7 +151,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('submitFinalProposal', [Final_proposals::class, 'submitFinalProposal']);
     // Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     // Route::post('saveImage', [ImagesController::class, 'Insert']);
-    Route::post('updateTerms', [UserController::class, 'updateTerms']);
+    Route::get('updateTerms', [UserController::class, 'updateTerms']);
 
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
