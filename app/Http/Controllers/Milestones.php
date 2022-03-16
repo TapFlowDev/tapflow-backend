@@ -439,9 +439,9 @@ class Milestones extends Controller
 
                 $milestone = Milestone::create($data);
             }
-            ['code' => 200, 'msg' => 'successful'];
+           return ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
-            ['code' => 500, 'msg' => $error->getMessage()];
+           return ['code' => 500, 'msg' => $error->getMessage()];
         }
     }
     function updateMilestonesPrices($hours,$hourly_rate, $final_proposal_id)

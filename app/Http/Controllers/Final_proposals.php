@@ -467,7 +467,6 @@ class Final_proposals extends Controller
                                     $req['price'] = $price;
                                     $milestones = new Milestones;
                                     $milestones_submit =$milestones->SubmitFinal($req->milestones, $ifExist['final_proposal_id'],$req->project_id,$req->hourly_rate);
-                                    dd($milestones_submit);
                                     if ($milestones_submit['code'] == 200) {
                                         if ($req->down_payment['status'] == 1) {
                                             $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
