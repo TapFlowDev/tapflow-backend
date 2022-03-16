@@ -466,8 +466,8 @@ class Final_proposals extends Controller
                                     $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                     $req['price'] = $price;
                                     $milestones = new Milestones;
-                                    $milestones->SubmitFinal($req->milestones, $ifExist['final_proposal_id']);
-                                    if ($milestones['code'] == 200) {
+                                    $milestones_submit=  $milestones->SubmitFinal($req->milestones, $ifExist['final_proposal_id'],$req->project_id,$req->hourly_rate);
+                                    if ($milestones_submit['code'] == 200) {
                                         if ($req->down_payment['status'] == 1) {
                                             $this->downPaymentHandler($req->down_payment, $ifExist['final_proposal_id']);
                                         } else {
@@ -478,7 +478,7 @@ class Final_proposals extends Controller
                                         $response = Controller::returnResponse(200, 'update data successful', []);
                                         return json_encode($response);
                                     } else {
-                                        $response = Controller::returnResponse(500, 'something went wrong ', $milestones['msg']);
+                                        $response = Controller::returnResponse(500, 'something went wrong ', $milestones_submit['msg']);
                                         return json_encode($response);
                                     }
                                 } else {
