@@ -422,19 +422,19 @@ class Milestones extends Controller
         try {
             Milestone::where('final_proposal_id', $final_proposal_id)->delete();
             foreach ($data as $milestone) {
-                if (count($milestone->deliverables) >= 0) {
-                    $deliverables = serialize($milestone->deliverables);
+                if (count($milestone['deliverables']) >= 0) {
+                    $deliverables = serialize($milestone['deliverables']);
                 }
-                $price = $this->calculatePrice($milestone->milestone_num_hours, $hourly_rate);
+                $price = $this->calculatePrice($milestone['milestone_num_hours'], $hourly_rate);
                 $req['milestone_price'] = $price;
                 $data = array(
                     "project_id" => $project_id,
                     "final_proposal_id" => $final_proposal_id,
-                    "hours" => $milestone->milestone_num_hours,
+                    "hours" => $milestone['milestone_num_hours'],
                     "price" => $price,
-                    "name" => $milestone->milestone_name,
-                    "description" => $milestone->milestone_description,
-                    "deliverables" => serialize($milestone->deliverables),
+                    "name" => $milestone['milestone_name'],
+                    "description" => $milestone['milestone_description'],
+                    "deliverables" => serialize($milestone['deliverables']),
                 );
 
                 $milestone = Milestone::create($data);
