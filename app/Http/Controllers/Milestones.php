@@ -417,7 +417,7 @@ class Milestones extends Controller
             return ['delete' => 0, 'msg' => $error->getMessage()];
         }
     }
-    function SubmitFinal($data, $final_proposal_id)
+    function SubmitFinal($data, $final_proposal_id,$project_id,$hourly_rate)
     {
         try {
             Milestone::where('final_proposal_id', $final_proposal_id)->delete();
@@ -425,10 +425,10 @@ class Milestones extends Controller
                 if (count($milestone->deliverables) >= 0) {
                     $deliverables = serialize($milestone->deliverables);
                 }
-                $price = $this->calculatePrice($milestone->milestone_num_hours, $milestone->hourly_rate);
+                $price = $this->calculatePrice($milestone->milestone_num_hours, $hourly_rate);
                 $req['milestone_price'] = $price;
                 $data = array(
-                    "project_id" => $milestone->project_id,
+                    "project_id" => $project_id,
                     "final_proposal_id" => $final_proposal_id,
                     "hours" => $milestone->milestone_num_hours,
                     "price" => $price,
