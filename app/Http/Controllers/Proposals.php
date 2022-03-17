@@ -201,7 +201,7 @@ class Proposals extends Controller
                 ->join('projects', 'proposals.project_id', '=', 'projects.id')
                 ->select('proposals.*', 'projects.name as projectName')
                 ->where('projects.company_id', '=', $userData['group_id'])
-                ->where('proposals.status', '=', 1)
+                ->where('proposals.status', '<>', 1)
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get());
