@@ -204,6 +204,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('updateCompanyImage', [CompanyController::class, 'updateCompanyImage']);
     Route::post('updateClientImage', [ClientController::class, 'updateClientImage']);
     Route::get('getFinalProposalById/{id}', [Final_proposals::class, 'getProposalDetailsById']);
+    Route::get('dashboardProposals/{offset}/{limit}', [Proposals::class, 'getClientPropsals']);
     
 });
 
