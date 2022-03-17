@@ -186,4 +186,38 @@ class Proposals extends Controller
         $estimatedPrice['max'] = $to * $max;
         return $estimatedPrice;
     }
+
+    function getClientPropsals(Request $req, $offset = 1, $limit = 3)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $propsals = $this->getProposaldata(DB::table('proposals')
+                ->join('projects', 'proposals.project_id', '=', 'projects.id')
+                ->select('proposals.*', 'projects.name as projectName')
+                ->where('projects.company_id', '=', $userData['group_id'])
+                ->latest()->offset($page)->limit($limit)
+                ->get());
+            // return $propsals;
+            $response = Controller::returnResponse(200, "data found", $propsals);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getProposaldata($proposals)
+    {
+        $groupObj = new GroupController;
+        foreach ($proposals as &$proposal) {
+            $teamInfo = $groupObj->getGroupNameAndImage($proposal->team_id);
+            $proposal->teamName = $teamInfo->name;
+            $proposal->teamImage = $teamInfo->image;
+            $proposalEstPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
+            $proposal->estMin = $proposalEstPrice['min'];
+            $proposal->estMax = $proposalEstPrice['max'];
+        }
+
+        return $proposals;
+    }
 }
