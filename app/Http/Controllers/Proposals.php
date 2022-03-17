@@ -195,11 +195,10 @@ class Proposals extends Controller
             $propsals = $this->getProposaldata(DB::table('proposals')
                 ->leftJoin('final_proposals', function ($join) {
                     $join->on('proposals.id', '=', 'final_proposals.proposal_id')
-                        ->select('final_proposals.hourly_rate as finalRate','final_proposals.hours as finalHours','final_proposals.status as finalStatus', 'final_proposals.id as finalId')
                         ->where('final_proposals.status', '=', 1);
                 })
                 ->join('projects', 'proposals.project_id', '=', 'projects.id')
-                ->select('proposals.*', 'projects.name as projectName')
+                ->select('proposals.*', 'projects.name as projectName', 'final_proposals.price as finalPrice', 'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
                 ->where('projects.company_id', '=', $userData['group_id'])
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
@@ -222,11 +221,11 @@ class Proposals extends Controller
             $proposalEstPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
             $proposal->estMin = $proposalEstPrice['min'];
             $proposal->estMax = $proposalEstPrice['max'];
-            if (isset($proposal->finalId)) {
-                $proposal->finalPrice = $proposal->finalRate * $proposal->finalHours;
-            }else{
-                $proposal->finalPrice = '';
-            }
+            // if (!isset($proposal->finalId)) {
+            //     $proposal->finalPrice = $proposal->finalRate * $proposal->finalHours;
+            // } else {
+            //     $proposal->finalPrice = '';
+            // }
         }
 
         return $proposals;
