@@ -190,8 +190,8 @@ class Proposals extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-            dd($userData);
-            if ($userData['exist'] == 0) {
+        
+            if ($userData['exist'] == 1) {
                 if ($userData['group_id'] == $req->company_id) {
                     if ($userData['privileges'] == 1) {
 
