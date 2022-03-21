@@ -195,9 +195,10 @@ class Proposals extends Controller
                     if ($userData['privileges'] == 1) {
 
                         Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                        return (json_encode($response));
                     }
-                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
-                    return (json_encode($response));
                 } else {
                     $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                     return (json_encode($response));
