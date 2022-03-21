@@ -196,6 +196,8 @@ class Proposals extends Controller
                     if ($userData['privileges'] == 1) {
 
                         Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
+                        $response = Controller::returnResponse(200, "proposal accepted", []);
+                        return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                         return (json_encode($response));
@@ -216,10 +218,12 @@ class Proposals extends Controller
     function rejectProposal(Request $req)
     {
         $userData = Controller::checkUser($req);
-        if ($userData['exist'] == 0) {
+        if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
                 if ($userData['privileges'] == 1) {
                     Proposal::where('id', $req->proposal_id)->update(['status' => 2]);
+                    $response = Controller::returnResponse(200, "proposal rejected", []);
+                    return (json_encode($response));
                 }
                 $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                 return (json_encode($response));
