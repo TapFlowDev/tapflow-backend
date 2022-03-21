@@ -343,7 +343,8 @@ class Final_proposals extends Controller
                 $milestone = new Milestones;
                 $team = new TeamController;
                 $projectObj = new ProjectController;
-                $final_proposal = Final_proposal::where(['id', $id,'status','!=',1])
+                $final_proposal = Final_proposal::where('id', $id)
+                ->where('status','!=',1)
                 
               
                     ->select(
