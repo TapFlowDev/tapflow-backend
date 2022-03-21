@@ -509,7 +509,7 @@ class ProjectController extends Controller
         $project->categories = $projectCategoriesObj->getProjectCategories($id);
         $project->duration = Category::find((int)$project->days)->name;
         $user = json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
-        $final_ids = Final_proposal::where('project_id', $id);
+        $final_ids = Final_proposal::where(['project_id', $id,'status','!=',1]);
         $no_finals = $final_ids->count();
         $init_ids = proposal::where('project_id', $id);
         $no_init = $init_ids->count();
