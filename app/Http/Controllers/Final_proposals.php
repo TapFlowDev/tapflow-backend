@@ -541,13 +541,13 @@ class Final_proposals extends Controller
     private function rejectAll($project_id, $proposal_id)
     {
         try {
-            DB::table('final_proposals')
+           $db= DB::table('final_proposals')
                 ->where('project_id', '=', $project_id)
                 ->where('id', '!=', $proposal_id)
                 ->update(['status' => 2]);
-            return 1;
+            return ['code'=>200 , 'msg'=>'success'];
         } catch (Exception $error) {
-            return 2;
+            return ['code'=>500 , 'msg'=>$error->getMessage()];
         }
     }
     function acceptFinalProposal(Request $req)
@@ -559,12 +559,12 @@ class Final_proposals extends Controller
                     if ($userData['privileges'] == 1) {
 
                         $rejectAll = $this->rejectAll($req->project_id, $req->proposal_id);
-                        if ($rejectAll == 1) {
+                        if ($rejectAll['code'] == 200) {
                             Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                             $response = Controller::returnResponse(200, "proposal accepted", []);
                             return (json_encode($response));
                         } else {
-                            $response = Controller::returnResponse(500, "something wrong", []);
+                            $response = Controller::returnResponse(500, "something wrong", $rejectAll['msg']);
                             return (json_encode($response));
                         }
                     }
