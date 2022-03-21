@@ -107,19 +107,23 @@ class ProjectsController extends Controller
         if ($project->team_id != '') {
             $teams = $teamObj->getTeamById($project->team_id);
             $status = 1;
+            $propsals = [];
         } else {
             $status = 0;
-            $teamsIds = proposal::select('team_id')->where('project_id', '=', $id)->distinct()->pluck('team_id');
-            foreach ($teamsIds as $teamId) {
-                $teamInfo = $teamObj->getTeamById($teamId);
-                if ($teamInfo != '') {
-                    $teams[] = $teamInfo;
-                }
+            $propsals = proposal::where('project_id', '=', $id)->distinct()->get();
+            // $teamsIds = proposal::select('team_id')->where('project_id', '=', $id)->distinct()->pluck('team_id');
+            foreach ($propsals as &$propsal) {
+                $teamInfo = Group::where('id', '=', $propsal->team_id)->get()->first();
+                $propsal->team_name = $teamInfo->name;
+                // if ($teamInfo != '') {
+                //     $teams[] = $teamInfo;
+                // }
             }
             // return $teams;
         }
         // $allTeams = $teamObj->getAllTeams();
-        return view("AdminTool.Projects.show", ['project' => $project, 'status' => $status, 'teams' => $teams]);
+        // return $propsals;
+        return view("AdminTool.Projects.show", ['project' => $project, 'status' => $status, 'teams' => $teams, 'propsals' => $propsals]);
     }
 
     /**

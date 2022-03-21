@@ -113,6 +113,7 @@ Route::get('deleteMilestonesByProposalId/{id}', [Milestones::class, 'deleteMiles
 Route::get('getGroupNameAndImage/{id}', [GroupController::class, 'getGroupNameAndImage']);
 Route::get('getQuestions', [FormOptionsController::class, 'getData']);
 Route::get('getDemoLink', [ContentDataController::class, 'getDemoLink']);
+Route::get('getTerms', [ContentDataController::class, 'getTerms']);
 
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
@@ -150,6 +151,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('submitFinalProposal', [Final_proposals::class, 'submitFinalProposal']);
     // Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
     // Route::post('saveImage', [ImagesController::class, 'Insert']);
+    Route::get('updateTerms', [UserController::class, 'updateTerms']);
+
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
@@ -205,5 +208,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('rejectFinalProposal', [Final_proposals::class, 'rejectFinalProposal']);
     Route::post('rejectProposal', [proposals::class, 'rejectProposal']);
     Route::post('acceptProposal', [proposals::class, 'acceptProposal']);
+    Route::get('dashboardProposals/{offset}/{limit}', [Proposals::class, 'getClientPropsals']);
 });
 

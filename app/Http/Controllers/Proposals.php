@@ -186,7 +186,6 @@ class Proposals extends Controller
         $estimatedPrice['max'] = $to * $max;
         return $estimatedPrice;
     }
-   
     function acceptProposal(Request $req)
     {
         try {
@@ -230,5 +229,49 @@ class Proposals extends Controller
             $response = Controller::returnResponse(422, "this user does not have team", []);
             return (json_encode($response));
         }
+
+
+    function getClientPropsals(Request $req, $offset = 1, $limit = 3)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $propsals = $this->getProposaldata(DB::table('proposals')
+                ->leftJoin('final_proposals', function ($join) {
+                    $join->on('proposals.id', '=', 'final_proposals.proposal_id')
+                        ->where('final_proposals.status', '=', 1);
+                })
+                ->join('projects', 'proposals.project_id', '=', 'projects.id')
+                ->select('proposals.*', 'projects.name as projectName', 'final_proposals.price as finalPrice', 'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
+                ->where('projects.company_id', '=', $userData['group_id'])
+                ->latest()->offset($page)->limit($limit)
+                ->distinct()
+                ->get());
+            // return $propsals;
+            $response = Controller::returnResponse(200, "data found", $propsals);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getProposaldata($proposals)
+    {
+        $groupObj = new GroupController;
+        foreach ($proposals as &$proposal) {
+            $teamInfo = $groupObj->getGroupNameAndImage($proposal->team_id);
+            $proposal->teamName = $teamInfo->name;
+            $proposal->teamImage = $teamInfo->image;
+            $proposalEstPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
+            $proposal->estMin = $proposalEstPrice['min'];
+            $proposal->estMax = $proposalEstPrice['max'];
+            // if (!isset($proposal->finalId)) {
+            //     $proposal->finalPrice = $proposal->finalRate * $proposal->finalHours;
+            // } else {
+            //     $proposal->finalPrice = '';
+            // }
+        }
+
+        return $proposals;
     }
 }

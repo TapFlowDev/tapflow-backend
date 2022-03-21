@@ -18,7 +18,8 @@
                                         <h6 class="mb-0">Admin Name</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <a class="team-name-link" href="{{ route('AdminTool.clients.show', $info->admin_id)}}" target="_blanck"
+                                        <a class="team-name-link"
+                                            href="{{ route('AdminTool.clients.show', $info->admin_id) }}" target="_blanck"
                                             role="button">{{ $info->admin_name }}
                                         </a>
                                     </div>
@@ -115,39 +116,43 @@
                             </div>
                         </div>
                         <div class="row">
-                            <h3>Company Projects</h3>
+                            <div class="col-lg-12">
+                                <h3>Company Projects</h3>
+                            </div>
                         </div>
                         <div class="row">
                             @foreach ($projects as $project)
                                 <div class="col-lg-4">
                                     <div class="card mb-3 card-projects">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <a href="{{ route('AdminTool.projects.show', $project->id) }}" class="project-card-href">
-                                                <div class="col-sm-12 project-card">
-                                                    <h6 class="mb-0">{{ $project->name }}</h6>
-                                                    <p>{{ date('Y-m-d', strtotime($project->created_at)) }}</p>
+                                        <a href="{{ route('AdminTool.projects.show', $project->id) }}"
+                                            class="project-card-href">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-sm-12 project-card">
+                                                        <h6 class="mb-0">{{ $project->name }}</h6>
+                                                        <p>{{ date('Y-m-d', strtotime($project->created_at)) }}</p>
+                                                    </div>
+                                                    </div>
+                                                    <hr>
+                                                <div class="row">
+                                                    <div class="col-sm-12 project-card">
+                                                        <h6 class="mb-0">Status</h6>
+                                                        <p>
+                                                            @if ($project->status == 0)
+                                                                Pending
+                                                            @elseif ($project->status == 1)
+                                                                Active
+                                                            @elseif ($project->status == 2)
+                                                                Finished
+                                                            @endif
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <hr>
-                                                <div class="col-sm-12 project-card">
-                                                    <h6 class="mb-0">Status</h6>
-                                                    <p>
-                                                        @if ($project->status == 0)
-                                                            Pending
-                                                        @elseif ($project->status == 1)
-                                                            Active
-                                                        @elseif ($project->status == 2)
-                                                            Finished
-                                                        @endif
-                                                    </p>
-                                                </div>
-                                            </a>
                                             </div>
-                                        </div>
+                                        </a>
                                     </div>
                                 </div>
                             @endforeach
-
                         </div>
                     </div>
                 </div>
