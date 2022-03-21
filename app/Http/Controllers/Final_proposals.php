@@ -187,6 +187,7 @@ class Final_proposals extends Controller
                 $proposals = DB::table('final_proposals')
                     ->select('final_proposals.*')
                     ->where('project_id', $project_id)
+                    ->where('status','!=',-1)
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
@@ -342,7 +343,9 @@ class Final_proposals extends Controller
                 $milestone = new Milestones;
                 $team = new TeamController;
                 $projectObj = new ProjectController;
-                $final_proposal = Final_proposal::where('id', $id)
+                $final_proposal = Final_proposal::where(['id', $id,'status','!=',1])
+                
+              
                     ->select(
                         'id',
                         'title',
