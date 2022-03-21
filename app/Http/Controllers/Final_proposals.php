@@ -550,13 +550,15 @@ class Final_proposals extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-            if ($userData['exist'] == 0) {
+            if ($userData['exist'] == 1) {
                 if ($userData['group_id'] == $req->company_id) {
                     if ($userData['privileges'] == 1) {
 
                         $rejectAll = $this->rejectAll($req->project_id, $req->proposal_id);
                         if ($rejectAll == 1) {
                             Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
+                            $response = Controller::returnResponse(200, "proposal accepted", []);
+                            return (json_encode($response));
                         } else {
                             $response = Controller::returnResponse(500, "something wrong", []);
                             return (json_encode($response));
@@ -580,10 +582,12 @@ class Final_proposals extends Controller
     function rejectFinalProposal(Request $req)
     {
         $userData = Controller::checkUser($req);
-        if ($userData['exist'] == 0) {
+        if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
                 if ($userData['privileges'] == 1) {
                     Final_proposal::where('id', $req->proposal_id)->update(['status' => 2]);
+                    $response = Controller::returnResponse(200, "proposal rejected", []);
+                    return (json_encode($response));
                 }
                 $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                 return (json_encode($response));
