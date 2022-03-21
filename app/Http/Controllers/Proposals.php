@@ -186,4 +186,49 @@ class Proposals extends Controller
         $estimatedPrice['max'] = $to * $max;
         return $estimatedPrice;
     }
+   
+    function acceptProposal(Request $req)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 0) {
+                if ($userData['group_id'] == $req->company_id) {
+                    if ($userData['privileges'] == 1) {
+
+                        Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
+                    }
+                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                    return (json_encode($response));
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "this user does not have team", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function rejectProposal(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 0) {
+            if ($userData['group_id'] == $req->company_id) {
+                if ($userData['privileges'] == 1) {
+                    Proposal::where('id', $req->proposal_id)->update(['status' => 2]);
+                }
+                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
+        }
+    }
 }
