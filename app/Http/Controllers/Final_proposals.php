@@ -534,4 +534,66 @@ class Final_proposals extends Controller
     //     $price=$this->calculatePrice($hours,$hourly_rate);
     //     Final_proposal::
     // }
+    private function rejectAll($project_id, $proposal_id)
+    {
+        try {
+            DB::table('final_proposals')
+                ->where('project_id', '=', $project_id)
+                ->where('id', '!=', $proposal_id)
+                ->update(['status' => 2]);
+            return 1;
+        } catch (Exception $error) {
+            return 2;
+        }
+    }
+    function acceptFinalProposal(Request $req)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 0) {
+                if ($userData['group_id'] == $req->company_id) {
+                    if ($userData['privileges'] == 1) {
+
+                        $rejectAll = $this->rejectAll($req->project_id, $req->proposal_id);
+                        if ($rejectAll == 1) {
+                            Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
+                        } else {
+                            $response = Controller::returnResponse(500, "something wrong", []);
+                            return (json_encode($response));
+                        }
+                    }
+                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                    return (json_encode($response));
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "this user does not have team", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function rejectFinalProposal(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 0) {
+            if ($userData['group_id'] == $req->company_id) {
+                if ($userData['privileges'] == 1) {
+                    Final_proposal::where('id', $req->proposal_id)->update(['status' => 2]);
+                }
+                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
+        }
+    }
 }
