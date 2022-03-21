@@ -229,7 +229,7 @@ class Proposals extends Controller
             $response = Controller::returnResponse(422, "this user does not have team", []);
             return (json_encode($response));
         }
-
+    }
 
     function getClientPropsals(Request $req, $offset = 1, $limit = 3)
     {
