@@ -391,11 +391,12 @@ class ProjectController extends Controller
             $FProposalsObj = new Final_proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
             $FProposal = $FProposalsObj->checkIfExists($projectData->id, $team_id);
-           
+            dd($FProposal);
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
             $final_proposal_type = $FProposal['type'];
             $final_proposal_status = $FProposal['status'];
+
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
