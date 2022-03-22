@@ -378,7 +378,7 @@ class ProjectController extends Controller
     {
         $userData = $req->user();
 
-        // try {
+        try {
             $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
             if ($projectData->team_id != '' || $projectData->status > 0) {
                 $response = Controller::returnResponse(500, "project is not pending", []);
