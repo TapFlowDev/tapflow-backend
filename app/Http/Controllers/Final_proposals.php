@@ -128,15 +128,15 @@ class Final_proposals extends Controller
     }
     function checkIfExists($project_id, $team_id)
     {
-        $final_proposal_id = DB::table('final_proposals')
-            ->select('id','type')
+        $final_proposal = DB::table('final_proposals')
+            ->select('id')
             ->where('team_id', '=', $team_id)
             ->where('project_id', '=', $project_id)
             ->first();
-        if ($final_proposal_id == null) {
+        if ($final_proposal == null) {
             return ['exist' => 0];
         } else {
-            return ['exist' => 1, "final_proposal_id" => $final_proposal_id->id,'type'=>$final_proposal_id->type,'status'=>$final_proposal_id->status];
+            return ['exist' => 1, "final_proposal_id" => $final_proposal->id,'type'=>$final_proposal->type,'status'=>$final_proposal->status];
           
         }
     }
