@@ -129,7 +129,7 @@ class Final_proposals extends Controller
     function checkIfExists($project_id, $team_id)
     {
         $final_proposal = DB::table('final_proposals')
-            ->select('id')
+            ->select('id','type','status')
             ->where('team_id', '=', $team_id)
             ->where('project_id', '=', $project_id)
             ->first();
