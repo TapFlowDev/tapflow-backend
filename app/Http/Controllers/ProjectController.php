@@ -292,9 +292,15 @@ class ProjectController extends Controller
         try {
             $projects = DB::table('projects')
                 ->join('proposals', 'projects.id', '=', 'proposals.project_id')
+                ->join('final_proposals', 'projects.id', '=', 'final_proposals.project_id')
                 ->select('projects.*')
+                ->select('proposals.status as proposal_status')
+                ->select('final_proposals.status as final_proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
+                ->where('final_proposals.team_id', '=', $agency_id)
                 ->where('proposals.status', '<', 2)
+                ->where('final_proposals.status', '=', 0)
+                ->where('final_proposals.status', '=', 3)
                 ->where('projects.status', '=', 0)
                 ->distinct()
                 ->latest()->offset($page)->limit($limit)
@@ -384,11 +390,12 @@ class ProjectController extends Controller
             $proposalsObj = new Proposals;
             $FProposalsObj = new Final_proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
-            $FProposal = $FProposalsObj->getProposalType($projectData->id, $team_id);
+            $FProposal = $FProposalsObj->checkIfExists($projectData->id, $team_id);
            
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
-            $final_proposal_type = $FProposal;
+            $final_proposal_type = $FProposal['type'];
+            $final_proposal_status = $FProposal['status'];
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -408,6 +415,7 @@ class ProjectController extends Controller
             $projectData->proposal_id = $proposal_id;
             $projectData->proposal_status = $proposal_status;
             $projectData->final_proposal_type = $final_proposal_type;
+            $projectData->final_proposal_status = $final_proposal_status;
             $projectData->admins = $admins;
          
             $response = Controller::returnResponse(200, "data found", $projectData);
