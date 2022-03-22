@@ -20,6 +20,7 @@ use App\Models\Team;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt\Finally_;
+use Stripe\Issuing\Card;
 
 use function PHPUnit\Framework\isEmpty;
 
@@ -225,6 +226,7 @@ class Final_proposals extends Controller
     }
     function getProposalDetailsByProject_id($project_id)
     {
+        
         $milestone = new Milestones;
         $final_proposal = Final_proposal::where('project_id', $project_id)
             ->select(
@@ -248,6 +250,7 @@ class Final_proposals extends Controller
         $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
         $final_proposal->milestones = $milestones;
         return ($final_proposal);
+            
     }
     function createEmptyFinalProposal($hourly_rate, $num_hours, $proposal_id, $team_id, $project_id, $user_id, $type)
     {

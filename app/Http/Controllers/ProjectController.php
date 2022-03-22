@@ -291,16 +291,16 @@ class ProjectController extends Controller
         $page = ($offset - 1) * $limit;
         try {
             $projects = DB::table('proposals')
-            ->leftJoin('final_proposals', function ($join) {
-                $join->on('proposals.id', '=', 'final_proposals.proposal_id')
-                    ->where('final_proposals.status', '!=', 1);
-            })
-            ->join('projects', 'proposals.project_id', '=', 'projects.id')
-            ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
-            ->where('proposals.team_id', '=', $agency_id)
-            ->latest()->offset($page)->limit($limit)
-            ->distinct()
-            ->get();
+                ->leftJoin('final_proposals', function ($join) {
+                    $join->on('proposals.id', '=', 'final_proposals.proposal_id')
+                        ->where('final_proposals.status', '!=', 1);
+                })
+                ->join('projects', 'proposals.project_id', '=', 'projects.id')
+                ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
+                ->where('proposals.team_id', '=', $agency_id)
+                ->latest()->offset($page)->limit($limit)
+                ->distinct()
+                ->get();
 
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
@@ -387,7 +387,7 @@ class ProjectController extends Controller
             $FProposalsObj = new Final_proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
             $FProposal = $FProposalsObj->checkIfExists($projectData->id, $team_id);
-       
+
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
             $final_proposal_type = $FProposal['type'];
@@ -414,7 +414,7 @@ class ProjectController extends Controller
             $projectData->final_proposal_type = $final_proposal_type;
             $projectData->final_proposal_status = $final_proposal_status;
             $projectData->admins = $admins;
-         
+
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -514,7 +514,7 @@ class ProjectController extends Controller
         $project->categories = $projectCategoriesObj->getProjectCategories($id);
         $project->duration = Category::find((int)$project->days)->name;
         $user = json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
-        $final_ids = Final_proposal::where('project_id', $id) ->where('status','!=',-1);
+        $final_ids = Final_proposal::where('project_id', $id)->where('status', '!=', -1);
         $no_finals = $final_ids->count();
         $init_ids = proposal::where('project_id', $id);
         $no_init = $init_ids->count();
@@ -611,9 +611,15 @@ class ProjectController extends Controller
         // $user_id =$proposalsControllersObj->getProposalByProjectAndTeamId((int)$project->id,$project->team_id)->user_id;
 
         $team = $teamControllersObj->get_team_info($project->team_id);
-        $final_proposal = $finalProposalControllersObj->getProposalDetailsByProject_id($id);
+        $Exist = $finalProposalControllersObj->checkIfExists($project->team_id, $id);
+        if ($Exist['exist'] == 1) {
+            $final_proposal = $finalProposalControllersObj->getProposalDetailsByProject_id($id);
+            $project->contract = $final_proposal;
+        } else {
+            $project->contract = 'no contract';
+        }
 
-        $project->contract = $final_proposal;
+
         $user = json_decode($freelancersControllersObj->get_freelancer_info($final_proposal->user_id))->data;
         // if (isset($user->image)) {
         //     $user->image = asset("images/users/" . $user->image);
@@ -654,6 +660,6 @@ class ProjectController extends Controller
     function getProjectCompanyId($id)
     {
         $company_id = Project::where('id', $id)->select('company_id')->first();
-        return($company_id->company_id);
+        return ($company_id->company_id);
     }
 }
