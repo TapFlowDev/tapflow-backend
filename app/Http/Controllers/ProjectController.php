@@ -300,7 +300,7 @@ class ProjectController extends Controller
                 ->where('final_proposals.team_id', '=', $agency_id)
                 ->where('proposals.status', '<', 2)
                 ->where('final_proposals.status', '=', 0)
-                ->where('final_proposals.status', '=', 3)
+                ->orwhere('final_proposals.status', '=', 3)
                 ->where('projects.status', '=', 0)
                 ->distinct()
                 ->latest()->offset($page)->limit($limit)
