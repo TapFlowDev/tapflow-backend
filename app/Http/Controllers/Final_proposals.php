@@ -246,7 +246,7 @@ class Final_proposals extends Controller
                 'status',
                 'created_at'
             )->first();
-            dd($final_proposal);
+           
         $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
         $final_proposal->milestones = $milestones;
         return ($final_proposal);
