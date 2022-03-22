@@ -394,8 +394,8 @@ class ProjectController extends Controller
             dd($FProposal);
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
-            $final_proposal_type = $FProposal['type'];
-            $final_proposal_status = $FProposal['status'];
+            // $final_proposal_type = $FProposal['type'];
+            // $final_proposal_status = $FProposal['status'];
 
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
@@ -415,8 +415,8 @@ class ProjectController extends Controller
             }
             $projectData->proposal_id = $proposal_id;
             $projectData->proposal_status = $proposal_status;
-            $projectData->final_proposal_type = $final_proposal_type;
-            $projectData->final_proposal_status = $final_proposal_status;
+            // $projectData->final_proposal_type = $final_proposal_type;
+            // $projectData->final_proposal_status = $final_proposal_status;
             $projectData->admins = $admins;
          
             $response = Controller::returnResponse(200, "data found", $projectData);
