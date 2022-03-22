@@ -290,21 +290,18 @@ class ProjectController extends Controller
         $limit = 4;
         $page = ($offset - 1) * $limit;
         try {
-            $projects = DB::table('projects')
-                ->join('proposals', 'projects.id', '=', 'proposals.project_id')
-                // ->join('final_proposals', 'projects.id', '=', 'final_proposals.project_id')
-                ->select('projects.*')
-                ->select('proposals.status as proposal_status')
-                // ->select('final_proposals.status as final_proposal_status')
-                ->where('proposals.team_id', '=', $agency_id)
-                // ->where('final_proposals.team_id', '=', $agency_id)
-                ->where('proposals.status', '<', 2)
-                // ->where('final_proposals.status', '=', 0)
-                // ->orwhere('final_proposals.status', '=', 3)
-                ->where('projects.status', '=', 0)
-                ->distinct()
-                ->latest()->offset($page)->limit($limit)
-                ->get();
+            $projects = DB::table('proposals')
+            ->Join('final_proposals', function ($join) {
+                $join->on('proposals.id', '=', 'final_proposals.proposal_id')
+                    ->where('final_proposals.status', '=', 0)->orwhere('final_proposals.status', '=', 3)->where('proposals.status' < 1);
+            })
+            ->join('projects', 'proposals.project_id', '=', 'projects.id')
+            ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status', 
+            'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
+            ->where('proposals.team_id', '=', $agency_id)
+            ->latest()->offset($page)->limit($limit)
+            ->distinct()
+            ->get();
 
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
