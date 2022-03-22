@@ -137,6 +137,7 @@ class Final_proposals extends Controller
             return ['exist' => 0];
         } else {
             return ['exist' => 1, "final_proposal_id" => $final_proposal_id->id,'type'=>$final_proposal_id->type,'status'=>$final_proposal_id->status];
+          
         }
     }
     //this query used to update final proposal data and keep proposal id the same
