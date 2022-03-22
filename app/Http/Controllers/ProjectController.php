@@ -296,8 +296,7 @@ class ProjectController extends Controller
                     ->where('final_proposals.status', '=', 0)->orWhere('final_proposals.status', '=', 3);
             })
             ->join('projects', 'proposals.project_id', '=', 'projects.id')
-            ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status', 
-            'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
+            ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
             ->where('proposals.team_id', '=', $agency_id)
             ->latest()->offset($page)->limit($limit)
             ->distinct()
