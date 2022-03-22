@@ -228,21 +228,7 @@ class Final_proposals extends Controller
         $milestone = new Milestones;
         $final_proposal = Final_proposal::where('project_id', $project_id)
             ->select(
-                'id',
-                'title',
-                'user_id',
-                'proposal_id',
-                'project_id',
-                'team_id',
-                'hours',
-                'hourly_rate',
-                'price',
-                'down_payment',
-                'down_payment_value',
-                'starting_date',
-                'type',
-                'status',
-                'created_at'
+                '*'
             )->first();
         $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
         $final_proposal->milestones = $milestones;
