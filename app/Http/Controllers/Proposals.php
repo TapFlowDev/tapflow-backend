@@ -245,7 +245,7 @@ class Proposals extends Controller
             $propsals = $this->getProposaldata(DB::table('proposals')
                 ->leftJoin('final_proposals', function ($join) {
                     $join->on('proposals.id', '=', 'final_proposals.proposal_id')
-                        ->where('final_proposals.status', '=', 1);
+                        ->where('final_proposals.status', '=', 0);
                 })
                 ->join('projects', 'proposals.project_id', '=', 'projects.id')
                 ->select('proposals.*', 'projects.name as projectName', 'final_proposals.price as finalPrice', 'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
