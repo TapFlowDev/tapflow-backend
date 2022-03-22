@@ -378,7 +378,7 @@ class ProjectController extends Controller
     {
         $userData = $req->user();
 
-        try {
+        // try {
             $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
             if ($projectData->team_id != '' || $projectData->status > 0) {
                 $response = Controller::returnResponse(500, "project is not pending", []);
@@ -421,11 +421,11 @@ class ProjectController extends Controller
          
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
-        } catch (\Exception $error) {
+        // } catch (\Exception $error) {
 
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
-            return (json_encode($response));
-        }
+        //     $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+        //     return (json_encode($response));
+        // }
     }
     function getNumberOfProjectForCompany($id)
     {
