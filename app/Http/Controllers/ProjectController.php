@@ -611,8 +611,8 @@ class ProjectController extends Controller
         // $user_id =$proposalsControllersObj->getProposalByProjectAndTeamId((int)$project->id,$project->team_id)->user_id;
 
         $team = $teamControllersObj->get_team_info($project->team_id);
-        $Exist=$finalProposalControllersObj->checkIfExists($project->team_id,$id);
-        if($Exist['exist']==1){
+        // $Exist=$finalProposalControllersObj->checkIfExists($project->team_id,$id);
+        // if($Exist['exist']==1){
         $final_proposal = $finalProposalControllersObj->getProposalDetailsByProject_id($id);
         $project->contract = $final_proposal;
     
@@ -643,20 +643,21 @@ class ProjectController extends Controller
             "image" => $user->image,
         );
         return $project;
-    }
-    else{ $project->contract = 'no contract';
-        if (isset($team->image)) {
-            $team->image = asset("images/companies/" . $team->image);
-        } else {
-            $team->image = asset('images/profile-pic.jpg');
-        }
+    // }
+    // else{
+    //      $project->contract = 'no contract';
+    //     if (isset($team->image)) {
+    //         $team->image = asset("images/companies/" . $team->image);
+    //     } else {
+    //         $team->image = asset('images/profile-pic.jpg');
+    //     }
 
-        $project->agency_info = array(
-            "id" => $team->id,
-            "name" => $team->name,
+    //     $project->agency_info = array(
+    //         "id" => $team->id,
+    //         "name" => $team->name,
          
-        );
-        return $project;}
+    //     );
+    //     return $project;}
     }
     private function ifExist($id)
     {
