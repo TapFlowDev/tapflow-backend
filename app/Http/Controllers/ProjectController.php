@@ -398,7 +398,7 @@ class ProjectController extends Controller
             }
             else{
                 $projectData->final_proposal_type = null;
-                $projectData->final_proposal_status = null;
+                $projectData->final_proposal_status = '0';
             }
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
