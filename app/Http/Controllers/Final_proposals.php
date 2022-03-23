@@ -136,7 +136,7 @@ class Final_proposals extends Controller
         if ($final_proposal == null) {
             return ['exist' => 0];
         } else {
-            return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' => $final_proposal->type, 'status' => $final_proposal->status];
+            return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' =>(int)$final_proposal->type, 'status' => $final_proposal->status];
         }
     }
     //this query used to update final proposal data and keep proposal id the same
@@ -520,9 +520,9 @@ class Final_proposals extends Controller
             ->select('type')
             ->first();
         if ($final_proposal === null) {
-            $type = "0";
+            $type = 0;
         } else {
-            $type = $final_proposal->type;
+            $type = (int)$final_proposal->type;
         }
         return $type;
     }
