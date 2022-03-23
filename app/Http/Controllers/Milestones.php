@@ -16,6 +16,7 @@ use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Final_proposals;
 use App\Models\Final_proposal;
+
 use Illuminate\Support\Facades\DB;
 use Money\Exchange;
 
@@ -502,6 +503,50 @@ class Milestones extends Controller
             return 1;
         } else {
             return 0;
+        }
+    }
+    function acceptSubmission(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 1) {
+            if ($userData['group_id'] == $req->company_id) {
+                if ($userData['privileges'] == 1) {
+                    Milestone::where('id',$req->milestone_id)->update(['status'=>3]);
+                    milestone_submission::where('id',$req->submission_id)->update(['client_comments'=>$req->comments]);
+                    $response = Controller::returnResponse(200, "proposal rejected", []);
+                    return (json_encode($response));
+                }
+                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
+        }
+    }
+    function reviseSubmission(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 1) {
+            if ($userData['group_id'] == $req->company_id) {
+                if ($userData['privileges'] == 1) {
+                    Milestone::where('id',$req->milestone_id)->update(['status'=>2]);
+                    milestone_submission::where('id',$req->submission_id)->update(['client_comments'=>$req->comments]);
+                    $response = Controller::returnResponse(200, "proposal rejected", []);
+                    return (json_encode($response));
+                }
+                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
         }
     }
 }
