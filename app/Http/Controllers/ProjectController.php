@@ -390,9 +390,16 @@ class ProjectController extends Controller
        
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
+            if($FProposal['exist']==1){
             $final_proposal_type = $FProposal['type'];
             $final_proposal_status = $FProposal['status'];
-
+            $projectData->final_proposal_type = $final_proposal_type;
+            $projectData->final_proposal_status = $final_proposal_status;
+            }
+            else{
+                $projectData->final_proposal_type = null;
+                $projectData->final_proposal_status = null;
+            }
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -411,8 +418,6 @@ class ProjectController extends Controller
             }
             $projectData->proposal_id = $proposal_id;
             $projectData->proposal_status = $proposal_status;
-            $projectData->final_proposal_type = $final_proposal_type;
-            $projectData->final_proposal_status = $final_proposal_status;
             $projectData->admins = $admins;
          
             $response = Controller::returnResponse(200, "data found", $projectData);
