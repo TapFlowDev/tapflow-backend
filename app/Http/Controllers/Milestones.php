@@ -23,6 +23,8 @@ class Milestones extends Controller
 {
     function Insert(Request $req)
     {
+        $response = Controller::returnResponse(200, "milestone added successfully", $req);
+        return (json_encode($response));
         try {
 
             $finalProposalObj = new Final_proposals;
