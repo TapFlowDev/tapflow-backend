@@ -208,7 +208,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('rejectFinalProposal', [Final_proposals::class, 'rejectFinalProposal']);
     Route::post('rejectProposal', [proposals::class, 'rejectProposal']);
     Route::post('acceptProposal', [proposals::class, 'acceptProposal']);
-    Route::post('reviseFinalProposal', [proposals::class, 'reviseFinalProposal']);
+    Route::post('reviseFinalProposal', [Final_proposals::class, 'reviseFinalProposal']);
     Route::get('dashboardProposals/{offset}/{limit}', [Proposals::class, 'getClientPropsals']);
 });
 
