@@ -82,6 +82,7 @@ class Milestones extends Controller
                                     return (json_encode($response));
                                 }
                             } else {
+                                if($finalProposal['status']==-1 ||$finalProposal['status']==3){
                                 $final_proposal_id = $finalProposal['final_proposal_id'];
                                 if (count($req->deliverables) >= 0) {
                                     $deliverables = $req->deliverables;
@@ -122,6 +123,11 @@ class Milestones extends Controller
                                 $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
                                 return (json_encode($response));
                             }
+                            else{
+                                $response = Controller::returnResponse(422, "Uou already submit your proposal", []);
+                                return (json_encode($response));
+                        }
+                        }
                         } else {
                             $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                             return (json_encode($response));
