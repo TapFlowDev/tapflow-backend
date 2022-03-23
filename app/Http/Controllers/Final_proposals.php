@@ -136,7 +136,7 @@ class Final_proposals extends Controller
         if ($final_proposal == null) {
             return ['exist' => 0];
         } else {
-            return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' =>(int)$final_proposal->type, 'status' => $final_proposal->status];
+            return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' => (int)$final_proposal->type, 'status' => $final_proposal->status];
         }
     }
     //this query used to update final proposal data and keep proposal id the same
@@ -569,9 +569,10 @@ class Final_proposals extends Controller
                             $response = Controller::returnResponse(500, "something wrong", $rejectAll['msg']);
                             return (json_encode($response));
                         }
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                        return (json_encode($response));
                     }
-                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
-                    return (json_encode($response));
                 } else {
                     $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                     return (json_encode($response));
@@ -587,56 +588,56 @@ class Final_proposals extends Controller
     }
     function rejectFinalProposal(Request $req)
     {
-        try{
-        $userData = Controller::checkUser($req);
-        if ($userData['exist'] == 1) {
-            if ($userData['group_id'] == $req->company_id) {
-                if ($userData['privileges'] == 1) {
-                    Final_proposal::where('id', $req->proposal_id)->update(['status' => 2]);
-                    $response = Controller::returnResponse(200, "proposal rejected", []);
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $req->company_id) {
+                    if ($userData['privileges'] == 1) {
+                        Final_proposal::where('id', $req->proposal_id)->update(['status' => 2]);
+                        $response = Controller::returnResponse(200, "proposal rejected", []);
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                     return (json_encode($response));
                 }
-                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
-                return (json_encode($response));
             } else {
-                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
-        } else {
-            $response = Controller::returnResponse(422, "this user does not have team", []);
-            return (json_encode($response));
-        }
-        }catch(Exception $error)
-        {
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", []);
             return (json_encode($response));
         }
     }
     function reviseFinalProposal(Request $req)
     {
-        try{
-        $userData = Controller::checkUser($req);
-        if ($userData['exist'] == 1) {
-            if ($userData['group_id'] == $req->company_id) {
-                if ($userData['privileges'] == 1) {
-                    Final_proposal::where('id', $req->proposal_id)->update(['status' => 3]);
-                    $response = Controller::returnResponse(200, "Go to chat to complete the review ", []);
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $req->company_id) {
+                    if ($userData['privileges'] == 1) {
+                        Final_proposal::where('id', $req->proposal_id)->update(['status' => 3]);
+                        $response = Controller::returnResponse(200, "Go to chat to complete the review ", []);
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                     return (json_encode($response));
                 }
-                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
-                return (json_encode($response));
             } else {
-                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
-        } else {
-            $response = Controller::returnResponse(422, "this user does not have team", []);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", []);
             return (json_encode($response));
         }
-    }catch(Exception $error)
-    {
-        $response = Controller::returnResponse(500, "something went wrong", []);
-        return (json_encode($response));
-    }
     }
 }
