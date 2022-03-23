@@ -23,8 +23,7 @@ class Milestones extends Controller
 {
     function Insert(Request $req)
     {
-        $response = Controller::returnResponse(200, "milestone added successfully", $req);
-        return (json_encode($response));
+       
         try {
 
             $finalProposalObj = new Final_proposals;
@@ -48,7 +47,7 @@ class Milestones extends Controller
                             $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
                             $deliverables = [];
                             if ($finalProposal['exist'] == 0) {
-                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->num_hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id'], $req->type);
+                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id'], $req->type);
                                 if ($new_final_proposal['code'] == 422 || $new_final_proposal['code'] == 500) {
                                     $response = Controller::returnResponse($new_final_proposal['code'], 'error generating final proposal', $new_final_proposal['msg']);
                                     return json_encode($response);
