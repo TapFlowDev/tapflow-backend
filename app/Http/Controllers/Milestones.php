@@ -448,6 +448,18 @@ class Milestones extends Controller
     function SubmitFinal($data, $final_proposal_id,$project_id,$hourly_rate)
     {
         try {
+            $rules = array(
+                
+                "milestone_name" => "required",
+                "milestone_num_hours" => "required",
+                "milestone_price" => "required",
+                "deliverables" => "required",
+                "description" => "required",
+            );
+            $validators = Validator::make($data->all(), $rules);
+            if ($validators->fails()) {
+                return ['code' => 200, 'msg' => $validators->errors()];
+            } else {
             Milestone::where('final_proposal_id', $final_proposal_id)->delete();
             foreach ($data as $milestone) {
                 if (count($milestone['deliverables']) >= 0) {
@@ -463,11 +475,14 @@ class Milestones extends Controller
                     "name" => $milestone['milestone_name'],
                     "description" => $milestone['milestone_description'],
                     "deliverables" => serialize($milestone['deliverables']),
+                    
                 );
 
                 $milestone = Milestone::create($data);
             }
            return ['code' => 200, 'msg' => 'successful'];
+        }
+       
         } catch (Exception $error) {
            return ['code' => 500, 'msg' => $error->getMessage()];
         }
