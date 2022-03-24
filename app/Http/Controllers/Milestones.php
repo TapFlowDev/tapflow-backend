@@ -93,7 +93,7 @@ class Milestones extends Controller
                                 if (count($req->deliverables) > 0) {
                                     $countDeliverables = "1";
                                 }
-                                $isValidArray = array($req->milestone_name, $req->milestone_description, $countDeliverables, $req->milestone_price, $req->milestone_num_hours);
+                                $isValidArray = array($req->milestone_name, $req->milestone_description, $countDeliverables, $price, $req->milestone_num_hours);
                                 $isValid = $this->checkIsValid($isValidArray);
                                 $data = array(
                                     "project_id" => $req->project_id,
@@ -186,7 +186,7 @@ class Milestones extends Controller
                             if (count($req->deliverables) > 0) {
                                 $countDeliverables = "1";
                             }
-                            $isValidArray = array($req->milestone_name, $req->milestone_description, $countDeliverables, $req->milestone_price, $req->milestone_num_hours);
+                            $isValidArray = array($req->milestone_name, $req->milestone_description, $countDeliverables, $price, $req->milestone_num_hours);
                             $isValid = $this->checkIsValid($isValidArray);
                             $milestone = Milestone::where('id', $req->milestone_id)
                                 ->update([
