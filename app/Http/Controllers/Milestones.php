@@ -455,7 +455,7 @@ class Milestones extends Controller
                 "deliverables" => "required",
                 "description" => "required",
             );
-            $validators = Validator::make($data->all(), $rules);
+            $validators = Validator::make($data, $rules);
             if ($validators->fails()) {
                 return ['code' => 200, 'msg' => $validators->errors()];
             } else {
