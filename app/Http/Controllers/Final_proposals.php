@@ -39,22 +39,23 @@ class Final_proposals extends Controller
                     if ($init_proposal['proposal']->status == 1) {
                         $req['user_id'] = $userData['user_id'];
                         $ifExist = $this->checkIfExists($req->project_id,  $team_id);
+                        $rules = array(
+                            "team_id" => "required|exists:groups,id",
+                            "project_id" => "required|exists:projects,id",
+                            "proposal_id" => "required|exists:proposals,id",
+                            "hourly_rate" => "required|numeric",
+                            "hours" => "required|numeric",
+                            "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
+                            "type" => "required" //1=>regular milestones ,2=>monthly based milestones
+                        );
+                        $validators = Validator::make($req->all(), $rules);
+                        if ($validators->fails()) {
+                            $responseData = $validators->errors();
+                            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                            return (json_encode($response));
+                        } else {
                         if ($ifExist['exist'] == '0') {
-                            $rules = array(
-                                "team_id" => "required|exists:groups,id",
-                                "project_id" => "required|exists:projects,id",
-                                "proposal_id" => "required|exists:proposals,id",
-                                "hourly_rate" => "required|numeric",
-                                "hours" => "required|numeric",
-                                "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
-                                "type" => "required" //1=>regular milestones ,2=>monthly based milestones
-                            );
-                            $validators = Validator::make($req->all(), $rules);
-                            if ($validators->fails()) {
-                                $responseData = $validators->errors();
-                                $response = Controller::returnResponse(101, "Validation Error", $responseData);
-                                return (json_encode($response));
-                            } else {
+                        
                                 try {
                                     $price = $this->calculatePrice($req->hours, $req->hourly_rate);
                                     $req['price'] = $price;
@@ -71,7 +72,7 @@ class Final_proposals extends Controller
                                     $response = Controller::returnResponse(500, 'something wrong', $error->getMessage());
                                     return json_encode($response);
                                 }
-                            }
+                            
                         }
                         //if the proposal exists
                         else {
@@ -108,6 +109,7 @@ class Final_proposals extends Controller
                                 return json_encode($response);
                             }
                         }
+                    }
                     } else {
                         $response = Controller::returnResponse(422, 'your initial proposal status not accepted ', []);
                         return json_encode($response);
