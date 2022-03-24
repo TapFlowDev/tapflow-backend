@@ -57,7 +57,7 @@ class Final_proposals extends Controller
                                 return (json_encode($response));
                             } else {
                                 try {
-                                    $price = $this->calculatePrice($req->hours, $req->hourly_rate);
+                                    $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                     $req['price'] = $price;
                                     $final_proposal = Final_proposal::create($req->except(['down_payment']) + ['status' => -1]);
                                     if ($req->down_payment['status'] == 1) {
@@ -79,16 +79,16 @@ class Final_proposals extends Controller
                             $proposal = json_decode($this->getProposalDetailsById($ifExist['final_proposal_id']));
                             $status = $proposal->status;
                             if ($status == -1 || $status == 3) {
-                                $price = $this->calculatePrice($req->hours, $req->hourly_rate);
+                                $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                 $req['price'] = $price;
                                 if ($ifExist['type'] == 1) {
-                                    $MP = $milestoneObj->updateMilestonesPrices($req->hours, $req->hourly_rate, $ifExist['final_proposal_id']);
+                                    $MP = $milestoneObj->updateMilestonesPrices($req->num_hours, $req->hourly_rate, $ifExist['final_proposal_id']);
                                     if ($MP['code'] == 500) {
                                         $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                         return (json_encode($response));
                                     }
                                 } elseif ($ifExist['type'] == 2) {
-                                    $MP = $milestoneObj->updateMilestonesMonthly($req->hours, $req->hourly_rate, $ifExist['final_proposal_id']);
+                                    $MP = $milestoneObj->updateMilestonesMonthly($req->num_hours, $req->hourly_rate, $ifExist['final_proposal_id']);
                                     if ($MP['code'] == 500) {
                                         $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
                                         return (json_encode($response));
@@ -430,7 +430,7 @@ class Final_proposals extends Controller
                                 return (json_encode($response));
                             } else {
                                 try {
-                                    $price = $this->calculatePrice($req->hours, $req->hourly_rate);
+                                    $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                     $req['price'] = $price;
                                     $final_proposal = Final_proposal::create($req->except(['down_payment']) + ['status' => $final_proposal_status]);
                                     if ($req->down_payment['status'] == 1) {
@@ -468,7 +468,7 @@ class Final_proposals extends Controller
                                 return (json_encode($response));
                             } else {
                                 if ($ifExist['status'] == -1 || $ifExist['status']  == 3) {
-                                    $price = $this->calculatePrice($req->hours, $req->hourly_rate);
+                                    $price = $this->calculatePrice($req->num_hours, $req->hourly_rate);
                                     $req['price'] = $price;
                                     $milestones = new Milestones;
                                     $milestones_submit = $milestones->SubmitFinal($req->milestones, $ifExist['final_proposal_id'], $req->project_id, $req->hourly_rate);
