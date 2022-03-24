@@ -293,11 +293,10 @@ class ProjectController extends Controller
             $projects = DB::table('proposals')
             ->leftJoin('final_proposals', function ($join) {
                 $join->on('proposals.id', '=', 'final_proposals.proposal_id')
-                    ->where('final_proposals.status', '=', 0)->orWhere('final_proposals.status', '=', 3);
+                    ->where('final_proposals.status', '!=', 1);
             })
             ->join('projects', 'proposals.project_id', '=', 'projects.id')
-            ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status', 
-            'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
+            ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
             ->where('proposals.team_id', '=', $agency_id)
             ->latest()->offset($page)->limit($limit)
             ->distinct()
@@ -391,9 +390,16 @@ class ProjectController extends Controller
        
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
+            if($FProposal['exist']==1){
             $final_proposal_type = $FProposal['type'];
             $final_proposal_status = $FProposal['status'];
-
+            $projectData->final_proposal_type = $final_proposal_type;
+            $projectData->final_proposal_status = $final_proposal_status;
+            }
+            else{
+                $projectData->final_proposal_type = '0';
+                $projectData->final_proposal_status = null;
+            }
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -412,8 +418,6 @@ class ProjectController extends Controller
             }
             $projectData->proposal_id = $proposal_id;
             $projectData->proposal_status = $proposal_status;
-            $projectData->final_proposal_type = $final_proposal_type;
-            $projectData->final_proposal_status = $final_proposal_status;
             $projectData->admins = $admins;
          
             $response = Controller::returnResponse(200, "data found", $projectData);
@@ -612,9 +616,13 @@ class ProjectController extends Controller
         // $user_id =$proposalsControllersObj->getProposalByProjectAndTeamId((int)$project->id,$project->team_id)->user_id;
 
         $team = $teamControllersObj->get_team_info($project->team_id);
+        // $Exist=$finalProposalControllersObj->checkIfExists($project->team_id,$id);
+        // if($Exist['exist']==1){
         $final_proposal = $finalProposalControllersObj->getProposalDetailsByProject_id($id);
-
         $project->contract = $final_proposal;
+    
+
+        
         $user = json_decode($freelancersControllersObj->get_freelancer_info($final_proposal->user_id))->data;
         // if (isset($user->image)) {
         //     $user->image = asset("images/users/" . $user->image);
@@ -640,6 +648,21 @@ class ProjectController extends Controller
             "image" => $user->image,
         );
         return $project;
+    // }
+    // else{
+    //      $project->contract = 'no contract';
+    //     if (isset($team->image)) {
+    //         $team->image = asset("images/companies/" . $team->image);
+    //     } else {
+    //         $team->image = asset('images/profile-pic.jpg');
+    //     }
+
+    //     $project->agency_info = array(
+    //         "id" => $team->id,
+    //         "name" => $team->name,
+         
+    //     );
+    //     return $project;}
     }
     private function ifExist($id)
     {

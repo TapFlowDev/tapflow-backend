@@ -16,6 +16,7 @@ use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Final_proposals;
 use App\Models\Final_proposal;
+
 use Illuminate\Support\Facades\DB;
 use Money\Exchange;
 
@@ -23,6 +24,7 @@ class Milestones extends Controller
 {
     function Insert(Request $req)
     {
+       
         try {
 
             $finalProposalObj = new Final_proposals;
@@ -46,7 +48,7 @@ class Milestones extends Controller
                             $finalProposal = $finalProposalObj->checkIfExists($req->project_id, $req->team_id);
                             $deliverables = [];
                             if ($finalProposal['exist'] == 0) {
-                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->num_hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id'], $req->type);
+                                $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->hourly_rate, $req->hours, $req->proposal_id, $req->team_id, $req->project_id, $userData['user_id'], $req->type);
                                 if ($new_final_proposal['code'] == 422 || $new_final_proposal['code'] == 500) {
                                     $response = Controller::returnResponse($new_final_proposal['code'], 'error generating final proposal', $new_final_proposal['msg']);
                                     return json_encode($response);
@@ -80,6 +82,7 @@ class Milestones extends Controller
                                     return (json_encode($response));
                                 }
                             } else {
+                                if($finalProposal['status']==-1 ||$finalProposal['status']==3){
                                 $final_proposal_id = $finalProposal['final_proposal_id'];
                                 if (count($req->deliverables) >= 0) {
                                     $deliverables = $req->deliverables;
@@ -120,6 +123,11 @@ class Milestones extends Controller
                                 $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
                                 return (json_encode($response));
                             }
+                            else{
+                                $response = Controller::returnResponse(422, "Uou already submit your proposal", []);
+                                return (json_encode($response));
+                        }
+                        }
                         } else {
                             $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                             return (json_encode($response));
@@ -501,6 +509,50 @@ class Milestones extends Controller
             return 1;
         } else {
             return 0;
+        }
+    }
+    function acceptSubmission(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 1) {
+            if ($userData['group_id'] == $req->company_id) {
+                if ($userData['privileges'] == 1) {
+                    Milestone::where('id',$req->milestone_id)->update(['status'=>3]);
+                    milestone_submission::where('id',$req->submission_id)->update(['client_comments'=>$req->comments]);
+                    $response = Controller::returnResponse(200, "proposal rejected", []);
+                    return (json_encode($response));
+                }
+                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
+        }
+    }
+    function reviseSubmission(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 1) {
+            if ($userData['group_id'] == $req->company_id) {
+                if ($userData['privileges'] == 1) {
+                    Milestone::where('id',$req->milestone_id)->update(['status'=>2]);
+                    milestone_submission::where('id',$req->submission_id)->update(['client_comments'=>$req->comments]);
+                    $response = Controller::returnResponse(200, "proposal rejected", []);
+                    return (json_encode($response));
+                }
+                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
         }
     }
 }
