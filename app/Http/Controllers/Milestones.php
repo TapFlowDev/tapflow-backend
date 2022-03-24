@@ -24,7 +24,7 @@ class Milestones extends Controller
 {
     function Insert(Request $req)
     {
-       
+
         try {
 
             $finalProposalObj = new Final_proposals;
@@ -82,52 +82,51 @@ class Milestones extends Controller
                                     return (json_encode($response));
                                 }
                             } else {
-                                if($finalProposal['status']==-1 ||$finalProposal['status']==3){
-                                $final_proposal_id = $finalProposal['final_proposal_id'];
-                                if (count($req->deliverables) >= 0) {
-                                    $deliverables = $req->deliverables;
-                                }
-                                $price = $this->calculatePrice($req->milestone_num_hours, $req->hourly_rate);
-                                $req['milestone_price'] = $price;
-                                $countDeliverables = "";
-                                if (count($req->deliverables) > 0) {
-                                    $countDeliverables = "1";
-                                }
-                                $isValidArray = array($req->milestone_name, $req->milestone_description, $countDeliverables, $price, $req->milestone_num_hours);
-                                $isValid = $this->checkIsValid($isValidArray);
-                                $data = array(
-                                    "project_id" => $req->project_id,
-                                    "final_proposal_id" => $final_proposal_id,
-                                    "hours" => $req->milestone_num_hours,
-                                    "price" => $req->milestone_price,
-                                    "name" => $req->milestone_name,
-                                    "description" => $req->milestone_description,
-                                    "deliverables" => serialize($req->deliverables),
-                                    "is_valid" => $isValid
-                                );
-                                if ($finalProposal['type'] == 1) {
-                                    $MP = $this->updateMilestonesPrices($req->hours, $req->hourly_rate, $finalProposal['final_proposal_id']);
-                                    if ($MP['code'] == 500) {
-                                        $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
-                                        return (json_encode($response));
+                                if ($finalProposal['status'] == -1 || $finalProposal['status'] == 3) {
+                                    $final_proposal_id = $finalProposal['final_proposal_id'];
+                                    if (count($req->deliverables) >= 0) {
+                                        $deliverables = $req->deliverables;
                                     }
-                                } elseif ($finalProposal['type'] == 2) {
-                                    $MP = $this->updateMilestonesMonthly($req->hours, $req->hourly_rate, $finalProposal['final_proposal_id']);
-                                    if ($MP['code'] == 500) {
-                                        $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
-                                        return (json_encode($response));
+                                    $price = $this->calculatePrice($req->milestone_num_hours, $req->hourly_rate);
+                                    $req['milestone_price'] = $price;
+                                    $countDeliverables = "";
+                                    if (count($req->deliverables) > 0) {
+                                        $countDeliverables = "1";
                                     }
+                                    $isValidArray = array($req->milestone_name, $req->milestone_description, $countDeliverables, $price, $req->milestone_num_hours);
+                                    $isValid = $this->checkIsValid($isValidArray);
+                                    $data = array(
+                                        "project_id" => $req->project_id,
+                                        "final_proposal_id" => $final_proposal_id,
+                                        "hours" => $req->milestone_num_hours,
+                                        "price" => $req->milestone_price,
+                                        "name" => $req->milestone_name,
+                                        "description" => $req->milestone_description,
+                                        "deliverables" => serialize($req->deliverables),
+                                        "is_valid" => $isValid
+                                    );
+                                    if ($finalProposal['type'] == 1) {
+                                        $MP = $this->updateMilestonesPrices($req->hours, $req->hourly_rate, $finalProposal['final_proposal_id']);
+                                        if ($MP['code'] == 500) {
+                                            $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                            return (json_encode($response));
+                                        }
+                                    } elseif ($finalProposal['type'] == 2) {
+                                        $MP = $this->updateMilestonesMonthly($req->hours, $req->hourly_rate, $finalProposal['final_proposal_id']);
+                                        if ($MP['code'] == 500) {
+                                            $response = Controller::returnResponse(500, "something wrong update prices", $MP['msg']);
+                                            return (json_encode($response));
+                                        }
+                                    }
+                                    $milestone = Milestone::create($data);
+                                    // $FP=Final_proposal::where('id',$finalProposal['final_proposal_id'])->update('')
+                                    $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
+                                    return (json_encode($response));
+                                } else {
+                                    $response = Controller::returnResponse(422, "Uou already submit your proposal", []);
+                                    return (json_encode($response));
                                 }
-                                $milestone = Milestone::create($data);
-                                // $FP=Final_proposal::where('id',$finalProposal['final_proposal_id'])->update('')
-                                $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
-                                return (json_encode($response));
                             }
-                            else{
-                                $response = Controller::returnResponse(422, "Uou already submit your proposal", []);
-                                return (json_encode($response));
-                        }
-                        }
                         } else {
                             $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                             return (json_encode($response));
@@ -191,7 +190,7 @@ class Milestones extends Controller
                             $milestone = Milestone::where('id', $req->milestone_id)
                                 ->update([
                                     'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price,
-                                    'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables), 'is_valid'=>$isValid
+                                    'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables), 'is_valid' => $isValid
                                 ]);
                             $response = Controller::returnResponse(200, "milestone updated successful", []);
                             return (json_encode($response));
@@ -445,11 +444,11 @@ class Milestones extends Controller
             return ['delete' => 0, 'msg' => $error->getMessage()];
         }
     }
-    function SubmitFinal($data, $final_proposal_id,$project_id,$hourly_rate)
+    function SubmitFinal($data, $final_proposal_id, $project_id, $hourly_rate)
     {
         try {
             $rules = array(
-                
+
                 "milestone_name" => "required",
                 "milestone_num_hours" => "required",
                 "milestone_price" => "required",
@@ -460,31 +459,31 @@ class Milestones extends Controller
             if ($validators->fails()) {
                 return ['code' => 200, 'msg' => $validators->errors()];
             } else {
-            Milestone::where('final_proposal_id', $final_proposal_id)->delete();
-            foreach ($data as $milestone) {
-                if (count($milestone['deliverables']) >= 0) {
-                    $deliverables = serialize($milestone['deliverables']);
-                }
-                $price = $this->calculatePrice($milestone['milestone_num_hours'], $hourly_rate);
-                $req['milestone_price'] = $price;
-                $data = array(
-                    "project_id" => $project_id,
-                    "final_proposal_id" => $final_proposal_id,
-                    "hours" => $milestone['milestone_num_hours'],
-                    "price" => $price,
-                    "name" => $milestone['milestone_name'],
-                    "description" => $milestone['milestone_description'],
-                    "deliverables" => serialize($milestone['deliverables']),
-                    
-                );
+                Milestone::where('final_proposal_id', $final_proposal_id)->delete();
+                foreach ($data as $milestone) {
+                    if (count($milestone['deliverables']) >= 0) {
+                        $deliverables = serialize($milestone['deliverables']);
+                    }
+                    $price = $this->calculatePrice($milestone['milestone_num_hours'], $hourly_rate);
+                    $req['milestone_price'] = $price;
+                    $data = array(
+                        "project_id" => $project_id,
+                        "final_proposal_id" => $final_proposal_id,
+                        "hours" => $milestone['milestone_num_hours'],
+                        "price" => $price,
+                        "name" => $milestone['milestone_name'],
+                        "description" => $milestone['milestone_description'],
+                        "deliverables" => serialize($milestone['deliverables']),
+                        "is_valid" => 1
 
-                $milestone = Milestone::create($data);
+                    );
+
+                    $milestone = Milestone::create($data);
+                }
+                return ['code' => 200, 'msg' => 'successful'];
             }
-           return ['code' => 200, 'msg' => 'successful'];
-        }
-       
         } catch (Exception $error) {
-           return ['code' => 500, 'msg' => $error->getMessage()];
+            return ['code' => 500, 'msg' => $error->getMessage()];
         }
     }
     function updateMilestonesPrices($hours, $hourly_rate, $final_proposal_id)
@@ -532,8 +531,8 @@ class Milestones extends Controller
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
                 if ($userData['privileges'] == 1) {
-                    Milestone::where('id',$req->milestone_id)->update(['status'=>3]);
-                    milestone_submission::where('id',$req->submission_id)->update(['client_comments'=>$req->comments]);
+                    Milestone::where('id', $req->milestone_id)->update(['status' => 3]);
+                    milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));
                 }
@@ -554,8 +553,8 @@ class Milestones extends Controller
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
                 if ($userData['privileges'] == 1) {
-                    Milestone::where('id',$req->milestone_id)->update(['status'=>2]);
-                    milestone_submission::where('id',$req->submission_id)->update(['client_comments'=>$req->comments]);
+                    Milestone::where('id', $req->milestone_id)->update(['status' => 2]);
+                    milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));
                 }
