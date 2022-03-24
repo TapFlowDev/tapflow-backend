@@ -46,7 +46,6 @@ class Final_proposals extends Controller
                                 "proposal_id" => "required|exists:proposals,id",
                                 "hourly_rate" => "required|numeric",
                                 "hours" => "required|numeric",
-                                "starting_date" => "date",
                                 "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
                                 "type" => "required" //1=>regular milestones ,2=>monthly based milestones
                             );
