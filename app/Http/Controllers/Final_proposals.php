@@ -41,12 +41,12 @@ class Final_proposals extends Controller
                         $ifExist = $this->checkIfExists($req->project_id,  $team_id);
                         if ($ifExist['exist'] == '0') {
                             $rules = array(
-                                "title" => "required",
                                 "team_id" => "required|exists:groups,id",
                                 "project_id" => "required|exists:projects,id",
                                 "proposal_id" => "required|exists:proposals,id",
                                 "hourly_rate" => "required|numeric",
-                                "starting_date" => "required|date",
+                                "hours" => "required|numeric",
+                                "starting_date" => "date",
                                 "down_payment" => "required", //value 0=>no down payment 1=>there is down payment
                                 "type" => "required" //1=>regular milestones ,2=>monthly based milestones
                             );
