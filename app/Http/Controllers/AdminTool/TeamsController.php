@@ -85,6 +85,12 @@ class TeamsController extends Controller
     public function edit($id)
     {
         //
+        $team = DB::table('teams')
+            ->join('groups', 'teams.group_id', '=', 'groups.id')
+            ->select('groups.*', 'teams.*')
+            ->where('groups.id', $id)
+            ->get()->first();
+        return view('AdminTool.Agencies.edit', ['team' => $team]);
     }
 
     /**
@@ -97,6 +103,21 @@ class TeamsController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $validated = $request->validate([
+            'minPerHour' => 'required|numeric|gte:0',
+            'maxPerHour' => 'required|numeric|gte:0',
+            'min_work_hour' => 'required|numeric|gte:0',
+            'max_work_hour' => 'required|numeric|gte:0',
+            'lead_time' => 'required|numeric'
+        ]);
+        $team = Team::where('group_id', '=', $id)->update([
+            "minPerHour" => $request->minPerHour,
+            "maxPerHour" => $request->maxPerHour,
+            "min_work_hour" => $request->min_work_hour,
+            "max_work_hour" => $request->max_work_hour,
+            "lead_time" => $request->lead_time
+        ]);
+        return redirect('/AdminTool/agencies');
     }
 
     /**

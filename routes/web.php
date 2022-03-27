@@ -20,6 +20,7 @@ use App\Http\Controllers\AdminTool\DummyCompaines;
 use App\Http\Controllers\AdminTool\DummyProjects;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Http\Controllers\AdminTool\FromOptions;
+use App\Http\Controllers\AdminTool\InitialProposals;
 use App\Http\Controllers\AdminTool\StaticDataController;
 use App\Http\Controllers\MailChimpController;
 use App\Http\Controllers\NotificationsSettings;
@@ -71,6 +72,8 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/formOptions', FromOptions::class);
     Route::resource('/clientsRequests', ClientsRequests::class);
     Route::resource('/staticData', StaticDataController::class);
+    Route::resource('/initialProposals', InitialProposals::class);
+// Route::resource('agencies.wallets', WalletsController::class)->shallow();
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
     // Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
     Route::post('sendEmail',[EmailController::class, 'send'])->name('sendEmail.send');
