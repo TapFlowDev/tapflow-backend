@@ -14,6 +14,8 @@ class AddNewColummnsInTeamsTable extends Migration
     public function up()
     {
         Schema::table('teams', function (Blueprint $table) {
+            $table->string('minPerHour', '255')->after('design')->nullable();
+            $table->string('maxPerHour', '255')->after('minPerHour')->nullable();
             $table->string('min_work_hour', '255')->after('maxPerHour')->nullable();
             $table->string('max_work_hour', '255')->after('min_work_hour')->nullable();
             $table->string('lead_time', '255')->after('max_work_hour')->nullable();
