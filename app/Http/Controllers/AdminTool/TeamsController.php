@@ -10,6 +10,7 @@ use App\Models\Group;
 use App\Models\Group_member;
 use App\Models\Team;
 use App\Models\User;
+use App\Models\wallet;
 use Illuminate\Support\Facades\DB;
 
 
@@ -135,6 +136,7 @@ class TeamsController extends Controller
         foreach ($array as $key => &$group) {
             $admin = Group_member::select('user_id')->where('group_id', $group->group_id)->get()->first();
             $userInfo = User::find($admin->user_id);
+            $walletInfo = wallet::where('reference_id', '=', $group->id)->where('type', '=', 1)->get()->first();
             $group->admin_name = $userInfo->first_name . " " . $userInfo->last_name;
             $group->admin_id = $userInfo->id;
             $group->admin_email = $userInfo->email;
@@ -149,6 +151,11 @@ class TeamsController extends Controller
                 $group->country = $country->name;
             } else {
                 $group->country = "Unset";
+            }
+            $group->walletId = '';
+            if ($walletInfo) {
+                // dd($walletInfo->id);
+                $group->walletId = $walletInfo->id;
             }
 
         }

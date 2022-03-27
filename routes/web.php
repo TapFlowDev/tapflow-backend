@@ -23,6 +23,8 @@ use App\Http\Controllers\AdminTool\FromOptions;
 use App\Http\Controllers\AdminTool\InitialProposals;
 use App\Http\Controllers\AdminTool\NotificationSettings;
 use App\Http\Controllers\AdminTool\StaticDataController;
+use App\Http\Controllers\AdminTool\WalletsController;
+use App\Http\Controllers\AdminTool\WalletsTransactionsController;
 use App\Http\Controllers\MailChimpController;
 use App\Http\Controllers\NotificationsSettings;
 use Illuminate\Http\Request;
@@ -75,6 +77,8 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/staticData', StaticDataController::class);
     Route::resource('/notificationSettings', NotificationSettings::class);
     Route::resource('/initialProposals', InitialProposals::class);
+    Route::resource('wallet.transactions', WalletsTransactionsController::class)->shallow();
+    // Route::resource('agencies.wallets', WalletsController::class)->shallow();
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
     // Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
     Route::post('sendEmail', [EmailController::class, 'send'])->name('sendEmail.send');
@@ -84,6 +88,9 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::post('verifyProject/{id}', [ProjectsController::class, 'verifyProject'])->name('verifyProject.update');
     Route::get('hideContent/{id}', [StaticDataController::class, 'hideContent'])->name('hideContent.hideContent');
     Route::get('showContent/{id}', [StaticDataController::class, 'showContent'])->name('showContent.showContent');
+    //
+    Route::post('/wallet/create', [WalletsController::class, 'create'])->name('wallet.create');
+
 });
 Route::get('/r', function (Request $request) {
     return redirect('/api/r/' . $request->r);
