@@ -44,7 +44,7 @@
                                         @if ($user->verified == 0)
                                             <button class="btn btn-sm btn-success"
                                                 onclick="event.preventDefault();
-                                                            document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Verify</button>
+                                                                    document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Verify</button>
                                             <form id="verifyTeam-user-form-{{ $user->id }}"
                                                 action="{{ route('AdminTool.group.update', $user->id) }}" method="POST"
                                                 style="display: none;">
@@ -56,7 +56,7 @@
                                         @elseif ($user->verified == 1)
                                             <button class="btn btn-sm btn-danger"
                                                 onclick="event.preventDefault();
-                                                        document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Unverify</button>
+                                                                document.getElementById('verifyTeam-user-form-{{ $user->id }}').submit()">Unverify</button>
                                             <form id="verifyTeam-user-form-{{ $user->id }}"
                                                 action="{{ route('AdminTool.group.update', $user->id) }}" method="POST"
                                                 style="display: none;">
@@ -67,12 +67,13 @@
                                             </form>
                                         @endif
                                         @if ($user->walletId != '')
-                                        <a class="btn btn-sm btn-info"
-                                        href="{{ route('AdminTool.wallet.transactions.index', $user->walletId) }}"
-                                        role="button">View Transactions</a>
+                                            <a class="btn btn-sm btn-info"
+                                                href="{{ route('AdminTool.wallet.transactions.index', $user->walletId) }}"
+                                                role="button">View Transactions</a>
                                         @else
-                                            <button class="btn btn-sm btn-info" onclick="event.preventDefault();
-                                            document.getElementById('create-wallet-{{ $user->id }}').submit()">View
+                                            <button class="btn btn-sm btn-info"
+                                                onclick="event.preventDefault();
+                                                    document.getElementById('create-wallet-{{ $user->id }}').submit()">View
                                                 Transactions</button>
                                             <form id="create-wallet-{{ $user->id }}"
                                                 action="{{ route('AdminTool.wallet.create') }}" method="POST"
@@ -84,13 +85,16 @@
                                         @endif
                                         <button class="btn btn-sm btn-danger"
                                             onclick="event.preventDefault();
-                                        document.getElementById('delete-user-form-{{ $user->id }}').submit()">Delete</button>
+                                                document.getElementById('delete-user-form-{{ $user->id }}').submit()">Delete</button>
                                         <form id="delete-user-form-{{ $user->id }}"
                                             action="{{ route('AdminTool.agencies.destroy', $user->id) }}" method="POST"
                                             style="display: none;">
                                             @csrf
                                             @method("DELETE")
                                         </form>
+                                        <a class="btn btn-sm btn-outline-info"
+                                            href="{{ route('AdminTool.agencies.edit', $user->id) }}" role="button">Update
+                                            Info</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -102,5 +106,4 @@
             </div>
         </div>
     </div>
-
 @endsection

@@ -25,6 +25,9 @@ class Team extends Model
         'BA',
         'design',
         'minPerHour',
-        'maxPerHour'
+        'maxPerHour',
+        'min_work_hour',
+        'max_work_hour',
+        'lead_time',
     ];
 }
