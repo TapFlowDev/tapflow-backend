@@ -292,7 +292,7 @@ class ProjectController extends Controller
         $page = ($offset - 1) * $limit;
         try {
             $projects = DB::table('proposals')
-            ->InnerJoin('final_proposals', function ($join) {
+            ->join('final_proposals', function ($join) {
                 $join->on('proposals.id', '=', 'final_proposals.proposal_id')
                     ->where('final_proposals.status', '!=', 1);
             })
