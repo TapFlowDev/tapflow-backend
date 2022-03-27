@@ -367,7 +367,7 @@ class ProjectController extends Controller
                 }
             }
             $projectData->admins = $admins;
-            $projectData->milestones = $milestones;
+            $projectData->milestones = json_encode($milestones);
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
