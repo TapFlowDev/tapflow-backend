@@ -23,8 +23,9 @@
                                         <h6 class="mb-0">Admin Name</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <a class="team-name-link" href="{{ route('AdminTool.clients.show', $project->admin_id)}}" target="_blanck"
-                                            role="button">{{ $project->admin_name }}
+                                        <a class="team-name-link"
+                                            href="{{ route('AdminTool.clients.show', $project->admin_id) }}"
+                                            target="_blanck" role="button">{{ $project->admin_name }}
                                         </a>
                                     </div>
                                 </div>
@@ -35,8 +36,8 @@
                                     </div>
                                     <div class="col-sm-9 text-secondary">
 
-                                        <a class="team-name-link" href="mailto:{{ $project->admin_email }}" target="_blanck"
-                                            role="button">{{ $project->admin_email }}
+                                        <a class="team-name-link" href="mailto:{{ $project->admin_email }}"
+                                            target="_blanck" role="button">{{ $project->admin_email }}
                                         </a>
                                     </div>
                                 </div>
@@ -97,9 +98,10 @@
                                         <h6 class="mb-0"> Requirements</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        @foreach ( $project->requirments_description as $requirment )
-                                        {{ $requirment }} @if (!$loop->last),@endif
-                                            
+                                        @foreach ($project->requirments_description as $requirment)
+                                            {{ $requirment }} @if (!$loop->last)
+                                                ,
+                                            @endif
                                         @endforeach
                                     </div>
                                 </div>
@@ -132,7 +134,7 @@
                                         <form action="{{ route('AdminTool.sendEmailAgencies.send', $project->id) }}" method="POST">
                                             @csrf
                                             <select data-placeholder="Choose Agencis" multiple class="chosen-select" name='teamsIds[]'>
-                                                @foreach ($allTeams as $team )
+                                                @foreach ($allTeams as $team)
                                                 <option value="{{ $team->id }}"> {{ $team->name }}</option>
                                                 @endforeach
                                             </select>
@@ -145,44 +147,50 @@
                             </div>
                         </div>
                         <div class="row">
-                            @if ($status == 1)
-                                <h3>Agency who took project</h3>
-                            @else
-                                <h3>Agencis who's intrested in this project</h3>
-                            @endif
+                            <div class="col-lg-12">
+                                @if ($status == 1)
+                                    <h3>Agency who took project</h3>
+                                @else
+                                    <h3>Initial Propsals</h3>
+                                @endif
+                            </div>
                         </div>
                         <div class="row">
                             @if ($status == 1)
                                 <div class="col-lg-4">
                                     <div class="card mb-3 card-projects">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <a href="{{ route('AdminTool.agencies.show', $teams->id) }}"
-                                                    class="project-card-href">
-                                                    <div class="col-sm-12 project-card">
+                                        <a href="{{ route('AdminTool.agencies.show', $teams->id) }}"
+                                            class="project-card-href project-card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-sm-6">
                                                         <p> Agency name:</p>
+                                                    </div>
+                                                    <div class="col-sm-6">
                                                         <h6 class="mb-0">{{ $teams->name }}</h6>
                                                     </div>
-                                                </a>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     </div>
                                 </div>
                             @else
-                                @foreach ($teams as $team)
+                                @foreach ($propsals as $propsal)
                                     <div class="col-lg-4">
                                         <div class="card mb-3 card-projects">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <a href="{{ route('AdminTool.agencies.show', $team->id) }}"
-                                                        class="project-card-href">
-                                                        <div class="col-sm-12 project-card">
+                                            <a href="{{ route('AdminTool.initialProposals.show', $propsal->id) }}"
+                                                class=" project-card project-card-href">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
                                                             <p> Agency name:</p>
-                                                            <h6 class="mb-0">{{ $team->name }}</h6>
                                                         </div>
-                                                    </a>
+                                                        <div class="col-sm-6">
+                                                            <h6 class="mt-1">{{ $propsal->team_name }}</h6>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </div>
                                     </div>
                                 @endforeach
@@ -195,18 +203,4 @@
 
         </div>
     </div>
-    <script type="text/javascript">
-        $(function() {
-            $(".chosen-select").chosen();
-        });
-    </script>
-    <script>
-        jQuery('#languageSelect').multiselect({
-            columns: 1,
-            placeholder: 'Select Languages',
-            search: true,
-            selectAll: true
-
-        });
-    </script>
 @endsection

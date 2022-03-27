@@ -75,6 +75,9 @@
                                             @csrf
                                             @method("DELETE")
                                         </form>
+                                        <a class="btn btn-sm btn-outline-info"
+                                            href="{{ route('AdminTool.agencies.edit', $user->id) }}" role="button">Update
+                                            Info</a>
                                     </td>
                                 </tr>
                             @endforeach

@@ -23,6 +23,11 @@ class Team extends Model
         'employees_number',
         'field',
         'BA',
-        'design'
+        'design',
+        'minPerHour',
+        'maxPerHour',
+        'min_work_hour',
+        'max_work_hour',
+        'lead_time',
     ];
 }
