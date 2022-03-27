@@ -90,6 +90,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::get('showContent/{id}', [StaticDataController::class, 'showContent'])->name('showContent.showContent');
     //
     Route::post('/wallet/create', [WalletsController::class, 'create'])->name('wallet.create');
+    Route::get('/agencyExportCsv', [GroupsController::class, 'agencyExportCsv'])->name('agecies.exportCsv');
 
 });
 Route::get('/r', function (Request $request) {
