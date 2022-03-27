@@ -5,6 +5,8 @@
             <div class="col-12">
                 <div class="content-container">
                     <h1> Agencies</h1>
+                    <a class="btn btn-sm btn-success float-right mb-3" target="_blank" href="{{ route('AdminTool.agecies.exportCsv') }}"
+                        role="button">Export to CSV</a>
                     <table class="table">
                         <thead>
                             <tr>

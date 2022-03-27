@@ -83,6 +83,9 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::post('verifyProject/{id}',[ProjectsController::class, 'verifyProject'])->name('verifyProject.update');
     Route::get('hideContent/{id}',[StaticDataController::class, 'hideContent'])->name('hideContent.hideContent');
     Route::get('showContent/{id}',[StaticDataController::class, 'showContent'])->name('showContent.showContent');
+
+    
+    Route::get('/agencyExportCsv', [GroupsController::class, 'agencyExportCsv'])->name('agecies.exportCsv');
     
 });
 Route::get('/r', function (Request $request) {
