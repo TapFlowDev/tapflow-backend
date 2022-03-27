@@ -453,12 +453,12 @@ class ProjectController extends Controller
             $page = ($offset - 1) * $limit;
             try {
                 $projects = DB::table('projects')
-                    ->select('id', 'user_id', 'company_id', 'name', 'min', 'max', 'description', 'status', 'days', 'budget_type', 'verified', 'created_at',)
+                    ->select('*')
                     ->where('projects.company_id', '=', $company_id)
                     ->where('projects.status', '=', 0)
-                    ->distinct()
                     ->orderBy('updated_at', 'desc')
                     ->latest()->offset($page)->limit($limit)
+                    ->distinct()
                     ->get();
 
                 $projectInfo = $this->getProjectsDetails($projects);
