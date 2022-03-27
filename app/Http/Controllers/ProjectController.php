@@ -202,6 +202,7 @@ class ProjectController extends Controller
                 ->where('projects.status', '=', 0)
                 ->where('verified', '=', 1)
                 ->distinct()
+                ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->get();
             $projectsData = $this->getProjectsInfo($projects);
@@ -291,13 +292,14 @@ class ProjectController extends Controller
         $page = ($offset - 1) * $limit;
         try {
             $projects = DB::table('proposals')
-            ->leftJoin('final_proposals', function ($join) {
+            ->InnerJoin('final_proposals', function ($join) {
                 $join->on('proposals.id', '=', 'final_proposals.proposal_id')
                     ->where('final_proposals.status', '!=', 1);
             })
             ->join('projects', 'proposals.project_id', '=', 'projects.id')
             ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
             ->where('proposals.team_id', '=', $agency_id)
+            ->orderBy('updated_at', 'desc')
             ->latest()->offset($page)->limit($limit)
             ->distinct()
             ->get();
@@ -321,7 +323,9 @@ class ProjectController extends Controller
                 ->select('projects.*')
                 ->where('projects.team_id', '=', $agency_id)
                 ->where('projects.status', '=', 1)
+                ->orWhere('projects.status', '=', 4)
                 ->distinct()
+                ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->get();
 
@@ -451,8 +455,8 @@ class ProjectController extends Controller
                     ->select('id', 'user_id', 'company_id', 'name', 'min', 'max', 'description', 'status', 'days', 'budget_type', 'verified', 'created_at',)
                     ->where('projects.company_id', '=', $company_id)
                     ->where('projects.status', '=', 0)
-
                     ->distinct()
+                    ->orderBy('updated_at', 'desc')
                     ->latest()->offset($page)->limit($limit)
                     ->get();
 
@@ -547,6 +551,7 @@ class ProjectController extends Controller
                     ->where('status', '=', 1)
                     ->select('projects.*')
                     ->distinct()
+                    ->orderBy('updated_at', 'desc')
                     ->latest()->offset($page)->limit($limit)
                     ->get();
                 $projects_info = $this->getCompanyActiveProjectsInfo($projects);
