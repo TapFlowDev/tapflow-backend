@@ -317,7 +317,7 @@ class ProjectController extends Controller
 
     function getAgencyActiveProjects($agency_id, $offset = 1)
     {
-        $limit = 4;
+        $limit = 10;
         $page = ($offset - 1) * $limit;
         try {
             $projects = DB::table('projects')
