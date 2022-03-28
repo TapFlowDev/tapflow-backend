@@ -213,5 +213,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('dashboardProposals/{offset}/{limit}', [Proposals::class, 'getClientPropsals']);
     Route::post('payMilestone/', [PaymentsController::class, 'makePayment']);
     Route::get('transactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getCompanyTransactions']);
+    Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
 });
 

@@ -25,6 +25,7 @@ use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
+use App\Models\Milestone;
 use App\Models\Team;
 
 class ProjectController extends Controller
@@ -687,31 +688,33 @@ class ProjectController extends Controller
         $company_id = Project::where('id', $id)->select('company_id')->first();
         return ($company_id->company_id);
     }
-    function getClientPaymentProjects(Request $req, $offset, $limit)
+
+    function getProjectMilestones(Request $req, $id)
     {
-        $userData = $req->user();
-        $userData = $this->checkUser($req);
-        if ($userData['exist'] < 1) {
-            $response = Controller::returnResponse(401, "unauthrized", []);
-            return (json_encode($response));
-        }
         try {
-            $page = ($offset - 1) * $limit;
-            $GroupControllerObj = new GroupController;
-            // $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
-            $company_id = $userData['group_id'];
-            $projects = DB::table('projects')
-                ->where('company_id', '=', $company_id)
-                ->where(function ($query) {
-                    $query->where('status', '=', 1)->orWhere('status', '=', 4);
-                })
-                ->select('projects.*')
-                ->distinct()
-                ->orderBy('updated_at', 'desc')
-                ->latest()->offset($page)->limit($limit)
-                ->get();
-            $projects_info = $this->getCompanyActiveProjectsInfo($projects);
-            $response = Controller::returnResponse(200, "successful", $projects_info);
+            $milestonesObj = new Milestones;
+            $userData = $this->checkUser($req);
+            $project = Project::where('id', $id)->get();
+            //check if project is not empty
+            if (!$project->first()) {
+                $response = Controller::returnResponse(401, "unauthrized", []);
+                return (json_encode($response));
+            }
+            $projectInfo = $this->getProjectsInfo($project)->first();
+            if ($projectInfo->company_id != $userData['group_id']) {
+                $response = Controller::returnResponse(401, "unauthrized", []);
+                return (json_encode($response));
+            }
+            $milestonesInfo = Milestone::where('project_id', $id)->get()->makeHidden(['deliverables', 'created_at', 'updated_at']);
+            $remainingAmount = number_format(Milestone::where('project_id', $id)->where('is_paid', '<>', 1)->sum('price'), 2, '.', '');
+            $remainingMilestones = Milestone::where('project_id', $id)->where('status', '<>', 3)->count();
+            $responseData = array(
+                'projectInfo' => $projectInfo,
+                'milestones' => $milestonesInfo,
+                'remainingAmount' => $remainingAmount,
+                'remainingMilestones' => $remainingMilestones
+            );
+            $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
