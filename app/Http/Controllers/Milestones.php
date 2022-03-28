@@ -352,6 +352,7 @@ class Milestones extends Controller
                 } else {
                     $links = serialize(array());
                 }
+
                 $submission = milestone_submission::create($req->except(['submission_file']) + ['links' => $links]);
                 $submission_id = $submission->id;
                 $project = Project::where('id', $req->project_id)->select('name')->first();
