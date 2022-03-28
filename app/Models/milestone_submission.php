@@ -17,6 +17,6 @@ class milestone_submission extends Model
         'project_id',
         'links',
         'file',
-        'comment',
+        'agency_comments',
     ];
 }
