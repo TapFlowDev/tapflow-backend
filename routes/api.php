@@ -37,6 +37,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FormOptionsController;
 use App\Http\Controllers\Milestones;
 use App\Http\Controllers\ContentDataController;
+use App\Http\Controllers\PaymentsController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
 
@@ -210,5 +211,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('acceptProposal', [proposals::class, 'acceptProposal']);
     Route::post('reviseFinalProposal', [Final_proposals::class, 'reviseFinalProposal']);
     Route::get('dashboardProposals/{offset}/{limit}', [Proposals::class, 'getClientPropsals']);
+    Route::post('payMilestone/', [PaymentsController::class, 'makePayment']);
+    Route::get('transactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getCompanyTransactions']);
 });
 

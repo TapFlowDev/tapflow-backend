@@ -15,5 +15,7 @@ class wallets_transaction extends Model
         'amount',
         'wallet_id',
         'type',//1=>deposit 2=>withdraw
+        'status',
+        'payment_id'
     ];
 }

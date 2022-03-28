@@ -14,6 +14,6 @@ class wallet extends Model
     protected $fillable = [
         'reference_id',
         'balance',
-        'type',
+        'type',// type = 1 => group, type = 2 => freelancer
     ];
 }

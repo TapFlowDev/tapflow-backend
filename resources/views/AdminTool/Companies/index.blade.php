@@ -21,8 +21,8 @@
                                     <th scope="row">{{ $user->id }}</th>
                                     <td>{{ $user->name }}</td>
                                     <td class="team-name-link">
-                                        <a href="{{ route('AdminTool.clients.show', $user->admin_id) }}"
-                                            target="_blanck" role="">{{ $user->admin_name }}
+                                        <a href="{{ route('AdminTool.clients.show', $user->admin_id) }}" target="_blanck"
+                                            role="">{{ $user->admin_name }}
                                         </a>
                                     </td>
                                     {{-- <td>
@@ -38,14 +38,22 @@
                                             role="button">View</a>
                                         {{-- <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.freelancers.show', $user->freelancer_id) }}"
                             role="button">View</a> --}}
-                                        {{-- <button class="btn btn-sm btn-danger" 
-                                onclick="event.preventDefault();
-                                document.getElementById('delete-user-form-{{ $user->id }}').submit()">Delete</button>
-                            <form id="delete-user-form-{{ $user->id }}"  action="{{ route('AdminTool.users.destroy', $user->id) }}" method="POST"
-                                style="display: none;">
-                            @csrf
-                            @method("DELETE")
-                            </form> --}}
+                                        @if ($user->walletId != '')
+                                        <a class="btn btn-sm btn-info"
+                                        href="{{ route('AdminTool.wallet.transactions.index', $user->walletId) }}"
+                                        role="button">View Transactions</a>
+                                        @else
+                                            <button class="btn btn-sm btn-info" onclick="event.preventDefault();
+                                            document.getElementById('create-wallet-{{ $user->id }}').submit()">View
+                                                Transactions</button>
+                                            <form id="create-wallet-{{ $user->id }}"
+                                                action="{{ route('AdminTool.wallet.create') }}" method="POST"
+                                                style="display: none;">
+                                                @csrf
+                                                <input type="hidden" name="group_id" value="{{ $user->id }}">
+                                                <input type="hidden" name="type" value="1">
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -57,5 +65,4 @@
             </div>
         </div>
     </div>
-
 @endsection

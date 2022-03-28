@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
         integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Tapflow Admin Tool') }}</title>
@@ -22,10 +23,10 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
     <!-- js -->
-    
+
     <script src="https://phpcoder.tech/multiselect/js/jquery.multiselect.js"></script>
-<link rel="stylesheet" href="https://phpcoder.tech/multiselect/css/jquery.multiselect.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css">
+    <link rel="stylesheet" href="https://phpcoder.tech/multiselect/css/jquery.multiselect.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.css">
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/chosen.jquery.min.js') }}" defer></script>
 
@@ -154,7 +155,7 @@
                     @auth
                         {{-- <a href="{{ url('/home') }}">Home</a> --}}
                         <a href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                        document.getElementById('logout-form').submit();">Logout</a>
+                                                            document.getElementById('logout-form').submit();">Logout</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
