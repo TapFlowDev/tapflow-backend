@@ -134,4 +134,28 @@ class WalletsTransactionsController extends Controller
             return ['paymentStatus' => -1, 'paymentMsg' => 'error', 'responseCode' => 500];
         }
     }
+    function getCompanyTransactions(Request $req, $offset, $limit)
+    {
+        try {
+            $walletObj = new WalletsController;
+            $page = ($offset - 1) * $limit;
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $wallet = $walletObj->getOrCreateWallet($userData['group_id'], 1);
+            $transactions = wallets_transaction::where('wallet_id', '=', $wallet->id)->orderBy('created_at', 'desc')->offset($page)->limit($limit)->get();
+            $responseData = array(
+                'walletInfo' => $wallet,
+                'transactions' => $transactions
+            );
+            $response = Controller::returnResponse(200, "data found", $responseData);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
 }

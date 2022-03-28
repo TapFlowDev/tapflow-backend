@@ -74,10 +74,10 @@ class PaymentsController extends Controller
                 return (json_encode($response));
             }
             // check if project active
-            // if ($projectInfo->status != 1) {
-            //     $response = Controller::returnResponse(422, "project is not active", []);
-            //     return (json_encode($response));
-            // }
+            if ($projectInfo->status != 4 && $projectInfo->status != 1) {
+                $response = Controller::returnResponse(422, "project is not active", []);
+                return (json_encode($response));
+            }
 
             /*
             first check if milestone is a downpayment
@@ -129,17 +129,13 @@ class PaymentsController extends Controller
              * else if milestone is not downpayment and submitted we make sure $paymenStatus = 1 so we make sure 
              *  the transaction was made successfully 
              */
-            $isProjectActive =0;
+            $isProjectActive = $projectInfo->status;
             if ($paymentStatus['paymentStatus'] == 1) {
                 $milstoneInfo->is_paid = 1;
                 $milstoneInfo->save();
                 if ($milstoneInfo->down_payment == 1) {
                     $payment->status = $paymentStatus['paymentStatus'];
                     $payment->save();
-                    /**
-                     * check other milestones to make project active
-                     */
-                   $isProjectActive = $this->makeProjectActive($contractId);
                 } else {
                     $agencyPaymentStatus = $walletTransactionsObj->makePaymentTransactionDeposit($payment);
                     $payment->status = 2;
@@ -148,12 +144,16 @@ class PaymentsController extends Controller
                      * MUST MAKE LOG FILE FOR TRANSACTIONS IF ERROR ACURED
                      */
                 }
+                /**
+                 * check other milestones to make project active
+                 */
+                $isProjectActive = $this->makeProjectActive($contract);
             }
 
             $returnData = array(
                 'payment' => $payment,
                 'msg' => $paymentStatus['paymentMsg'],
-                'projectActive' =>$isProjectActive
+                'projectActive' => $isProjectActive
             );
             $response = Controller::returnResponse($paymentStatus['responseCode'], $paymentStatus['paymentMsg'], $returnData);
             return (json_encode($response));
@@ -162,16 +162,37 @@ class PaymentsController extends Controller
             return (json_encode($response));
         }
     }
-    function makeProjectActive($final){
+    function makeProjectActive($final)
+    {
         $finalId = $final->id;
-        $milestones = Milestone::select('is_paid')->where('final_proposal_id', '=', $finalId)->where('down_payment', '=', 1)->pluck('is_paid')->toArray();
-        if(in_array(0, $milestones)){
-            return 0;
-        }
+        // $final = Final_proposal::where('id', '=', $finalId)->get()->first();
         $project = Project::where('id', '=', $final->project_id)->get()->first();
-        $project->status=1;
-        $project->save();
-        return 1;
-        
+        // $isPaidArray = array_column($milestones, 'is_paid');
+        // $statusArray = array_column($milestones, 'status');
+        //return $milestones;
+        /**
+         * check if project is alreeady active
+         * if project is active then check all milestone if submitted and paid to make project completed
+         * else if project not active check milestones if all paid to make project active
+         */
+        $projectStatus = $project->status;
+        if ($project->status == 1) {
+            $milestonesCount = Milestone::where('final_proposal_id', '=', $finalId)->count();
+            $milestones = Milestone::where('final_proposal_id', '=', $finalId)->where('is_paid', '=', 1)->where('status', '=', 3)->count();
+            if ($milestones==$milestonesCount) {
+                $projectStatus = 3;   
+                $project->status = $projectStatus;
+                $project->save();
+            }
+        } elseif ($project->status == 4) {
+            $milestones = Milestone::where('final_proposal_id', '=', $finalId)->where('down_payment', '=', 1)->count();
+            $milestonesPaid = Milestone::where('final_proposal_id', '=', $finalId)->where('down_payment', '=', 1)->where('is_paid', '=', 1)->count();
+            if ($milestones==$milestonesPaid) {
+                $projectStatus = 1;   
+                $project->status = $projectStatus;
+                $project->save();
+            }
+        }
+        return $project->status;
     }
 }
