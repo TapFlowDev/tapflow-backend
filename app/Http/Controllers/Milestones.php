@@ -579,11 +579,14 @@ class Milestones extends Controller
                 if ($userData['privileges'] == 1) {
                     // Milestone::where('id', $req->milestone_id)->select('*');
                     // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
-                    $milestones = DB::table('milestones')
-                        ->join('milestone_submissions.milestone_id', '=', 'milestones.id')
+                    $milestones =  DB::table('milestones')
+                        ->join('milestone_submissions', function ($join) {
+                            $join->on('milestones.id', '=', 'milestone_submissions.milestone_id')
+                                ->select('milestone_submissions.*');
+                        })
                         ->select('milestones.*')
-                        ->select('milestone_submissions.*')
                         ->where('milestones.id', '=', $req->milestone_id)
+
                         ->get();
                     $response = Controller::returnResponse(200, "successful", $milestones);
                     return (json_encode($response));
