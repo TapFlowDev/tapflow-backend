@@ -577,20 +577,22 @@ class Milestones extends Controller
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->group_id) {
                 if ($userData['privileges'] == 1) {
-                    // Milestone::where('id', $req->milestone_id)->select('*');
-                    // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
-                    $milestone_data = DB::table('milestones')
-                        ->leftJoin('milestone_submissions','milestone_submissions.milestone_id', '=', 'milestones.id')
-                        ->select('milestones.*','milestone_submissions.file','milestone_submissions.links','milestone_submissions.agency_comments','milestone_submissions.client_comments','milestone_submissions.created_at as submit_date')
-                        ->where('milestones.id', '=', $req->milestone_id)
-                        ->get();
-                   
-                        // $del=unserialize($milestone_data->deliverables);
-                        // $links=unserialize($milestone_data->links);
-                        // $milestone_data->deliverables=$del;
-                        // $milestone_data->links=$links;
-                     
-                    $response = Controller::returnResponse(200, "successful", $milestone_data);
+                    $milestone = Milestone::where('id', $req->milestone_id)->select('*')->first();
+                    $del = unserialize($milestone->deliverables);
+                    $milestone->deliverables = $del;
+                    $submissions = milestone_submission::where('milestone_id', $req->milestone_id)->select('*')->get();
+                    $submissions_details = [];
+                    foreach ($submissions as $sub) {
+                        array_push($submissions_details, array(
+                            "file" => $sub->file,
+                            "links" => unserialize($sub->links),
+                            "agency_comments" => $sub->agency_comments,
+                            "milestone_price" => $sub->client_comments,
+                            "submission_data" => $sub->created_at,
+                        ));
+                    }
+                    $milestone->submissions =  $submissions_details;
+                    $response = Controller::returnResponse(200, "successful", $milestone);
                     return (json_encode($response));
                 }
                 $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
