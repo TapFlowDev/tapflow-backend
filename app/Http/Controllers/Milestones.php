@@ -581,7 +581,8 @@ class Milestones extends Controller
                     // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
                     $milestones = DB::table('milestones')
                         ->join('milestone_submissions.milestone_id', '=', 'milestones.id')
-                        ->select('milestones.*,milestone_submissions.*')
+                        ->select('milestones.*')
+                        ->select(',milestone_submissions.*.*')
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
                     $response = Controller::returnResponse(200, "successful", $milestones);
