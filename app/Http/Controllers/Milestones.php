@@ -336,7 +336,7 @@ class Milestones extends Controller
 
             $rules = [
                 "submission_file" => "mimes:zip,rar |max:35000",
-                'comment' => "required",
+                'agency_comments' => "required",
                 'project_id' => "required|exists:projects,id",
                 'milestone_id' => "required|exists:milestones,id"
             ];
@@ -589,7 +589,7 @@ class Milestones extends Controller
                             // "links" => unserialize($sub->links),
                             "agency_comments" => $sub->agency_comments,
                             "milestone_price" => $sub->client_comments,
-                            "submission_data" => $sub->created_at,
+                            "submission_date" => $sub->created_at,
                         ));
                     }
                     $milestone->submissions =  $submissions_details;
