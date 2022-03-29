@@ -579,7 +579,7 @@ class Milestones extends Controller
                 if ($userData['privileges'] == 1) {
                     // Milestone::where('id', $req->milestone_id)->select('*');
                     // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
-                    $milestones = DB::table('milestones')
+                    $milestone_data = DB::table('milestones')
                         ->leftJoin('milestone_submissions', 'milestone_submissions.milestone_id', '=', 'milestones.id')
                         ->select(
                             'milestones.name',
@@ -596,8 +596,8 @@ class Milestones extends Controller
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
                   
-
-                    $response = Controller::returnResponse(200, "successful", $milestones);
+                            dd($milestone_data);
+                    $response = Controller::returnResponse(200, "successful", $milestone_data);
                     return (json_encode($response));
                 }
                 $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
