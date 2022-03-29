@@ -585,8 +585,8 @@ class Milestones extends Controller
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
 
-                        $del=serialize($milestones['deliverables']);
-                        $links=serialize($milestones['links']);
+                        $del=unserialize($milestones->deliverables);
+                        $links=unserialize($milestones->links);
                         $milestones['deliverables']=$del;
                         $milestones['links']=$links;
                      
