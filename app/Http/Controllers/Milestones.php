@@ -585,7 +585,8 @@ class Milestones extends Controller
                     foreach ($submissions as $sub) {
                         array_push($submissions_details, array(
                             "file" => $sub->file,
-                            "links" => unserialize($sub->links),
+                            "links" => $sub->links,
+                            // "links" => unserialize($sub->links),
                             "agency_comments" => $sub->agency_comments,
                             "milestone_price" => $sub->client_comments,
                             "submission_data" => $sub->created_at,
