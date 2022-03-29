@@ -582,11 +582,8 @@ class Milestones extends Controller
                     $milestone_data = DB::table('milestones')
                         ->leftJoin('milestone_submissions', 'milestone_submissions.milestone_id', '=', 'milestones.id')
                         ->select(
-                            'milestones.name',
-                           'milestones.deliverables',
-                            'milestones.description',
-                            'milestones.hours',
-                            'milestones.price',
+                            'milestones.*',
+                           
                             'milestone_submissions.file',
                             'milestone_submissions.links',
                             'milestone_submissions.agency_comments',
@@ -594,7 +591,7 @@ class Milestones extends Controller
                             'milestone_submissions.created_at as submit_date'
                         )
                         ->where('milestones.id', '=', $req->milestone_id)
-                        ->get();
+                        ->first();
                   
                             dd($milestone_data);
                     $response = Controller::returnResponse(200, "successful", $milestone_data);
