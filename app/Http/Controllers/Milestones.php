@@ -581,12 +581,15 @@ class Milestones extends Controller
                     // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
                     $milestones = DB::table('milestones')
                         ->join('milestone_submissions.milestone_id', '=', 'milestones.id')
-                        ->select('*')
+                        ->select('milestones.*','milestone_submissions.file','milestone_submissions.links','milestone_submissions.agency_comments','milestone_submissions.client_comments')
                         
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
 
-
+                        $del=serialize($milestones->deliverables);
+                        $links=serialize($milestones->links);
+                        $milestones['deliverables']=$del;
+                        $milestones['links']=$links;
                      
                     $response = Controller::returnResponse(200, "successful", $milestones);
                     return (json_encode($response));
