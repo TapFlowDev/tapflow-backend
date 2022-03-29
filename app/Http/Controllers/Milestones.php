@@ -583,12 +583,12 @@ class Milestones extends Controller
                         ->leftJoin('milestone_submissions', 'milestone_submissions.milestone_id', '=', 'milestones.id')
                         ->select(
                             'milestones.name',
-                            unserialize('milestones.deliverables'),
+                           'milestones.deliverables',
                             'milestones.description',
                             'milestones.hours',
                             'milestones.price',
                             'milestone_submissions.file',
-                            unserialize('milestone_submissions.links'),
+                            'milestone_submissions.links',
                             'milestone_submissions.agency_comments',
                             'milestone_submissions.client_comments',
                             'milestone_submissions.created_at as submit_date'
