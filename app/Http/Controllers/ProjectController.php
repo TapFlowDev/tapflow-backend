@@ -343,6 +343,7 @@ class ProjectController extends Controller
     function getAgencyActiveProject($id)
     {
         $milestonesObj = new Milestones;
+        $finalProposalsObj = new Final_proposals;
         try {
             $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
             $projectData->final_proposal_id = DB::table('final_proposals')->select('id')->where('project_id', '=', $projectData->id)->where('status', '=', 1)->pluck('id')->first();
@@ -351,6 +352,8 @@ class ProjectController extends Controller
                 return (json_encode($response));
             }
             $milestones = $milestonesObj->getMilestoneByProposalId($projectData->final_proposal_id);
+            $contract = $finalProposalsObj->getProposalById($projectData->final_proposal_id);
+
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -369,6 +372,7 @@ class ProjectController extends Controller
             }
             $projectData->admins = $admins;
             $projectData->milestones = $milestones;
+            $projectData->contract = $contract;
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
