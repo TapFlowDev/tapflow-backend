@@ -586,10 +586,10 @@ class Milestones extends Controller
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
 
-                        $del=serialize($milestones->deliverables);
-                        $links=serialize($milestones->links);
-                        $milestones['deliverables']=$del;
-                        $milestones['links']=$links;
+                        // $del=serialize($milestones->deliverables);
+                        // $links=serialize($milestones->links);
+                        // // $milestones['deliverables']=$del;
+                        // $milestones['links']=$links;
                      
                     $response = Controller::returnResponse(200, "successful", $milestones);
                     return (json_encode($response));
