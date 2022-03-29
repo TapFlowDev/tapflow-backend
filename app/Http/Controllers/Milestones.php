@@ -362,7 +362,7 @@ class Milestones extends Controller
                 $submissionName = time() . "-" . $projectName . '-' . $milestoneName . '-' . $req->file('submission_file')->getClientOriginalName();;
                 $submission_file = $req->submission_file;
                 if (!File::exists($projectName)) {
-                    mkdir($projectName);
+                    File::makeDirectory(public_path().'/'.$projectName,0777,true);
                     $submission_file->move(public_path($projectName), $submissionName);
                     $this->updateSubmissionFile($submission_id, $submissionName);
                     $this->updateStatus($req->milestone_id, '1');
