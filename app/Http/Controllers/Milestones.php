@@ -570,4 +570,32 @@ class Milestones extends Controller
             return (json_encode($response));
         }
     }
+
+    function getMilestoneById(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 1) {
+            if ($userData['group_id'] == $req->group_id) {
+                if ($userData['privileges'] == 1) {
+                    // Milestone::where('id', $req->milestone_id)->select('*');
+                    // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
+                    $milestones = DB::table('milestones')
+                        ->join('milestone_submissions.milestone_id', '=', 'milestones.id')
+                        ->select('milestones.*,milestone_submissions.*')
+                        ->where('milestones.id', '=', $req->milestone_id)
+                        ->get();
+                    $response = Controller::returnResponse(200, "successful", $milestones);
+                    return (json_encode($response));
+                }
+                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
+        }
+    }
 }
