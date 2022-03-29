@@ -580,20 +580,16 @@ class Milestones extends Controller
                     // Milestone::where('id', $req->milestone_id)->select('*');
                     // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
                     $milestone_data = DB::table('milestones')
-                        ->leftJoin('milestone_submissions', 'milestone_submissions.milestone_id', '=', 'milestones.id')
-                        ->select(
-                            'milestones.*',
-                           
-                            'milestone_submissions.file',
-                            'milestone_submissions.links',
-                            'milestone_submissions.agency_comments',
-                            'milestone_submissions.client_comments',
-                            'milestone_submissions.created_at as submit_date'
-                        )
+                        ->leftJoin('milestone_submissions','milestone_submissions.milestone_id', '=', 'milestones.id')
+                        ->select('milestones.*','milestone_submissions.file','milestone_submissions.links','milestone_submissions.agency_comments','milestone_submissions.client_comments','milestone_submissions.created_at as submit_date')
                         ->where('milestones.id', '=', $req->milestone_id)
-                        ->first();
-                  
-                            dd($milestone_data);
+                        ->get();
+                   
+                        $del=unserialize($milestone_data->deliverables);
+                        $links=unserialize($milestone_data->links);
+                        $milestone_data['deliverables']=$del;
+                        $milestone_data['links']=$links;
+                     
                     $response = Controller::returnResponse(200, "successful", $milestone_data);
                     return (json_encode($response));
                 }
