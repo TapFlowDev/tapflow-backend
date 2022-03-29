@@ -580,16 +580,27 @@ class Milestones extends Controller
                     // Milestone::where('id', $req->milestone_id)->select('*');
                     // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
                     $milestones = DB::table('milestones')
-                        ->leftJoin('milestone_submissions','milestone_submissions.milestone_id', '=', 'milestones.id')
-                        ->select('milestones.*','milestone_submissions.file','milestone_submissions.links','milestone_submissions.agency_comments','milestone_submissions.client_comments','milestone_submissions.created_at as submit_date')
+                        ->leftJoin('milestone_submissions', 'milestone_submissions.milestone_id', '=', 'milestones.id')
+                        ->select(
+                            'milestones.name',
+                            'milestones.deliverables',
+                            'milestones.description',
+                            'milestones.hours',
+                            'milestones.price',
+                            'milestone_submissions.file',
+                            'milestone_submissions.links',
+                            'milestone_submissions.agency_comments',
+                            'milestone_submissions.client_comments',
+                            'milestone_submissions.created_at as submit_date'
+                        )
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
-                    dd($milestones->deliverables);
-                        $del=unserialize();
-                        $links=unserialize($milestones->links);
-                        $milestones['deliverables']=$del;
-                        $milestones['links']=$links;
-                     
+                  
+                    $del = unserialize($milestones->deliverables);
+                    $links = unserialize($milestones->links);
+                    $milestones['deliverables'] = $del;
+                    $milestones['links'] = $links;
+
                     $response = Controller::returnResponse(200, "successful", $milestones);
                     return (json_encode($response));
                 }
