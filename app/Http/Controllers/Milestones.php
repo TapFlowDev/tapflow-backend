@@ -580,7 +580,7 @@ class Milestones extends Controller
                     // Milestone::where('id', $req->milestone_id)->select('*');
                     // ::where('id', $req->submission_id)->update(['client_comments' => $req->comments]);
                     $milestones = DB::table('milestones')
-                        ->join('milestone_submissions.milestone_id', '=', 'milestones.id')
+                        ->join('milestone_submissions','milestone_submissions.milestone_id', '=', 'milestones.id')
                         ->select('milestones.*','milestone_submissions.file','milestone_submissions.links','milestone_submissions.agency_comments','milestone_submissions.client_comments')
                         
                         ->where('milestones.id', '=', $req->milestone_id)
