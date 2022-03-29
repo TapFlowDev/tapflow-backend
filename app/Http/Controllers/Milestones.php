@@ -582,7 +582,7 @@ class Milestones extends Controller
                     $milestones = DB::table('milestones')
                         ->join('milestone_submissions.milestone_id', '=', 'milestones.id')
                         ->select('milestones.*')
-                        ->select(',milestone_submissions.*.*')
+                        ->select('milestone_submissions.*')
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
                     $response = Controller::returnResponse(200, "successful", $milestones);
