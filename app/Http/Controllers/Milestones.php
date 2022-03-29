@@ -583,12 +583,12 @@ class Milestones extends Controller
                         ->leftJoin('milestone_submissions', 'milestone_submissions.milestone_id', '=', 'milestones.id')
                         ->select(
                             'milestones.name',
-                            'milestones.deliverables',
+                            unserialize('milestones.deliverables'),
                             'milestones.description',
                             'milestones.hours',
                             'milestones.price',
                             'milestone_submissions.file',
-                            'milestone_submissions.links',
+                            unserialize('milestone_submissions.links'),
                             'milestone_submissions.agency_comments',
                             'milestone_submissions.client_comments',
                             'milestone_submissions.created_at as submit_date'
@@ -596,10 +596,6 @@ class Milestones extends Controller
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
                   
-                    $del = unserialize($milestones->deliverables);
-                    $links = unserialize($milestones->links);
-                    $milestones['deliverables'] = $del;
-                    $milestones['links'] = $links;
 
                     $response = Controller::returnResponse(200, "successful", $milestones);
                     return (json_encode($response));
