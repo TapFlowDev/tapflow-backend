@@ -584,8 +584,8 @@ class Milestones extends Controller
                         ->select('milestones.*','milestone_submissions.file','milestone_submissions.links','milestone_submissions.agency_comments','milestone_submissions.client_comments','milestone_submissions.created_at as submit_date')
                         ->where('milestones.id', '=', $req->milestone_id)
                         ->get();
-
-                        $del=unserialize($milestones->deliverables);
+                    dd($milestones->deliverables);
+                        $del=unserialize();
                         $links=unserialize($milestones->links);
                         $milestones['deliverables']=$del;
                         $milestones['links']=$links;
