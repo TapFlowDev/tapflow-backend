@@ -587,8 +587,8 @@ class Milestones extends Controller
                    
                         $del=unserialize($milestone_data->deliverables);
                         $links=unserialize($milestone_data->links);
-                        $milestone_data['deliverables']=$del;
-                        $milestone_data['links']=$links;
+                        $milestone_data->deliverables=$del;
+                        $milestone_data->links=$links;
                      
                     $response = Controller::returnResponse(200, "successful", $milestone_data);
                     return (json_encode($response));
