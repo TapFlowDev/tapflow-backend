@@ -323,7 +323,7 @@ class ProjectController extends Controller
                 // ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
                 ->distinct()
-               ->toArray();
+                ->get();
                 // print_r(['project11'=> $projects1]);
                
                 $projects2 = DB::table('final_proposals')
@@ -333,10 +333,10 @@ class ProjectController extends Controller
                 // ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
                 ->distinct()
-                ->toArray();
+                ->get();
                 // print_r(['project22'=> $projects2]);
               
-                $projectsss=array_merge($projects1,$projects2);
+                $projectsss=array_merge($projects1->toArray(),$projects2->toArray());
                
                 print_r(['merge'=> $projectsss]);
               
