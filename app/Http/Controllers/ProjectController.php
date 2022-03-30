@@ -286,9 +286,9 @@ class ProjectController extends Controller
         }
         return $projects;
     }
-    function getAgencyPendingProjects($agency_id, $offset = 1)
+    function getAgencyPendingProjects($agency_id, $offset = 1,$limit)
     {
-        $limit = 4;
+   
         $page = ($offset - 1) * $limit;
         try {
             // $projects = DB::table('proposals')
