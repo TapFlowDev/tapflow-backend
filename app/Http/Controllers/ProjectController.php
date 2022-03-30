@@ -324,6 +324,8 @@ class ProjectController extends Controller
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get()->toArray();
+                print_r(['project11'=> $projects1]);
+                print_r('<br>');
                 $projects2 = DB::table('projects')
                 ->join('final_proposals', 'final_proposals.project_id', '=', 'projects.id')
                 ->select('projects.*', 'final_proposals.status as final_proposals_status')
@@ -332,9 +334,16 @@ class ProjectController extends Controller
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get()->toArray();
-                $projects=array_merge($projects1,$projects2);
-                $projects=array_unique($projects);
-               
+                print_r(['project22'=> $projects2]);
+                print_r('<br>');
+                $projectsss=array_merge($projects1,$projects2);
+                print_r('<br>');
+                print_r(['merge'=> $projectsss]);
+                print_r('<br>');
+                $projects=array_unique($projectsss);
+                print_r(['unique'=> $projects]);
+                print_r('<br>');
+                dd();               
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
