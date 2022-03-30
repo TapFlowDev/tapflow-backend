@@ -763,6 +763,7 @@ class ProjectController extends Controller
     }
     private function getProjectsInfo2($projects)
     {
+        $projects=array_unique($projects);
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
@@ -802,6 +803,6 @@ class ProjectController extends Controller
             $project->admin_info = $admin_info;
            
         }
-        return array_unique($projects);
+        return $projects;
     }
 }
