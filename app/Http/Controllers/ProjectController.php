@@ -306,12 +306,14 @@ class ProjectController extends Controller
             //     ->distinct()
             //     ->get();
                  $projects = DB::table('projects')
-                ->join('final_proposals', function ($join) {
-                    $join->on('proposals.id', '=', 'final_proposals.proposal_id')
+                ->join('final_proposals', function ($join,$agency_id) {
+                    $join->on('project.id', '=', 'final_proposals.project_id')
                         ->where('final_proposals.status', '!=', 1)
-                        ->orWhere('proposals.status', '!=', 1);
+                        ->where('final_proposals.team_id', '=', $agency_id);
+                       
                 })
                 ->join('proposals', 'proposals.project_id', '=', 'projects.id')
+                ->where('proposals.status', '!=', 1)
                 ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->orderBy('updated_at', 'desc')
