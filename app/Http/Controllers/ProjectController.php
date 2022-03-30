@@ -297,7 +297,8 @@ class ProjectController extends Controller
         $page = ($offset - 1) * $limit;
         try {
 
-            $initProjects =Proposal::where('team_id',$agency_id)->select('project_id','status')->get();
+            $initProjects =Proposal::where('team_id',$agency_id)->select('project_id','status')->offset($page)->limit($limit)
+            ->distinct()->get();
             $projects_id=$initProjects->pluck('project_id')->toArray();
             $status=1;
             $projects = DB::table('projects')
