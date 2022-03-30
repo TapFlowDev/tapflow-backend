@@ -328,8 +328,8 @@ class ProjectController extends Controller
                 ->get();
             //     // // print_r(['project11'=> $projects1]);
                $projectIds=$projects1->pluck('project_id')->toArray();
-                $projects2 = DB::table('projects')
-                ->leftJoin('final_proposals', function ($join) {
+                $projects = DB::table('projects')
+                ->rightJoin('final_proposals', function ($join) {
                     $join->on('projects.id', '=', 'final_proposals.project_id')
                     
                     ->where('final_proposals.status','<>',1);
@@ -344,7 +344,7 @@ class ProjectController extends Controller
                 ->get();
                 // // print_r(['project22'=> $projects2]);
               
-                $projects=array_merge($projects1->toArray(),$projects2->toArray());
+                // $projects=array_merge($projects1->toArray(),$projects2->toArray());
            
               
              
