@@ -309,7 +309,7 @@ class ProjectController extends Controller
                 ->join('proposals','proposals.project_id' ,'=','projects.id')
                 ->join('final_proposals' , 'final_proposals.proposal_id' ,'=','proposals.id')
                 ->where('proposals.team_id', '=', $agency_id)
-                ->where('final_proposals.status','=',0)
+                ->orWhere('final_proposals.status','=',0)
                 ->orWhere('final_proposals.status','=',2)
                 ->orWhere('final_proposals.status','=',3)
                 ->orWhere('final_proposals.status','=',-1)
