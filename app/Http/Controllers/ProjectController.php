@@ -328,40 +328,40 @@ class ProjectController extends Controller
                 ->offset($page)->limit($limit)
                 ->distinct()
                 ->get(); 
-                $projects2 = DB::table('projects')
-                ->join('final_proposals', 'final_proposals.project_id', '=', 'projects.id')
-                ->select('projects.id as project_id','final_proposals.status as final_proposal_status')
-                ->where('final_proposals.team_id', '=', $agency_id)
-                ->where('final_proposals.status','<>',1)
-                // ->orderBy('updated_at', 'desc')
-                ->offset($page)->limit($limit)
-                ->distinct()
-                ->get();
-            //     // // print_r(['project11'=> $projects1]);
-               $projectIds1=$projects1->pluck('project_id')->toArray();
-               $projectIds2=$projects2->pluck('project_id')->toArray();
                 // $projects2 = DB::table('projects')
-                // ->leftJoin('final_proposals', function ($join) {
-                //     $join->on('projects.team_id','<>','final_proposals.team_id')
-                    
-                //     ->where('final_proposals.status','<>',1);
-                   
-                // })
-                // ->select('projects.*', 'final_proposals.team_id as agency_id','final_proposals.status as final_proposal_status')
-                // ->whereIn('projects.id',$projectIds)
+                // ->join('final_proposals', 'final_proposals.project_id', '=', 'projects.id')
+                // ->select('projects.id as project_id','final_proposals.status as final_proposal_status')
                 // ->where('final_proposals.team_id', '=', $agency_id)
-                // // ->where('final_proposals.status','!=',1)
+                // ->where('final_proposals.status','<>',1)
                 // // ->orderBy('updated_at', 'desc')
                 // ->offset($page)->limit($limit)
                 // ->distinct()
                 // ->get();
+            //     // // print_r(['project11'=> $projects1]);
+               $projectIds1=$projects1->pluck('project_id')->toArray();
+            //    $projectIds2=$projects2->pluck('project_id')->toArray();
+                $projects = DB::table('projects')
+                ->leftJoin('final_proposals', function ($join) {
+                    $join->on('projects.team_id','<>','final_proposals.team_id')
+                    
+                    ->where('final_proposals.status','<>',1);
+                   
+                })
+                ->select('projects.*', 'final_proposals.team_id as agency_id','final_proposals.status as final_proposal_status')
+                ->whereIn('projects.id',$projectIds1)
+                ->where('final_proposals.team_id', '=', $agency_id)
+                // ->where('final_proposals.status','!=',1)
+                // ->orderBy('updated_at', 'desc')
+                ->offset($page)->limit($limit)
+                ->distinct()
+                ->get();
                 // // print_r(['project22'=> $projects2]);
               
                 // $projects=array_merge($projectIds1,$projectIds2);
-            $projects=['init'=>$projectIds1,'final'=>$projectIds2];
+            // $projects=['init'=>$projectIds1,'final'=>$projectIds2];
               
-                $response = Controller::returnResponse(200, "data found", $projects);
-                return (json_encode($response));
+                // $response = Controller::returnResponse(200, "data found", $projects);
+                // return (json_encode($response));
                 
                            
             $projectInfo = $this->getProjectsInfo2($projects,$agency_id);
