@@ -266,9 +266,9 @@ class ProjectController extends Controller
             {
                 array_push($arr,$finalProp['status']);
                 $final_status=$finalProp['status'];
-                if($finalProp ['status'] == 1){
-                    unset($projects[$keyProj]);
-                   }
+                // if($finalProp ['status'] == 1){
+                //     unset($projects[$keyProj]);
+                //    }
             }
             else{
                 array_push($arr,null);
