@@ -340,7 +340,8 @@ class ProjectController extends Controller
            
               
            
-               
+                $response = Controller::returnResponse(200, "data found3424324234234", $projects);
+                return (json_encode($response));
                            
             $projectInfo = $this->getProjectsInfo2($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
