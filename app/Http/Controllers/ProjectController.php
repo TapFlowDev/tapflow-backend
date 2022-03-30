@@ -320,7 +320,7 @@ class ProjectController extends Controller
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get();
-                $projects=$projects1->intersect($projects2);
+                $projects=$projects2->intersect($projects1);
                 dd($projects);
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
