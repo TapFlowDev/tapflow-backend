@@ -320,7 +320,7 @@ class ProjectController extends Controller
                 ->join('projects', 'proposals.project_id', '=', 'projects.id')
                 ->select('proposals.project_id', 'proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
-                ->orderBy('updated_at', 'desc')
+                // ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get()->toArray();
@@ -330,7 +330,7 @@ class ProjectController extends Controller
                 ->join('projects', 'final_proposals.project_id', '=', 'projects.id')
                 ->select('final_proposals.project_id', 'final_proposals.status as final_proposals_status')
                 ->where('final_proposals.team_id', '=', $agency_id)
-                ->orderBy('updated_at', 'desc')
+                // ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get()->toArray();
