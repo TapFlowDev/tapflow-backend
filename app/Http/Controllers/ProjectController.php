@@ -336,8 +336,8 @@ class ProjectController extends Controller
                 ->distinct()
                 ->get();
             //     // // print_r(['project11'=> $projects1]);
-               $projectIds1=$projects1->pluck('project_id')->toArray();
-               $projectIds2=$projects2->pluck('project_id')->toArray();
+               $projectIds1=$projects1->pluck('id')->toArray();
+               $projectIds2=$projects2->pluck('id')->toArray();
                 // $projects2 = DB::table('projects')
                 // ->leftJoin('final_proposals', function ($join) {
                 //     $join->on('projects.team_id','<>','final_proposals.team_id')
