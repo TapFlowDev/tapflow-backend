@@ -296,7 +296,7 @@ class ProjectController extends Controller
         
         $page = ($offset - 1) * $limit;
         try {
-
+            
             // $initProjects =Proposal::where('team_id',$agency_id)->select('project_id','status')->offset($page)->limit($limit)
             // ->distinct()->get();
             // $projects_id=$initProjects->pluck('project_id')->toArray();
@@ -329,14 +329,14 @@ class ProjectController extends Controller
             //     // // print_r(['project11'=> $projects1]);
                $projectIds=$projects1->pluck('project_id')->toArray();
                 $projects2 = DB::table('projects')
-                ->leftJoin('final_proposals', function ($join,$agency_id) {
+                ->leftJoin('final_proposals', function ($join) {
                     $join->on('projects.id', '=', 'final_proposals.projects_id')
-                    ->where('final_proposals.team_id', '=', $agency_id)
+                    
                     ->where('final_proposals.status','<>',1);
                 })
                 ->select('projects.*', 'final_proposals.team_id as agency_id','final_proposals.status as final_proposal_status')
                 ->whereIn('projects.id',$projectIds)
-                
+                ->where('final_proposals.team_id', '=', $agency_id)
                 // ->where('final_proposals.status','!=',1)
                 // ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
