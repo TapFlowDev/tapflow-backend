@@ -336,15 +336,13 @@ class ProjectController extends Controller
                 ->get();
                 // print_r(['project22'=> $projects2]);
               
-                $projectsss=array_merge($projects1->toArray(),$projects2->toArray());
-               
-                print_r(['merge'=> $projectsss]);
+                $projects=array_merge($projects1->toArray(),$projects2->toArray());
+           
               
-                $projects=array_unique($projectsss);
-                print_r(['unique'=> $projects]);
+           
                
-                dd();               
-            $projectInfo = $this->getProjectsInfo($projects);
+                           
+            $projectInfo = $this->getProjectsInfo2($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -762,5 +760,48 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
             return (json_encode($response));
         }
+    }
+    private function getProjectsInfo2($projects)
+    {
+        $projectCategoriesObj = new ProjectCategoriesController;
+        $requirementsObj = new Requirement;
+        $clientObj = new ClientController;
+       
+        foreach ($projects as $keyProj => &$project) {
+            $project->company_name = Group::find($project->company_id)->name;
+            $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
+            $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
+            $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
+            $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
+            $user_info = json_decode($clientObj->get_client_info($project->user_id));
+           
+           
+            $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
+            if (isset($user_info->image)) {
+                $admin_info['image'] = asset("images/companies/" . $user_info->image);
+            } else {
+                $admin_info['image'] = asset('images/profile-pic.jpg');
+            }
+            if ($company_field_id != '' && $company_field_id != null) {
+                $project->company_field = Category::find((int)$company_field_id)->name;
+            }
+            if ($company_sector_id != '' && $company_sector_id != null) {
+                $project->company_sector = Category::find((int)$company_sector_id)->name;
+            }
+
+            // dd($company_image);
+            if (isset($company_image)) {
+                $project->company_image = asset("images/companies/" . $company_image);
+            } else {
+                $project->company_image = asset('images/profile-pic.jpg');
+            }
+            $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
+            $project->company_bio = $company_bio;
+            $project->duration = Category::find((int)$project->days)->name;
+            $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            $project->admin_info = $admin_info;
+           
+        }
+        return array_unique($projects);
     }
 }
