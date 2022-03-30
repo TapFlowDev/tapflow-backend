@@ -320,7 +320,7 @@ class ProjectController extends Controller
                 // ->get();
                  $projects1 = DB::table('projects')
                 ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-                ->select('projects.id', 'proposals.team_id as agency_id','proposals.status')
+                ->select('projects.*', 'proposals.team_id as agency_id','proposals.status')
                 ->where('proposals.team_id', '=', $agency_id)
                 // ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
