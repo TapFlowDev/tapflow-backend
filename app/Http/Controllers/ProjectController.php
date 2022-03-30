@@ -252,6 +252,7 @@ class ProjectController extends Controller
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
+        $final_proposalObj=new Final_proposals;
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
@@ -259,7 +260,6 @@ class ProjectController extends Controller
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
-
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
                 $admin_info['image'] = asset("images/companies/" . $user_info->image);
@@ -293,11 +293,11 @@ class ProjectController extends Controller
         $page = ($offset - 1) * $limit;
         try {
             // $projects = DB::table('proposals')
-            //     ->join('final_proposals', function ($join) {
-            //         $join->on('proposals.id', '=', 'final_proposals.proposal_id')
-            //             ->where('final_proposals.status', '!=', 1)
-            //             ->orWhere('proposals.status', '!=', 1);
-            //     })
+                // ->join('final_proposals', function ($join) {
+                //     $join->on('proposals.id', '=', 'final_proposals.proposal_id')
+                //         ->where('final_proposals.status', '!=', 1)
+                //         ->orWhere('proposals.status', '!=', 1);
+                // })
             //     ->join('projects', 'proposals.project_id', '=', 'projects.id')
             //     ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
             //     ->where('proposals.team_id', '=', $agency_id)
@@ -307,8 +307,12 @@ class ProjectController extends Controller
             //     ->get();
                  $projects = DB::table('projects')
                 ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-                // ->where('proposals.status', '!=', 1)
-                ->select('projects.*', 'proposals.status as proposal_status')
+                ->join('final_proposals', function ($join) {
+                    $join->on('proposals.id', '=', 'final_proposals.proposal_id')
+                        ->where('final_proposals.status', '!=', 1)
+                        ->orWhere('proposals.status', '!=', 1);
+                })
+                ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
