@@ -271,7 +271,7 @@ class ProjectController extends Controller
                    }
             }
             else{
-                array_push($arr,$finalProp['status']);
+                array_push($arr,null);
                 $final_status=null;}
            
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
