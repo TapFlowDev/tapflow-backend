@@ -321,7 +321,7 @@ class ProjectController extends Controller
                 ->select('proposals.project_id', 'proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 // ->orderBy('updated_at', 'desc')
-                ->latest()->offset($page)->limit($limit)
+                ->offset($page)->limit($limit)
                 ->distinct()
                 ->get()->toArray();
                 print_r(['project11'=> $projects1]);
@@ -331,7 +331,7 @@ class ProjectController extends Controller
                 ->select('final_proposals.project_id', 'final_proposals.status as final_proposals_status')
                 ->where('final_proposals.team_id', '=', $agency_id)
                 // ->orderBy('updated_at', 'desc')
-                ->latest()->offset($page)->limit($limit)
+                ->offset($page)->limit($limit)
                 ->distinct()
                 ->get()->toArray();
                 print_r(['project22'=> $projects2]);
