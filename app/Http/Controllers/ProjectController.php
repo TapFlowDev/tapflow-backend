@@ -318,31 +318,31 @@ class ProjectController extends Controller
                 // // ->get();
                  $projects1 = DB::table('projects')
                 ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-                ->select('projects.*', 'proposals.status as proposal_status')
+                ->select('projects.id', 'proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get()->toArray();
                 print_r(['project11'=> $projects1]);
-                print_r('<br>');
+               
                 $projects2 = DB::table('projects')
                 ->join('final_proposals', 'final_proposals.project_id', '=', 'projects.id')
-                ->select('projects.*', 'final_proposals.status as final_proposals_status')
+                ->select('projects.id', 'final_proposals.status as final_proposals_status')
                 ->where('final_proposals.team_id', '=', $agency_id)
                 ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get()->toArray();
                 print_r(['project22'=> $projects2]);
-                print_r('<br>');
+              
                 $projectsss=array_merge($projects1,$projects2);
-                print_r('<br>');
+               
                 print_r(['merge'=> $projectsss]);
-                print_r('<br>');
+              
                 $projects=array_unique($projectsss);
                 print_r(['unique'=> $projects]);
-                print_r('<br>');
+               
                 dd();               
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
