@@ -781,18 +781,15 @@ class ProjectController extends Controller
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
-            // $finalProp=$finalPropObj->checkIfExists($project->id ,$agency_id);
+            $finalProp=$finalPropObj->checkIfExists($project->id ,$agency_id);
             $initProp=$initPropObj->checkIfProposalExists($project->id ,$agency_id);
             $proposal_status=$initProp['status'];
-        //    if($finalProp['exist'] == 1)
-        //    {
-        //        $finalStatus=$finalProp['status'];
-        //        if($finalStatus == 1)
-        //        {
-        //            unset($projects['keyProj']);
-        //        }
-        //    }
-        //    else{ $finalStatus=null;}
+           if($finalProp['exist'] == 1)
+           {
+               $finalStatus=$finalProp['status'];
+              
+           }
+           else{ $finalStatus=null;}
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
                 $admin_info['image'] = asset("images/companies/" . $user_info->image);
@@ -817,7 +814,7 @@ class ProjectController extends Controller
             $project->duration = Category::find((int)$project->days)->name;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
             $project->admin_info = $admin_info;
-            // $project->final_proposal_status=  $finalStatus;
+            $project->final_proposal_status=  $finalStatus;
             $project->proposal_status =   $proposal_status;
            
         }
