@@ -261,19 +261,19 @@ class ProjectController extends Controller
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
             $finalProp=$final_proposalObj->checkIfExists($project->id,$project->agency_id);
-            $arr=["key"=>$keyProj,"exist"=>$finalProp['exist']];
+            // $arr=["key"=>$keyProj,"exist"=>$finalProp['exist']];
             if($finalProp['exist'] ==1)
             {
-                array_push($arr,$finalProp['status']);
+                // array_push($arr,$finalProp['status']);
                 $final_status=$finalProp['status'];
-                // if($finalProp ['status'] == 1){
-                //     unset($projects[$keyProj]);
-                //    }
+                if($final_status == 1){
+                    unset($projects[$keyProj]);
+                   }
             }
             else{
-                array_push($arr,null);
+                // array_push($arr,null);
                 $final_status=null;}
-           print_r($arr);
+        //    print_r($arr);
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
                 $admin_info['image'] = asset("images/companies/" . $user_info->image);
