@@ -301,8 +301,9 @@ class ProjectController extends Controller
             $projects = DB::table('proposals')
             ->LeftJoin('final_proposals','final_proposals.proposal_id','=','proposals.id')
                 ->when($status, function ($query, $status) {
-                    $query->where('proposals.status', $status)
+                    return $query->where('proposals.status', $status)
                     ->where('final_proposals.status', '<>', 1);
+                    
                 })
                 ->join('projects', 'proposals.project_id', '=', 'projects.id')
                 ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
