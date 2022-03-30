@@ -310,6 +310,7 @@ class ProjectController extends Controller
                 ->join('final_proposals' , 'final_proposals.proposal_id' ,'=','proposals.id')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->where('final_proposals.status','!=',1)
+                ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
                 ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
