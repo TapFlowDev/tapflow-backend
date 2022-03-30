@@ -330,7 +330,7 @@ class ProjectController extends Controller
                $projectIds=$projects1->pluck('project_id')->toArray();
                 $projects2 = DB::table('projects')
                 ->leftJoin('final_proposals', function ($join) {
-                    $join->on('projects.id', '=', 'final_proposals.projects_id')
+                    $join->on('projects.id', '=', 'final_proposals.project_id')
                     
                     ->where('final_proposals.status','<>',1);
                 })
