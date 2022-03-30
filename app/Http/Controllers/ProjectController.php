@@ -316,9 +316,9 @@ class ProjectController extends Controller
                 // // ->latest()->offset($page)->limit($limit)
                 // // ->distinct()
                 // // ->get();
-                 $projects1 = DB::table('projects')
-                ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-                ->select('projects.id', 'proposals.status as proposal_status')
+                 $projects1 = DB::table('proposals')
+                ->join('projects', 'proposals.project_id', '=', 'projects.id')
+                ->select('proposals.project_id', 'proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
@@ -326,9 +326,9 @@ class ProjectController extends Controller
                 ->get()->toArray();
                 print_r(['project11'=> $projects1]);
                
-                $projects2 = DB::table('projects')
-                ->join('final_proposals', 'final_proposals.project_id', '=', 'projects.id')
-                ->select('projects.id', 'final_proposals.status as final_proposals_status')
+                $projects2 = DB::table('final_proposals')
+                ->join('projects', 'final_proposals.project_id', '=', 'projects.id')
+                ->select('final_proposals.project_id', 'final_proposals.status as final_proposals_status')
                 ->where('final_proposals.team_id', '=', $agency_id)
                 ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
