@@ -339,7 +339,7 @@ class ProjectController extends Controller
                 ->offset($page)->limit($limit)
                 ->distinct()
                 ->get();
-                print_r(['project22'=> $projects2]);
+                // print_r(['project22'=> $projects2]);
               
                 $projects=array_merge($projects1->toArray(),$projects2->toArray());
            
