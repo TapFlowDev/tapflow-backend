@@ -332,8 +332,8 @@ class ProjectController extends Controller
                 ->leftJoin('final_proposals', function ($join) {
                     $join->on('projects.id', '=', 'final_proposals.project_id')
                     
-                    ->where('final_proposals.status','<>',1)
-                    ->where('projects.team_id','<>','final_proposals.team_id');
+                    ->where('final_proposals.status','<>',1);
+                    // ->where('projects.team_id','<>','final_proposals.team_id');
                 })
                 ->select('projects.*', 'final_proposals.team_id as agency_id','final_proposals.status as final_proposal_status')
                 ->whereIn('projects.id',$projectIds)
