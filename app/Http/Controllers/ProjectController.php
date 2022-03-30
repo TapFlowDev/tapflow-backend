@@ -273,7 +273,7 @@ class ProjectController extends Controller
             else{
                 array_push($arr,null);
                 $final_status=null;}
-           
+           print_r($arr);
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
                 $admin_info['image'] = asset("images/companies/" . $user_info->image);
@@ -300,7 +300,7 @@ class ProjectController extends Controller
             $project->admin_info = $admin_info;
             $project->final_proposal_status = $final_status;
         }
-        dd($arr);
+      
         return $projects;
     }
     function getAgencyPendingProjects($agency_id, $offset = 1,$limit)
