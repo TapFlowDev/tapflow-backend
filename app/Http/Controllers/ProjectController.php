@@ -252,7 +252,6 @@ class ProjectController extends Controller
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
-        $final_proposalObj=new Final_proposals;
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
@@ -322,7 +321,7 @@ class ProjectController extends Controller
                 ->distinct()
                 ->get();
                 $projects=$projects1->intersect($projects2);
-
+                dd($projects);
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
