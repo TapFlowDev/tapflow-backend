@@ -320,7 +320,7 @@ class ProjectController extends Controller
                 // ->get();
                  $projects1 = DB::table('projects')
                 ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-                ->select('projects.* as project_id','proposals.status as proposal_status')
+                ->select('projects.*','proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->where('projects.status','<>',1)
                 ->where('projects.status','<>',4)
