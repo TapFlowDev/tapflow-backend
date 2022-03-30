@@ -319,7 +319,7 @@ class ProjectController extends Controller
                 // // ->get();
                  $projects1 = DB::table('proposals')
                 ->join('projects', 'proposals.project_id', '=', 'projects.id')
-                ->select('projects.*', 'proposals.status as proposal_status','proposals.team_id as agency_id')
+                ->select('projects.*', 'proposals.team_id as agency_id')
                 ->where('proposals.team_id', '=', $agency_id)
                 // ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
@@ -329,7 +329,7 @@ class ProjectController extends Controller
                
                 $projects2 = DB::table('final_proposals')
                 ->join('projects', 'final_proposals.project_id', '=', 'projects.id')
-                ->select('projects.*', 'final_proposals.status as final_proposals_status','final_proposals.team_id as agency_id')
+                ->select('projects.*', 'final_proposals.team_id as agency_id')
                 ->where('final_proposals.team_id', '=', $agency_id)
                 // ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
@@ -769,6 +769,7 @@ class ProjectController extends Controller
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
         $finalPropObj=NEW Final_proposals;
+        $initPropObj=NEW Proposals;
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
@@ -777,6 +778,8 @@ class ProjectController extends Controller
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
             $finalProp=$finalPropObj->checkIfExists($project->id ,$project->agency_id);
+            $initProp=$initPropObj->checkIfProposalExists($project->id ,$project->agency_id);
+            $proposal_status=$initProp['status'];
            if($finalProp['exist'] == 1)
            {
                $finalStatus=$finalProp['status'];
@@ -811,6 +814,7 @@ class ProjectController extends Controller
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
             $project->admin_info = $admin_info;
             $project->final_proposals_status =  $finalStatus;
+            $project->proposal_status =   $proposal_status;
            
         }
         return $projects;

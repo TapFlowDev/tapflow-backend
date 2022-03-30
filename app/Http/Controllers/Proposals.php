@@ -155,14 +155,14 @@ class Proposals extends Controller
     function checkIfProposalExists($project_id, $team_id)
     {
         $proposal_id = DB::table('proposals')
-            ->select('id')
+            ->select('id','status')
             ->where('team_id', '=', $team_id)
             ->where('project_id', '=', $project_id)
             ->first();
         if ($proposal_id == null) {
             return ['exist' => 0];
         } else {
-            return ['exist' => 1, "proposal_id" => $proposal_id->id];
+            return ['exist' => 1, "proposal_id" => $proposal_id->id,"status"=>$proposal_id->status];
         }
     }
     function getProposalInfo($project_id, $team_id)
