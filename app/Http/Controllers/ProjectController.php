@@ -292,15 +292,24 @@ class ProjectController extends Controller
         
         $page = ($offset - 1) * $limit;
         try {
-            $projects = DB::table('proposals')
-                ->join('final_proposals', function ($join) {
-                    $join->on('proposals.id', '=', 'final_proposals.proposal_id')
-                        ->where('final_proposals.status', '!=', 1);
+            // $projects = DB::table('proposals')
+            //     ->join('final_proposals', function ($join) {
+            //         $join->on('proposals.id', '=', 'final_proposals.proposal_id')
+            //             ->where('final_proposals.status', '!=', 1);
                        
-                })
-                ->join('projects', 'proposals.project_id', '=', 'projects.id')
-                ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
+            //     })
+            //     ->join('projects', 'proposals.project_id', '=', 'projects.id')
+            //     ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
+            //     ->where('proposals.team_id', '=', $agency_id)
+            //     ->orderBy('updated_at', 'desc')
+            //     ->latest()->offset($page)->limit($limit)
+            //     ->distinct()
+            //     ->get();
+                $projects=DB::table('projects')
+                ->join('proposals','proposals.project_id' ,'=','projects.id')
+                ->join('final_proposals' , 'final_proposals.proposal_id' ,'=','proposals.id')
                 ->where('proposals.team_id', '=', $agency_id)
+                ->where('final_proposals.status','!=',1)
                 ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
