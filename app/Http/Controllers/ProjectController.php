@@ -331,6 +331,7 @@ class ProjectController extends Controller
                 ->join('projects', 'final_proposals.project_id', '=', 'projects.id')
                 ->select('projects.*', 'final_proposals.team_id as agency_id')
                 ->where('final_proposals.team_id', '=', $agency_id)
+                ->where('final_proposals.status','<>',1)
                 // ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
                 ->distinct()
@@ -783,7 +784,7 @@ class ProjectController extends Controller
            if($finalProp['exist'] == 1)
            {
                $finalStatus=$finalProp['status'];
-               if($finalStatus ==1)
+               if($finalStatus == 1)
                {
                    unset($projects['keyProj']);
                }
