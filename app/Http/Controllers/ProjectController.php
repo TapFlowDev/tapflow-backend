@@ -296,19 +296,21 @@ class ProjectController extends Controller
         
         $page = ($offset - 1) * $limit;
         try {
-            // $projects = DB::table('proposals')
-            //     ->join('final_proposals', function ($join) {
-            //         $join->on('proposals.id', '=', 'final_proposals.proposal_id')
-            //             ->where('final_proposals.status', '!=', 1);
-                       
-            //     })
-            //     ->join('projects', 'proposals.project_id', '=', 'projects.id')
-            //     ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
-            //     ->where('proposals.team_id', '=', $agency_id)
-            //     ->orderBy('updated_at', 'desc')
-            //     ->latest()->offset($page)->limit($limit)
-            //     ->distinct()
-            //     ->get();
+
+            $status=1;
+            $projects = DB::table('proposals')
+            ->LeftJoin('final_proposals','final_proposals.proposal_id','=','proposals.id')
+                ->when($status, function ($query, $status) {
+                    $query->where('status', $status)
+                    ->where('final_proposals.status', '<>', 1);
+                })
+                ->join('projects', 'proposals.project_id', '=', 'projects.id')
+                ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
+                ->where('proposals.team_id', '=', $agency_id)
+                ->orderBy('updated_at', 'desc')
+                ->offset($page)->limit($limit)
+                ->distinct()
+                ->get();
                 // // $projects=DB::table('projects')
                 // // ->join('proposals','proposals.project_id' ,'=','projects.id')
                 // // ->where('proposals.team_id', '=', $agency_id)
@@ -317,28 +319,28 @@ class ProjectController extends Controller
                 // // ->latest()->offset($page)->limit($limit)
                 // // ->distinct()
                 // // ->get();
-                 $projects1 = DB::table('proposals')
-                ->join('projects', 'proposals.project_id', '=', 'projects.id')
-                ->select('projects.*', 'proposals.team_id as agency_id')
-                ->where('proposals.team_id', '=', $agency_id)
-                // ->orderBy('updated_at', 'desc')
-                ->offset($page)->limit($limit)
-                ->distinct()
-                ->get();
-                // print_r(['project11'=> $projects1]);
+                //  $projects1 = DB::table('proposals')
+                // ->join('projects', 'proposals.project_id', '=', 'projects.id')
+                // ->select('projects.*', 'proposals.team_id as agency_id')
+                // ->where('proposals.team_id', '=', $agency_id)
+                // // ->orderBy('updated_at', 'desc')
+                // ->offset($page)->limit($limit)
+                // ->distinct()
+                // ->get();
+                // // print_r(['project11'=> $projects1]);
                
-                $projects2 = DB::table('final_proposals')
-                ->join('projects', 'final_proposals.project_id', '=', 'projects.id')
-                ->select('projects.*', 'final_proposals.team_id as agency_id')
-                ->where('final_proposals.team_id', '=', $agency_id)
-                ->where('final_proposals.status','<>',1)
-                // ->orderBy('updated_at', 'desc')
-                ->offset($page)->limit($limit)
-                ->distinct()
-                ->get();
+                // $projects2 = DB::table('final_proposals')
+                // ->join('projects', 'final_proposals.project_id', '=', 'projects.id')
+                // ->select('projects.*', 'final_proposals.team_id as agency_id')
+                // ->where('final_proposals.team_id', '=', $agency_id)
+                // ->where('final_proposals.status','<>',1)
+                // // ->orderBy('updated_at', 'desc')
+                // ->offset($page)->limit($limit)
+                // ->distinct()
+                // ->get();
                 // print_r(['project22'=> $projects2]);
               
-                $projects=array_merge($projects1->toArray(),$projects2->toArray());
+                // $projects=array_merge($projects1->toArray(),$projects2->toArray());
            
               
              
