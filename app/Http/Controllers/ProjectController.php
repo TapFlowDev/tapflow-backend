@@ -266,7 +266,7 @@ class ProjectController extends Controller
                 $final_status=$finalProp['status'];
                 if($finalProp ['status'] == 1){
                     unset($projects[$keyProj]);
-                    continue;}
+                   }
             }
             else{$final_status=null;}
            
