@@ -341,8 +341,7 @@ class ProjectController extends Controller
            
               
              
-                $response = Controller::returnResponse(200, "data found3424324234234", $projects);
-                return (json_encode($response));
+                
                            
             $projectInfo = $this->getProjectsInfo2($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
@@ -769,7 +768,7 @@ class ProjectController extends Controller
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
-
+        $finalPropObj=NEW Final_proposals;
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
@@ -777,8 +776,16 @@ class ProjectController extends Controller
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
-           
-           
+            $finalProp=$finalPropObj->checkIfExists($project->id ,$project->agency_id);
+           if($finalProp['exist'] == 1)
+           {
+               $finalStatus=$finalProp['status'];
+               if($finalStatus ==1)
+               {
+                   unset($projects['keyProj']);
+               }
+           }
+           else{ $finalStatus=null;}
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
                 $admin_info['image'] = asset("images/companies/" . $user_info->image);
@@ -803,6 +810,7 @@ class ProjectController extends Controller
             $project->duration = Category::find((int)$project->days)->name;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
             $project->admin_info = $admin_info;
+            $project->final_proposals_status =  $finalStatus;
            
         }
         return $projects;
