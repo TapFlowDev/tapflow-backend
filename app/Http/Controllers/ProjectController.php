@@ -264,16 +264,16 @@ class ProjectController extends Controller
             $arr=['key'=>$keyProj,'exist' =>$finalProp['exist']];
             if($finalProp['exist'] ==1)
             {
-                array_push($arr,['status'=>$finalProp['status']]);
+                array_push($arr,$finalProp['status']);
                 $final_status=$finalProp['status'];
                 if($finalProp ['status'] == 1){
                     unset($projects[$keyProj]);
                    }
             }
             else{
-                array_push($arr,['status'=>$finalProp['status']]);
+                array_push($arr,$finalProp['status']);
                 $final_status=null;}
-           dd($arr);
+           
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
                 $admin_info['image'] = asset("images/companies/" . $user_info->image);
@@ -300,6 +300,7 @@ class ProjectController extends Controller
             $project->admin_info = $admin_info;
             $project->final_proposal_status = $final_status;
         }
+        dd($arr);
         return $projects;
     }
     function getAgencyPendingProjects($agency_id, $offset = 1,$limit)
