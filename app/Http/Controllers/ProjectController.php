@@ -357,7 +357,7 @@ class ProjectController extends Controller
                 ->get();
                 // // print_r(['project22'=> $projects2]);
               
-                $projects=array_merge($projects1,$projects2);
+                $projects=array_merge($projects1->toArray(),$projects2->toArray());
             // $projects=['init'=>$projectIds1,'final'=>$projectIds2];
               
                 // $response = Controller::returnResponse(200, "data found", $projects);
