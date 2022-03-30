@@ -260,6 +260,12 @@ class ProjectController extends Controller
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
+            $finaProp=$final_proposalObj->checkIfExists($project->id,$project->agency_id);
+            if($finaProp['exist'] ==1)
+            {
+                $final_status=$finaProp['status'];
+            }
+            else{$final_status=null;}
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
                 $admin_info['image'] = asset("images/companies/" . $user_info->image);
@@ -284,6 +290,7 @@ class ProjectController extends Controller
             $project->duration = Category::find((int)$project->days)->name;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
             $project->admin_info = $admin_info;
+            $project->final_proposal_status = $final_status;
         }
         return $projects;
     }
@@ -309,11 +316,7 @@ class ProjectController extends Controller
                 ->join('proposals','proposals.project_id' ,'=','projects.id')
                 ->join('final_proposals' , 'final_proposals.proposal_id' ,'=','proposals.id')
                 ->where('proposals.team_id', '=', $agency_id)
-                ->orWhere('final_proposals.status','=',0)
-                ->orWhere('final_proposals.status','=',2)
-                ->orWhere('final_proposals.status','=',3)
-                ->orWhere('final_proposals.status','=',-1)
-                ->select('projects.*', 'proposals.status as proposal_status', 'final_proposals.status as final_proposal_status')
+                ->select('projects.*', 'proposals.status as proposal_status', 'proposals.team_id as agency_id')
                 ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
