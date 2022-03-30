@@ -359,7 +359,8 @@ class Milestones extends Controller
                 $projectName = str_replace(' ', '-', $project->name);
                 $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
                 $milestoneName = str_replace(' ', '-', $milestone->name);
-                $submissionName = time() . $milestoneName . '-' . $req->file('submission_file')->getClientOriginalName();
+                $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
+                $submissionName = time() .'-'. $milestoneName . '-' . $originalName;
                 $submission_file = $req->submission_file;
                 if (!File::exists($projectName)) {
                     File::makeDirectory(public_path().'/'.$projectName,0777,true);
