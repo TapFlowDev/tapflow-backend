@@ -342,7 +342,7 @@ class ProjectController extends Controller
            
                
                            
-            $projectInfo = $this->getProjectsInfo2($projects);
+            $projectInfo = array_unique($this->getProjectsInfo2($projects));
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -763,7 +763,7 @@ class ProjectController extends Controller
     }
     private function getProjectsInfo2($projects)
     {
-        $projects=array_unique($projects);
+       
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
