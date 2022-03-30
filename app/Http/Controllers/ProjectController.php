@@ -320,7 +320,7 @@ class ProjectController extends Controller
                 // ->get();
                  $projects1 = DB::table('projects')
                 ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-                ->select('projects.id as project_id','proposals.status as proposal_status')
+                ->select('projects.* as project_id','proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->where('projects.status','<>',1)
                 ->where('projects.status','<>',4)
@@ -340,9 +340,9 @@ class ProjectController extends Controller
             //     // // print_r(['project11'=> $projects1]);
                $projectIds1=$projects1->pluck('project_id')->toArray();
             //    $projectIds2=$projects2->pluck('project_id')->toArray();
-                $projects = DB::table('projects')
+                $projects2 = DB::table('projects')
                 ->leftJoin('final_proposals', function ($join) {
-                    $join->on('projects.team_id','<>','final_proposals.team_id')
+                    $join->on('projects.id','=','final_proposals.project_id')
                     
                     ->where('final_proposals.status','<>',1);
                    
@@ -357,7 +357,7 @@ class ProjectController extends Controller
                 ->get();
                 // // print_r(['project22'=> $projects2]);
               
-                // $projects=array_merge($projectIds1,$projectIds2);
+                $projects=array_merge($projects1,$projects2);
             // $projects=['init'=>$projectIds1,'final'=>$projectIds2];
               
                 // $response = Controller::returnResponse(200, "data found", $projects);
