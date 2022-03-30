@@ -27,6 +27,7 @@ use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
 use App\Models\Milestone;
 use App\Models\Team;
+use Illuminate\Support\Arr;
 
 class ProjectController extends Controller
 {
@@ -339,7 +340,7 @@ class ProjectController extends Controller
                 $projects=array_merge($projects1->toArray(),$projects2->toArray());
            
               
-           
+                $projects=array_unique($projects);
                 $response = Controller::returnResponse(200, "data found3424324234234", $projects);
                 return (json_encode($response));
                            
