@@ -336,13 +336,13 @@ class ProjectController extends Controller
                 ->get();
                 // print_r(['project22'=> $projects2]);
               
-                $projects=array_merge($projects1->toArray(),$projects2->toArray());
+                $projects=$projects1->toArray()+$projects2->toArray();
            
               
            
                
                            
-            $projectInfo = array_unique($this->getProjectsInfo2($projects));
+            $projectInfo = $this->getProjectsInfo2($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
