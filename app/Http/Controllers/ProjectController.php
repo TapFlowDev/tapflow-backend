@@ -305,7 +305,7 @@ class ProjectController extends Controller
             //     ->latest()->offset($page)->limit($limit)
             //     ->distinct()
             //     ->get();
-                 $projects = DB::table('projects')
+                 $projects1 = DB::table('projects')
                 ->join('proposals', 'proposals.project_id', '=', 'projects.id')
                 ->select('projects.*', 'proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
@@ -313,6 +313,15 @@ class ProjectController extends Controller
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get();
+                $projects2 = DB::table('projects')
+                ->join('final_proposals', 'final_proposals.project_id', '=', 'projects.id')
+                ->select('projects.*', 'final_proposals.status as final_proposals_status')
+                ->where('final_proposals.team_id', '=', $agency_id)
+                ->orderBy('updated_at', 'desc')
+                ->latest()->offset($page)->limit($limit)
+                ->distinct()
+                ->get();
+                $projects=$projects1->intersect($projects2);
 
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
