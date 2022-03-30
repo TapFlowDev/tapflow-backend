@@ -336,7 +336,7 @@ class ProjectController extends Controller
                 ->get();
                 // print_r(['project22'=> $projects2]);
               
-                $projects=$projects1->toArray()+$projects2->toArray();
+                $projects=array_merge($projects1->toArray(),$projects2->toArray());
            
               
            
