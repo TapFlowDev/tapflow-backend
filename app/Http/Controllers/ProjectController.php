@@ -346,7 +346,7 @@ class ProjectController extends Controller
                            
             $projectInfo = $this->getProjectsInfo2($projects,$agency_id);
            
-            $response = Controller::returnResponse(200, "data found",  $initProjects);
+            $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
 
