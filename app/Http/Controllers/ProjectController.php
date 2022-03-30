@@ -333,7 +333,7 @@ class ProjectController extends Controller
                 ->select('projects.*', 'final_proposals.team_id as agency_id','final_proposals.status as final_proposal_status')
                 ->whereIn('projects.id',$projectIds)
                 ->where('final_proposals.team_id', '=', $agency_id)
-                ->where('final_proposals.status','<>',1)
+                ->where('final_proposals.status','!=',1)
                 // ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
                 ->distinct()
