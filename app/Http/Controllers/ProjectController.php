@@ -264,7 +264,10 @@ class ProjectController extends Controller
             if($finalProp['exist'] ==1)
             {
                 $final_status=$finalProp['status'];
-                if($finalProp ['status'] == 1){continue;}
+                if($finalProp ['status'] == 1){
+                   
+                    dd(['key'=>$keyProj,'status'=>$final_status]);
+                    continue;}
             }
             else{$final_status=null;}
            
