@@ -252,6 +252,7 @@ class ProjectController extends Controller
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
+        $final_proposalObj=new Final_proposals;
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
@@ -288,7 +289,7 @@ class ProjectController extends Controller
     }
     function getAgencyPendingProjects($agency_id, $offset = 1,$limit)
     {
-   
+        
         $page = ($offset - 1) * $limit;
         try {
             // $projects = DB::table('proposals')
@@ -320,8 +321,8 @@ class ProjectController extends Controller
                 ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get();
-                $projects=$projects2->intersect($projects1);
-                dd($projects);
+                $projects=array_intersect((array)$projects1,(array)$projects2);
+
             $projectInfo = $this->getProjectsInfo($projects);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
