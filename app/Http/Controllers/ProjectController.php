@@ -307,7 +307,7 @@ class ProjectController extends Controller
             //     ->get();
                  $projects = DB::table('projects')
                 ->join('proposals', 'proposals.project_id', '=', 'projects.id')
-                ->where('proposals.status', '!=', 1)
+                // ->where('proposals.status', '!=', 1)
                 ->select('projects.*', 'proposals.status as proposal_status')
                 ->where('proposals.team_id', '=', $agency_id)
                 ->orderBy('updated_at', 'desc')
