@@ -16,6 +16,7 @@ use App\Http\Controllers\AdminTool\DashboardController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\AdminTool\CategoryTypesController;
 use App\Http\Controllers\AdminTool\ClientsRequests;
+use App\Http\Controllers\AdminTool\DepositRequestController;
 use App\Http\Controllers\AdminTool\DummyCompaines;
 use App\Http\Controllers\AdminTool\DummyProjects;
 use App\Http\Controllers\AdminTool\ProjectsController;
@@ -76,6 +77,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/clientsRequests', ClientsRequests::class);
     Route::resource('/staticData', StaticDataController::class);
     Route::resource('/notificationSettings', NotificationSettings::class);
+    Route::resource('companies.depositRequests', DepositRequestController::class)->shallow();
     Route::resource('/initialProposals', InitialProposals::class);
     Route::resource('wallet.transactions', WalletsTransactionsController::class)->shallow();
     // Route::resource('agencies.wallets', WalletsController::class)->shallow();

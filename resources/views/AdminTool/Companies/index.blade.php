@@ -39,12 +39,12 @@
                                         {{-- <a class="btn btn-sm btn-primary" href="{{ route('AdminTool.freelancers.show', $user->freelancer_id) }}"
                             role="button">View</a> --}}
                                         @if ($user->walletId != '')
-                                        <a class="btn btn-sm btn-info"
-                                        href="{{ route('AdminTool.wallet.transactions.index', $user->walletId) }}"
-                                        role="button">View Transactions</a>
+                                            <a class="btn btn-sm btn-info"
+                                                href="{{ route('AdminTool.wallet.transactions.index', $user->walletId) }}"
+                                                role="button">View Transactions</a>
                                         @else
                                             <button class="btn btn-sm btn-info" onclick="event.preventDefault();
-                                            document.getElementById('create-wallet-{{ $user->id }}').submit()">View
+                                                document.getElementById('create-wallet-{{ $user->id }}').submit()">View
                                                 Transactions</button>
                                             <form id="create-wallet-{{ $user->id }}"
                                                 action="{{ route('AdminTool.wallet.create') }}" method="POST"
@@ -54,6 +54,9 @@
                                                 <input type="hidden" name="type" value="1">
                                             </form>
                                         @endif
+                                        <a class="btn btn-sm btn-outline-primary"
+                                            href="{{ route('AdminTool.companies.depositRequests.index', $user->id) }}"
+                                            role="button">Deposit Requests</a>
                                     </td>
                                 </tr>
                             @endforeach
