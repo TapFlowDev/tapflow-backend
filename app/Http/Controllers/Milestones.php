@@ -350,12 +350,12 @@ class Milestones extends Controller
             } else {
 
                 if (isset($req->links)) {
-                    $arr=array($req->links);
-                    $data=[];
-                    foreach ($arr as $link){
-                        array_push($data,$link);
-                    }
-                    $links =serialize($data) ;
+                    $arr=json_encode($req->links);
+                    // $data=[];
+                    // foreach ($arr as $link){
+                    //     array_push($data,$link);
+                    // }
+                    $links =serialize($arr) ;
                 } else {
                     $links = serialize(array());
                 }
