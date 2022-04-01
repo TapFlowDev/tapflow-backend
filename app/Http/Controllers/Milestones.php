@@ -350,7 +350,7 @@ class Milestones extends Controller
             } else {
 
                 if (isset($req->links)) {
-                    $arr=array($req->links);
+                    $arr=json_decode($req->links);
                     $links = serialize($arr);
                 } else {
                     $links = serialize(array());
