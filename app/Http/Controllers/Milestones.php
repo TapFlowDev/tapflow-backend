@@ -26,7 +26,8 @@ class Milestones extends Controller
     {
 
         try {
-
+            $response = Controller::returnResponse(101, "Validation Error", ['dat'=>$req->deliverables]);
+            return (json_encode($response));
             $finalProposalObj = new Final_proposals;
             $rules = array(
                 "team_id" => "required|exists:groups,id",
