@@ -350,7 +350,7 @@ class Milestones extends Controller
             } else {
 
                 if (isset($req->links)) {
-                    $arr=$req->links;
+                    $arr=array($req->links);
                     $data=[];
                     foreach ($arr as $link){
                         array_push($data,$link);
