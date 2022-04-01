@@ -350,8 +350,12 @@ class Milestones extends Controller
             } else {
 
                 if (isset($req->links)) {
-                    // $arr=json_decode($req->links);
-                    $links =$req->links ;
+                    $arr=$req->links;
+                    $data=[];
+                    foreach ($arr as $link){
+                        array_push($data,$link);
+                    }
+                    $links =serialize($data) ;
                 } else {
                     $links = serialize(array());
                 }
@@ -589,7 +593,7 @@ class Milestones extends Controller
                     foreach ($submissions as $sub) {
                         array_push($submissions_details, array(
                             "file" => $sub->file,
-                            "links" =>$sub->links,
+                            "links" =>unserialize($sub->links),
                             "agency_comments" => $sub->agency_comments,
                             "milestone_price" => $sub->client_comments,
                             "submission_date" => $sub->created_at,
