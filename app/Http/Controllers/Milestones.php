@@ -26,8 +26,7 @@ class Milestones extends Controller
     {
 
         try {
-            $response = Controller::returnResponse(101, "Validation Error", ['dat'=>$req->deliverables]);
-            return (json_encode($response));
+           
             $finalProposalObj = new Final_proposals;
             $rules = array(
                 "team_id" => "required|exists:groups,id",
@@ -356,7 +355,10 @@ class Milestones extends Controller
                     // foreach ($arr as $link){
                     //     array_push($data,$link);
                     // }
+
                     $links =serialize($arr) ;
+                    $response = Controller::returnResponse(101, "Validation Error", ['arr'=>$arr,"links"=>$links ,'type arr'=>gettype($arr),"type links"=>gettype($links) ]);
+                    return (json_encode($response));
                 } else {
                     $links = serialize(array());
                 }
