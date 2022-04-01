@@ -340,7 +340,8 @@ class Milestones extends Controller
                 'project_id' => "required|exists:projects,id",
                 'milestone_id' => "required|exists:milestones,id"
             ];
-            $response = Controller::returnResponse(101, "Validation Error type", ['type'=>gettype($req->links)]);
+            $arr=array($req->links);
+            $response = Controller::returnResponse(101, "Validation Error type", ['type'=>gettype($arr)]);
             return (json_encode($response));
             $validators = Validator::make($req->all(), $rules);
             if ($validators->fails()) {
