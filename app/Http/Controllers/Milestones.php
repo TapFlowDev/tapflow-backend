@@ -26,7 +26,7 @@ class Milestones extends Controller
     {
 
         try {
-           
+
             $finalProposalObj = new Final_proposals;
             $rules = array(
                 "team_id" => "required|exists:groups,id",
@@ -331,44 +331,56 @@ class Milestones extends Controller
         }
     }
     function submitMilestone(Request $req)
-    { 
+    {
         try {
-         
-            $rules = [
-                "submission_file" => "file|mimes:zip,rar|max:35000",
-                'agency_comments' => "required",
-                'project_id' => "required|exists:projects,id",
-                'milestone_id' => "required|exists:milestones,id"
-            ];
-            
-           
-            $validators = Validator::make($req->all(), $rules);
-            if ($validators->fails()) {
-                $responseData = $validators->errors();
-                $response = Controller::returnResponse(101, "Validation Error", $responseData);
-                return (json_encode($response));
-            } else {
-                
-                $submission = milestone_submission::create($req->except(['submission_file']));
-                $submission_id = $submission->id;
-                $project = Project::where('id', $req->project_id)->select('name')->first();
-                $projectName = str_replace(' ', '-', $project->name);
-                $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
-                $milestoneName = str_replace(' ', '-', $milestone->name);
-                $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
-                $submissionName = time() .'-'. $milestoneName . '-' . $originalName;
-                $submission_file = $req->submission_file;
-                if (!File::exists($projectName)) {
-                    File::makeDirectory(public_path().'/'.$projectName,0777,true);
-                    $submission_file->move(public_path($projectName), $submissionName);
-                    $this->updateSubmissionFile($submission_id, $submissionName);
-                    $this->updateStatus($req->milestone_id, '1');
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['privileges'] == 1) {
+                    if ($userData['group_id'] == $req->team_id) {
+                        $rules = [
+                            "submission_file" => "file|mimes:zip,rar|max:35000",
+                            'agency_comments' => "required",
+                            'project_id' => "required|exists:projects,id",
+                            'milestone_id' => "required|exists:milestones,id"
+                        ];
+                        $validators = Validator::make($req->all(), $rules);
+                        if ($validators->fails()) {
+                            $responseData = $validators->errors();
+                            $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                            return (json_encode($response));
+                        } else {
+                            $submission = milestone_submission::create($req->except(['submission_file']));
+                            $submission_id = $submission->id;
+                            $project = Project::where('id', $req->project_id)->select('name')->first();
+                            $projectName = str_replace(' ', '-', $project->name);
+                            $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
+                            $milestoneName = str_replace(' ', '-', $milestone->name);
+                            $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
+                            $submissionName = time() . '-' . $milestoneName . '-' . $originalName;
+                            $submission_file = $req->submission_file;
+                            if (!File::exists($projectName)) {
+                                File::makeDirectory(public_path() . '/' . $projectName, 0777, true);
+                                $submission_file->move(public_path($projectName), $submissionName);
+                                $this->updateSubmissionFile($submission_id, $submissionName);
+                                $this->updateStatus($req->milestone_id, '1');
+                            } else {
+                                $submission_file->move(public_path($projectName), $submissionName);
+                                $this->updateSubmissionFile($submission_id, $submissionName);
+                                $this->updateStatus($req->milestone_id, '1');
+                            }
+                            $response = Controller::returnResponse(200, "submit successful", ['submissionId' => $submission_id]);
+                            return (json_encode($response));
+                        }
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this you are trying to access another agency data", []);
+                        return (json_encode($response));
+                    }
                 } else {
-                    $submission_file->move(public_path($projectName), $submissionName);
-                    $this->updateSubmissionFile($submission_id, $submissionName);
-                    $this->updateStatus($req->milestone_id, '1');
+                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                    return (json_encode($response));
                 }
-                $response = Controller::returnResponse(200, "submit successful", ['submissionId' => $submission_id]);
+            } else {
+                $response = Controller::returnResponse(422, "user does not have team", []);
                 return (json_encode($response));
             }
         } catch (Exception $error) {
@@ -582,7 +594,7 @@ class Milestones extends Controller
                     foreach ($submissions as $sub) {
                         array_push($submissions_details, array(
                             "file" => $sub->file,
-                            "links" =>unserialize($sub->links),
+                            "links" => unserialize($sub->links),
                             "agency_comments" => $sub->agency_comments,
                             "milestone_price" => $sub->client_comments,
                             "submission_date" => $sub->created_at,
@@ -606,25 +618,15 @@ class Milestones extends Controller
     function addSubmissionLinks(Request $req)
     {
         try {
-            // $data=str_replace('"\"','',$req->links);
-            
-          
-            // $response = Controller::returnResponse(200, "submit successful",
-            //  [ 
-            //   'links'=>$req->links,'type links'=>gettype($req->links),
-       
-            // ]);
-            // return (json_encode($response));
-                if (isset($req->links)) {
-                    $links =serialize($req->links) ;  
-                } else {
-                    $links = serialize(array());
-                }
-                $submission = milestone_submission::where('id',$req->submission_id)->update(['links'=>$links]);
-                $response = Controller::returnResponse(200, "links add successfully",["submission_id"=> $req->submission_id]);
-                return (json_encode($response));
+            if (isset($req->links)) {
+                $links = serialize($req->links);
+            } else {
+                $links = serialize(array());
             }
-         catch (Exception $error) {
+            $submission = milestone_submission::where('id', $req->submission_id)->update(['links' => $links]);
+            $response = Controller::returnResponse(200, "links add successfully", ["submission_id" => $req->submission_id]);
+            return (json_encode($response));
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
             return (json_encode($response));
         }
