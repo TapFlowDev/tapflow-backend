@@ -321,6 +321,7 @@ class Milestones extends Controller
                     "milestone_price" => $milestone->price,
                     "milestone_hours" => $milestone->hours,
                     "milestone_status" => $milestone->status,
+                    "milestone_isPaid" => $milestone->is_paid,
                     "deliverables" => unserialize($milestone->deliverables),
                 ));
             }
