@@ -610,13 +610,13 @@ class Milestones extends Controller
             $arr=array($req->links);
             foreach ($arr as $l )
             {
-                array_push($data,$l);
+                print_r($l);
             }
             $response = Controller::returnResponse(200, "submit successful",
              [ 
-              'links'=>$req->links['links'],'type links'=>gettype($req->links),
-             'data' => $data ,'type data'=>gettype($data),
-             'arr' => $arr ,'type arr'=>gettype($arr),
+            //   'links'=>$req->links,'type links'=>gettype($req->links),
+            //  'data' => $data ,'type data'=>gettype($data),
+            //  'arr' => $arr ,'type arr'=>gettype($arr),
             ]);
             return (json_encode($response));
                 // if (isset($req->links)) {
