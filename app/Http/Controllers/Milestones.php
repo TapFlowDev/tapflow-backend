@@ -333,7 +333,9 @@ class Milestones extends Controller
     function submitMilestone(Request $req)
     {
         try {
-
+            $response = Controller::returnResponse(101, "Validation Error", $req->submission_file);
+            return (json_encode($response));
+            
             $rules = [
                 "submission_file" => "file|mimes:zip,rar|max:35000",
                 'agency_comments' => "required",
