@@ -620,8 +620,8 @@ class Milestones extends Controller
                 } else {
                     $links = serialize(array());
                 }
-                $submission = milestone_submission::where('milestone_id',$req->milestone_id)->update(['links'=>$links]);
-                $response = Controller::returnResponse(200, "submit successful", ['links added successfully' => $req->milestone_id]);
+                $submission = milestone_submission::where('id',$req->submission_id)->update(['links'=>$links]);
+                $response = Controller::returnResponse(200, "links add successfully",["submission_id"=> $req->submission_id]);
                 return (json_encode($response));
             }
          catch (Exception $error) {
