@@ -605,7 +605,7 @@ class Milestones extends Controller
     function addSubmissionLinks(Request $req)
     {
         try {
-                if (isset($req->links) && count($req->links )>0) {
+                if (isset($req->links)) {
                     $links =serialize($req->links) ;  
                 } else {
                     $links = serialize(array());
