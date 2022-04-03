@@ -331,9 +331,14 @@ class Milestones extends Controller
         }
     }
     function submitMilestone(Request $req)
-    {
-        $response = Controller::returnResponse(101, "Validation Error", ["links"=>$req->links ,"file"=>$$req->submission_file ,"type links"=>gettype($req->links),"type file"=>gettype($req->submission_file) ]);
+    { 
+        try {
+        $response = Controller::returnResponse(101, "Validation Error", ["links"=>$req->links ,"file"=>$req->submission_file ,"type links"=>gettype($req->links),"type file"=>gettype($req->submission_file) ]);
                     return (json_encode($response));
+                } catch (Exception $error) {
+                        $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+                        return (json_encode($response));
+                    }
         // try {
          
         //     $rules = [
