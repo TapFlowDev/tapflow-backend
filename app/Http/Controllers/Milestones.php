@@ -605,7 +605,7 @@ class Milestones extends Controller
     function addSubmissionLinks(Request $req)
     {
         try {
-            $response = Controller::returnResponse(200, "submit successful", ['links added successfully' => $req->links ,'type'=>gettype($req->links)]);
+            $response = Controller::returnResponse(200, "submit successful", ['links added successfully' => $req->links ,'type'=>gettype($req->links),'id' => $req->milestone_id ,'type'=>gettype($req->milestone_id)]);
             return (json_encode($response));
                 if (isset($req->links)) {
                     $links =serialize($req->links) ;  
