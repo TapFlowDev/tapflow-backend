@@ -333,9 +333,7 @@ class Milestones extends Controller
     function submitMilestone(Request $req)
     {
         try {
-            $response = Controller::returnResponse(101, "Validation Error", $req->submission_file);
-            return (json_encode($response));
-            
+         
             $rules = [
                 "submission_file" => "file|mimes:zip,rar|max:35000",
                 'agency_comments' => "required",
@@ -359,7 +357,7 @@ class Milestones extends Controller
                     // }
 
                     $links =serialize($arr) ;
-                    $response = Controller::returnResponse(101, "Validation Error", ['arr'=>$arr,"links"=>$links ,'type arr'=>gettype($arr),"type links"=>gettype($links) ]);
+                    $response = Controller::returnResponse(101, "Validation Error", ['arr'=>$arr,"links"=>$links ,"file"=>$$req->submission_file ,'type arr'=>gettype($arr),"type links"=>gettype($links),"type file"=>gettype($req->submission_file) ]);
                     return (json_encode($response));
                 } else {
                     $links = serialize(array());
