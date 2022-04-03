@@ -632,4 +632,39 @@ class Milestones extends Controller
             return (json_encode($response));
         }
     }
+    function payMilestoneDetails(Request $request, $id)
+    {
+        try {
+            $walletObj = new WalletsController;
+
+            $userData = $this->checkUser($request);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $milstoneInfo = Milestone::where('id', '=', $id)->get()->first();
+            //check if milestone exists and validate user
+            if (!$milstoneInfo) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $projectId = $milstoneInfo->project_id;
+            $projectInfo = Project::where('id', '=', $projectId)->where('company_id', '=', $userData['group_id'])->get()->first();
+            if (!$projectInfo) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $wallet = $walletObj->getOrCreateWallet($userData['group_id'], 1);
+            $responseData = array(
+                'milestone' => $milstoneInfo,
+                'wallet' => $wallet
+            );
+            $response = Controller::returnResponse(200, "data found", $responseData);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
 }
