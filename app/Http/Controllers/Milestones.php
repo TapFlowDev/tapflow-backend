@@ -606,12 +606,16 @@ class Milestones extends Controller
     {
         try {
             // $data=str_replace('"\"','',$req->links);
-          
+            $data=array();
             $arr=array($req->links);
+            foreach ($arr as $l )
+            {
+                array_push($data,$l);
+            }
             $response = Controller::returnResponse(200, "submit successful",
              [ 
               'links'=>$req->links,'type links'=>gettype($req->links),
-            //  'data' => $data ,'type data'=>gettype($data),
+             'data' => $data ,'type data'=>gettype($data),
              'arr' => $arr ,'type arr'=>gettype($arr),
             ]);
             return (json_encode($response));
