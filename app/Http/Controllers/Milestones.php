@@ -335,7 +335,7 @@ class Milestones extends Controller
         try {
          
             $rules = [
-                // "submission_file" => "file|mimes:zip,rar|max:35000",
+                "submission_file" => "file|mimes:zip,rar|max:35000",
                 'agency_comments' => "required",
                 'project_id' => "required|exists:projects,id",
                 'milestone_id' => "required|exists:milestones,id"
@@ -348,12 +348,8 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return (json_encode($response));
             } else {
-                if(isset($req->links))
-                {
-                    $links=serialize($req->links);
-                }
-                else{$links=serialize(array());}
-                $submission = milestone_submission::create($req->except(['submission_file'])+['links'=>$links]);
+                
+                $submission = milestone_submission::create($req->except(['submission_file']));
                 $submission_id = $submission->id;
                 $project = Project::where('id', $req->project_id)->select('name')->first();
                 $projectName = str_replace(' ', '-', $project->name);
@@ -612,22 +608,19 @@ class Milestones extends Controller
         try {
             // $data=str_replace('"\"','',$req->links);
             
-            $arr=$req->links;
-          $data=$arr[0];
-          $splited=
+          
             $response = Controller::returnResponse(200, "submit successful",
              [ 
               'links'=>$req->links,'type links'=>gettype($req->links),
-             'data' => $data ,'type data'=>gettype($data),
-             'arr' => $arr ,'length arr'=>count($arr),
+       
             ]);
             return (json_encode($response));
                 // if (isset($req->links)) {
-                    $links =serialize($data) ;  
+                    // $links =serialize($data) ;  
                 // } else {
                     //$links = serialize(array());
                 // }
-                $submission = milestone_submission::where('milestone_id',$req->milestone_id)->update(['links'=>$links]);
+                // $submission = milestone_submission::where('milestone_id',$req->milestone_id)->update(['links'=>$links]);
                 $response = Controller::returnResponse(200, "submit successful", ['links added successfully' => $req->milestone_id]);
                 return (json_encode($response));
             }
