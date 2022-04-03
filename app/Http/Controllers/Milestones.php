@@ -348,7 +348,12 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return (json_encode($response));
             } else {
-                $submission = milestone_submission::create($req->except(['submission_file']));
+                if(isset($req->links))
+                {
+                    $links=serialize($req->links);
+                }
+                else{$links=serialize(array());}
+                $submission = milestone_submission::create($req->except(['submission_file'])+['links'=>$links]);
                 $submission_id = $submission->id;
                 $project = Project::where('id', $req->project_id)->select('name')->first();
                 $projectName = str_replace(' ', '-', $project->name);
@@ -606,17 +611,15 @@ class Milestones extends Controller
     {
         try {
             // $data=str_replace('"\"','',$req->links);
-            $data=array();
-            $arr=array($req->links);
-            foreach ($arr as $l )
-            {
-                array_push($data,$l);
-            }
+            
+            $arr=$req->links;
+          $data=$arr[0];
+          $splited=
             $response = Controller::returnResponse(200, "submit successful",
              [ 
               'links'=>$req->links,'type links'=>gettype($req->links),
              'data' => $data ,'type data'=>gettype($data),
-             'arr' => $arr ,'type arr'=>gettype($arr),
+             'arr' => $arr ,'length arr'=>count($arr),
             ]);
             return (json_encode($response));
                 // if (isset($req->links)) {
