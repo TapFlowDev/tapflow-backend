@@ -609,18 +609,18 @@ class Milestones extends Controller
             // $data=str_replace('"\"','',$req->links);
             
           
-            $response = Controller::returnResponse(200, "submit successful",
-             [ 
-              'links'=>$req->links,'type links'=>gettype($req->links),
+            // $response = Controller::returnResponse(200, "submit successful",
+            //  [ 
+            //   'links'=>$req->links,'type links'=>gettype($req->links),
        
-            ]);
-            return (json_encode($response));
-                // if (isset($req->links)) {
-                    // $links =serialize($data) ;  
-                // } else {
-                    //$links = serialize(array());
-                // }
-                // $submission = milestone_submission::where('milestone_id',$req->milestone_id)->update(['links'=>$links]);
+            // ]);
+            // return (json_encode($response));
+                if (isset($req->links)) {
+                    $links =serialize($req->links) ;  
+                } else {
+                    $links = serialize(array());
+                }
+                $submission = milestone_submission::where('milestone_id',$req->milestone_id)->update(['links'=>$links]);
                 $response = Controller::returnResponse(200, "submit successful", ['links added successfully' => $req->milestone_id]);
                 return (json_encode($response));
             }
