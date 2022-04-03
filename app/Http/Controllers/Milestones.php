@@ -335,7 +335,7 @@ class Milestones extends Controller
         try {
          
             $rules = [
-                "submission_file" => "file|mimes:zip,rar|max:35000",
+                // "submission_file" => "file|mimes:zip,rar|max:35000",
                 'agency_comments' => "required",
                 'project_id' => "required|exists:projects,id",
                 'milestone_id' => "required|exists:milestones,id"
