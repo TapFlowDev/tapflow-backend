@@ -332,63 +332,65 @@ class Milestones extends Controller
     }
     function submitMilestone(Request $req)
     {
-        try {
+        $response = Controller::returnResponse(101, "Validation Error", ["links"=>$req->links ,"file"=>$$req->submission_file ,"type links"=>gettype($req->links),"type file"=>gettype($req->submission_file) ]);
+                    return (json_encode($response));
+        // try {
          
-            $rules = [
-                "submission_file" => "file|mimes:zip,rar|max:35000",
-                'agency_comments' => "required",
-                'project_id' => "required|exists:projects,id",
-                'milestone_id' => "required|exists:milestones,id"
-            ];
+        //     $rules = [
+        //         "submission_file" => "file|mimes:zip,rar|max:35000",
+        //         'agency_comments' => "required",
+        //         'project_id' => "required|exists:projects,id",
+        //         'milestone_id' => "required|exists:milestones,id"
+        //     ];
             
            
-            $validators = Validator::make($req->all(), $rules);
-            if ($validators->fails()) {
-                $responseData = $validators->errors();
-                $response = Controller::returnResponse(101, "Validation Error", $responseData);
-                return (json_encode($response));
-            } else {
+        //     $validators = Validator::make($req->all(), $rules);
+        //     if ($validators->fails()) {
+        //         $responseData = $validators->errors();
+        //         $response = Controller::returnResponse(101, "Validation Error", $responseData);
+        //         return (json_encode($response));
+        //     } else {
 
-                if (isset($req->links)) {
-                    $arr=json_encode($req->links);
-                    // $data=[];
-                    // foreach ($arr as $link){
-                    //     array_push($data,$link);
-                    // }
+        //         if (isset($req->links)) {
+        //             $arr=json_encode($req->links);
+        //             // $data=[];
+        //             // foreach ($arr as $link){
+        //             //     array_push($data,$link);
+        //             // }
 
-                    $links =serialize($arr) ;
-                    $response = Controller::returnResponse(101, "Validation Error", ['arr'=>$arr,"links"=>$links ,"file"=>$$req->submission_file ,'type arr'=>gettype($arr),"type links"=>gettype($links),"type file"=>gettype($req->submission_file) ]);
-                    return (json_encode($response));
-                } else {
-                    $links = serialize(array());
-                }
+        //             $links =serialize($arr) ;
+        //             $response = Controller::returnResponse(101, "Validation Error", ['arr'=>$arr,"links"=>$links ,"file"=>$$req->submission_file ,'type arr'=>gettype($arr),"type links"=>gettype($links),"type file"=>gettype($req->submission_file) ]);
+        //             return (json_encode($response));
+        //         } else {
+        //             $links = serialize(array());
+        //         }
 
-                $submission = milestone_submission::create($req->except(['submission_file']) + ['links' => $links]);
-                $submission_id = $submission->id;
-                $project = Project::where('id', $req->project_id)->select('name')->first();
-                $projectName = str_replace(' ', '-', $project->name);
-                $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
-                $milestoneName = str_replace(' ', '-', $milestone->name);
-                $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
-                $submissionName = time() .'-'. $milestoneName . '-' . $originalName;
-                $submission_file = $req->submission_file;
-                if (!File::exists($projectName)) {
-                    File::makeDirectory(public_path().'/'.$projectName,0777,true);
-                    $submission_file->move(public_path($projectName), $submissionName);
-                    $this->updateSubmissionFile($submission_id, $submissionName);
-                    $this->updateStatus($req->milestone_id, '1');
-                } else {
-                    $submission_file->move(public_path($projectName), $submissionName);
-                    $this->updateSubmissionFile($submission_id, $submissionName);
-                    $this->updateStatus($req->milestone_id, '1');
-                }
-                $response = Controller::returnResponse(200, "submit successful", ['submissionId' => $submission_id]);
-                return (json_encode($response));
-            }
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
-            return (json_encode($response));
-        }
+        //         $submission = milestone_submission::create($req->except(['submission_file']) + ['links' => $links]);
+        //         $submission_id = $submission->id;
+        //         $project = Project::where('id', $req->project_id)->select('name')->first();
+        //         $projectName = str_replace(' ', '-', $project->name);
+        //         $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
+        //         $milestoneName = str_replace(' ', '-', $milestone->name);
+        //         $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
+        //         $submissionName = time() .'-'. $milestoneName . '-' . $originalName;
+        //         $submission_file = $req->submission_file;
+        //         if (!File::exists($projectName)) {
+        //             File::makeDirectory(public_path().'/'.$projectName,0777,true);
+        //             $submission_file->move(public_path($projectName), $submissionName);
+        //             $this->updateSubmissionFile($submission_id, $submissionName);
+        //             $this->updateStatus($req->milestone_id, '1');
+        //         } else {
+        //             $submission_file->move(public_path($projectName), $submissionName);
+        //             $this->updateSubmissionFile($submission_id, $submissionName);
+        //             $this->updateStatus($req->milestone_id, '1');
+        //         }
+        //         $response = Controller::returnResponse(200, "submit successful", ['submissionId' => $submission_id]);
+        //         return (json_encode($response));
+        //     }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+        //     return (json_encode($response));
+        // }
     }
     function updateSubmissionFile($submission_id, $fileName)
     {
