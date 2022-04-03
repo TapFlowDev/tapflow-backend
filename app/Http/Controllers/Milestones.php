@@ -612,13 +612,13 @@ class Milestones extends Controller
             {
                 array_push($data,$l);
             }
-            // $response = Controller::returnResponse(200, "submit successful",
-            //  [ 
-            //   'links'=>$req->links,'type links'=>gettype($req->links),
-            //  'data' => $data ,'type data'=>gettype($data),
-            //  'arr' => $arr ,'type arr'=>gettype($arr),
-            // ]);
-            // return (json_encode($response));
+            $response = Controller::returnResponse(200, "submit successful",
+             [ 
+              'links'=>$req->links['links'],'type links'=>gettype($req->links),
+             'data' => $data ,'type data'=>gettype($data),
+             'arr' => $arr ,'type arr'=>gettype($arr),
+            ]);
+            return (json_encode($response));
                 // if (isset($req->links)) {
                     $links =serialize($data) ;  
                 // } else {
