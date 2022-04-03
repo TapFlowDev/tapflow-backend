@@ -605,13 +605,13 @@ class Milestones extends Controller
     function addSubmissionLinks(Request $req)
     {
         try {
-            $data=str_replace('"\"','',$req->links);
+            // $data=str_replace('"\"','',$req->links);
           
-            $arr=array($data);
+            $arr=array($req->links);
             $response = Controller::returnResponse(200, "submit successful",
              [ 
               'links'=>$req->links,'type links'=>gettype($req->links),
-             'data' => $data ,'type data'=>gettype($data),
+            //  'data' => $data ,'type data'=>gettype($data),
              'arr' => $arr ,'type arr'=>gettype($arr),
             ]);
             return (json_encode($response));
