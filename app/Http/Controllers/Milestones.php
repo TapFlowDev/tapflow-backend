@@ -351,21 +351,19 @@ class Milestones extends Controller
                             return (json_encode($response));
                         } else {
                             $submission = milestone_submission::create($req->except(['submission_file']));
-                            $submission_id = $submission->id;
-                            $project = Project::where('id', $req->project_id)->select('name')->first();
-                            $projectName = str_replace(' ', '-', $project->name);
+                            $submission_id = $submission->id;                          
                             $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
                             $milestoneName = str_replace(' ', '-', $milestone->name);
                             $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
-                            $submissionName = time() . '_' . $milestoneName . '-' . $originalName;
+                            $submissionName = time() . '_' . $milestoneName . '_' . $originalName;
                             $submission_file = $req->submission_file;
-                            if (!File::exists($projectName)) {
-                                File::makeDirectory(public_path() . '/' . $projectName, 0777, true);
-                                $submission_file->move(public_path($projectName), $submissionName);
+                            if (!File::exists($$req->project_id)) {
+                                File::makeDirectory(public_path() . '/submissions' . $req->project_id, 0777, true);
+                                $submission_file->move(public_path($$req->project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             } else {
-                                $submission_file->move(public_path($projectName), $submissionName);
+                                $submission_file->move(public_path($req->project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
