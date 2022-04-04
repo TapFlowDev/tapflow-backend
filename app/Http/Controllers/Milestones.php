@@ -650,7 +650,7 @@ class Milestones extends Controller
                     if (file_exists($filecheck)) {
                         $file= asset('submissions/'.$milestone->project_id."/".$submission->file);
                         // return Response()->download($file);
-                        $response = Controller::returnResponse(422, "file does not exist", ['link'=>$file]);
+                        $response = Controller::returnResponse(200, "successful", ['link'=>$file]);
                         return (json_encode($response));
                         //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '11.
                         //   filesize($fileurl)))->deleteFileAfterSend(true);
