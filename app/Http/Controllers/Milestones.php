@@ -641,8 +641,8 @@ class Milestones extends Controller
                     if ($userData['privileges'] == 1) {
                      $submission= milestone_submission::where('id',$req->submission_id)->select('file','milestone_id')->get();
                      $milestone=Milestone::where('id',$submission->milestone_id)->select('project_id','name')->get();
-                     $project_name=Project::where('id',$milestone->project_id)->select('name')->first()->name;
-                     $dest_path=$project_name;
+                   
+                     $dest_path='/submissions/'.$milestone->project_id.'/';
                      $file= asset($dest_path .$submission->file);
                         if (file_exists($file)) {
                             return response()->download($file);
