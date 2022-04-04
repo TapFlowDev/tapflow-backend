@@ -636,7 +636,7 @@ class Milestones extends Controller
 
     function downloadSubmissionFile(Request $req)
     {
-        // try {
+        try {
         $userData = Controller::checkUser($req);
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->group_id) {
@@ -649,12 +649,15 @@ class Milestones extends Controller
 
                     if (file_exists($filecheck)) {
                         $file= asset('submissions/'.$milestone->project_id."/".$submission->file);
-                        return Response()->download($file);
+                        // return Response()->download($file);
+                        $response = Controller::returnResponse(422, "file does not exist", ['link'=>$file]);
+                        return (json_encode($response));
                         //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '11.
                         //   filesize($fileurl)))->deleteFileAfterSend(true);
                     }
                     else {
-                        return ['status' => ' file does not exist'];
+                        $response = Controller::returnResponse(422, "file does not exist", []);
+                     return (json_encode($response));
                     }
 
                     
@@ -672,10 +675,10 @@ class Milestones extends Controller
             $response = Controller::returnResponse(422, "this user does not have team", []);
             return (json_encode($response));
         }
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 
     function payMilestoneDetails(Request $request, $id)
