@@ -16,9 +16,9 @@ use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Final_proposals;
 use App\Models\Final_proposal;
-
 use Illuminate\Support\Facades\DB;
 use Money\Exchange;
+use Response;
 
 class Milestones extends Controller
 {
@@ -649,7 +649,7 @@ class Milestones extends Controller
 
                     if (file_exists($filecheck)) {
                         $file= asset('submissions/'.$milestone->project_id."/".$submission->file);
-                        return response()->download($file);
+                        return Response()->download($file);
                         //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '11.
                         //   filesize($fileurl)))->deleteFileAfterSend(true);
                     }
