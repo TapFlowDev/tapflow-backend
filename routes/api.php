@@ -219,5 +219,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
     Route::post('depositRequest', [DepositRequestController::class, 'Insert']);
     Route::get('payMilestoneDetails/{id}', [Milestones::class, 'payMilestoneDetails']);
+    Route::post('acceptSubmission', [Milestones::class, 'acceptSubmission']);
+    Route::post('reviewSubmission', [Milestones::class, 'reviseSubmission']);
 });
 
