@@ -350,6 +350,7 @@ class Milestones extends Controller
                             $response = Controller::returnResponse(101, "Validation Error", $responseData);
                             return (json_encode($response));
                         } else {
+                            $project_id=$req->project_id;
                             $submission = milestone_submission::create($req->except(['submission_file']));
                             $submission_id = $submission->id;                          
                             $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
@@ -357,13 +358,13 @@ class Milestones extends Controller
                             $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
                             $submissionName = time() . '_' . $milestoneName . '_' . $originalName;
                             $submission_file = $req->submission_file;
-                            if (!File::exists($$req->project_id)) {
-                                File::makeDirectory(public_path() . '/submissions' . $req->project_id, 0777, true);
-                                $submission_file->move(public_path($$req->project_id), $submissionName);
+                            if (!File::exists($project_id)) {
+                                File::makeDirectory(public_path() . '/submissions/' . $project_id, 0777, true);
+                                $submission_file->move(public_path($project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             } else {
-                                $submission_file->move(public_path($req->project_id), $submissionName);
+                                $submission_file->move(public_path($project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
