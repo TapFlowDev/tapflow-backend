@@ -665,6 +665,11 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
 
     function payMilestoneDetails(Request $request, $id)
     {
