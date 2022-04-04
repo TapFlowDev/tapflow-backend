@@ -642,6 +642,8 @@ class Milestones extends Controller
                 if ($userData['group_id'] == $req->group_id) {
                     if ($userData['privileges'] == 1) {
                      $submission= milestone_submission::where('id',$req->submission_id)->select('file','milestone_id')->get();
+                     $response = Controller::returnResponse(422, "Unauthorized action this action for admins", ['submission'=>$submission]);
+                     return (json_encode($response));
                      $milestone=Milestone::where('id',$submission->milestone_id)->select('project_id','name')->get();
                      $dest_path='/submissions/'.$milestone->project_id;
                      $file= asset($dest_path .$submission->file);
