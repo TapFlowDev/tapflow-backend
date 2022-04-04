@@ -358,8 +358,8 @@ class Milestones extends Controller
                             $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
                             $submissionName = time() . '_' . $milestoneName . '_' . $originalName;
                             $submission_file = $req->submission_file;
-                            if (!File::exists($project_id)) {
-                                File::makeDirectory(public_path() . '/submissions/' . $project_id, 0777, true);
+                            if (!File::exists('/submissions/'.$project_id)) {
+                                File::makeDirectory(public_path() . '/submissions/' . $project_id, 755, true);
                                 $submission_file->move(public_path($project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
@@ -636,7 +636,7 @@ class Milestones extends Controller
 
     function downloadSubmissionFile(Request $req)
     {
-        try {
+        // try {
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
                 if ($userData['group_id'] == $req->group_id) {
@@ -664,10 +664,10 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
-            return (json_encode($response));
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+        //     return (json_encode($response));
+        // }
     }
 
     function payMilestoneDetails(Request $request, $id)
