@@ -643,10 +643,9 @@ class Milestones extends Controller
                     if ($userData['privileges'] == 1) {
                      $submission= milestone_submission::where('id',$req->submission_id)->select('file','milestone_id')->get()->first();
                      $milestone=Milestone::where('id',$submission->milestone_id)->select('project_id','name')->get()->first();
-                     $dest_path='public/submissions/'.$milestone->project_id;
-                     $file= asset($dest_path .$submission->file);
-                     $filePath=$dest_path.$submission->file;
-                        if (!File::exists($filePath)) {
+                     $dest_path='/submissions/'.$milestone->project_id;
+                     $file= asset($dest_path .'/'.$submission->file);
+                        if (!File::exists($file)) {
                             return response()->download($file);
                         //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '11.
                         //   filesize($fileurl)))->deleteFileAfterSend(true);
