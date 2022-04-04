@@ -364,7 +364,7 @@ class Milestones extends Controller
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             } else {
-                                $submission_file->move(public_path($project_id), $submissionName);
+                                $submission_file->move(public_path('/submissions/'.$project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
@@ -597,7 +597,7 @@ class Milestones extends Controller
                             "links" => unserialize($sub->links),
                             "agency_comments" => $sub->agency_comments,
                             "client_comments" => $sub->client_comments,
-                            "milestone_price" => $sub->client_comments,
+                            "submission_status" => $sub->status,
                             "submission_date" => $sub->created_at,
                         ));
                     }
