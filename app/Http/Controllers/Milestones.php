@@ -593,6 +593,7 @@ class Milestones extends Controller
                     $submissions_details = [];
                     foreach ($submissions as $sub) {
                         array_push($submissions_details, array(
+                            "submission_id"=>$sub->id,
                             "file" => $sub->file,
                             "links" => unserialize($sub->links),
                             "agency_comments" => $sub->agency_comments,
@@ -642,12 +643,11 @@ class Milestones extends Controller
                     if ($userData['privileges'] == 1) {
                      $submission= milestone_submission::where('id',$req->submission_id)->select('file','milestone_id')->get();
                      $milestone=Milestone::where('id',$submission->milestone_id)->select('project_id','name')->get();
-                   
-                     $dest_path='/submissions/'.$milestone->project_id.'/';
+                     $dest_path='/submissions/'.$milestone->project_id;
                      $file= asset($dest_path .$submission->file);
                         if (file_exists($file)) {
                             return response()->download($file);
-                        //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '.
+                        //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '11.
                         //   filesize($fileurl)))->deleteFileAfterSend(true);
                         } else {
                             return ['status'=>' file does not exist'];
