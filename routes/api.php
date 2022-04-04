@@ -155,6 +155,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Route::post('saveImage', [ImagesController::class, 'Insert']);
     Route::get('updateTerms', [UserController::class, 'updateTerms']);
     Route::post('getMilestoneById', [Milestones::class, 'getMilestoneById']);
+    Route::post('downloadSubmissionFile', [Milestones::class, 'downloadSubmissionFile']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
