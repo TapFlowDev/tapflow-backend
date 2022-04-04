@@ -350,21 +350,21 @@ class Milestones extends Controller
                             $response = Controller::returnResponse(101, "Validation Error", $responseData);
                             return (json_encode($response));
                         } else {
-                            $project_id=$req->project_id;
+                            $project_id = $req->project_id;
                             $submission = milestone_submission::create($req->except(['submission_file']));
-                            $submission_id = $submission->id;                          
+                            $submission_id = $submission->id;
                             $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
                             $milestoneName = str_replace(' ', '-', $milestone->name);
                             $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
                             $submissionName = time() . '_' . $milestoneName . '_' . $originalName;
                             $submission_file = $req->submission_file;
-                            if (!File::exists('/submissions/'.$project_id)) {
+                            if (!File::exists('/submissions/' . $project_id)) {
                                 File::makeDirectory(public_path() . '/submissions/' . $project_id, 755, true);
                                 $submission_file->move(public_path($project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             } else {
-                                $submission_file->move(public_path('/submissions/'.$project_id), $submissionName);
+                                $submission_file->move(public_path('/submissions/' . $project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
@@ -593,7 +593,7 @@ class Milestones extends Controller
                     $submissions_details = [];
                     foreach ($submissions as $sub) {
                         array_push($submissions_details, array(
-                            "submission_id"=>$sub->id,
+                            "submission_id" => $sub->id,
                             "file" => $sub->file,
                             "links" => unserialize($sub->links),
                             "agency_comments" => $sub->agency_comments,
@@ -637,33 +637,41 @@ class Milestones extends Controller
     function downloadSubmissionFile(Request $req)
     {
         // try {
-            $userData = Controller::checkUser($req);
-            if ($userData['exist'] == 1) {
-                if ($userData['group_id'] == $req->group_id) {
-                    if ($userData['privileges'] == 1) {
-                     $submission= milestone_submission::where('id',$req->submission_id)->select('file','milestone_id')->get()->first();
-                     $milestone=Milestone::where('id',$submission->milestone_id)->select('project_id','name')->get()->first();
-                     $dest_path="/submissions/".$milestone->project_id."/".$submission->file;
-                     $file= asset($dest_path);
-                        if (File::exists($file)) {
-                            return response()->download($file);
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 1) {
+            if ($userData['group_id'] == $req->group_id) {
+                if ($userData['privileges'] == 1) {
+                    $submission = milestone_submission::where('id', $req->submission_id)->select('file', 'milestone_id')->get()->first();
+                    $milestone = Milestone::where('id', $submission->milestone_id)->select('project_id', 'name')->get()->first();
+                    $dest_path = "/submissions/" . $milestone->project_id . "/" . $submission->file;
+                    $file = asset($dest_path);
+                    $filecheck = public_path('submissions/'. $milestone->project_id."/".$submission->file);
+
+                    if (!file_exists($filecheck)) {
+                        $file= asset('submissions/'. $milestone->project_id."/".$submission->file);
+                        return response()->download($file);
                         //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '11.
                         //   filesize($fileurl)))->deleteFileAfterSend(true);
-                        } else {
-                            return ['status'=>' file does not exist'];
-                        }
-                    } else {
-                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
-                        return (json_encode($response));
                     }
+                    else {
+                        return ['status' => ' file does not exist'];
+                    }
+
+                    
+                       
+                    
                 } else {
-                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                     return (json_encode($response));
                 }
             } else {
-                $response = Controller::returnResponse(422, "this user does not have team", []);
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                 return (json_encode($response));
             }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
+        }
         // } catch (Exception $error) {
         //     $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
         //     return (json_encode($response));
