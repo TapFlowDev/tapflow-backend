@@ -37,6 +37,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\FormOptionsController;
 use App\Http\Controllers\Milestones;
 use App\Http\Controllers\ContentDataController;
+use App\Http\Controllers\DepositRequestController;
 use App\Http\Controllers\PaymentsController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
@@ -216,5 +217,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('payMilestone/', [PaymentsController::class, 'makePayment']);
     Route::get('transactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getCompanyTransactions']);
     Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
+    Route::post('depositRequest', [DepositRequestController::class, 'Insert']);
+    Route::get('payMilestoneDetails/{id}', [Milestones::class, 'payMilestoneDetails']);
 });
 
