@@ -358,15 +358,17 @@ class Milestones extends Controller
                             $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
                             $submissionName = time() . '_' . $milestoneName . '_' . $originalName;
                             $submission_file = $req->submission_file;
-                            $dist='/submissions/'.$project_id;
+                            // $dist='/submissions/'.$project_id;
+                            $dist = public_path('submissions/'.$req->project_id);
                             // if (!File::exists($dist)) {
-                                if (!file_exists($dist)) {
-                                File::makeDirectory(public_path() .'/submissions/'. $project_id, 755, true);
+                                // if (!file_exists($dist)) {
+                                    if (file_exists($dist)) {
+                                File::makeDirectory(public_path().'submissions/'.$project_id, 755, true);
                                 $submission_file->move(public_path($project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             } else {
-                                $submission_file->move(public_path('/submissions/'. $project_id), $submissionName);
+                                $submission_file->move(public_path('submissions/'. $project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
