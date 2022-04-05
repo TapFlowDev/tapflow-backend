@@ -363,7 +363,7 @@ class Milestones extends Controller
                             // if (!File::exists($dist)) {
                                 // if (!file_exists($dist)) {
                                     if (file_exists($dist)) {
-                                File::makeDirectory(public_path().'submissions/'.$project_id, 755, true);
+                                File::makeDirectory(public_path().'submissions/'.$project_id, 0755, true);
                                 $submission_file->move(public_path($project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
