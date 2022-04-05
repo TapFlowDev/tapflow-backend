@@ -541,6 +541,7 @@ class Milestones extends Controller
     }
     function acceptSubmission(Request $req)
     {
+        try{
         $userData = Controller::checkUser($req);
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
@@ -550,8 +551,10 @@ class Milestones extends Controller
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));
                 }
+                else{
                 $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                 return (json_encode($response));
+                }
             } else {
                 $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                 return (json_encode($response));
@@ -560,9 +563,15 @@ class Milestones extends Controller
             $response = Controller::returnResponse(422, "this user does not have team", []);
             return (json_encode($response));
         }
+    }catch(Exception $error)
+    {
+        $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+        return (json_encode($response));
+    }
     }
     function reviseSubmission(Request $req)
     {
+        try{
         $userData = Controller::checkUser($req);
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
@@ -582,6 +591,11 @@ class Milestones extends Controller
             $response = Controller::returnResponse(422, "this user does not have team", []);
             return (json_encode($response));
         }
+    }catch(Exception $error)
+    {
+        $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+        return (json_encode($response));
+    }
     }
 
     function getMilestoneById(Request $req)
