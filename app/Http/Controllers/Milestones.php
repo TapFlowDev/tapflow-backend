@@ -333,7 +333,7 @@ class Milestones extends Controller
     }
     function submitMilestone(Request $req)
     {
-        try {
+        // try {
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
                 if ($userData['privileges'] == 1) {
@@ -361,12 +361,12 @@ class Milestones extends Controller
                             $dist='/submissions/'.$project_id;
                             // if (!File::exists($dist)) {
                                 if (!file_exists($dist)) {
-                                File::makeDirectory(public_path() . '/submissions/' . $project_id, 755, true);
+                                File::makeDirectory(public_path() .'/submissions/'. $project_id, 755, true);
                                 $submission_file->move(public_path($project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             } else {
-                                $submission_file->move(public_path('/submissions/' . $project_id), $submissionName);
+                                $submission_file->move(public_path('/submissions/'. $project_id), $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
@@ -385,10 +385,10 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(422, "user does not have team", []);
                 return (json_encode($response));
             }
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
-            return (json_encode($response));
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+        //     return (json_encode($response));
+        // }
     }
     function updateSubmissionFile($submission_id, $fileName)
     {
