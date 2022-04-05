@@ -18,5 +18,6 @@ class milestone_submission extends Model
         'links',
         'file',
         'agency_comments',
+        'status'
     ];
 }
