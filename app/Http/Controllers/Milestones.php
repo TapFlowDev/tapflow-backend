@@ -576,8 +576,12 @@ class Milestones extends Controller
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
                 if ($userData['privileges'] == 1) {
+                    $comments=$req->comments;
                     Milestone::where('id', $req->milestone_id)->update(['status' => 2]);
-                    milestone_submission::where('id', $req->submission_id)->update(["client_comments" => $req->comments,"status" => 2]);
+                    // milestone_submission::where('id', $req->submission_id)->update(["client_comments" => $req->comments,"status" => 2]);
+                    DB::table('milestone_submissions')
+                    ->where('id', '=',$req->submission_id)
+                    ->update(["client_comments" =>$comments,"status" => 2]);
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));
                 }
