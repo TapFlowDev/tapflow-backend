@@ -139,6 +139,11 @@ class Proposals extends Controller
                     ->get();
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
+                    $priceMin=$proposal->price_min*$proposal->from;
+                    $priceMax=$proposal->price_mac*$proposal->to;
+                    $proposal->Price_min=$priceMin;
+                    $proposal->Price_max=$priceMax;
+
                 }
 
                 $response = Controller::returnResponse(200, "successful", $proposals);
