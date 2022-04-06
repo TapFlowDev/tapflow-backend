@@ -139,11 +139,10 @@ class Proposals extends Controller
                     ->get();
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
-                    $priceMin=$proposal->price_min*$proposal->from;
-                    $priceMax=$proposal->price_mac*$proposal->to;
-                    $proposal->Price_min=$priceMin;
-                    $proposal->Price_max=$priceMax;
-
+                    $priceMin = (float)$proposal->price_min * (float)$proposal->from;
+                    $priceMax = (float)$proposal->price_max * (float)$proposal->to;
+                    $proposal->price_min = $priceMin;
+                    $proposal->price_max = $priceMax;
                 }
 
                 $response = Controller::returnResponse(200, "successful", $proposals);
@@ -160,14 +159,14 @@ class Proposals extends Controller
     function checkIfProposalExists($project_id, $team_id)
     {
         $proposal_id = DB::table('proposals')
-            ->select('id','status')
+            ->select('id', 'status')
             ->where('team_id', '=', $team_id)
             ->where('project_id', '=', $project_id)
             ->first();
         if ($proposal_id == null) {
             return ['exist' => 0];
         } else {
-            return ['exist' => 1, "proposal_id" => $proposal_id->id,"status"=>$proposal_id->status];
+            return ['exist' => 1, "proposal_id" => $proposal_id->id, "status" => $proposal_id->status];
         }
     }
     function getProposalInfo($project_id, $team_id)
@@ -195,7 +194,7 @@ class Proposals extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-        
+
             if ($userData['exist'] == 1) {
                 if ($userData['group_id'] == $req->company_id) {
                     if ($userData['privileges'] == 1) {
