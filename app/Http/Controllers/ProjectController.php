@@ -199,7 +199,7 @@ class ProjectController extends Controller
             $projects =  DB::table('projects_categories')
                 ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
                 ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
-                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description','projects.days', 'projects.created_at')
+                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description','projects.days', 'projects.created_at','projects.updated_at')
                 ->where('groups_categories.group_id', '=', $agency_id)
                 ->where('projects.status', '=', 0)
                 ->where('verified', '=', 1)
