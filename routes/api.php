@@ -24,6 +24,7 @@ use  App\Http\Controllers\GroupsLinksController;
 use  App\Http\Controllers\GroupCategoriesController;
 use  App\Http\Controllers\UserCategoriesController;
 use  App\Http\Controllers\AnnouncementsController;
+use App\Http\Controllers\BillingInfoController;
 use App\Http\Controllers\ClientsRequestsController;
 use  App\Http\Controllers\ContactUsController;
 use  App\Http\Controllers\WalletsController;
@@ -156,6 +157,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('updateTerms', [UserController::class, 'updateTerms']);
     Route::post('getMilestoneById', [Milestones::class, 'getMilestoneById']);
     Route::post('downloadSubmissionFile', [Milestones::class, 'downloadSubmissionFile']);
+    Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
@@ -189,6 +191,11 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('deleteMilestone', [Milestones::class, 'deleteMilestone']);
     Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
     Route::post('addSubmissionLinks', [Milestones::class, 'addSubmissionLinks']);
+    Route::post('addBillingInfo', [BillingInfoController::class, 'Insert']);
+    Route::post('updateBillingInfo/{id}', [BillingInfoController::class, 'Update']);
+    Route::get('billingInfo', [BillingInfoController::class, 'getBillingInfo']);
+    Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
+
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
@@ -216,7 +223,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('dashboardProposals/{offset}/{limit}', [Proposals::class, 'getClientPropsals']);
     Route::post('payMilestone/', [PaymentsController::class, 'makePayment']);
     Route::get('transactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getCompanyTransactions']);
-    Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
     Route::post('depositRequest', [DepositRequestController::class, 'Insert']);
     Route::get('payMilestoneDetails/{id}', [Milestones::class, 'payMilestoneDetails']);
     Route::post('acceptSubmission', [Milestones::class, 'acceptSubmission']);
