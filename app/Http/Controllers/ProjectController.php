@@ -195,7 +195,7 @@ class ProjectController extends Controller
     {
         
         $page = ($offset - 1) * $limit;
-        try {
+        // try {
             $projects =  DB::table('projects_categories')
                 ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
                 ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
@@ -211,10 +211,10 @@ class ProjectController extends Controller
             $responseData = $projectsData;
             $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
-        } catch (\Exception $error) {
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
-            return (json_encode($response));
-        }
+        // } catch (\Exception $error) {
+        //     $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+        //     return (json_encode($response));
+        // }
 
         // ->pluck('project_id');
 
