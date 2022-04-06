@@ -191,15 +191,15 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-    function suggestedProjects($agency_id, $offset = 1)
+    function suggestedProjects($agency_id, $offset = 1,$limit)
     {
-        $limit = 4;
+        
         $page = ($offset - 1) * $limit;
-        try {
+        // try {
             $projects =  DB::table('projects_categories')
                 ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
                 ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
-                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.requirements_description', 'projects.days', 'projects.created_at')
+                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name','projects.user_id', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description','projects.days', 'projects.created_at','projects.updated_at')
                 ->where('groups_categories.group_id', '=', $agency_id)
                 ->where('projects.status', '=', 0)
                 ->where('verified', '=', 1)
@@ -211,10 +211,10 @@ class ProjectController extends Controller
             $responseData = $projectsData;
             $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
-        } catch (\Exception $error) {
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
-            return (json_encode($response));
-        }
+        // } catch (\Exception $error) {
+        //     $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+        //     return (json_encode($response));
+        // }
 
         // ->pluck('project_id');
 

@@ -333,7 +333,7 @@ class Milestones extends Controller
     }
     function submitMilestone(Request $req)
     {
-        // try {
+        try {
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
                 if ($userData['privileges'] == 1) {
@@ -356,19 +356,20 @@ class Milestones extends Controller
                             $milestone = Milestone::where('id', $req->milestone_id)->select('name')->first();
                             $milestoneName = str_replace(' ', '-', $milestone->name);
                             $originalName = str_replace(' ', '-',  $req->file('submission_file')->getClientOriginalName());
+                            $originalName = str_replace('_', '-',  $originalName);
                             $submissionName = time() . '_' . $milestoneName . '_' . $originalName;
                             $submission_file = $req->submission_file;
                             // $dist='/submissions/'.$project_id;
-                            $dist = public_path('submissions/'.$req->project_id);
-                            // if (!File::exists($dist)) {
+                            $dist = public_path().'/submissions/'.$req->project_id;
+                            if (!File::exists($dist)) {
                                 // if (!file_exists($dist)) {
-                                    if (file_exists($dist)) {
-                                File::makeDirectory(public_path().'submissions/'.$project_id, 755, true);
-                                $submission_file->move(public_path($project_id), $submissionName);
+                                    // if (!file_exists($dist)) {
+                                File::makeDirectory(public_path().'/submissions/'.$project_id, 0755, true);
+                                $submission_file->move(public_path().'/submissions/'.$project_id , $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             } else {
-                                $submission_file->move(public_path('submissions/'. $project_id), $submissionName);
+                                $submission_file->move(public_path().'/submissions/'. $project_id, $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
@@ -387,10 +388,10 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(422, "user does not have team", []);
                 return (json_encode($response));
             }
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
     }
     function updateSubmissionFile($submission_id, $fileName)
     {
@@ -541,17 +542,20 @@ class Milestones extends Controller
     }
     function acceptSubmission(Request $req)
     {
+        try{
         $userData = Controller::checkUser($req);
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
                 if ($userData['privileges'] == 1) {
+                    milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, 'status' => 3]);
                     Milestone::where('id', $req->milestone_id)->update(['status' => 3]);
-                    milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, ['status' => 3]]);
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));
                 }
+                else{
                 $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                 return (json_encode($response));
+                }
             } else {
                 $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                 return (json_encode($response));
@@ -560,15 +564,22 @@ class Milestones extends Controller
             $response = Controller::returnResponse(422, "this user does not have team", []);
             return (json_encode($response));
         }
+    }catch(Exception $error)
+    {
+        $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+        return (json_encode($response));
+    }
     }
     function reviseSubmission(Request $req)
     {
+        try{
         $userData = Controller::checkUser($req);
         if ($userData['exist'] == 1) {
             if ($userData['group_id'] == $req->company_id) {
                 if ($userData['privileges'] == 1) {
+                    
+                    milestone_submission::where('id', $req->submission_id)->update(["client_comments" => $req->comments,"status" => 2]);
                     Milestone::where('id', $req->milestone_id)->update(['status' => 2]);
-                    milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, 'status' => 2]);
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));
                 }
@@ -582,6 +593,11 @@ class Milestones extends Controller
             $response = Controller::returnResponse(422, "this user does not have team", []);
             return (json_encode($response));
         }
+    }catch(Exception $error)
+    {
+        $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+        return (json_encode($response));
+    }
     }
 
     function getMilestoneById(Request $req)
