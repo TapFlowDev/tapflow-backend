@@ -31,7 +31,6 @@ use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
 
-
 // use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 /*
 |--------------------------------------------------------------------------
@@ -107,3 +106,14 @@ Route::get('/donePayment', function () {
     return view('donePayment');
 });
 Route::get('/mailchimptest', [MailChimpController::class, 'test']);
+
+// Route::get('/notifications', [NotificationsSettings::class, 'test']);
+// Route::get('/testEst', [Proposals::class, 'testPropsal']);
+
+// Route::get('/testForms', function(){
+//     return view('testForms');
+// });
+
+Route::get('test-broadcast', function(Request $request){
+    broadcast(new \App\Events\realTimeMessages('HI YASMIN'));
+});
