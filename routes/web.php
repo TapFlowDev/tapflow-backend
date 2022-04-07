@@ -124,7 +124,7 @@ Route::get('/send', function( Request $request ){
 
 
     $user=\App\Models\User::whereEmail('client@email.com')->first();
-    dd($request);
- //    $user->notify((new realtimemsg('hiiiiiiiiiii')));
+    // dd($request);
+    $user->notify((new realtimemsg('hiiiiiiiiiii')));
   
  });
