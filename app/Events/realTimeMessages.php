@@ -35,4 +35,8 @@ class realTimeMessages implements ShouldBroadcast
     {
         return new PrivateChannel('channel-one');
     }
+    public function broadcastAs()
+    {
+        return ('ahmad');
+    }
 }
