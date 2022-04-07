@@ -26,7 +26,8 @@ class Milestones extends Controller
     {
 
         try {
-
+           
+           
             $finalProposalObj = new Final_proposals;
             $rules = array(
                 "team_id" => "required|exists:groups,id",

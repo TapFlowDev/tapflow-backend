@@ -2,12 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ProjectApply extends Notification
+class notifications extends Notification
 {
     use Queueable;
 
@@ -29,7 +31,7 @@ class ProjectApply extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail','broadcast'];
+        return ['mail'];
     }
 
     /**
@@ -41,7 +43,6 @@ class ProjectApply extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Notification')
                     ->line('The introduction to the notification.')
                     ->action('Notification Action', url('/'))
                     ->line('Thank you for using our application!');
@@ -53,10 +54,11 @@ class ProjectApply extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function roadcast($notifiable)
+    public function toBroadcast($notifiable)
     {
-        return [
+        return new BroadcastMessage( [
             //
-        ];
+            'message'=>"$this->message (User $notifiable->name)"
+        ]);
     }
 }

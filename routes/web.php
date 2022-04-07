@@ -30,6 +30,8 @@ use App\Http\Controllers\NotificationsSettings;
 use Illuminate\Http\Request;
 use App\Mail\SendInvitation;
 use Illuminate\Support\Facades\Mail;
+use App\Notifications\realtimemsg;
+
 
 // use App\Http\Controllers\AdminTool\AdminSubCategoryController;
 /*
@@ -113,3 +115,16 @@ Route::get('/mailchimptest', [MailChimpController::class, 'test']);
 // Route::get('/testForms', function(){
 //     return view('testForms');
 // });
+
+Route::get('test-broadcast', function(){
+    broadcast(new \App\Events\notifications('HI YASMIN '));
+ 
+});
+Route::get('/send', function( Request $request ){
+
+
+    $user=\App\Models\User::whereEmail('yasmin@test.com')->first();
+    dd($request);
+ //    $user->notify((new realtimemsg('hiiiiiiiiiii')));
+  
+ });
