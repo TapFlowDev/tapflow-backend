@@ -115,5 +115,5 @@ Route::get('/mailchimptest', [MailChimpController::class, 'test']);
 // });
 
 Route::get('test-broadcast', function(Request $request){
-    broadcast(new \App\Events\realTimeMessages('HI YASMIN'));
+   return broadcast(new \App\Events\realTimeMessages('HI YASMIN'));
 });
