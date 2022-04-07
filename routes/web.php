@@ -123,7 +123,7 @@ Route::get('test-broadcast', function(){
 Route::get('/send', function( Request $request ){
 
 
-    $user=\App\Models\User::whereEmail('yasmin@test.com')->first();
+    $user=\App\Models\User::whereEmail('client@email.com')->first();
     dd($request);
  //    $user->notify((new realtimemsg('hiiiiiiiiiii')));
   
