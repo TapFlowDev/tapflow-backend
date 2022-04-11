@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Billing_info;
 use App\Models\User;
 use App\Models\withdrawl_request;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -32,6 +33,14 @@ class WithdrawlRequestController extends Controller
                 $responseData = $validator->errors();
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return (json_encode($response));
+            }
+            $latestWithdrawlRequest = withdrawl_request::select('created_at')->where('group_id', '=', $userData['group_id'])->latest()->first()->toArray();
+            if ($latestWithdrawlRequest) {
+                $isAccepted = $this->timeDiff(date('Y-m-d H:i:s', strtotime($latestWithdrawlRequest['created_at'])));
+                if ($isAccepted != 1) {
+                    $response = Controller::returnResponse(422, "Action denied, You must wait 30 mintutes for your next withdrawal request", []);
+                    return (json_encode($response));
+                }
             }
 
             $biilingInfo = Billing_info::where('id', '=', $req->billing_info_id)->get()->first();
@@ -97,5 +106,19 @@ class WithdrawlRequestController extends Controller
             $withdrawl->admin_name = $user->first_name . " " . $user->last_name;
         }
         return $array;
+    }
+    private function timeDiff($latest)
+    {
+        // dd($latest);
+        $now = new DateTime();
+        $diff = $now->diff(new DateTime($latest));
+        $minutes =  $diff->days * 24 * 60;
+        $minutes += $diff->h * 60;
+        $minutes += $diff->i;
+        if ($minutes < 30) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 }
