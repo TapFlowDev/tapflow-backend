@@ -41,6 +41,7 @@ use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\DepositRequestController;
 use App\Http\Controllers\PaymentsController;
 use App\Notifications\RealTimeMessageNotification;
+use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
 
@@ -196,6 +197,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('updateBillingInfo/{id}', [BillingInfoController::class, 'Update']);
     Route::get('billingInfo', [BillingInfoController::class, 'getBillingInfo']);
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
+    Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
 
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {

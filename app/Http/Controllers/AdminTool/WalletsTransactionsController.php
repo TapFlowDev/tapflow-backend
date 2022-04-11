@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AdminTool;
 use App\Http\Controllers\Controller;
 use App\Models\wallet;
 use App\Models\wallets_transaction;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -120,5 +121,28 @@ class WalletsTransactionsController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function withdraw($array)
+    {
+        try {
+            $transactionData = array(
+                'amount' => $array['amount'],
+                'type' => 2,
+                'wallet_id' => $array['wallet'],
+            );
+            $transaction = wallets_transaction::create($transactionData);
+            if ($transaction) {
+                $transaction->status = 1;
+                $transaction->save();
+            }
+            $walletInfo = wallet::find($array['wallet']);
+            $currentBalance = (float)$walletInfo->balance;
+            $newBalance = $currentBalance - (float)$array['amount'];
+            $walletInfo->balance = number_format($newBalance, 2, '.', '');
+            $walletInfo->save();
+            return array('code'=>200, 'transaction'=>$transaction);
+        } catch (Exception $error) {
+            return array('code'=>500);
+        }
     }
 }
