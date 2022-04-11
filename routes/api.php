@@ -198,6 +198,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('billingInfo', [BillingInfoController::class, 'getBillingInfo']);
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
     Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
+    Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
 
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
@@ -230,9 +231,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('payMilestoneDetails/{id}', [Milestones::class, 'payMilestoneDetails']);
     Route::post('acceptSubmission', [Milestones::class, 'acceptSubmission']);
     Route::post('reviewSubmission', [Milestones::class, 'reviseSubmission']);
-});
-Route::get('send-notification', function(){
-    $user=\App\Models\User::whereEmail('ahmad1@gmail.com')->first();
-    $user->notify((new RealTimeMessageNotification('hi from send notification function')));
-    return 'notification sent successfully';
+    Route::get('deposits/{offset}/{limit}', [DepositRequestController::class, 'getDeposits']);
 });
