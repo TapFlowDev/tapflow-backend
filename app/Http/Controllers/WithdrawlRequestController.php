@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Billing_info;
+use App\Models\User;
 use App\Models\withdrawl_request;
 use Exception;
 use Illuminate\Http\Request;
@@ -45,7 +46,7 @@ class WithdrawlRequestController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", array('amount' => array('withdraw amount must be less or equal to your wallet balance')));
                 return (json_encode($response));
             }
-            
+
             $withdrawlArray = array(
                 'user_id' => $userData['user_id'],
                 'group_id' => $userData['group_id'],
@@ -68,5 +69,33 @@ class WithdrawlRequestController extends Controller
     //delete row according to row id
     function Delete($id)
     {
+    }
+    function getWithdrawlRequests(Request $req, $offset, $limit)
+    {
+        try {
+            $page = ($offset - 1) * $limit;
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $withdrawlRequests = $this->getWithdrawlData(withdrawl_request::where('group_id', '=', $userData['group_id'])->latest()->offset($page)->limit($limit)->get()->makeHidden(['wallet_transactiond_id', 'type', 'user_id']));
+            $response = Controller::returnResponse(200, "data found", $withdrawlRequests);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getWithdrawlData($array)
+    {
+        foreach ($array as $keyWithdrawl => &$withdrawl) {
+            $billingInfo = Billing_info::where('id', '=', $withdrawl->billing_info_id)->get()->first()->toArray();
+            $withdrawl->billingInfo = $billingInfo;
+            $user = User::where('id', '=', $withdrawl->user_id)->get()->first();
+            $withdrawl->admin_name = $user->first_name . " " . $user->last_name;
+        }
+        return $array;
     }
 }

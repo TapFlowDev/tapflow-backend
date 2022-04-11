@@ -59,4 +59,22 @@ class DepositRequestController extends Controller
         }
         return $code;
     }
+    function getDeposits(Request $req, $offset, $limit)
+    {
+        try {
+            $page = ($offset - 1) * $limit;
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $deposits = deposit_request::where('company_id', '=', $userData['group_id'])->latest()->offset($page)->limit($limit)->get();
+            $response = Controller::returnResponse(200, "data found", $deposits);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
 }
