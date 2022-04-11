@@ -26,6 +26,7 @@ use App\Http\Controllers\AdminTool\NotificationSettings;
 use App\Http\Controllers\AdminTool\StaticDataController;
 use App\Http\Controllers\AdminTool\WalletsController;
 use App\Http\Controllers\AdminTool\WalletsTransactionsController;
+use App\Http\Controllers\AdminTool\WithdrawlRequestsController;
 use App\Http\Controllers\MailChimpController;
 use App\Http\Controllers\NotificationsSettings;
 use Illuminate\Http\Request;
@@ -80,6 +81,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('companies.depositRequests', DepositRequestController::class)->shallow();
     Route::resource('/initialProposals', InitialProposals::class);
     Route::resource('wallet.transactions', WalletsTransactionsController::class)->shallow();
+    Route::resource('agencies.withdrawal', WithdrawlRequestsController::class);
     // Route::resource('agencies.wallets', WalletsController::class)->shallow();
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
     // Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');

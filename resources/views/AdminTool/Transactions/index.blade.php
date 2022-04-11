@@ -79,8 +79,11 @@
                         </div>
                     </div>
                     <h1> Transactions </h1>
-                    <a class="btn btn-sm btn-success float-right mb-3"
-                        href="{{ route('AdminTool.wallet.transactions.create', $walletInfo->id) }}" role="button">Add Balance</a>
+                    @if ($groupInfo['group_type'] == 2)
+                        <a class="btn btn-sm btn-success float-right mb-3"
+                            href="{{ route('AdminTool.wallet.transactions.create', $walletInfo->id) }}" role="button">Add
+                            Balance</a>
+                    @endif
                     <table class="table">
                         <thead>
                             <tr>
