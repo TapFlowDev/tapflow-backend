@@ -115,7 +115,10 @@ Route::get('getGroupNameAndImage/{id}', [GroupController::class, 'getGroupNameAn
 Route::get('getQuestions', [FormOptionsController::class, 'getData']);
 Route::get('getDemoLink', [ContentDataController::class, 'getDemoLink']);
 Route::get('getTerms', [ContentDataController::class, 'getTerms']);
-
+Route::get('csrfToken',function(){
+    $token=csrf_token();
+    return $token;
+});
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
 
