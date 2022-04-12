@@ -40,7 +40,7 @@ use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\PaymentsController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
-
+use App\Http\Controllers\Controller;
 // use App\Http\Controllers\PaymentController;
 
 /*
@@ -117,7 +117,8 @@ Route::get('getDemoLink', [ContentDataController::class, 'getDemoLink']);
 Route::get('getTerms', [ContentDataController::class, 'getTerms']);
 Route::get('csrfToken',function(){
     $token=csrf_token();
-    return $token;
+    $response = Controller::returnResponse(200, 'success', $token);
+            return json_encode($response);
 });
 // Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
