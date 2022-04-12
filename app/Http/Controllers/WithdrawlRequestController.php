@@ -34,9 +34,10 @@ class WithdrawlRequestController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return (json_encode($response));
             }
-            $latestWithdrawlRequest = withdrawl_request::select('created_at')->where('group_id', '=', $userData['group_id'])->latest()->first()->toArray();
+            $latestWithdrawlRequest = withdrawl_request::select('created_at')->where('group_id', '=', $userData['group_id'])->latest()->first();
             if ($latestWithdrawlRequest) {
-                $isAccepted = $this->timeDiff(date('Y-m-d H:i:s', strtotime($latestWithdrawlRequest['created_at'])));
+               $latestWithdrawlRequestArr = $latestWithdrawlRequest->toArray();
+                $isAccepted = $this->timeDiff(date('Y-m-d H:i:s', strtotime($latestWithdrawlRequestArr['created_at'])));
                 if ($isAccepted != 1) {
                     $response = Controller::returnResponse(422, "Action denied, You must wait 30 mintutes for your next withdrawal request", []);
                     return (json_encode($response));
