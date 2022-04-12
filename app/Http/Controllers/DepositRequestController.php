@@ -30,9 +30,10 @@ class DepositRequestController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return (json_encode($response));
             }
-            $latestDeposit = deposit_request::select('created_at')->where('company_id', '=', $userData['group_id'])->latest()->first()->toArray();
+            $latestDeposit = deposit_request::select('created_at')->where('company_id', '=', $userData['group_id'])->latest()->first();
             if ($latestDeposit) {
-                $isAccepted = $this->timeDiff(date('Y-m-d H:i:s', strtotime($latestDeposit['created_at'])));
+                $latestDepositArr = $latestDeposit->toArray();
+                $isAccepted = $this->timeDiff(date('Y-m-d H:i:s', strtotime($latestDepositArr['created_at'])));
                 if ($isAccepted != 1) {
                     $response = Controller::returnResponse(422, "Action denied, You must wait 30 mintutes for your next deposit request", []);
                     return (json_encode($response));
