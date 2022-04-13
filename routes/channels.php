@@ -16,7 +16,7 @@ use App\Models\Group_member;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
-Broadcast::channel('channel-one',function($user){
+Broadcast::channel('channels',function(){
     return true;
 });
 
