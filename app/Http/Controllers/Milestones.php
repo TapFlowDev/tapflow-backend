@@ -360,16 +360,16 @@ class Milestones extends Controller
                             $submissionName = time() . '_' . $milestoneName . '_' . $originalName;
                             $submission_file = $req->submission_file;
                             // $dist='/submissions/'.$project_id;
-                            $dist = public_path().'/submissions/'.$req->project_id;
+                            $dist = public_path() . '/submissions/' . $req->project_id;
                             if (!File::exists($dist)) {
                                 // if (!file_exists($dist)) {
-                                    // if (!file_exists($dist)) {
-                                File::makeDirectory(public_path().'/submissions/'.$project_id, 0755, true);
-                                $submission_file->move(public_path().'/submissions/'.$project_id , $submissionName);
+                                // if (!file_exists($dist)) {
+                                File::makeDirectory(public_path() . '/submissions/' . $project_id, 0755, true);
+                                $submission_file->move(public_path() . '/submissions/' . $project_id, $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             } else {
-                                $submission_file->move(public_path().'/submissions/'. $project_id, $submissionName);
+                                $submission_file->move(public_path() . '/submissions/' . $project_id, $submissionName);
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
@@ -542,62 +542,59 @@ class Milestones extends Controller
     }
     function acceptSubmission(Request $req)
     {
-        try{
-        $userData = Controller::checkUser($req);
-        if ($userData['exist'] == 1) {
-            if ($userData['group_id'] == $req->company_id) {
-                if ($userData['privileges'] == 1) {
-                    milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, 'status' => 3]);
-                    Milestone::where('id', $req->milestone_id)->update(['status' => 3]);
-                    $response = Controller::returnResponse(200, "proposal rejected", []);
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $req->company_id) {
+                    if ($userData['privileges'] == 1) {
+                        milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, 'status' => 3]);
+                        Milestone::where('id', $req->milestone_id)->update(['status' => 3]);
+                        $response = Controller::returnResponse(200, "proposal rejected", []);
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                     return (json_encode($response));
                 }
-                else{
-                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
-                return (json_encode($response));
-                }
             } else {
-                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
-        } else {
-            $response = Controller::returnResponse(422, "this user does not have team", []);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return (json_encode($response));
         }
-    }catch(Exception $error)
-    {
-        $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
-        return (json_encode($response));
-    }
     }
     function reviseSubmission(Request $req)
     {
-        try{
-        $userData = Controller::checkUser($req);
-        if ($userData['exist'] == 1) {
-            if ($userData['group_id'] == $req->company_id) {
-                if ($userData['privileges'] == 1) {
-                    
-                    milestone_submission::where('id', $req->submission_id)->update(["client_comments" => $req->comments,"status" => 2]);
-                    Milestone::where('id', $req->milestone_id)->update(['status' => 2]);
-                    $response = Controller::returnResponse(200, "proposal rejected", []);
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $req->company_id) {
+                    if ($userData['privileges'] == 1) {
+
+                        milestone_submission::where('id', $req->submission_id)->update(["client_comments" => $req->comments, "status" => 2]);
+                        Milestone::where('id', $req->milestone_id)->update(['status' => 2]);
+                        $response = Controller::returnResponse(200, "proposal rejected", []);
+                        return (json_encode($response));
+                    }
+                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                    return (json_encode($response));
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                     return (json_encode($response));
                 }
-                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
-                return (json_encode($response));
             } else {
-                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
-        } else {
-            $response = Controller::returnResponse(422, "this user does not have team", []);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return (json_encode($response));
         }
-    }catch(Exception $error)
-    {
-        $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
-        return (json_encode($response));
-    }
     }
 
     function getMilestoneById(Request $req)
@@ -622,7 +619,10 @@ class Milestones extends Controller
                             "submission_date" => $sub->created_at,
                         ));
                     }
+                    $cansubmit=$this->canSubmit($req->milestone_id);
                     $milestone->submissions =  $submissions_details;
+                    $milestone->can_submit =  $cansubmit;
+                   
                     $response = Controller::returnResponse(200, "successful", $milestone);
                     return (json_encode($response));
                 }
@@ -657,44 +657,39 @@ class Milestones extends Controller
     function downloadSubmissionFile(Request $req)
     {
         try {
-        $userData = Controller::checkUser($req);
-        if ($userData['exist'] == 1) {
-            if ($userData['group_id'] == $req->group_id) {
-                if ($userData['privileges'] == 1) {
-                    $submission = milestone_submission::where('id', $req->submission_id)->select('file', 'milestone_id')->get()->first();
-                    $milestone = Milestone::where('id', $submission->milestone_id)->select('project_id', 'name')->get()->first();
-                    $dest_path = "/submissions/" . $milestone->project_id . "/" . $submission->file;
-                    $file = asset($dest_path);
-                    $filecheck = public_path('submissions/'.$milestone->project_id."/".$submission->file);
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $req->group_id) {
+                    if ($userData['privileges'] == 1) {
+                        $submission = milestone_submission::where('id', $req->submission_id)->select('file', 'milestone_id')->get()->first();
+                        $milestone = Milestone::where('id', $submission->milestone_id)->select('project_id', 'name')->get()->first();
+                        $dest_path = "/submissions/" . $milestone->project_id . "/" . $submission->file;
+                        $file = asset($dest_path);
+                        $filecheck = public_path('submissions/' . $milestone->project_id . "/" . $submission->file);
 
-                    if (file_exists($filecheck)) {
-                        $file= asset('submissions/'.$milestone->project_id."/".$submission->file);
-                        // return Response()->download($file);
-                        $response = Controller::returnResponse(200, "successful", ['link'=>$file]);
+                        if (file_exists($filecheck)) {
+                            $file = asset('submissions/' . $milestone->project_id . "/" . $submission->file);
+                            // return Response()->download($file);
+                            $response = Controller::returnResponse(200, "successful", ['link' => $file]);
+                            return (json_encode($response));
+                            //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '11.
+                            //   filesize($fileurl)))->deleteFileAfterSend(true);
+                        } else {
+                            $response = Controller::returnResponse(422, "file does not exist", []);
+                            return (json_encode($response));
+                        }
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
                         return (json_encode($response));
-                        //  'Photos.zip', array('Content-Type: application/octet-stream','Content-Length: '11.
-                        //   filesize($fileurl)))->deleteFileAfterSend(true);
                     }
-                    else {
-                        $response = Controller::returnResponse(422, "file does not exist", []);
-                     return (json_encode($response));
-                    }
-
-                    
-                       
-                    
                 } else {
-                    $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
                     return (json_encode($response));
                 }
             } else {
-                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
-        } else {
-            $response = Controller::returnResponse(422, "this user does not have team", []);
-            return (json_encode($response));
-        }
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
             return (json_encode($response));
@@ -735,5 +730,45 @@ class Milestones extends Controller
             $response = Controller::returnResponse(500, "Something went wrong", $error->getMessage());
             return (json_encode($response));
         }
+    }
+    /**
+     * $id Milestone Id 
+     */
+    function canSubmit($id)
+    {
+        $cansubmit = 0;
+        $status1 = Milestone::where('id', $id)->select('status')->first()->status;
+        if ($status1 == 3 || $status1 == 1) {
+            $cansubmit = 0;
+        }
+        else{
+            $final_proposal_id = Milestone::where('id', $id)->select('final_proposal_id')->first()->final_proposal_id;
+        $milestones = Milestone::where('final_proposal_id', $final_proposal_id)->select('id', 'status')->get();
+        $ids = $milestones->pluck('id')->toArray();
+        asort($ids);
+      
+        $index = array_search($id, $ids); //index of the current milestone
+        if ($index == 0) {
+            $status = Milestone::where('id', $id)->select('status')->first()->status;
+            if ($status == 0 || $status == 2) {
+                $cansubmit = 1;
+            }
+        }
+        else{
+        $splittedIds = array_slice($ids, $index); //this array have just the current milestone 
+        for ($i = 0; $i < count($splittedIds) - 1; $i++) {
+            $status = Milestone::where('id', $splittedIds[$i])->select('status')->first()->status;
+            if ($status == 3) {
+                $cansubmit = 1;
+                continue;
+            } else {
+                $cansubmit = 0;
+                break;
+            }
+        }
+    }
+        }
+        
+    return $cansubmit;
     }
 }
