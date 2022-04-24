@@ -740,6 +740,7 @@ class Milestones extends Controller
         $status1 = Milestone::where('id', $id)->select('status')->first()->status;
         if ($status1 == 3 || $status1 == 1) {
             $cansubmit = 0;
+
         }
         else{
             $final_proposal_id = Milestone::where('id', $id)->select('final_proposal_id')->first()->final_proposal_id;
@@ -756,7 +757,16 @@ class Milestones extends Controller
         }
         else{
         $splittedIds = array_slice($ids, $index); //this array have just the current milestone 
-        for ($i = 0; $i < count($splittedIds) - 1; $i++) {
+        if(count($splittedIds) == 1)
+        {
+            $length =1;
+        }
+        else
+        {
+            $length=count($splittedIds)-1;
+        }
+
+        for ($i = 0; $i < $length; $i++) {
             $status = Milestone::where('id', $splittedIds[$i])->select('status')->first()->status;
             if ($status == 3) {
                 $cansubmit = 1;
