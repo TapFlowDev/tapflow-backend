@@ -140,7 +140,7 @@ class Proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
-                $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($user_group_id);
+                $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($proposal->team_id);
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
                     $proposal->agency_info->admin_email=$agencyAdmin->email;
