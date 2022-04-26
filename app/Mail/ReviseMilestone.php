@@ -30,7 +30,7 @@ class ReviseMilestone extends Mailable
    
     public function build()
     {
-        return $this->from('projects@tapflow.app', 'Tapflow-Projects')->subject($this->details['subject'])->markdown('mail.reviseMiestone');
+        return $this->from('projects@tapflow.app', 'Tapflow-Projects')->subject($this->details['subject'])->markdown('mail.reviseMilestone');
 
         
     }
