@@ -125,8 +125,11 @@ class Proposals extends Controller
         $userData = $req->user();
         $project = Project::where('id', $project_id)->select('user_id')->first();
         $GroupControllerObj = new GroupController;
+        $groupMemsObj = new GroupMembersController;
+
         $project_group_id = $GroupControllerObj->getGroupIdByUserId($project->user_id);
         $user_group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+       
         if ($user_group_id == $project_group_id) {
 
             $page = ($offset - 1) * $limit;
@@ -137,8 +140,10 @@ class Proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
+                $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($user_group_id);
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
+                    $proposal->agency_info->admin_email=$agencyAdmin->email;
                     $priceMin = (float)$proposal->price_min * (float)$proposal->from;
                     $priceMax = (float)$proposal->price_max * (float)$proposal->to;
                     $proposal->price_min = $priceMin;
