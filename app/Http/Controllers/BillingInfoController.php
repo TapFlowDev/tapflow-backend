@@ -20,6 +20,14 @@ class BillingInfoController extends Controller
                 "bank_name" => "required|max:255",
                 "IBAN" => "required|unique:billing_infos,IBAN",
                 "country" => "required|exists:countries,id",
+                "legal_name" => "required|max:255",
+                "phone" => "required|max:255",
+                "legal_address" => "required|max:255",
+                "building" => "max:255",
+                "city" => "required|max:255",
+                "region" => "required|max:255",
+                "zip_code" => "required|max:255,numeric",
+                "SWIFT" => "required|min:8,max:11",
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
@@ -52,6 +60,14 @@ class BillingInfoController extends Controller
                 'bank_name' => $req->bank_name,
                 'IBAN' => $req->IBAN,
                 'country' => $req->country,
+                'legal_name' => $req->legal_name,
+                'phone' => $req->phone,
+                'legal_address' => $req->legal_address,
+                'building' => $req->building,
+                'city' => $req->city,
+                'region' => $req->region,
+                'zip_code' => $req->zip_code,
+                'SWIFT' => $req->SWIFT,
             );
             $billingInfo = Billing_info::create($billingInfoArray);
             $response = Controller::returnResponse(200, "billing info created successfully", $billingInfo);
@@ -70,6 +86,14 @@ class BillingInfoController extends Controller
                 "bank_name" => "required|max:255",
                 "IBAN" => "required",
                 "country" => "required|exists:countries,id",
+                "legal_name" => "required|max:255",
+                "phone" => "required|max:255",
+                "legal_address" => "required|max:255",
+                "building" => "max:255",
+                "city" => "required|max:255",
+                "region" => "required|max:255",
+                "zip_code" => "required|max:255,numeric",
+                "SWIFT" => "required|min:8,max:11",
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
@@ -106,7 +130,15 @@ class BillingInfoController extends Controller
                 ->update([
                     'bank_name' => $req->bank_name,
                     'IBAN' => $req->IBAN,
-                    'country' => $req->country
+                    'country' => $req->country,
+                    'legal_name' => $req->legal_name,
+                    'phone' => $req->phone,
+                    'legal_address' => $req->legal_address,
+                    'building' => $req->building,
+                    'city' => $req->city,
+                    'region' => $req->region,
+                    'zip_code' => $req->zip_code,
+                    'SWIFT' => $req->SWIFT,
                 ]);
 
             $response = Controller::returnResponse(200, "billing info updated successfully", $billingInfo);

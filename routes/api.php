@@ -97,6 +97,8 @@ Route::post('addRequest', [ClientsRequestsController::class, 'Insert']);
 Route::post('addTeam', [GroupController::class, 'add_group_team']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
+// testing
+Route::get('printInvoice', [PaymentsController::class, 'printInvoice']);
 
 
 

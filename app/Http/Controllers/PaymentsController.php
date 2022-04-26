@@ -10,6 +10,7 @@ use App\Models\Project;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use PDF;
 
 class PaymentsController extends Controller
 {
@@ -194,5 +195,16 @@ class PaymentsController extends Controller
             }
         }
         return $project->status;
+    }
+    function printInvoice()
+    {
+        $data = [
+            'title' => 'Welcome to ItSolutionStuff.com',
+            'date' => date('m/d/Y')
+        ];
+          
+        $pdf = PDF::loadView('pdf/pdfTest', $data);
+    
+        return $pdf->download('itsolutionstuff.pdf');
     }
 }
