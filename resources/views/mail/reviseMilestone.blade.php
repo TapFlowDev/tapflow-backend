@@ -22,7 +22,7 @@
                 <td>Client FeedBack:</td>
             </tr>
              <tr>
-             <td>{{ $details['milestone']['client_comments'] }}</td>
+             <td colspan="2">{{ $details['milestone']['client_comments'] }}</td>
             </tr>
         </table>
         <br>
