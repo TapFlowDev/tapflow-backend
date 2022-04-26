@@ -566,13 +566,13 @@ class Milestones extends Controller
 
                         $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
                         $details = [
-                            "subject" => 'Review Your Submission',
+                            "subject" => 'Your Submission Accepted',
                             "name" => $adminName,
                             "project_id" =>  $projectInfo->id,
                             "project_name" =>  $projectInfo->name,
                             "milestone" => ['name' => $milestoneDetails->name, 'client_comments' => $req->comments]
                         ];
-                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new reviseMilestone($details));
+                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new AcceptMilestone($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
                     } else {
@@ -615,13 +615,13 @@ class Milestones extends Controller
 
                         $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
                         $details = [
-                            "subject" => 'Your Submission Revised',
+                            "subject" => 'Review Your Submission',
                             "name" => $adminName,
                             "project_id" =>  $projectInfo->id,
                             "project_name" =>  $projectInfo->name,
                             "milestone" => ['name' => $milestoneDetails->name, 'client_comments' => $req->comments]
                         ];
-                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new AcceptMilestone($details));
+                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new reviseMilestone($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
                     }
