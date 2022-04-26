@@ -13,6 +13,14 @@ class Billing_info extends Model
         'bank_name',
         'IBAN',
         'account_number',
-        'country'
+        'country',
+        'legal_name',
+        'phone',
+        'legal_address',
+        'building',
+        'city',
+        'region',
+        'zip_code',
+        'SWIFT',
     ];
 }
