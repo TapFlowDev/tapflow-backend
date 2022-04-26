@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Money\Exchange;
 use Response;
 use App\Mail\AcceptMilestone;
-use App\Mail\reviseMilestone;
+use App\Mail\ReviseMilestone;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ProjectController;
 
@@ -612,7 +612,6 @@ class Milestones extends Controller
                         $projectObj = new ProjectController;
                         $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($agency->id);
                         $projectInfo = json_decode($projectObj->getProject($agency->project_id))->data;
-
                         $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
                         $details = [
                             "subject" => 'Review Your Submission',
@@ -621,7 +620,7 @@ class Milestones extends Controller
                             "project_name" =>  $projectInfo->name,
                             "milestone" => ['name' => $milestoneDetails->name, 'client_comments' => $req->comments]
                         ];
-                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new reviseMilestone($details));
+                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new ReviseMilestone($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
                     }
