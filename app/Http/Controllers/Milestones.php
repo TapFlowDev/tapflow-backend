@@ -19,6 +19,9 @@ use App\Models\Final_proposal;
 use Illuminate\Support\Facades\DB;
 use Money\Exchange;
 use Response;
+use App\Mail\AcceptMilestone;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\ProjectController;
 
 class Milestones extends Controller
 {
@@ -123,7 +126,7 @@ class Milestones extends Controller
                                     $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
                                     return (json_encode($response));
                                 } else {
-                                    $response = Controller::returnResponse(422, "Uou already submit your proposal", []);
+                                    $response = Controller::returnResponse(422, "You already submit your proposal", []);
                                     return (json_encode($response));
                                 }
                             }
@@ -549,6 +552,26 @@ class Milestones extends Controller
                     if ($userData['privileges'] == 1) {
                         milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, 'status' => 3]);
                         Milestone::where('id', $req->milestone_id)->update(['status' => 3]);
+                        $milestoneDetails = Milestone::where('id', $req->milestone_id)->select('name', 'final_proposal_id')->first();
+                        $agency = DB::table('groups')
+                            ->Join('final_proposals', 'groups.id', '=', 'final_proposals.team_id')
+                            ->select('groups.name', 'groups.id', 'final_proposals.project_id')
+                            ->where('final_proposals.id', '=', $milestoneDetails->final_proposal_id)
+                            ->first();
+                        $groupMemsObj = new GroupMembersController;
+                        $projectObj = new ProjectController;
+                        $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($agency->id);
+                        $projectInfo = json_decode($projectObj->getProject($agency->project_id))->data;
+
+                        $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
+                        $details = [
+                            "subject" => 'Your Submission Revised',
+                            "name" => $adminName,
+                            "project_id" =>  $projectInfo->id,
+                            "project_name" =>  $projectInfo->name,
+                            "milestone" => ['name' => $milestoneDetails->name, 'client_comments' => $req->comments]
+                        ];
+                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new AcceptMilestone($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
                     } else {
@@ -578,6 +601,26 @@ class Milestones extends Controller
 
                         milestone_submission::where('id', $req->submission_id)->update(["client_comments" => $req->comments, "status" => 2]);
                         Milestone::where('id', $req->milestone_id)->update(['status' => 2]);
+                        $milestoneDetails = Milestone::where('id', $req->milestone_id)->select('name', 'final_proposal_id')->first();
+                        $agency = DB::table('groups')
+                            ->Join('final_proposals', 'groups.id', '=', 'final_proposals.team_id')
+                            ->select('groups.name', 'groups.id', 'final_proposals.project_id')
+                            ->where('final_proposals.id', '=', $milestoneDetails->final_proposal_id)
+                            ->first();
+                        $groupMemsObj = new GroupMembersController;
+                        $projectObj = new ProjectController;
+                        $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($agency->id);
+                        $projectInfo = json_decode($projectObj->getProject($agency->project_id))->data;
+
+                        $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
+                        $details = [
+                            "subject" => 'Your Submission Revised',
+                            "name" => $adminName,
+                            "project_id" =>  $projectInfo->id,
+                            "project_name" =>  $projectInfo->name,
+                            "milestone" => ['name' => $milestoneDetails->name, 'client_comments' => $req->comments]
+                        ];
+                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new AcceptMilestone($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
                     }
@@ -619,10 +662,10 @@ class Milestones extends Controller
                             "submission_date" => $sub->created_at,
                         ));
                     }
-                    $cansubmit=$this->canSubmit($req->milestone_id);
+                    $cansubmit = $this->canSubmit($req->milestone_id);
                     $milestone->submissions =  $submissions_details;
                     $milestone->can_submit =  $cansubmit;
-                   
+
                     $response = Controller::returnResponse(200, "successful", $milestone);
                     return (json_encode($response));
                 }
@@ -740,45 +783,39 @@ class Milestones extends Controller
         $status1 = Milestone::where('id', $id)->select('status')->first()->status;
         if ($status1 == 3 || $status1 == 1) {
             $cansubmit = 0;
-
-        }
-        else{
+        } else {
             $final_proposal_id = Milestone::where('id', $id)->select('final_proposal_id')->first()->final_proposal_id;
-        $milestones = Milestone::where('final_proposal_id', $final_proposal_id)->select('id', 'status')->get();
-        $ids = $milestones->pluck('id')->toArray();
-        asort($ids);
-      
-        $index = array_search($id, $ids); //index of the current milestone
-        if ($index == 0) {
-            $status = Milestone::where('id', $id)->select('status')->first()->status;
-            if ($status == 0 || $status == 2) {
-                $cansubmit = 1;
+            $milestones = Milestone::where('final_proposal_id', $final_proposal_id)->select('id', 'status')->get();
+            $ids = $milestones->pluck('id')->toArray();
+            asort($ids);
+
+            $index = array_search($id, $ids); //index of the current milestone
+            if ($index == 0) {
+                $status = Milestone::where('id', $id)->select('status')->first()->status;
+                if ($status == 0 || $status == 2) {
+                    $cansubmit = 1;
+                }
+            } else {
+                $splittedIds = array_slice($ids, $index); //this array have just the current milestone 
+                if (count($splittedIds) == 1) {
+                    $length = 1;
+                } else {
+                    $length = count($splittedIds) - 1;
+                }
+
+                for ($i = 0; $i < $length; $i++) {
+                    $status = Milestone::where('id', $splittedIds[$i])->select('status')->first()->status;
+                    if ($status == 3) {
+                        $cansubmit = 1;
+                        continue;
+                    } else {
+                        $cansubmit = 0;
+                        break;
+                    }
+                }
             }
-        }
-        else{
-        $splittedIds = array_slice($ids, $index); //this array have just the current milestone 
-        if(count($splittedIds) == 1)
-        {
-            $length =1;
-        }
-        else
-        {
-            $length=count($splittedIds)-1;
         }
 
-        for ($i = 0; $i < $length; $i++) {
-            $status = Milestone::where('id', $splittedIds[$i])->select('status')->first()->status;
-            if ($status == 3) {
-                $cansubmit = 1;
-                continue;
-            } else {
-                $cansubmit = 0;
-                break;
-            }
-        }
-    }
-        }
-        
-    return $cansubmit;
+        return $cansubmit;
     }
 }
