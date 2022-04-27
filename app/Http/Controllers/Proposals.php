@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\InitialProposalActions;
 use GuzzleHttp\Handler\Proxy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -200,12 +201,13 @@ class Proposals extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-
             if ($userData['exist'] == 1) {
                 if ($userData['group_id'] == $req->company_id) {
                     if ($userData['privileges'] == 1) {
 
                         Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
+                        // notify agency
+                        $mail = $this->notifyAgency($req->proposal_id, 1);
                         $response = Controller::returnResponse(200, "proposal accepted", []);
                         return (json_encode($response));
                     } else {
@@ -232,6 +234,8 @@ class Proposals extends Controller
             if ($userData['group_id'] == $req->company_id) {
                 if ($userData['privileges'] == 1) {
                     Proposal::where('id', $req->proposal_id)->update(['status' => 2]);
+                    // notify agency
+                    $mail = $this->notifyAgency($req->proposal_id, 2);
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));
                 }
@@ -289,5 +293,22 @@ class Proposals extends Controller
         }
 
         return $proposals;
+    }
+    function notifyAgency($proposalId, $status){
+        $groupMemberObj = new GroupMembersController;
+        $proposal = Proposal::where('id', $proposalId)->get()->first();
+        $teamId = $proposal->team_id;
+        $projectId = $proposal->project_id;
+        $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
+        $project = Project::where('id', '=', $projectId)->get()->first();
+        $subject = $project->name . " Proposal Update";
+        $details = array(
+            'subject' => $subject,
+            'projectName' => $project->name,
+            'status' => $status,
+        );
+        // Mail::to($admin->email)->send(new WalletActions($details));
+        // dd($details);
+        return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
 }
