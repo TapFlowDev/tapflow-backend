@@ -98,6 +98,8 @@ class WalletsTransactionsController extends Controller
                     $newBalance = number_format($walletBalance - $total, 2, '.', '');
                     $wallet->balance = $newBalance;
                     $wallet->save();
+                    //notify admin
+                    $mail = $this->notifyAdminWalletAction($wallet->reference_id, 2, $total, $newBalance);
                     return ['paymentStatus' => 1, 'paymentMsg' => 'paid successfully',  'responseCode' => 200];
                 }
             }
@@ -127,6 +129,8 @@ class WalletsTransactionsController extends Controller
                 $newBalance = number_format($walletBalance + $total, 2, '.', '');
                 $wallet->balance = $newBalance;
                 $wallet->save();
+                //notify admin
+                $mail = $this->notifyAdminWalletAction($wallet->reference_id, 2, $total, $newBalance);
                 return ['paymentStatus' => 1, 'paymentMsg' => 'paid successfully',  'responseCode' => 200];
             }
             return ['paymentStatus' => -1, 'paymentMsg' => 'error', 'responseCode' => 500];
