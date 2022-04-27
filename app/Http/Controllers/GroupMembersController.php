@@ -143,7 +143,6 @@ class GroupMembersController extends Controller
     }
     function getTeamAdminByGroupId($id)
     {
-        
             $teamMembers = DB::table('group_members')
                 ->leftjoin('freelancers', 'group_members.user_id', '=', 'freelancers.user_id')
                 ->leftjoin('users', 'group_members.user_id', '=', 'users.id')
@@ -152,8 +151,18 @@ class GroupMembersController extends Controller
                 ->where('group_members.group_id', '=', $id)
                 ->where('group_members.privileges', '=', 1)
                 ->first();
-          
             return ($teamMembers);
-       
+    }
+    function getCompanyAdminByGroupId($id)
+    {
+            $teamMembers = DB::table('group_members')
+                ->leftjoin('clients', 'group_members.user_id', '=', 'clients.user_id')
+                ->leftjoin('users', 'group_members.user_id', '=', 'users.id')
+                ->select("clients.user_id", "users.first_name", "users.last_name", "users.email",
+                   "clients.country", "users.role", "group_members.privileges")
+                ->where('group_members.group_id', '=', $id)
+                ->where('group_members.privileges', '=', 1)
+                ->first();
+            return ($teamMembers);
     }
 }
