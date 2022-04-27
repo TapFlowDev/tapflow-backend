@@ -507,13 +507,13 @@ class Final_proposals extends Controller
                                         $companyAdmin = $GroupMemsObj->getCompanyAdminByGroupId($projectInfo->company_id);
                                         $agency = $GroupControllerObj->getGroupById($req->team_id);
                                         $adminName = $companyAdmin->first_name .' '. $companyAdmin->last_name;
-                                        // $desc=Final_proposal::where('id', $ifExist['final_proposal_id'])->select('description')->first()->description;
+                                        $desc=Final_proposal::where('id', $ifExist['final_proposal_id'])->select('description')->first()->description;
                                         $details = [
                                             "subject" => 'Final Proposal Submitted By '.$agency->name,
                                             "name" => $adminName,
                                             "project_id" =>  $projectInfo->id,
                                             "project_name" =>  $projectInfo->name,
-                                            // "Proposal_description"=>$desc,
+                                            "Proposal_description"=>$desc,
                                             "agency_name"=>$agency->name
                                         ];
                                         Mail::mailer('smtp2')->to($companyAdmin->email)->send(new SubmitFinalProposal($details));
