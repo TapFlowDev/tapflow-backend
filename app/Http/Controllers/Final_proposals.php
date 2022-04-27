@@ -467,6 +467,7 @@ class Final_proposals extends Controller
                         }
                         //if the proposal exists
                         else {
+                            try{
                             $rules = array(
                                 "title" => "required",
                                 "team_id" => "required|exists:groups,id",
@@ -528,6 +529,12 @@ class Final_proposals extends Controller
                                     return json_encode($response);
                                 }
                             }
+                        }
+                        catch(Exception $error)
+                        {
+                            $response = Controller::returnResponse(500, "something went wrong",$error->getMessage());
+            return (json_encode($response));
+                        }
                         }
                     } else {
                         $response = Controller::returnResponse(422, 'your initial proposal status not accepted ', []);
@@ -681,7 +688,7 @@ class Final_proposals extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something went wrong", []);
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return (json_encode($response));
         }
     }
@@ -723,7 +730,7 @@ class Final_proposals extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something went wrong", []);
+            $response = Controller::returnResponse(500, "something went wrong",$error->getMessage());
             return (json_encode($response));
         }
     }
