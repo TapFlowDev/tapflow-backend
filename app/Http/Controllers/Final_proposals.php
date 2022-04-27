@@ -612,7 +612,7 @@ class Final_proposals extends Controller
                             }
 
                             Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
-                            $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id,project_id')->first();
+                            $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id','project_id')->first();
                             $groupMemsObj = new GroupMembersController;
                             $projectObj = new ProjectController;
                             $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
@@ -658,7 +658,7 @@ class Final_proposals extends Controller
                 if ($userData['group_id'] == $req->company_id) {
                     if ($userData['privileges'] == 1) {
                         Final_proposal::where('id', $req->proposal_id)->update(['status' => 2]);
-                        $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id,project_id')->first();
+                        $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id','project_id')->first();
                         $groupMemsObj = new GroupMembersController;
                         $projectObj = new ProjectController;
                         $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
@@ -700,7 +700,7 @@ class Final_proposals extends Controller
                 if ($userData['group_id'] == $req->company_id) {
                     if ($userData['privileges'] == 1) {
                         Final_proposal::where('id', $req->proposal_id)->update(['status' => 3]);
-                        $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id,project_id')->first();
+                        $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id','project_id')->first();
                         $groupMemsObj = new GroupMembersController;
                         $projectObj = new ProjectController;
                         $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
