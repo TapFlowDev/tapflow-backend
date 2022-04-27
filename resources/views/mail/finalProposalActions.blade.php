@@ -7,6 +7,8 @@
         @if ($details['type'] == 1)
         The final proposal you have submitted was accepted from the company.
         @elseif ($details['type'] == 2)
+        We are sorry to inform you that your final proposal has been rejected.
+        @elseif ($details['type'] == 3)
         The final proposal you have submitted was revised from the company.
         @endif
         <br>
@@ -39,7 +41,8 @@
         Congratulations
         Good luck,
         @elseif ($details['type'] == 2)
-        Good luck,
+        Good luck Next Time,
+        @elseif ($details['type'] == 3)
         @endif
     </p>
 </body>

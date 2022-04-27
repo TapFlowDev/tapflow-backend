@@ -449,7 +449,7 @@ class Final_proposals extends Controller
                                     $agency = $GroupControllerObj->getGroupById($req->team_id);
                                     $adminName = $companyAdmin->first_name . $companyAdmin->last_name;
                                     $details = [
-                                        "subject" => 'Final Proposal Submitted By'+$agency->name,
+                                        "subject" => 'Final Proposal Submitted By'.$agency->name,
                                         "name" => $adminName,
                                         "project_id" =>  $projectInfo->id,
                                         "project_name" =>  $projectInfo->name,
@@ -508,7 +508,7 @@ class Final_proposals extends Controller
                                         $adminName = $companyAdmin->first_name . $companyAdmin->last_name;
                                         $final_proposal=Final_proposal::where('id', $ifExist['final_proposal_id'])->select('description')->first()->description;
                                         $details = [
-                                            "subject" => 'Final Proposal Submitted By'+$agency->name,
+                                            "subject" => 'Final Proposal Submitted By'.$agency->name,
                                             "name" => $adminName,
                                             "project_id" =>  $projectInfo->id,
                                             "project_name" =>  $projectInfo->name,
@@ -605,7 +605,21 @@ class Final_proposals extends Controller
                             }
 
                             Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
-
+                            $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id,project_id')->first();
+                            $groupMemsObj = new GroupMembersController;
+                            $projectObj = new ProjectController;
+                            $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
+                            $projectInfo = json_decode($projectObj->getProject($final_proposal->project_id))->data;
+                            $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
+                            $details = [
+                                "subject" => 'Your FinalProposal Has Been Accepted',
+                                "name" => $adminName,
+                                "project_id" =>  $projectInfo->id,
+                                "project_name" =>  $projectInfo->name,
+                                "type"=>1
+                               
+                            ];
+                            Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                             $response = Controller::returnResponse(200, "proposal accepted", []);
                             return (json_encode($response));
                         } else {
@@ -637,6 +651,21 @@ class Final_proposals extends Controller
                 if ($userData['group_id'] == $req->company_id) {
                     if ($userData['privileges'] == 1) {
                         Final_proposal::where('id', $req->proposal_id)->update(['status' => 2]);
+                        $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id,project_id')->first();
+                        $groupMemsObj = new GroupMembersController;
+                        $projectObj = new ProjectController;
+                        $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
+                        $projectInfo = json_decode($projectObj->getProject($final_proposal->project_id))->data;
+                        $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
+                        $details = [
+                            "subject" => 'Your FinalProposal Has Been Rejected',
+                            "name" => $adminName,
+                            "project_id" =>  $projectInfo->id,
+                            "project_name" =>  $projectInfo->name,
+                            "type"=>2
+                           
+                        ];
+                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
                     } else {
@@ -675,7 +704,7 @@ class Final_proposals extends Controller
                             "name" => $adminName,
                             "project_id" =>  $projectInfo->id,
                             "project_name" =>  $projectInfo->name,
-                            "type"=>2
+                            "type"=>3
                            
                         ];
                         Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
