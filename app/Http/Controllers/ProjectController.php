@@ -382,10 +382,10 @@ class ProjectController extends Controller
                 ->select('projects.*')
                 ->where('projects.team_id', '=', $agency_id)
                 ->where('projects.status', '=', 1)
-                ->orWhere('projects.status', '=', 4)
+                ->where('projects.status', '=', 4)
                 ->distinct()
                 ->orderBy('updated_at', 'desc')
-                ->latest()->offset($page)->limit($limit)
+                ->offset($page)->limit($limit)
                 ->get();
 
             $projectInfo = $this->getProjectsInfo($projects);
