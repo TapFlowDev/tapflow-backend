@@ -513,7 +513,7 @@ class Final_proposals extends Controller
                                             "name" => $adminName,
                                             "project_id" =>  $projectInfo->id,
                                             "project_name" =>  $projectInfo->name,
-                                            "Proposal_description"=>$final_proposal->description,
+                                            "Proposal_description"=>$final_proposal,
                                             "agency_name"=>$agency->name
                                         ];
                                         Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
