@@ -23,7 +23,7 @@ use PhpParser\Node\Stmt\Finally_;
 use Stripe\Issuing\Card;
 use function PHPUnit\Framework\isEmpty;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\submitFinalProposal;
+use App\Mail\SubmitFinalProposal;
 use App\Mail\FinalProposalActions;
 class Final_proposals extends Controller
 {
@@ -447,7 +447,7 @@ class Final_proposals extends Controller
                                     $projectInfo = json_decode($projectObj->getProject($req->project_id))->data;
                                     $companyAdmin = $GroupMemsObj->getCompanyAdminByGroupId($projectInfo->company_id);
                                     $agency = $GroupControllerObj->getGroupById($req->team_id);
-                                    $adminName = $companyAdmin->first_name . $companyAdmin->last_name;
+                                    $adminName = $companyAdmin->first_name .' '. $companyAdmin->last_name;
                                     $details = [
                                         "subject" => 'Final Proposal Submitted By'.$agency->name,
                                         "name" => $adminName,
@@ -506,17 +506,17 @@ class Final_proposals extends Controller
                                         $projectInfo = json_decode($projectObj->getProject($req->project_id))->data;
                                         $companyAdmin = $GroupMemsObj->getCompanyAdminByGroupId($projectInfo->company_id);
                                         $agency = $GroupControllerObj->getGroupById($req->team_id);
-                                        $adminName = $companyAdmin->first_name . $companyAdmin->last_name;
+                                        $adminName = $companyAdmin->first_name .' '. $companyAdmin->last_name;
                                         // $desc=Final_proposal::where('id', $ifExist['final_proposal_id'])->select('description')->first()->description;
                                         $details = [
-                                            "subject" => 'Final Proposal Submitted By'.$agency->name,
+                                            "subject" => 'Final Proposal Submitted By '.$agency->name,
                                             "name" => $adminName,
                                             "project_id" =>  $projectInfo->id,
                                             "project_name" =>  $projectInfo->name,
                                             // "Proposal_description"=>$desc,
                                             "agency_name"=>$agency->name
                                         ];
-                                        Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
+                                        Mail::mailer('smtp2')->to($companyAdmin->email)->send(new SubmitFinalProposal($details));
                                         $response = Controller::returnResponse(200, 'update data successful', []);
                                         return json_encode($response);
                                     } else {
