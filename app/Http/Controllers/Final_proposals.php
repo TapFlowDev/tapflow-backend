@@ -21,9 +21,10 @@ use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt\Finally_;
 use Stripe\Issuing\Card;
-
 use function PHPUnit\Framework\isEmpty;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\submitFinalProposal;
+use App\Mail\FinalProposalActions;
 class Final_proposals extends Controller
 {
     function Insert(Request $req)
@@ -440,6 +441,22 @@ class Final_proposals extends Controller
                                         Final_proposal::where('id', $final_proposal->id)->update(['down_payment' => 0, 'down_payment_value' => 0.00]);
                                         Milestone::where('final_proposal_id', $final_proposal->id)->update(['down_payment' => 0]);
                                     }
+                                    $GroupControllerObj=new GroupController;
+                                    $GroupMemsObj=new GroupMembersController;
+                                    $projectObj=new ProjectController;
+                                    $projectInfo = json_decode($projectObj->getProject($req->project_id))->data;
+                                    $companyAdmin = $GroupMemsObj->getCompanyAdminByGroupId($projectInfo->company_id);
+                                    $agency = $GroupControllerObj->getGroupById($req->team_id);
+                                    $adminName = $companyAdmin->first_name . $companyAdmin->last_name;
+                                    $details = [
+                                        "subject" => 'Final Proposal Submitted By'+$agency->name,
+                                        "name" => $adminName,
+                                        "project_id" =>  $projectInfo->id,
+                                        "project_name" =>  $projectInfo->name,
+                                        "Proposal_description"=>$final_proposal->description,
+                                        "agency_name"=>$agency->name
+                                    ];
+                                    Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
                                 } catch (Exception $error) {
@@ -482,6 +499,23 @@ class Final_proposals extends Controller
                                         }
                                         $update_final = $this->updateQuery($ifExist['final_proposal_id'], $req);
                                         Final_proposal::where('id', $ifExist['final_proposal_id'])->update(['status' => $final_proposal_status]);
+                                        $GroupControllerObj=new GroupController;
+                                        $GroupMemsObj=new GroupMembersController;
+                                        $projectObj=new ProjectController;
+                                        $projectInfo = json_decode($projectObj->getProject($req->project_id))->data;
+                                        $companyAdmin = $GroupMemsObj->getCompanyAdminByGroupId($projectInfo->company_id);
+                                        $agency = $GroupControllerObj->getGroupById($req->team_id);
+                                        $adminName = $companyAdmin->first_name . $companyAdmin->last_name;
+                                        $final_proposal=Final_proposal::where('id', $ifExist['final_proposal_id'])->select('description')->first()->description;
+                                        $details = [
+                                            "subject" => 'Final Proposal Submitted By'+$agency->name,
+                                            "name" => $adminName,
+                                            "project_id" =>  $projectInfo->id,
+                                            "project_name" =>  $projectInfo->name,
+                                            "Proposal_description"=>$final_proposal->description,
+                                            "agency_name"=>$agency->name
+                                        ];
+                                        Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
                                         $response = Controller::returnResponse(200, 'update data successful', []);
                                         return json_encode($response);
                                     } else {
@@ -630,6 +664,21 @@ class Final_proposals extends Controller
                 if ($userData['group_id'] == $req->company_id) {
                     if ($userData['privileges'] == 1) {
                         Final_proposal::where('id', $req->proposal_id)->update(['status' => 3]);
+                        $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id,project_id')->first();
+                        $groupMemsObj = new GroupMembersController;
+                        $projectObj = new ProjectController;
+                        $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
+                        $projectInfo = json_decode($projectObj->getProject($final_proposal->project_id))->data;
+                        $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
+                        $details = [
+                            "subject" => 'Review Your FinalProposal',
+                            "name" => $adminName,
+                            "project_id" =>  $projectInfo->id,
+                            "project_name" =>  $projectInfo->name,
+                            "type"=>2
+                           
+                        ];
+                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                         $response = Controller::returnResponse(200, "Go to chat to complete the review ", []);
                         return (json_encode($response));
                     } else {
