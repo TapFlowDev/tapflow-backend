@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GroupMembersController;
+use App\Mail\WalletActions;
+use App\Models\Group;
+use App\Models\Group_member;
+use App\Models\User;
 use App\Models\wallet;
 use App\Models\wallets_transaction;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class WalletsTransactionsController extends Controller
 {
@@ -53,7 +59,7 @@ class WalletsTransactionsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store($wallet, Request $request)
+    public function store($wallet, Request $request) //deposit
     {
         $validated = $request->validate([
             'amount' => 'required|numeric|gt:0',
@@ -75,6 +81,8 @@ class WalletsTransactionsController extends Controller
         $newBalance = $currentBalance + (float)$request->amount;
         $walletInfo->balance = number_format($newBalance, 2, '.', '');
         $walletInfo->save();
+        // notify admin 
+        $mail = $this->notifyAdminWalletAction($walletInfo->reference_id, 1, $request->amount, $newBalance);
         return redirect('AdminTool/wallet/' . $wallet . '/transactions');
     }
 
@@ -140,9 +148,12 @@ class WalletsTransactionsController extends Controller
             $newBalance = $currentBalance - (float)$array['amount'];
             $walletInfo->balance = number_format($newBalance, 2, '.', '');
             $walletInfo->save();
-            return array('code'=>200, 'transaction'=>$transaction);
+            // notify admin 
+            $mail = $this->notifyAdminWalletAction($walletInfo->reference_id, 2, $array['amount'], $newBalance);
+            return array('code' => 200, 'transaction' => $transaction);
         } catch (Exception $error) {
-            return array('code'=>500);
+            return array('code' => 500);
         }
     }
+    
 }
