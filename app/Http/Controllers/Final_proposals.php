@@ -702,20 +702,20 @@ class Final_proposals extends Controller
                         Final_proposal::where('id', $req->proposal_id)->update(['status' => 3]);
                         $final_proposal=Final_proposal::where('id',$req->proposal_id)->select('team_id','project_id')->first();
                         $groupMemsObj = new GroupMembersController;
-                        $projectObj = new ProjectController;
+                        // $projectObj = new ProjectController;
                         $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
-                        $projectInfo = json_decode($projectObj->getProject($final_proposal->project_id))->data;
-                        $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
-                        $details = [
-                            "subject" => 'Review Your FinalProposal',
-                            "name" => $adminName,
-                            "project_id" =>  $projectInfo->id,
-                            "project_name" =>  $projectInfo->name,
-                            "type"=>3
+                        // $projectInfo = json_decode($projectObj->getProject($final_proposal->project_id))->data;
+                        // $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
+                        // $details = [
+                        //     "subject" => 'Review Your FinalProposal',
+                        //     "name" => $adminName,
+                        //     "project_id" =>  $projectInfo->id,
+                        //     "project_name" =>  $projectInfo->name,
+                        //     "type"=>3
                            
-                        ];
-                        Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
-                        $response = Controller::returnResponse(200, "Go to chat to complete the review ", []);
+                        // ];
+                        // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
+                        $response = Controller::returnResponse(200, "Please contact the agency via email ", ['admin_email'=>$agencyAdmin->email]);
                         return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
