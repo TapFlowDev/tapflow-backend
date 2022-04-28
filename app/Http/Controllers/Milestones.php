@@ -810,7 +810,7 @@ class Milestones extends Controller
                         $cansubmit = 1;
                         break;
                     }
-                    if ($status == 3) {
+                    elseif ($status == 3) {
                         $cansubmit = 1;
                         continue;
                     } else {
