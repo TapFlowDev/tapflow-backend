@@ -662,7 +662,7 @@ class Milestones extends Controller
                             "submission_date" => $sub->created_at,
                         ));
                     }
-                    $can = $this->can($req->milestone_id);
+                    $can = $this->canSubmit($req->milestone_id);
                     $milestone->submissions =  $submissions_details;
                     $milestone->can_submit =  $can;
 
