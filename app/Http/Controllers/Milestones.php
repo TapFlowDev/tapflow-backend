@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\AdminTool\WalletsTransactionsController as AdminToolWalletsTransactionsController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -23,10 +24,13 @@ use App\Mail\AcceptMilestone;
 use App\Mail\ReviseMilestone;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ProjectController;
+use App\Models\payments;
+use App\Http\Controllers\WalletsTransactionsController;
 use App\Models\Group;
 use App\Models\payments;
 use App\Models\wallets_transaction;
 use PDF;
+
 
 class Milestones extends Controller
 {
@@ -557,6 +561,7 @@ class Milestones extends Controller
                     if ($userData['privileges'] == 1) {
                         milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, 'status' => 3]);
                         Milestone::where('id', $req->milestone_id)->update(['status' => 3]);
+                        $this->PayIfDownPayment($req->milestone_id);
                         $milestoneDetails = Milestone::where('id', $req->milestone_id)->select('name', 'final_proposal_id')->first();
                         $agency = DB::table('groups')
                             ->Join('final_proposals', 'groups.id', '=', 'final_proposals.team_id')
@@ -567,7 +572,6 @@ class Milestones extends Controller
                         $projectObj = new ProjectController;
                         $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($agency->id);
                         $projectInfo = json_decode($projectObj->getProject($agency->project_id))->data;
-
                         $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
                         $details = [
                             "subject" => 'Your Submission Accepted',
@@ -807,6 +811,22 @@ class Milestones extends Controller
         }
         return $can;
     }
+
+    /**
+     * check if the milestone includes in the down payment if yes pay it
+     */
+    function PayIfDownPayment($id)
+    {
+        $down_payment=Milestone::where('id',$id)->select('down_payment')->first()->down_payment;
+        $walletTransactionsObj=new AdminToolWalletsTransactionsController;
+        if($down_payment==1)
+        {
+            $payment=payments::where('milestone_id',$id)->select('*')->first();
+            $walletTransactionsObj->makePaymentTransactionDeposit($payment);
+            return 1;
+        }
+        else{return 0;}
+
     function printMilestoneInvoice(Request $req, $id)
     {
         try {
@@ -868,5 +888,6 @@ class Milestones extends Controller
             $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
             return (json_encode($response));
         }
+
     }
 }
