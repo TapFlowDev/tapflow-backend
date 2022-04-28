@@ -27,7 +27,6 @@ use App\Http\Controllers\ProjectController;
 use App\Models\payments;
 use App\Http\Controllers\WalletsTransactionsController;
 use App\Models\Group;
-use App\Models\payments;
 use App\Models\wallets_transaction;
 use PDF;
 
@@ -826,7 +825,7 @@ class Milestones extends Controller
             return 1;
         }
         else{return 0;}
-
+    }
     function printMilestoneInvoice(Request $req, $id)
     {
         try {
