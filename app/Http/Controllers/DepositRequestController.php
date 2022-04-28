@@ -8,7 +8,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use PDF;
 class DepositRequestController extends Controller
 {
     //add row 
@@ -99,6 +99,31 @@ class DepositRequestController extends Controller
             return 0;
         } else {
             return 1;
+        }
+    }
+
+    function printDepositDeails(Request $req, $id){
+        try {
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $deposits = deposit_request::where('id', '=', $id)->where('company_id', '=', $userData['group_id'])->get()->first();
+            $data = array(
+                'ref_number' => $deposits->reference_number ,
+                'amount' => $deposits->amount,
+                'date' => date('Y/m/d', strtotime($deposits->created_at)),
+            );
+            $filename = "deposit-" . $deposits->reference_number  . ".pdf";
+            $pdf = PDF::loadView('pdf/depositRequest', $data);
+            return $pdf->download($filename);
+            $response = Controller::returnResponse(200, "data found", $deposits);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
         }
     }
 }

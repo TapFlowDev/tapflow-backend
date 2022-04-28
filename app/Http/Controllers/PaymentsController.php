@@ -203,8 +203,8 @@ class PaymentsController extends Controller
             'date' => date('m/d/Y')
         ];
         //   dd($data);
-        $pdf = PDF::loadView('pdf/pdfTest', $data);
+        $pdf = PDF::loadView('pdf/depositRequest', $data);
     
-        return $pdf->download('itsolutionstuff.pdf');
+        return $pdf->download('test.pdf');
     }
 }
