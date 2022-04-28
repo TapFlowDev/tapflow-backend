@@ -202,7 +202,7 @@ class PaymentsController extends Controller
             'title' => 'Welcome to ItSolutionStuff.com',
             'date' => date('m/d/Y')
         ];
-          
+        //   dd($data);
         $pdf = PDF::loadView('pdf/pdfTest', $data);
     
         return $pdf->download('itsolutionstuff.pdf');
