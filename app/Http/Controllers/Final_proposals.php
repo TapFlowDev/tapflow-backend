@@ -734,4 +734,22 @@ class Final_proposals extends Controller
             return (json_encode($response));
         }
     }
+    function testtest($id)
+    {
+        $final_proposal=Final_proposal::where('id',$id)->select('team_id','project_id')->first();
+        $groupMemsObj = new GroupMembersController;
+        $projectObj = new ProjectController;
+        $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
+        $projectInfo = json_decode($projectObj->getProject($final_proposal->project_id))->data;
+        $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
+        $details = [
+            "subject" => 'Review Your FinalProposal',
+            "name" => $adminName,
+            "project_id" =>  $projectInfo->id,
+            "project_name" =>  $projectInfo->name,
+            "type"=>3
+           
+        ];
+        Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new FinalProposalActions($details));
+    }
 }

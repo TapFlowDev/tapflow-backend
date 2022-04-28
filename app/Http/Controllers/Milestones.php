@@ -803,7 +803,7 @@ class Milestones extends Controller
                     $length = count($splittedIds) - 1;
                 }
 
-                for ($i = 0; $i < $length; $i++) {
+                for ($i = 0; $i <= $length; $i++) {
                     $status = Milestone::where('id', $splittedIds[$i])->select('status')->first()->status;
                     if ($status == 3) {
                         $cansubmit = 1;
