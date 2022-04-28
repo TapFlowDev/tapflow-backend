@@ -10,8 +10,8 @@
             @elseif ($details['type'] == 3)
                 The final proposal you have submitted was revised from the company.
             @endif
-            <br>
         </p>
+        <br>
         <p style="color: black; font-weight: bold;">
             Proposal Details:
         </p>

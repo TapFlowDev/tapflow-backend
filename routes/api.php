@@ -70,7 +70,7 @@ use phpDocumentor\Reflection\ProjectFactory;
 // });
 // for testing test
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
-Route::get('testest/{id}', [Final_proposals::class, 'testest']);
+Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
 Route::get('updateMilestonesPrices/{m}/{f}', [Milestones::class, 'updateMilestonesPrices']);
 
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
