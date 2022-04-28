@@ -100,7 +100,7 @@ Route::post('addTeam', [GroupController::class, 'add_group_team']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 // testing
-Route::get('printInvoice', [PaymentsController::class, 'printInvoice']);
+// Route::get('printInvoiceTestTT', [PaymentsController::class, 'printInvoice']);
 
 
 
@@ -240,4 +240,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('acceptSubmission', [Milestones::class, 'acceptSubmission']);
     Route::post('reviewSubmission', [Milestones::class, 'reviseSubmission']);
     Route::get('deposits/{offset}/{limit}', [DepositRequestController::class, 'getDeposits']);
+    Route::get('printDepositDeails/{id}', [DepositRequestController::class, 'printDepositDeails']);
 });
