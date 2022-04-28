@@ -358,7 +358,7 @@
      <div class="logo-container">
       <img
         style="height: 100px"
-        src="\public\images\profile-pic.jpg"
+        src="https://operations.tapflow.dev/images/profile-pic.jpg"
       >
     </div> 
 
