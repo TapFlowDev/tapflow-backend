@@ -26,6 +26,11 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ProjectController;
 use App\Models\payments;
 use App\Http\Controllers\WalletsTransactionsController;
+use App\Models\Group;
+use App\Models\payments;
+use App\Models\wallets_transaction;
+use PDF;
+
 
 class Milestones extends Controller
 {
@@ -782,7 +787,7 @@ class Milestones extends Controller
      */
     function canSubmit($id)
     {
-        $can=0;
+        $can = 0;
         $status1 = Milestone::where('id', $id)->select('status')->first()->status;
         if ($status1 == 3 || $status1 == 1) {
             $can = 0;
@@ -806,6 +811,7 @@ class Milestones extends Controller
         }
         return $can;
     }
+
     /**
      * check if the milestone includes in the down payment if yes pay it
      */
@@ -820,5 +826,68 @@ class Milestones extends Controller
             return 1;
         }
         else{return 0;}
+
+    function printMilestoneInvoice(Request $req, $id)
+    {
+        try {
+            $walletObj = new WalletsController;
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+            $wallet = $walletObj->getOrCreateWallet($userData['group_id'], 1);
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($userData['type'] == 1) {
+                $payment = payments::where('milestone_id', '=', $id)->where('agency_id', '=', $userData['group_id'])->where('status', '<>', 0)
+                    ->get()->first();
+            } else {
+                $payment = payments::where('milestone_id', '=', $id)->where('company_id', '=', $userData['group_id'])->where('status', '<>', 0)
+                    ->get()->first();
+            }
+            if (!$payment) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $transaction = wallets_transaction::where('payment_id', '=', $payment->id)->where('wallet_id', '=', $wallet->id)->get()->first();
+
+            if (!$transaction) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+
+            $payment = payments::where('id', '=', $transaction->payment_id)->get()->first();
+            $milestone = Milestone::where('id', '=', $payment->milestone_id)->get()->first();
+            $project = Project::select('name')->where('id', '=', $payment->project_id)->get()->first();
+            $agency = Group::select('name')->where('id', '=', $payment->agency_id)->get()->first();
+            $company = Group::select('name')->where('id', '=', $payment->company_id)->get()->first();
+
+            $total = 0;
+            if ($userData['type'] == 1) {
+                $total = $payment->agency_total_price;
+            } else {
+                $total = $payment->total_price;
+            }
+            $data = array(
+                'milestone_price' => $payment->milestone_price,
+                'tapflow_fee' => $payment->tapflow_fee,
+                'total' => $total,
+                'milestone_name' => $milestone->name,
+                'project_name' => $project->name,
+                'agency_name' => $agency->name,
+                'company_name' => $company->name,
+                'id' => $transaction->id,
+                'date' => date('Y-m-d', strtotime($transaction->created_at)),
+                'type' => $transaction->type,
+                'user_type' => $userData['type'],
+            );
+            $filename = "invoice-" . $transaction->id . ".pdf";
+            $pdf = PDF::loadView('pdf/milestone', $data);
+            return $pdf->download($filename);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+
     }
 }
