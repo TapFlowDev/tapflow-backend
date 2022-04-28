@@ -344,12 +344,16 @@
 
 <div class="web-container">
     <div class="logo-container">
-        <img style="height: 100px" src="https://operations.tapflow.dev/images/profile-pic.jpg">
+        <img style="height: 50px; width: 184px" src="https://operations.tapflow.dev/images/tapflow.jpeg">
     </div>
     <table class="invoice-info-container">
         <tr>
             <td rowspan="2" class="client-name">
-                Client Name
+                @if ($type == 1)
+                    Deposit
+                @else
+                    Withdraw
+                @endif
             </td>
             <td>
             </td>
@@ -369,15 +373,15 @@
         </tr>
         <tr>
             <td>
-                <strong>12345</strong>
+                <strong>{{ $date }}</strong>
             </td>
             <td>
-                <strong>May 24th, 2024</strong>
+                <strong>#{{ $id }}</strong>
             </td>
             <td>
             </td>
         </tr>
-        <tr>
+        {{-- <tr>
             <td>
                 From:
             </td>
@@ -396,7 +400,7 @@
             </td>
             <td>
             </td>
-        </tr>
+        </tr> --}}
     </table>
     {{--  --}}
 
@@ -411,24 +415,24 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
+            {{-- <tr>
                 <!-- <td>2</td> -->
                 <td>Milestone Name</td>
                 <td class="right"><strong>Milestone 1</strong></td>
                 <!-- <td class="bold">$30.00</td> -->
-            </tr>
+            </tr> --}}
             <tr>
                 <!-- <td>4</td> -->
                 <td>Amount</td>
-                <td class="right">$10.00</td>
+                <td class="right">${{ $amount }}</td>
                 <!-- <td class="bold">$40.00</td> -->
             </tr>
-            <tr>
+            {{-- <tr>
                 <!-- <td>5</td> -->
                 <td>Fees</td>
                 <td class="right">$7.00</td>
                 <!-- <td class="bold">$35.00</td> -->
-            </tr>
+            </tr> --}}
         </tbody>
     </table>
 
@@ -444,7 +448,7 @@
         <tbody>
             <tr>
                 <td class="large"></td>
-                <td class="large total">$105.00</td>
+                <td class="large total">${{ $amount }}</td>
             </tr>
         </tbody>
     </table>

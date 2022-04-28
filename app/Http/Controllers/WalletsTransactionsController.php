@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Group;
+use App\Models\Milestone;
+use App\Models\payments;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Models\wallets_transaction;
 use App\Models\wallet;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-
+use PDF;
 
 class WalletsTransactionsController extends Controller
 {
@@ -179,6 +183,97 @@ class WalletsTransactionsController extends Controller
                 'walletInfo' => $wallet,
                 'transactions' => $transactions
             );
+            $response = Controller::returnResponse(200, "data found", $responseData);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function printInvoice(Request $req, $id)
+    {
+        try {
+            $walletObj = new WalletsController;
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+            $wallet = $walletObj->getOrCreateWallet($userData['group_id'], 1);
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $transaction = wallets_transaction::where('id', '=', $id)->get()->first();
+            if (!$transaction) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($transaction->wallet_id!= $wallet->id) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($transaction->payment_id != '') {
+                
+                $payment = payments::where('id', '=', $transaction->payment_id)->get()->first();
+                $milestone = Milestone::where('id', '=', $payment->milestone_id)->get()->first();
+                $project = Project::select('name')->where('id', '=', $payment->project_id)->get()->first();
+                $agency = Group::select('name')->where('id', '=', $payment->agency_id)->get()->first();
+                $company = Group::select('name')->where('id', '=', $payment->company_id)->get()->first();
+
+                $total = 0;
+                if($userData['type'] == 1){
+                    $total = $payment->agency_total_price;
+                }else{
+                    $total = $payment->total_price;
+                }
+                $data = array(
+                    'milestone_price' => $payment->milestone_price,
+                    'tapflow_fee' => $payment->tapflow_fee,
+                    'total' => $total,
+                    'milestone_name' => $milestone->name,
+                    'project_name' => $project->name,
+                    'agency_name' => $agency->name,
+                    'company_name' => $company->name,
+                    'id' => $transaction->id,
+                    'date' => date('Y-m-d', strtotime($transaction->created_at)),
+                    'type' => $transaction->type,
+                    'user_type' => $userData['type'],
+                    );
+                    $filename = "invoice-".$transaction->id.".pdf";
+                    $pdf = PDF::loadView('pdf/milestone', $data);
+                    return $pdf->download($filename);
+            } 
+            else {
+                if ($transaction->type == 1) {
+                    /**
+                     * in this case the invoice will always be deposit for companies
+                     */
+                    $data = array(
+                        'amount' => $transaction->amount,
+                        'id' => $transaction->id,
+                        'date' => date('Y-m-d', strtotime($transaction->created_at)),
+                        'type' => 1
+                        );
+                    $filename = "invoice-".$transaction->id.".pdf";
+                    $pdf = PDF::loadView('pdf/depositOrWithdrawal', $data);
+                    
+                    return $pdf->download($filename);
+                }elseif($transaction->type == 2){
+                     /**
+                     * in this case the invoice will always be withdrawal from agencies
+                     */
+                    $data = array(
+                        'amount' => $transaction->amount,
+                        'id' => $transaction->id,
+                        'date' => date('Y-m-d', strtotime($transaction->created_at)),
+                        'type' => 2
+                    );
+                    // dd($data);
+                    $filename = "invoice-".$transaction->id.".pdf";
+                    $pdf = PDF::loadView('pdf/depositOrWithdrawal', $data);
+                    return $pdf->download($filename);
+                }
+            }
+            // $userData['type'] == 1
+            $responseData = [];
             $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
         } catch (Exception $error) {
