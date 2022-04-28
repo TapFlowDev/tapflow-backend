@@ -662,9 +662,9 @@ class Milestones extends Controller
                             "submission_date" => $sub->created_at,
                         ));
                     }
-                    $cansubmit = $this->canSubmit($req->milestone_id);
+                    $can = $this->can($req->milestone_id);
                     $milestone->submissions =  $submissions_details;
-                    $milestone->can_submit =  $cansubmit;
+                    $milestone->can_submit =  $can;
 
                     $response = Controller::returnResponse(200, "successful", $milestone);
                     return (json_encode($response));
@@ -779,48 +779,28 @@ class Milestones extends Controller
      */
     function canSubmit($id)
     {
-        $cansubmit = 0;
+        $can=0;
         $status1 = Milestone::where('id', $id)->select('status')->first()->status;
         if ($status1 == 3 || $status1 == 1) {
-            $cansubmit = 0;
+            $can = 0;
         } else {
             $final_proposal_id = Milestone::where('id', $id)->select('final_proposal_id')->first()->final_proposal_id;
             $milestones = Milestone::where('final_proposal_id', $final_proposal_id)->select('id', 'status')->get();
             $ids = $milestones->pluck('id')->toArray();
-            asort($ids);
-
             $index = array_search($id, $ids); //index of the current milestone
             if ($index == 0) {
                 $status = Milestone::where('id', $id)->select('status')->first()->status;
                 if ($status == 0 || $status == 2) {
-                    $cansubmit = 1;
+                    $can = 1;
                 }
             } else {
-                $splittedIds = array_slice($ids, $index); //this array have just the current milestone 
-                if (count($splittedIds) == 1) {
-                    $length = 1;
-                } else {
-                    $length = count($splittedIds) - 1;
-                }
-
-                for ($i = 0; $i <= $length; $i++) {
-                    $status = Milestone::where('id', $splittedIds[$i])->select('status')->first()->status;
-                    if($splittedIds[$i]==$id &&  $cansubmit == 1)
-                    {
-                        $cansubmit = 1;
-                        break;
-                    }
-                    elseif ($status == 3) {
-                        $cansubmit = 1;
-                        continue;
-                    } else {
-                        $cansubmit = 0;
-                        break;
-                    }
+                $check_index = $index - 1;
+                $status2 = Milestone::where('id', $ids[$check_index])->select('status')->first()->status;
+                if ($status2 == 3) {
+                    $can = 1;
                 }
             }
         }
-
-        return $cansubmit;
+        return $can;
     }
 }
