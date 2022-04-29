@@ -164,8 +164,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('getMilestoneById', [Milestones::class, 'getMilestoneById']);
     Route::post('downloadSubmissionFile', [Milestones::class, 'downloadSubmissionFile']);
     Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
-    Route::get('printInvoice/{id}', [WalletsTransactionsController::class, 'printInvoice']);
-    Route::get('printMilestoneInvoice/{id}', [Milestones::class, 'printMilestoneInvoice']);
+    Route::post('printInvoice', [WalletsTransactionsController::class, 'printInvoice']);
+    Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
 
 
 });
@@ -240,5 +240,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('acceptSubmission', [Milestones::class, 'acceptSubmission']);
     Route::post('reviewSubmission', [Milestones::class, 'reviseSubmission']);
     Route::get('deposits/{offset}/{limit}', [DepositRequestController::class, 'getDeposits']);
-    Route::get('printDepositDeails/{id}', [DepositRequestController::class, 'printDepositDeails']);
+    Route::post('printDepositDeails', [DepositRequestController::class, 'printDepositDeails']);
 });

@@ -190,9 +190,10 @@ class WalletsTransactionsController extends Controller
             return (json_encode($response));
         }
     }
-    function printInvoice(Request $req, $id)
+    function printInvoice(Request $req)
     {
         try {
+            $id = $req->id;
             $walletObj = new WalletsController;
             $userData = $this->checkUser($req);
             $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
