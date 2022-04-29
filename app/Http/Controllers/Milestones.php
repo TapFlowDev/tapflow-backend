@@ -826,9 +826,10 @@ class Milestones extends Controller
         }
         else{return 0;}
     }
-    function printMilestoneInvoice(Request $req, $id)
+    function printMilestoneInvoice(Request $req)
     {
         try {
+            $id = $req->id;
             $walletObj = new WalletsController;
             $userData = $this->checkUser($req);
             $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;

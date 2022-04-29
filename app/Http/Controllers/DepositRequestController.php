@@ -102,8 +102,9 @@ class DepositRequestController extends Controller
         }
     }
 
-    function printDepositDeails(Request $req, $id){
+    function printDepositDeails(Request $req){
         try {
+            $id = $req->id;
             $userData = $this->checkUser($req);
             $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
             if (!$condtion) {
