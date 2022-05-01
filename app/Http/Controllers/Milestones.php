@@ -882,13 +882,8 @@ class Milestones extends Controller
                 'user_type' => $userData['type'],
             );
             $filename = "invoice-" . $transaction->id . ".pdf";
-            $pdf = new PDF;
-            $pdf->loadHtml('pdf/milestone', $data);
-            // $pdf = PDF::loadView('pdf/milestone', $data);
-            $pdf->setPaper('A4', 'landscape');
-            $pdf->render();
-            $pdf->stream();
-            // return $pdf->download($filename);
+            $pdf = PDF::loadView('pdf/milestone', $data);
+            return $pdf->download($filename);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
             return (json_encode($response));
