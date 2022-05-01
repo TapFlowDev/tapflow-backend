@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta charset="utf-8">
     <style>
         body {
             font-size: 16px;
@@ -181,13 +182,13 @@
             font-family:
                 system-ui,
                 -apple-system,
-                'Segoe UI',
+                "Segoe UI",
                 Roboto,
                 Helvetica,
                 Arial,
                 sans-serif,
-                'Apple Color Emoji',
-                'Segoe UI Emoji';
+                "Apple Color Emoji",
+                "Segoe UI Emoji";
         }
 
 
@@ -220,7 +221,7 @@
                 ui-monospace,
                 SFMono-Regular,
                 Consolas,
-                'Liberation Mono',
+                "Liberation Mono",
                 Menlo,
                 monospace;
 
@@ -275,9 +276,9 @@
         }
 
         button,
-        [type='button'],
-        [type='reset'],
-        [type='submit'] {
+        [type="button"],
+        [type="reset"],
+        [type="submit"] {
             -webkit-appearance: button;
         }
 
@@ -316,7 +317,7 @@
         }
 
 
-        [type='search'] {
+        [type="search"] {
             -webkit-appearance: textfield;
             outline-offset: -2px;
         }
