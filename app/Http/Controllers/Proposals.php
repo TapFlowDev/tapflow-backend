@@ -308,9 +308,9 @@ class Proposals extends Controller
             'projectName' => $project->name,
             'status' => $status,
         );
-        // Mail::to($admin->email)->send(new WalletActions($details));
+        return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
         // dd($details);
-        return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
+        //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
 
 }

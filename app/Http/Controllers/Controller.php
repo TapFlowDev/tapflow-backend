@@ -71,8 +71,8 @@ class Controller extends BaseController
             'amount' => $amount,
             'currentAmount' => $currentBalance
         );
-        // Mail::to($admin->email)->send(new WalletActions($details));
+        return Mail::mailer('smtp')->to($admin->email)->send(new WalletActions($details));
         // dd($details);
-        return Mail::mailer('smtp')->to('hamzahshajrawi@gmail.com')->send(new WalletActions($details));
+        //return Mail::mailer('smtp')->to('hamzahshajrawi@gmail.com')->send(new WalletActions($details));
     }
 }
