@@ -23,6 +23,7 @@ use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Http\Controllers\AdminTool\FromOptions;
 use App\Http\Controllers\AdminTool\InitialProposals;
 use App\Http\Controllers\AdminTool\NotificationSettings;
+
 use App\Http\Controllers\AdminTool\StaticDataController;
 use App\Http\Controllers\AdminTool\WalletsController;
 use App\Http\Controllers\AdminTool\WalletsTransactionsController;
@@ -95,6 +96,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     //
     Route::post('/wallet/create', [WalletsController::class, 'create'])->name('wallet.create');
     Route::get('/agencyExportCsv', [GroupsController::class, 'agencyExportCsv'])->name('agecies.exportCsv');
+
 
 });
 Route::get('/r', function (Request $request) {
