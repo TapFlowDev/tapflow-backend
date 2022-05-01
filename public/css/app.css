@@ -368,7 +368,7 @@ body {
     justify-content: space-between;
 }
 .project-card-href{
-    text-decoration: none;
+    text-decoration: none !important;
     color: black;
 }
 .project-card-href:hover{

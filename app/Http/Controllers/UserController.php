@@ -79,7 +79,7 @@ class UserController extends Controller
             return (json_encode($response));
         } else {
             try {
-                $user = User::create($req->all() + ['name'=> $req->first_name . " " . $req->last_name]);
+                $user = User::create($req->all() + ['name' => $req->first_name . " " . $req->last_name, 'terms' => 1]);
                 $array = array("user_id" => $user->id, 'type_freelancer' => (int)$req->type);
                 if ($req->type == 1) {
                     $freelancer = Freelancer::create($array);
@@ -205,7 +205,7 @@ class UserController extends Controller
             $response = Controller::returnResponse(200, "login successfully", $responseData);
             return (json_encode($response));
         } catch (Exception $error) {
-            $responseData = array("error" => $error,);
+            $responseData = array("error" => $error->getMessage(),);
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return (json_encode($response));
         }
@@ -369,6 +369,24 @@ class UserController extends Controller
                 $response = Controller::returnResponse(500, "There IS Error Occurred", $error);
                 return (json_encode($response));
             }
+        }
+    }
+    function checkTokenExpiration(Request $req)
+    {
+        $response = Controller::returnResponse(200, 'Valid Token', []);
+        return (json_encode($response));
+    }
+    function updateTerms(Request $req)
+    {
+        $user = $req->user();
+        try {
+            $user->terms = 1;
+            $user->save();
+            $response = Controller::returnResponse(200, 'Terms and Condition updated successfully', []);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error);
+            return (json_encode($response));
         }
     }
 }

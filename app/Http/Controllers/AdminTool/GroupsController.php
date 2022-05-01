@@ -71,7 +71,7 @@ class GroupsController extends Controller
     public function update(Request $request, $id)
     {
         // dd($request->verify);
-        Group::where('id', $id)->update(['verified'=>(int)$request->verify]);
+        Group::where('id', $id)->update(['verified' => (int)$request->verify]);
         return redirect()->back();
     }
 
@@ -123,5 +123,6 @@ class GroupsController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
- 
+
 }
+

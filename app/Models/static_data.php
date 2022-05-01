@@ -16,5 +16,7 @@ class static_data extends Model
         "link",
         "text",
         "type",
+        "title",
+        "big_text",
     ];
 }

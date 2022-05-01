@@ -18,6 +18,8 @@ class ResetPasswordController extends Controller
 {
     function sendLinkResetPassword(Request $request)
     {
+        
+        
         try {
             $rules = array(
                 "email" => "email|required|exists:users,email"
@@ -35,12 +37,22 @@ class ResetPasswordController extends Controller
                 'token' => $token,
                 'created_at' => Carbon::now()
             ]);
+            $userType=$this->checkUserType($request->email);
+       
+            if($userType==2)
+            {
+            $urlll="client/reset-password?t=";
+            }
+            elseif($userType=1)
+            {
+                $urlll="reset-password?t=";
+            }
             if (env('APP_ENV') == 'local') {
-                $url = env('APP_URL') . "/reset-password?t=" . $token;
+                $url = env('APP_URL') . $urlll . $token;
             } elseif (env('APP_ENV') == 'dev') {
-                $url = "https://www.tapflow.dev/reset-password?t=" . $token;
+                $url = "https://www.tapflow.dev/".$urlll. $token;
             } else {
-                $url = "https://www.tapflow.app/reset-password?t=" . $token;
+                $url = "https://www.tapflow.app/".$urlll . $token;
             }
             $details = [
                 'url' => $url
@@ -50,7 +62,7 @@ class ResetPasswordController extends Controller
 
             return json_encode($response);
         } catch (Exception $error) {
-            $responseData = array("error" => $error,);
+            $responseData = array("error" => $error->getMessage());
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return json_encode($response);
         }
@@ -91,9 +103,13 @@ class ResetPasswordController extends Controller
             $response = Controller::returnResponse(200, "password changed successfully", array());
             return json_encode($response);
         } catch (Exception $error) {
-            $responseData = array("error" => $error);
+            $responseData = array("error" => $error->getMessage());
             $response = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return json_encode($response);
         }
+    }
+    private function checkUserType($email)
+    {
+       return User::where('email',$email)->select('type')->first()->type;
     }
 }

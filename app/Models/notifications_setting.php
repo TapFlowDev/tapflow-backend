@@ -15,5 +15,6 @@ class notifications_setting extends Model
         'email_template',
         'notification_title',
         'notification_text',
+        'has_group_name',
     ];
 }

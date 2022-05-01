@@ -61,7 +61,9 @@ class   GroupController extends Controller
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id",
             "analysis" => "required",
-            "design" => "required"
+            "design" => "required",
+            "minPerHour" => "numeric",
+            "maxPerHour" => "numeric"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -149,6 +151,8 @@ class   GroupController extends Controller
                 $teamArr['field'] = $req->field;
                 $teamArr['BA'] = $req->analysis;
                 $teamArr['design'] = $req->design;
+                $teamArr['minPerHour'] = $req->minPerHour;
+                $teamArr['maxPerHour'] = $req->maxPerHour;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
