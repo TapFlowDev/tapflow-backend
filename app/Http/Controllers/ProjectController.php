@@ -400,6 +400,7 @@ class ProjectController extends Controller
     {
         $milestonesObj = new Milestones;
         $finalProposalsObj = new Final_proposals;
+        $teamControllersObj = new TeamController;
         try {
             $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
             $projectData->final_proposal_id = DB::table('final_proposals')->select('id')->where('project_id', '=', $projectData->id)->where('status', '=', 1)->pluck('id')->first();
@@ -426,9 +427,16 @@ class ProjectController extends Controller
                     $admin->image  = asset('images/profile-pic.jpg');
                 }
             }
+            $team = $teamControllersObj->get_team_info($contract->team_id);
+            if (isset($team->image)) {
+                $team->image = asset("images/companies/" . $team->image);
+            } else {
+                $team->image = asset('images/profile-pic.jpg');
+            }
             $projectData->admins = $admins;
             $projectData->milestones = $milestones;
             $projectData->contract = $contract;
+            $projectData->contract->agency_info = $team;
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -652,7 +660,7 @@ class ProjectController extends Controller
     function getCompanyActiveProjectDetails(Request $req, $project_id, $company_id)
     {
         $userData = $req->user();
-        // try {
+        try {
         $GroupControllerObj = new GroupController;
         $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
         if ($group_id == $company_id) {
@@ -663,11 +671,11 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(422, "You are trying to get another company data", []);
             return (json_encode($response));
         }
-        // }catch(Exception $error)
-        // {
-        //     $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        }catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
     }
     private function getCompanyActiveProjectDetailsInfo($id)
     {
