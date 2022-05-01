@@ -38,7 +38,7 @@
     <table width="100%">
         <tbody>
             <tr height="40px">
-                <td style="font-weight: 900;">Refrence Number</td>
+                <td style="font-weight: 900;">Reference Number</td>
                 <td style="color:#8F8DA5; align= right ;">{{ $ref_number }}</td>
             </tr>
             <tr height="40px">
@@ -67,7 +67,7 @@
             </tr>
             <tr height="40px">
                 <td style="color:#8F8DA5;" width="200px"> Beneficiary Name </td>
-                <td> Tapfloe.inc </td>
+                <td> Tapflow.inc </td>
             </tr>
             <tr height="40px">
                 <td style="color:#8F8DA5;"> Account Number </td>
