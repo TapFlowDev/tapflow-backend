@@ -10,13 +10,13 @@
             font-family:
                 system-ui,
                 -apple-system,
-                'Segoe UI',
+                "Segoe UI",
                 Roboto,
                 Helvetica,
                 Arial,
                 sans-serif,
-                'Apple Color Emoji',
-                'Segoe UI Emoji';
+                "Apple Color Emoji",
+                "Segoe UI Emoji";
         }
     </style>
     <title>Transfare Details</title>
@@ -38,16 +38,16 @@
         <tbody>
             <tr height="40px">
                 <td style="font-weight: 900;">Refrence Number</td>
-                <td style="color:#8F8DA5; align='right';">{{ $ref_number }}</td>
+                <td style="color:#8F8DA5; align= right ;">{{ $ref_number }}</td>
             </tr>
             <tr height="40px">
                 <td style="font-weight: 900;">Amount</td>
-                <td style="color:#8F8DA5; align='right';">${{ $amount }}</td>
+                <td style="color:#8F8DA5; align= right ;">${{ $amount }}</td>
             </tr>
 
             <tr height="40px">
                 <td style="font-weight: 900;">Date</td>
-                <td style="color:#8F8DA5; align='right';">{{ $date }}</td>
+                <td style="color:#8F8DA5; align= right ;">{{ $date }}</td>
             </tr>
             <tr>
                 <td>
@@ -120,7 +120,7 @@
                     <strong>Important.</strong> To successfully send a wire:
                     <ul>
                         <li> use Evolve Bank & Trust details in the beneficiary (recipient) field</li>
-                        <li> use Tapflow,inc's details in the reference field</li>
+                        <li> use Tapflow,inc s details in the reference field</li>
                     </ul>
                 </td>
             </tr>
