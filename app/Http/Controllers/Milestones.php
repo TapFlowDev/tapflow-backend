@@ -483,28 +483,33 @@ class Milestones extends Controller
             );
             $validators = Validator::make($data, $rules);
             if ($validators->fails()) {
-                return ['code' => 200, 'msg' => $validators->errors()];
+                return ['code' => 422, 'msg' => $validators->errors()];
             } else {
-                Milestone::where('final_proposal_id', $final_proposal_id)->delete();
+                // Milestone::where('final_proposal_id', $final_proposal_id)->delete();
                 foreach ($data as $milestone) {
                     if (count($milestone['deliverables']) >= 0) {
                         $deliverables = serialize($milestone['deliverables']);
                     }
                     $price = $this->calculatePrice($milestone['milestone_num_hours'], $hourly_rate);
                     $req['milestone_price'] = $price;
-                    $data = array(
-                        "project_id" => $project_id,
-                        "final_proposal_id" => $final_proposal_id,
-                        "hours" => $milestone['milestone_num_hours'],
-                        "price" => $price,
-                        "name" => $milestone['milestone_name'],
-                        "description" => $milestone['milestone_description'],
-                        "deliverables" => serialize($milestone['deliverables']),
-                        "is_valid" => 1
+                    Milestone::where('id',$milestone['milestone_id'])->update( ["project_id" => $project_id, "final_proposal_id" => $final_proposal_id,
+                    "hours" => $milestone['milestone_num_hours'],"price" => $price,"name" => $milestone['milestone_name'],"description" => $milestone['milestone_description'],
+                    "deliverables" => serialize($milestone['deliverables']),
+                    "is_valid" => 1
+                ]);
+                    // $data = array(
+                    //     "project_id" => $project_id,
+                    //     "final_proposal_id" => $final_proposal_id,
+                    //     "hours" => $milestone['milestone_num_hours'],
+                    //     "price" => $price,
+                    //     "name" => $milestone['milestone_name'],
+                    //     "description" => $milestone['milestone_description'],
+                    //     "deliverables" => serialize($milestone['deliverables']),
+                    //     "is_valid" => 1
 
-                    );
+                    // );
 
-                    $milestone = Milestone::create($data);
+                    // $milestone = Milestone::create($data);
                 }
                 return ['code' => 200, 'msg' => 'successful'];
             }
