@@ -473,7 +473,7 @@ class Milestones extends Controller
     function SubmitFinal($data, $final_proposal_id, $project_id, $hourly_rate)
     {
         // try {
-            
+            return ['code' => 422, 'msg' => gettype($data)];
             $rules = array(
                 "milestone_name" => "required",
                 "milestone_num_hours" => "required",
