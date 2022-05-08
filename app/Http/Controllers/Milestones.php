@@ -482,9 +482,9 @@ class Milestones extends Controller
                 "description" => "required",
             );
             $validators = Validator::make($data, $rules);
-            // if ($validators->fails()) {
-            //     return ['code' => 422, 'msg' => $validators->errors()];
-            // } else {
+            if ($validators->fails()) {
+                return ['code' => 422, 'msg' => $validators->errors()];
+            } else {
                 // Milestone::where('final_proposal_id', $final_proposal_id)->delete();
                 foreach ($data as $milestone) {
                     if (count($milestone['deliverables']) >= 0) {
@@ -512,7 +512,7 @@ class Milestones extends Controller
                     // $milestone = Milestone::create($data);
                 }
                 return ['code' => 200, 'msg' => 'successful'];
-            // }
+            }
         // } catch (Exception $error) {
         //     return ['code' => 500, 'msg' => $error->getMessage()];
         // }
