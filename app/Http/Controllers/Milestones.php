@@ -1,4 +1,4 @@
-<?php
+<!-- <?php -->
 
 namespace App\Http\Controllers;
 
@@ -44,7 +44,7 @@ class Milestones extends Controller
                 "project_id" => "required|exists:projects,id",
                 "milestone_num_hours" => "required|numeric",
                 "milestone_hourly_rate" => "required|numeric",
-                "milestone_price" => "required",
+                // "milestone_price" => "required",
                 "deliverables" => "required",
             );
             $validators = Validator::make($req->all(), $rules);
@@ -483,7 +483,7 @@ class Milestones extends Controller
                 "milestone_name" => "required",
                 "milestone_num_hours" => "required",
                 "milestone_hourly_rate" => "required",
-                "milestone_price" => "required",
+                // "milestone_price" => "required",
                 "deliverables" => "required",
                 "description" => "required",
             );
