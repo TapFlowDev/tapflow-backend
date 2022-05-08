@@ -14,6 +14,7 @@ class withdrawl_request extends Model
         'billing_info_id',
         'wallet_transactiond_id',
         'amount',
+        'invoice',
         'type',// 1 => manual transfer
         'status',// 0 => pending, 1 => success, 2 => fail or denied 
     ];
