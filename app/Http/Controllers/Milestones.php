@@ -473,13 +473,14 @@ class Milestones extends Controller
     function SubmitFinal($data, $final_proposal_id, $project_id, $hourly_rate)
     {
         try {
-            return ['code' => 500, 'msg' => $data];
+            // return ['code' => 500, 'msg' => $data];
+            
             $rules = array(
                 "milestone_name" => "required",
                 "milestone_num_hours" => "required",
                 "milestone_price" => "required",
                 "deliverables" => "required",
-                "description" => "required",
+                "milestone_description" => "required",
             );
             $validators = Validator::make($data, $rules);
             if ($validators->fails()) {
