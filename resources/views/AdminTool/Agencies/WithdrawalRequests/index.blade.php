@@ -123,18 +123,10 @@
                                     </td>
                                     <td>
                                         @if ($withdrawlRequest->status == 0)
-                                            <button class="btn btn-sm btn-primary"
-                                                onclick="event.preventDefault();
-                                                                    document.getElementById('withdraw-form-{{ $withdrawlRequest->id }}').submit()">Withdraw</button>
-                                            <form id="withdraw-form-{{ $withdrawlRequest->id }}"
-                                                action="{{ route('AdminTool.agencies.withdrawal.update', [$withdrawlRequest->group_id, $withdrawlRequest->id]) }}"
-                                                method="POST" style="display: none;">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="wallet" value="{{ $walletInfo->id }}">
-                                                <input type="hidden" name="amount"
-                                                    value="{{ $withdrawlRequest->amount }}">
-                                            </form>
+                                            <a class="btn btn-sm btn-info"
+                                                href="{{ route('AdminTool.agencies.withdrawal.edit', [$withdrawlRequest->group_id, $withdrawlRequest->id]) }}"
+                                                role="button">Withdraw</a>
+                                        @else
                                         @endif
 
                                     </td>

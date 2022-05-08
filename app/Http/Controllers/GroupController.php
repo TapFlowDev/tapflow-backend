@@ -328,7 +328,7 @@ class   GroupController extends Controller
             $responseData = array(
                 "group_id" => $group_id
             );
-            $mailchimpUserType = 'agency-member';
+            $mailchimpUserType = 'company-member';
             // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
 
             $response = Controller::returnResponse(200, 'company added successfully', $responseData);

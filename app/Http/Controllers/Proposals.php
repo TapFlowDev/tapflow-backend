@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ProposalMail;
 use App\Models\Countries;
 use App\Models\Group;
+use App\Models\Group_member;
 use App\Models\Team;
 use App\Models\User;
 
@@ -302,10 +303,15 @@ class Proposals extends Controller
         $projectId = $proposal->project_id;
         $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
         $project = Project::where('id', '=', $projectId)->get()->first();
+        $groupId = $project->group_id;
+        $member = Group_member::where('group_id', $groupId)->first();
+        $clientId = $member->user_id;
+        $clinet = User::where('id', $clientId)->first();
         $subject = $project->name . " Proposal Update";
         $details = array(
             'subject' => $subject,
             'projectName' => $project->name,
+            'clientEmail' => $clinet->email,
             'status' => $status,
         );
         // Mail::to($admin->email)->send(new WalletActions($details));

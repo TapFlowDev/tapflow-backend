@@ -105,6 +105,9 @@ class WithdrawlRequestController extends Controller
             $withdrawl->billingInfo = $billingInfo;
             $user = User::where('id', '=', $withdrawl->user_id)->get()->first();
             $withdrawl->admin_name = $user->first_name . " " . $user->last_name;
+            if($withdrawl->invoice){
+                $withdrawl->invoice = asset('images/invoices/' . $withdrawl->invoice);
+            }
         }
         return $array;
     }
