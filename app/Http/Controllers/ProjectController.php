@@ -40,8 +40,8 @@ class ProjectController extends Controller
             "description" => "required",
             "requirements_description" => "required",
             "budget_type" => "required|gte:0|lt:2",
-            "min" => "numeric|multiple_of:5",
-            "max" => "numeric|multiple_of:5",
+            "min" => "numeric",
+            "max" => "numeric",
             "days" => "required|exists:categories,id",
             "needs" => "required",
             "design" => "required"
