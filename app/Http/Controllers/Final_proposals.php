@@ -402,8 +402,7 @@ class Final_proposals extends Controller
     }
     function submitFinalProposal(Request $req)
     {
-        $response = Controller::returnResponse(101, "Validation Error",$req->milestones);
-        return (json_encode($response));
+        
         $userData = Controller::checkUser($req);
         $proposalObj = new Proposals;
         $final_proposal_status = 0;
