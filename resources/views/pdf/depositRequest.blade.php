@@ -7,6 +7,7 @@
         body {
             margin: 0;
         }
+
         body {
             font-family:
                 system-ui,
@@ -39,16 +40,16 @@
         <tbody>
             <tr height="40px">
                 <td style="font-weight: 900;">Reference Number</td>
-                <td style="color:#8F8DA5; align= right ;">{{ $ref_number }}</td>
+                <td style="color:#8F8DA5;  text-align:right ;">{{ $ref_number }}</td>
             </tr>
             <tr height="40px">
                 <td style="font-weight: 900;">Amount</td>
-                <td style="color:#8F8DA5; align= right ;">${{ $amount }}</td>
+                <td style="color:#8F8DA5; text-align:right ;">${{ $amount }}</td>
             </tr>
 
             <tr height="40px">
                 <td style="font-weight: 900;">Date</td>
-                <td style="color:#8F8DA5; align= right ;">{{ $date }}</td>
+                <td style="color:#8F8DA5;    text-align:right ;">{{ $date }}</td>
             </tr>
             <tr>
                 <td>
@@ -60,6 +61,7 @@
             </tr>
         </tbody>
     </table>
+    
     <table>
         <tbody width="100%">
             <tr>
@@ -84,7 +86,9 @@
             </tr>
         </tbody>
     </table>
+    
     <table>
+
         <tbody width="100%">
             <tr>
                 <td style="color:#0B3AE1;font-weight: 500;">Receiving Bank Details</td>
@@ -186,7 +190,7 @@
             </tr>
             <tr height="40px">
                 <td></td>
-                <td style="color:#8F8DA5;"> Beneficiary Address  </td>
+                <td style="color:#8F8DA5;"> Beneficiary Address </td>
                 <td> 6070 Poplar Ave, Suite 200
                     Memphis, TN 38119
                     USA </td>
@@ -194,11 +198,11 @@
         </tbody>
     </table>
     <br>
+        
     <table>
         <tbody>
             <tr>
-                <td style="color:#0B3AE1;font-weight: 500;" width="200px">Reference field <p
-                        style="font-size:x-small;color:#8F8DA5;">
+                <td style="color:#0B3AE1;font-weight: 500;" width="200px">Reference field <p style="font-size:x-small;color:#8F8DA5;">
                         70 Remittance information
                     </p>
                 </td>
