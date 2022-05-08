@@ -102,7 +102,7 @@ class StaticDataController extends Controller
             $img->move(public_path($destPath), $imageName);
             static_data::where('id', $id)->update(array('image' => $imageName));
         }
-        $data=static_data::where('id',$id)->update(['link'=>$request->link,'text'=>$request->text]);
+        $data=static_data::where('id',$id)->update($request->except(['_token', '_method','imageContent']));
         return redirect('/AdminTool/staticData');
     }
 
@@ -123,7 +123,7 @@ class StaticDataController extends Controller
    }
    function getDataById($id)
    {
-       $data=static_data::where('id',$id)->select('id','image','link','text')->first();
+       $data=static_data::where('id',$id)->first();
        return $data;
    }
    function hideContent($id)

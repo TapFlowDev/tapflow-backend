@@ -20,6 +20,8 @@ class Milestone extends Model
         "hours",
         "price",
         "status",//1 => submitted, 2=> rejected, 3=>accepted
-        "deliverables"
+        "deliverables",
+        "is_valid",
+        "is_paid"
     ];
 }

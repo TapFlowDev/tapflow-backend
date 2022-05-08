@@ -61,7 +61,9 @@ class   GroupController extends Controller
             "name" => "required|max:255",
             "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id",
             "analysis" => "required",
-            "design" => "required"
+            "design" => "required",
+            "minPerHour" => "numeric",
+            "maxPerHour" => "numeric"
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -149,6 +151,8 @@ class   GroupController extends Controller
                 $teamArr['field'] = $req->field;
                 $teamArr['BA'] = $req->analysis;
                 $teamArr['design'] = $req->design;
+                $teamArr['minPerHour'] = $req->minPerHour;
+                $teamArr['maxPerHour'] = $req->maxPerHour;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
@@ -217,7 +221,7 @@ class   GroupController extends Controller
 
                 // return (json_encode($response));
                 $mailchimpUserType = 'agency-member';
-                //Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+                Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
                 $responseData = array(
                     "group_id" => $group_id
                 );
@@ -325,7 +329,7 @@ class   GroupController extends Controller
                 "group_id" => $group_id
             );
             $mailchimpUserType = 'agency-member';
-            //Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+            Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
 
             $response = Controller::returnResponse(200, 'company added successfully', $responseData);
             return json_encode($response);

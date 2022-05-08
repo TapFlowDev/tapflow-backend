@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\WalletActions;
+use App\Models\Group;
+use App\Models\Group_member;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class Controller extends BaseController
 {
@@ -46,5 +51,28 @@ class Controller extends BaseController
             $response = Controller::returnResponse(500, "check user error", $error->getMessage());
             return (json_encode($response));
         }
+    }
+    public function notifyAdminWalletAction($groupId, $transactionType, $amount, $currentBalance)
+    {
+        $groupObj = new GroupMembersController;
+        $groupType = Group::select('type')->where('id', '=', $groupId)->get()->first();
+        if ($groupType->type == 1) {
+            $admin = $groupObj->getTeamAdminByGroupId($groupId);
+        } elseif ($groupType->type == 2) {
+            $groupMember = Group_member::where('group_id', '=', $groupId)
+                ->where('privileges', '=', 1)
+                ->get()
+                ->first();
+            $admin = User::where('id', $groupMember->userId)->get()->first();
+        }
+        $details = array(
+            'subject'=>'Wallet Transaction',
+            'transactionType' => $transactionType,
+            'amount' => $amount,
+            'currentAmount' => $currentBalance
+        );
+        return Mail::mailer('smtp')->to($admin->email)->send(new WalletActions($details));
+        // dd($details);
+        //return Mail::mailer('smtp')->to('hamzahshajrawi@gmail.com')->send(new WalletActions($details));
     }
 }

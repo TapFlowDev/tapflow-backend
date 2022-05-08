@@ -84,4 +84,20 @@ class WalletsController extends Controller
     {
 
     }
+    function getOrCreateWallet($reference_id, $type){
+        $doesExist = wallet::where('reference_id', '=', $reference_id)->where('type', '=', $type)->get()->first();
+        if($doesExist){
+            return $doesExist;
+        }
+        $walletArr = array(
+            "reference_id" => $reference_id,
+            "type" => $type
+        );
+        $wallet = wallet::create($walletArr);
+        return $wallet;
+    }
+
+    function newTransaction($wallet, $payment){
+        
+    }
 }

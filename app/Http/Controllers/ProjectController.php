@@ -25,7 +25,9 @@ use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
+use App\Models\Milestone;
 use App\Models\Team;
+use Illuminate\Support\Arr;
 
 class ProjectController extends Controller
 {
@@ -189,29 +191,30 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-    function suggestedProjects($agency_id, $offset = 1)
+    function suggestedProjects($agency_id, $offset = 1,$limit)
     {
-        $limit = 4;
+        
         $page = ($offset - 1) * $limit;
-        try {
+        // try {
             $projects =  DB::table('projects_categories')
                 ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
                 ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
-                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.requirements_description', 'projects.days', 'projects.created_at')
+                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name','projects.user_id', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description','projects.days', 'projects.created_at','projects.updated_at')
                 ->where('groups_categories.group_id', '=', $agency_id)
                 ->where('projects.status', '=', 0)
                 ->where('verified', '=', 1)
                 ->distinct()
+                ->orderBy('updated_at', 'desc')
                 ->latest()->offset($page)->limit($limit)
                 ->get();
             $projectsData = $this->getProjectsInfo($projects);
             $responseData = $projectsData;
             $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
-        } catch (\Exception $error) {
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
-            return (json_encode($response));
-        }
+        // } catch (\Exception $error) {
+        //     $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+        //     return (json_encode($response));
+        // }
 
         // ->pluck('project_id');
 
@@ -250,6 +253,7 @@ class ProjectController extends Controller
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
+
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
@@ -257,6 +261,7 @@ class ProjectController extends Controller
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
+
 
             $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
             if (isset($user_info->image)) {
@@ -285,22 +290,80 @@ class ProjectController extends Controller
         }
         return $projects;
     }
-    function getAgencyPendingProjects($agency_id, $offset = 1)
+    function getAgencyPendingProjects($agency_id, $offset = 1, $limit)
     {
-        $limit = 4;
+
         $page = ($offset - 1) * $limit;
         try {
-            $projects = DB::table('projects')
-                ->join('proposals', 'projects.id', '=', 'proposals.project_id')
-                ->select('projects.*')
-                ->where('proposals.team_id', '=', $agency_id)
-                ->where('proposals.status', '<', 2)
-                ->where('projects.status', '=', 0)
-                ->distinct()
-                ->latest()->offset($page)->limit($limit)
-                ->get();
 
-            $projectInfo = $this->getProjectsInfo($projects);
+            // $initProjects =Proposal::where('team_id',$agency_id)->select('project_id','status')->offset($page)->limit($limit)
+            // ->distinct()->get();
+            // $projects_id=$initProjects->pluck('project_id')->toArray();
+            // $status=1;
+            // $projects = DB::table('projects')
+            // ->leftJoin('final_proposals','final_proposals.project_id','=','projects.id')
+            //     ->select('projects.*', 'final_proposals.status as final_proposal_status')
+            // ->whereIn('projects.id',$projects_id)
+            //     ->where('final_proposals.status','<>',1)
+            //     ->orderBy('updated_at', 'desc')
+            //     ->offset($page)->limit($limit)
+            //     ->distinct()
+            //     ->get();
+            // $projects=DB::table('projects')
+            // ->join('proposals','proposals.project_id' ,'=','projects.id')
+            // ->where('proposals.team_id', '=', $agency_id)
+            // ->select('projects.*', 'proposals.status as proposal_status', 'proposals.team_id as agency_id')
+            // ->orderBy('updated_at', 'desc')
+            // ->latest()->offset($page)->limit($limit)
+            // ->distinct()
+            // ->get();
+            $projects1 = DB::table('projects')
+                ->join('proposals', 'proposals.project_id', '=', 'projects.id')
+                ->select('projects.*', 'proposals.status as proposal_status')
+                ->where('proposals.team_id', '=', $agency_id)
+                ->where('projects.status', '<>', 1)
+                ->where('projects.status', '<>', 4)
+                // ->orderBy('updated_at', 'desc')
+                ->offset($page)->limit($limit)
+                ->distinct()
+                ->get();
+            // $projects2 = DB::table('projects')
+            // ->join('final_proposals', 'final_proposals.project_id', '=', 'projects.id')
+            // ->select('projects.id as project_id','final_proposals.status as final_proposal_status')
+            // ->where('final_proposals.team_id', '=', $agency_id)
+            // ->where('final_proposals.status','<>',1)
+            // // ->orderBy('updated_at', 'desc')
+            // ->offset($page)->limit($limit)
+            // ->distinct()
+            // ->get();
+            //     // // print_r(['project11'=> $projects1]);
+            $projectIds1 = $projects1->pluck('project_id')->toArray();
+            //    $projectIds2=$projects2->pluck('project_id')->toArray();
+            $projects2 = DB::table('projects')
+                ->leftJoin('final_proposals', function ($join) {
+                    $join->on('projects.id', '=', 'final_proposals.project_id')
+
+                        ->where('final_proposals.status', '<>', 1);
+                })
+                ->select('projects.*', 'final_proposals.team_id as agency_id', 'final_proposals.status as final_proposal_status')
+                ->whereIn('projects.id', $projectIds1)
+                ->where('final_proposals.team_id', '=', $agency_id)
+                // ->where('final_proposals.status','!=',1)
+                // ->orderBy('updated_at', 'desc')
+                ->offset($page)->limit($limit)
+                ->distinct()
+                ->get();
+            // // print_r(['project22'=> $projects2]);
+
+            $projects = array_merge($projects1->toArray(), $projects2->toArray());
+            // $projects=['init'=>$projectIds1,'final'=>$projectIds2];
+
+            // $response = Controller::returnResponse(200, "data found", $projects);
+            // return (json_encode($response));
+
+
+            $projectInfo = $this->getProjectsInfo2($projects, $agency_id);
+
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -310,17 +373,18 @@ class ProjectController extends Controller
         }
     }
 
-    function getAgencyActiveProjects($agency_id, $offset = 1)
+    function getAgencyActiveProjects($agency_id, $offset = 1, $limit)
     {
-        $limit = 4;
+
         $page = ($offset - 1) * $limit;
         try {
             $projects = DB::table('projects')
                 ->select('projects.*')
                 ->where('projects.team_id', '=', $agency_id)
-                ->where('projects.status', '=', 1)
+                ->whereIn('projects.status',[1,4])
                 ->distinct()
-                ->latest()->offset($page)->limit($limit)
+                ->orderBy('updated_at', 'desc')
+                ->offset($page)->limit($limit)
                 ->get();
 
             $projectInfo = $this->getProjectsInfo($projects);
@@ -335,6 +399,8 @@ class ProjectController extends Controller
     function getAgencyActiveProject($id)
     {
         $milestonesObj = new Milestones;
+        $finalProposalsObj = new Final_proposals;
+        $teamControllersObj = new TeamController;
         try {
             $projectData = $this->getProjectsInfo(Project::where('id', '=', $id)->get())->first();
             $projectData->final_proposal_id = DB::table('final_proposals')->select('id')->where('project_id', '=', $projectData->id)->where('status', '=', 1)->pluck('id')->first();
@@ -343,6 +409,8 @@ class ProjectController extends Controller
                 return (json_encode($response));
             }
             $milestones = $milestonesObj->getMilestoneByProposalId($projectData->final_proposal_id);
+            $contract = $finalProposalsObj->getProposalById($projectData->final_proposal_id);
+
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -359,8 +427,16 @@ class ProjectController extends Controller
                     $admin->image  = asset('images/profile-pic.jpg');
                 }
             }
+            $team = $teamControllersObj->get_team_info($contract->team_id);
+            if (isset($team->image)) {
+                $team->image = asset("images/companies/" . $team->image);
+            } else {
+                $team->image = asset('images/profile-pic.jpg');
+            }
             $projectData->admins = $admins;
             $projectData->milestones = $milestones;
+            $projectData->contract = $contract;
+            $projectData->contract->agency_info = $team;
             $response = Controller::returnResponse(200, "data found", $projectData);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -382,9 +458,21 @@ class ProjectController extends Controller
             $GroupControllerObj = new GroupController;
             $team_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
             $proposalsObj = new Proposals;
+            $FProposalsObj = new Final_proposals;
             $proposal = $proposalsObj->getProposalByProjectAndTeamId($projectData->id, $team_id);
+            $FProposal = $FProposalsObj->checkIfExists($projectData->id, $team_id);
+
             $proposal_id = $proposal->id;
             $proposal_status = $proposal->status;
+            if ($FProposal['exist'] == 1) {
+                $final_proposal_type = $FProposal['type'];
+                $final_proposal_status = $FProposal['status'];
+                $projectData->final_proposal_type = $final_proposal_type;
+                $projectData->final_proposal_status = $final_proposal_status;
+            } else {
+                $projectData->final_proposal_type = '0';
+                $projectData->final_proposal_status = null;
+            }
             $admins = DB::table('group_members')
                 ->join('users', 'group_members.user_id', '=', 'users.id')
                 ->select('users.id', 'users.first_name', 'users.last_name', 'users.role')
@@ -433,12 +521,12 @@ class ProjectController extends Controller
             $page = ($offset - 1) * $limit;
             try {
                 $projects = DB::table('projects')
-                    ->select('id', 'user_id', 'company_id', 'name', 'min', 'max', 'description', 'status', 'days', 'budget_type', 'verified', 'created_at',)
+                    ->select('*')
                     ->where('projects.company_id', '=', $company_id)
                     ->where('projects.status', '=', 0)
-
-                    ->distinct()
+                    ->orderBy('updated_at', 'desc')
                     ->latest()->offset($page)->limit($limit)
+                    ->distinct()
                     ->get();
 
                 $projectInfo = $this->getProjectsDetails($projects);
@@ -504,7 +592,7 @@ class ProjectController extends Controller
         $project->categories = $projectCategoriesObj->getProjectCategories($id);
         $project->duration = Category::find((int)$project->days)->name;
         $user = json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
-        $final_ids = Final_proposal::where('project_id', $id);
+        $final_ids = Final_proposal::where('project_id', $id)->where('status', '!=', -1);
         $no_finals = $final_ids->count();
         $init_ids = proposal::where('project_id', $id);
         $no_init = $init_ids->count();
@@ -529,9 +617,12 @@ class ProjectController extends Controller
             if ($group_id == $company_id) {
                 $projects = DB::table('projects')
                     ->where('company_id', '=', $company_id)
-                    ->where('status', '=', 1)
+                    ->where(function ($query) {
+                        $query->where('status', '=', 1)->orWhere('status', '=', 4);
+                    })
                     ->select('projects.*')
                     ->distinct()
+                    ->orderBy('updated_at', 'desc')
                     ->latest()->offset($page)->limit($limit)
                     ->get();
                 $projects_info = $this->getCompanyActiveProjectsInfo($projects);
@@ -569,7 +660,7 @@ class ProjectController extends Controller
     function getCompanyActiveProjectDetails(Request $req, $project_id, $company_id)
     {
         $userData = $req->user();
-        // try {
+        try {
         $GroupControllerObj = new GroupController;
         $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
         if ($group_id == $company_id) {
@@ -580,11 +671,11 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(422, "You are trying to get another company data", []);
             return (json_encode($response));
         }
-        // }catch(Exception $error)
-        // {
-        //     $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        }catch(Exception $error)
+        {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
     }
     private function getCompanyActiveProjectDetailsInfo($id)
     {
@@ -601,15 +692,19 @@ class ProjectController extends Controller
         // $user_id =$proposalsControllersObj->getProposalByProjectAndTeamId((int)$project->id,$project->team_id)->user_id;
 
         $team = $teamControllersObj->get_team_info($project->team_id);
+        // $Exist=$finalProposalControllersObj->checkIfExists($project->team_id,$id);
+        // if($Exist['exist']==1){
         $final_proposal = $finalProposalControllersObj->getProposalDetailsByProject_id($id);
-
         $project->contract = $final_proposal;
+
+
+
         $user = json_decode($freelancersControllersObj->get_freelancer_info($final_proposal->user_id))->data;
-        if (isset($user->image)) {
-            $user->image = asset("images/users/" . $user->image);
-        } else {
-            $user->image = asset('images/profile-pic.jpg');
-        }
+        // if (isset($user->image)) {
+        //     $user->image = asset("images/users/" . $user->image);
+        // } else {
+        //     $user->image = asset('images/profile-pic.jpg');
+        // }
         if (isset($team->image)) {
             $team->image = asset("images/companies/" . $team->image);
         } else {
@@ -629,6 +724,21 @@ class ProjectController extends Controller
             "image" => $user->image,
         );
         return $project;
+        // }
+        // else{
+        //      $project->contract = 'no contract';
+        //     if (isset($team->image)) {
+        //         $team->image = asset("images/companies/" . $team->image);
+        //     } else {
+        //         $team->image = asset('images/profile-pic.jpg');
+        //     }
+
+        //     $project->agency_info = array(
+        //         "id" => $team->id,
+        //         "name" => $team->name,
+
+        //     );
+        //     return $project;}
     }
     private function ifExist($id)
     {
@@ -644,6 +754,98 @@ class ProjectController extends Controller
     function getProjectCompanyId($id)
     {
         $company_id = Project::where('id', $id)->select('company_id')->first();
-        return($company_id->company_id);
+        return ($company_id->company_id);
+    }
+
+    function getProjectMilestones(Request $req, $id)
+    {
+        try {
+            $milestonesObj = new Milestones;
+            $userData = $this->checkUser($req);
+            $project = Project::where('id', $id)->get();
+            //check if project is not empty
+            if (!$project->first()) {
+                $response = Controller::returnResponse(401, "unauthrized", []);
+                return (json_encode($response));
+            }
+            $projectInfo = $this->getProjectsInfo($project)->first();
+            if ($userData['type'] == 2) {
+                if ($projectInfo->company_id != $userData['group_id']) {
+                    $response = Controller::returnResponse(401, "unauthrized", []);
+                    return (json_encode($response));
+                }
+            }elseif($userData['type']==1){
+                if ($projectInfo->team_id != $userData['group_id']) {
+                    $response = Controller::returnResponse(401, "unauthrized", []);
+                    return (json_encode($response));
+                }
+            }
+            $milestonesInfo = Milestone::where('project_id', $id)->get()->makeHidden(['deliverables', 'created_at', 'updated_at']);
+            $remainingAmount = number_format(Milestone::where('project_id', $id)->where('is_paid', '<>', 1)->sum('price'), 2, '.', '');
+            $remainingMilestones = Milestone::where('project_id', $id)->where('status', '<>', 3)->count();
+            $responseData = array(
+                'projectInfo' => $projectInfo,
+                'milestones' => $milestonesInfo,
+                'remainingAmount' => $remainingAmount,
+                'remainingMilestones' => $remainingMilestones
+            );
+            $response = Controller::returnResponse(200, "data found", $responseData);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getProjectsInfo2($projects, $agency_id)
+    {
+
+        $projectCategoriesObj = new ProjectCategoriesController;
+        $requirementsObj = new Requirement;
+        $clientObj = new ClientController;
+        $finalPropObj = new Final_proposals;
+        $initPropObj = new Proposals;
+        foreach ($projects as $keyProj => &$project) {
+            $project->company_name = Group::find($project->company_id)->name;
+            $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
+            $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
+            $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
+            $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
+            $user_info = json_decode($clientObj->get_client_info($project->user_id));
+            $finalProp = $finalPropObj->checkIfExists($project->id, $agency_id);
+            $initProp = $initPropObj->checkIfProposalExists($project->id, $agency_id);
+            $proposal_status = $initProp['status'];
+            if ($finalProp['exist'] == 1) {
+                $finalStatus = $finalProp['status'];
+            } else {
+                $finalStatus = null;
+            }
+            $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
+            if (isset($user_info->image)) {
+                $admin_info['image'] = asset("images/companies/" . $user_info->image);
+            } else {
+                $admin_info['image'] = asset('images/profile-pic.jpg');
+            }
+            if ($company_field_id != '' && $company_field_id != null) {
+                $project->company_field = Category::find((int)$company_field_id)->name;
+            }
+            if ($company_sector_id != '' && $company_sector_id != null) {
+                $project->company_sector = Category::find((int)$company_sector_id)->name;
+            }
+
+            // dd($company_image);
+            if (isset($company_image)) {
+                $project->company_image = asset("images/companies/" . $company_image);
+            } else {
+                $project->company_image = asset('images/profile-pic.jpg');
+            }
+            $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
+            $project->company_bio = $company_bio;
+            $project->duration = Category::find((int)$project->days)->name;
+            $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            $project->admin_info = $admin_info;
+            $project->final_proposal_status =  $finalStatus;
+            $project->proposal_status =   $proposal_status;
+        }
+        return $projects;
     }
 }

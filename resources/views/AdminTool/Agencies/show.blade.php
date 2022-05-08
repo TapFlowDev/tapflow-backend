@@ -51,6 +51,33 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-3">
+                                        <h6 class="mb-0">Transaction and Withdrawal Requests</h6>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @if ($info->walletId != '')
+                                            <a class="btn btn-sm btn-outline-primary"
+                                                href="{{ route('AdminTool.wallet.transactions.index', $info->walletId) }}"
+                                                role="button">View Transactions</a>
+                                        @else
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                onclick="event.preventDefault();
+                                                        document.getElementById('create-wallet-{{ $info->id }}').submit()">View
+                                                Transactions</button>
+                                            <form id="create-wallet-{{ $info->id }}"
+                                                action="{{ route('AdminTool.wallet.create') }}" method="POST"
+                                                style="display: none;">
+                                                @csrf
+                                                <input type="hidden" name="group_id" value="{{ $info->id }}">
+                                                <input type="hidden" name="type" value="1">
+                                            </form>
+                                        @endif
+                                        <a class="btn btn-sm btn-outline-info"
+                                            href="{{ route('AdminTool.agencies.withdrawal.index', $info->id) }}" role="button">Withdrawal Requests</a>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
                                         <h6 class="mb-0">Admin Name</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">

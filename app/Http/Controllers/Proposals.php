@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\InitialProposalActions;
 use GuzzleHttp\Handler\Proxy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -79,10 +80,10 @@ class Proposals extends Controller
                             'proposal' => $proposal,
                             'est' => $estPrice
                         ];
-                        Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
                         return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, 'You can not apply now, your agency does not verified yet', []);
@@ -125,8 +126,11 @@ class Proposals extends Controller
         $userData = $req->user();
         $project = Project::where('id', $project_id)->select('user_id')->first();
         $GroupControllerObj = new GroupController;
+        $groupMemsObj = new GroupMembersController;
+
         $project_group_id = $GroupControllerObj->getGroupIdByUserId($project->user_id);
         $user_group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+       
         if ($user_group_id == $project_group_id) {
 
             $page = ($offset - 1) * $limit;
@@ -137,8 +141,15 @@ class Proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
+             
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
+                    $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($proposal->team_id);
+                    $proposal->agency_info->admin_email=$agencyAdmin->email;
+                    $priceMin = (float)$proposal->price_min * (float)$proposal->from;
+                    $priceMax = (float)$proposal->price_max * (float)$proposal->to;
+                    $proposal->price_min = $priceMin;
+                    $proposal->price_max = $priceMax;
                 }
 
                 $response = Controller::returnResponse(200, "successful", $proposals);
@@ -155,14 +166,14 @@ class Proposals extends Controller
     function checkIfProposalExists($project_id, $team_id)
     {
         $proposal_id = DB::table('proposals')
-            ->select('id')
+            ->select('id', 'status')
             ->where('team_id', '=', $team_id)
             ->where('project_id', '=', $project_id)
             ->first();
         if ($proposal_id == null) {
             return ['exist' => 0];
         } else {
-            return ['exist' => 1, "proposal_id" => $proposal_id->id];
+            return ['exist' => 1, "proposal_id" => $proposal_id->id, "status" => $proposal_id->status];
         }
     }
     function getProposalInfo($project_id, $team_id)
@@ -186,4 +197,120 @@ class Proposals extends Controller
         $estimatedPrice['max'] = $to * $max;
         return $estimatedPrice;
     }
+
+    function acceptProposal(Request $req)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if ($userData['exist'] == 1) {
+                if ($userData['group_id'] == $req->company_id) {
+                    if ($userData['privileges'] == 1) {
+
+                        Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
+                        // notify agency
+                        $mail = $this->notifyAgency($req->proposal_id, 1);
+                        $response = Controller::returnResponse(200, "proposal accepted", []);
+                        return (json_encode($response));
+                    } else {
+                        $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                        return (json_encode($response));
+                    }
+                } else {
+                    $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                    return (json_encode($response));
+                }
+            } else {
+                $response = Controller::returnResponse(422, "this user does not have team", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function rejectProposal(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        if ($userData['exist'] == 1) {
+            if ($userData['group_id'] == $req->company_id) {
+                if ($userData['privileges'] == 1) {
+                    Proposal::where('id', $req->proposal_id)->update(['status' => 2]);
+                    // notify agency
+                    $mail = $this->notifyAgency($req->proposal_id, 2);
+                    $response = Controller::returnResponse(200, "proposal rejected", []);
+                    return (json_encode($response));
+                }
+                $response = Controller::returnResponse(422, "Unauthorized action this action for admins", []);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "Unauthorized you are trying to access another company data", []);
+                return (json_encode($response));
+            }
+        } else {
+            $response = Controller::returnResponse(422, "this user does not have team", []);
+            return (json_encode($response));
+        }
+    }
+
+    function getClientPropsals(Request $req, $offset = 1, $limit = 3)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $propsals = $this->getProposaldata(DB::table('proposals')
+                ->leftJoin('final_proposals', function ($join) {
+                    $join->on('proposals.id', '=', 'final_proposals.proposal_id')
+                        ->where('final_proposals.status', '=', 0);
+                })
+                ->join('projects', 'proposals.project_id', '=', 'projects.id')
+                ->select('proposals.*', 'projects.name as projectName', 'final_proposals.price as finalPrice', 'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
+                ->where('projects.company_id', '=', $userData['group_id'])
+                ->latest()->offset($page)->limit($limit)
+                ->distinct()
+                ->get());
+            // return $propsals;
+            $response = Controller::returnResponse(200, "data found", $propsals);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function getProposaldata($proposals)
+    {
+        $groupObj = new GroupController;
+        foreach ($proposals as &$proposal) {
+            $teamInfo = $groupObj->getGroupNameAndImage($proposal->team_id);
+            $proposal->teamName = $teamInfo->name;
+            $proposal->teamImage = $teamInfo->image;
+            $proposalEstPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
+            $proposal->estMin = $proposalEstPrice['min'];
+            $proposal->estMax = $proposalEstPrice['max'];
+            // if (!isset($proposal->finalId)) {
+            //     $proposal->finalPrice = $proposal->finalRate * $proposal->finalHours;
+            // } else {
+            //     $proposal->finalPrice = '';
+            // }
+        }
+
+        return $proposals;
+    }
+    function notifyAgency($proposalId, $status){
+        $groupMemberObj = new GroupMembersController;
+        $proposal = Proposal::where('id', $proposalId)->get()->first();
+        $teamId = $proposal->team_id;
+        $projectId = $proposal->project_id;
+        $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
+        $project = Project::where('id', '=', $projectId)->get()->first();
+        $subject = $project->name . " Proposal Update";
+        $details = array(
+            'subject' => $subject,
+            'projectName' => $project->name,
+            'status' => $status,
+        );
+        return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
+        // dd($details);
+        //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
+    }
+
 }
