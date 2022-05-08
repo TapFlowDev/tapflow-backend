@@ -491,7 +491,7 @@ class Final_proposals extends Controller
                                     $price = $this->calculatePrice($req->hours, $req->hourly_rate);
                                     $req['price'] = $price;
                                     $milestones = new Milestones;
-                                    return response($req->all(), 500);
+                                    return response($req);
                                     $milestones_submit = $milestones->SubmitFinal($req->milestones, $ifExist['final_proposal_id'], $req->project_id, $req->hourly_rate);
                                     if ($milestones_submit['code'] == 200) {
                                         if ($req->down_payment['status'] == 1) {
