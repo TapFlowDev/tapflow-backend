@@ -27,6 +27,7 @@ use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
 use App\Models\Milestone;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Support\Arr;
 
 class ProjectController extends Controller
@@ -257,7 +258,9 @@ class ProjectController extends Controller
 
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
-            $project->company_email = Group::find($project->company_id)->email;
+            $companyAdminId = Group_member::where('group_id','=',$project->company_id)->where('privileges', '=', 1)->first()->user_id;
+            $companyAdminEmail = User::select('email')->where('id','=',$companyAdminId)->first()->email;
+            $project->company_email = $companyAdminEmail;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
@@ -816,7 +819,9 @@ class ProjectController extends Controller
 
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
-            $project->company_email = Group::find($project->company_id)->email;
+            $companyAdminId = Group_member::where('group_id','=',$project->company_id)->where('privileges', '=', 1)->first()->user_id;
+            $companyAdminEmail = User::select('email')->where('id','=',$companyAdminId)->first()->email;
+            $project->company_email = $companyAdminEmail;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
