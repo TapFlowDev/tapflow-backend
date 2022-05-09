@@ -280,10 +280,9 @@ class ProjectController extends Controller
             }
             if ($company_country_id != '' && $company_country_id != null) {
                 $countriesData = $countriesObj->getCountryFlag($company_country_id);
-                $project->company_sector = Category::find((int)$company_sector_id)->name;
-                $project->company_flag = $countriesData->flag;
-                $project->company_name = $countriesData->name;
-                $project->company_code = $countriesData->code;
+                $project->company_country_flag = $countriesData->flag;
+                $project->company_country_name = $countriesData->name;
+                $project->company_country_code = $countriesData->code;
             }
 
             // dd($company_image);
@@ -847,10 +846,9 @@ class ProjectController extends Controller
             }
             if ($company_country_id != '' && $company_country_id != null) {
                 $countriesData = $countriesObj->getCountryFlag($company_country_id);
-                $project->company_sector = Category::find((int)$company_sector_id)->name;
-                $project->company_flag = $countriesData->flag;
-                $project->company_name = $countriesData->name;
-                $project->company_code = $countriesData->code;
+                $project->company_country_flag = $countriesData->flag;
+                $project->company_country_name = $countriesData->name;
+                $project->company_country_code = $countriesData->code;
             }
 
             // dd($company_image);
