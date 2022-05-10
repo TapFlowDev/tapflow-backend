@@ -301,12 +301,12 @@ class Proposals extends Controller
         $proposal = Proposal::where('id', $proposalId)->get()->first();
         $teamId = $proposal->team_id;
         $projectId = $proposal->project_id;
-        $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
+        // $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
         $project = Project::where('id', '=', $projectId)->get()->first();
-        $groupId = $project->group_id;
-        $member = Group_member::where('group_id', $groupId)->first();
+        $groupId = $project->company_id;
+        $member = Group_member::where('group_id', '=',$groupId)->where('privileges', '=', 1)->get()->first();
         $clientId = $member->user_id;
-        $clinet = User::where('id', $clientId)->first();
+        $clinet = User::where('id', $clientId)->get()->first();
         $subject = $project->name . " Proposal Update";
         $details = array(
             'subject' => $subject,
