@@ -612,11 +612,11 @@ class Final_proposals extends Controller
                         $rejectAll = $this->rejectAll($req->project_id, $req->proposal_id);
                         if ($rejectAll['code'] == 200) {
                             $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('down_payment', 'team_id')->first();
-                            if ($final_proposal->down_payment == 0) {
-                                Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 1]);
-                            } else {
-                                Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 4]);
-                            }
+                            // if ($final_proposal->down_payment == 0) {
+                            //     Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 1]);
+                            // } else {
+                            //     Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 4]);
+                            // }
 
                             Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                             $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('team_id', 'project_id')->first();
