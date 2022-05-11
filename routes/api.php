@@ -133,8 +133,8 @@ Route::get('getNumberOfProjectForCompany/{id}', [ProjectController::class, 'getN
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('getFinalProposalByProjectIdAndTeamId', [Final_proposals::class, 'getProposalByProjectIdAndTeamId']);
-    Route::get('deleteMilestone/{id}', [Milestones::class, 'Delete']);
-    Route::post('updateMilestone', [Milestones::class, 'Update']);
+  
+  
 
     // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
     Route::post('submitMilestone', [Milestones::class, 'submitMilestone']);
