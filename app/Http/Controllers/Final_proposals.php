@@ -426,7 +426,7 @@ class Final_proposals extends Controller
                                 "team_id" => "required|exists:groups,id",
                                 "project_id" => "required|exists:projects,id",
                                 "proposal_id" => "required|exists:proposals,id",
-                                "starting_date" => "required|date",
+                                "starting_date" => "required",
                                 "type" => "required", //1=>regular milestones ,2=>monthly based milestones
                                 "milestones" => "required"
                             );
@@ -481,7 +481,7 @@ class Final_proposals extends Controller
                                     "project_id" => "required|exists:projects,id",
                                     "proposal_id" => "required|exists:proposals,id",
 
-                                    "starting_date" => "required|date",
+                                    "starting_date" => "required",
 
                                     "type" => "required", //1=>regular milestones ,2=>monthly based milestones
                                     "milestones" => "required"
