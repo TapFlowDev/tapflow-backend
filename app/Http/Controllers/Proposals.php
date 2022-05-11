@@ -81,10 +81,10 @@ class Proposals extends Controller
                             'proposal' => $proposal,
                             'est' => $estPrice
                         ];
-                        Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
                         return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, 'You can not apply now, your agency does not verified yet', []);
@@ -301,7 +301,7 @@ class Proposals extends Controller
         $proposal = Proposal::where('id', $proposalId)->get()->first();
         $teamId = $proposal->team_id;
         $projectId = $proposal->project_id;
-        // $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
+        $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
         $project = Project::where('id', '=', $projectId)->get()->first();
         $groupId = $project->company_id;
         $member = Group_member::where('group_id', '=',$groupId)->where('privileges', '=', 1)->get()->first();
