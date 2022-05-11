@@ -492,7 +492,7 @@ class Milestones extends Controller
                 "milestone_hourly_rate" => "required",
                 // "milestone_price" => "required",
                 "deliverables" => "required",
-                "description" => "required",
+                "milestone_description" => "required",
             );
 
             // Milestone::where('final_proposal_id', $final_proposal_id)->delete();
