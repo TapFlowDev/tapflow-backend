@@ -559,8 +559,8 @@ class ProjectController extends Controller
 
         foreach ($projects as $keyProj => &$project) {
             $project->duration = Category::find((int)$project->days)->name;
-            $initial_proposals =  proposal::where('project_id', $project->id)->select('id')->get();
-            $final_proposals =  Final_proposal::where('project_id', $project->id)->where('status', '!=', -1)->select('id')->get();
+            $initial_proposals =  proposal::where('project_id', $project->id)->where('status', '!=', 1)->select('id')->get();
+            $final_proposals =  Final_proposal::where('project_id', $project->id)->where('status', '!=', -1)->where('status', '!=', 1)->select('id')->get();
             $project->initial_proposal_number = count($initial_proposals);
             $project->final_proposal_number = count($final_proposals);
         }
@@ -606,7 +606,7 @@ class ProjectController extends Controller
         $user = json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
         $final_ids = Final_proposal::where('project_id', $id)->where('status', '!=', -1);
         $no_finals = $final_ids->count();
-        $init_ids = proposal::where('project_id', $id);
+        $init_ids = proposal::where('project_id', $id)->where('status', '!=', 1);
         $no_init = $init_ids->count();
         $project->final_proposals_number = $no_finals;
         $project->initial_proposals_number = $no_init;
