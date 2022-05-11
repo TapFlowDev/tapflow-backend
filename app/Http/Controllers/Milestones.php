@@ -166,7 +166,7 @@ class Milestones extends Controller
 
     function updateMilestone(Request $req)
     {
-        // try {
+        try {
         $finalProposalObj = new Final_proposals;
         $userData = Controller::checkUser($req);
 
@@ -229,10 +229,10 @@ class Milestones extends Controller
             $response = Controller::returnResponse(422, "this user does not have team", []);
             return (json_encode($response));
         }
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 
     function deleteMilestone(Request $req)
