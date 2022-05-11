@@ -124,7 +124,7 @@ Route::get('getQuestions', [FormOptionsController::class, 'getData']);
 Route::get('getDemoLink', [ContentDataController::class, 'getDemoLink']);
 Route::get('getTerms', [ContentDataController::class, 'getTerms']);
 
-// Route::post('addCountries', [NewCountriesController::class, 'Insert']);
+Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
 
 

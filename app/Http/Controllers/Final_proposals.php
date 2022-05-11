@@ -402,6 +402,7 @@ class Final_proposals extends Controller
     }
     function submitFinalProposal(Request $req)
     {
+        
         $userData = Controller::checkUser($req);
         $proposalObj = new Proposals;
         $final_proposal_status = 0;

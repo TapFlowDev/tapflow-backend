@@ -27,6 +27,7 @@ use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
 use App\Models\Milestone;
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Support\Arr;
 
 class ProjectController extends Controller
@@ -40,8 +41,8 @@ class ProjectController extends Controller
             "description" => "required",
             "requirements_description" => "required",
             "budget_type" => "required|gte:0|lt:2",
-            "min" => "numeric|multiple_of:5",
-            "max" => "numeric|multiple_of:5",
+            "min" => "numeric",
+            "max" => "numeric",
             "days" => "required|exists:categories,id",
             "needs" => "required",
             "design" => "required"
@@ -191,26 +192,26 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-    function suggestedProjects($agency_id, $offset = 1,$limit)
+    function suggestedProjects($agency_id, $offset = 1, $limit)
     {
-        
+
         $page = ($offset - 1) * $limit;
         // try {
-            $projects =  DB::table('projects_categories')
-                ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
-                ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
-                ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name','projects.user_id', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description','projects.days', 'projects.created_at','projects.updated_at')
-                ->where('groups_categories.group_id', '=', $agency_id)
-                ->where('projects.status', '=', 0)
-                ->where('verified', '=', 1)
-                ->distinct()
-                ->orderBy('updated_at', 'desc')
-                ->latest()->offset($page)->limit($limit)
-                ->get();
-            $projectsData = $this->getProjectsInfo($projects);
-            $responseData = $projectsData;
-            $response = Controller::returnResponse(200, "Data Found", $responseData);
-            return (json_encode($response));
+        $projects =  DB::table('projects_categories')
+            ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
+            ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
+            ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.user_id', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.days', 'projects.created_at', 'projects.updated_at')
+            ->where('groups_categories.group_id', '=', $agency_id)
+            ->where('projects.status', '=', 0)
+            ->where('verified', '=', 1)
+            ->distinct()
+            ->orderBy('updated_at', 'desc')
+            ->latest()->offset($page)->limit($limit)
+            ->get();
+        $projectsData = $this->getProjectsInfo($projects);
+        $responseData = $projectsData;
+        $response = Controller::returnResponse(200, "Data Found", $responseData);
+        return (json_encode($response));
         // } catch (\Exception $error) {
         //     $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
         //     return (json_encode($response));
@@ -253,13 +254,18 @@ class ProjectController extends Controller
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
         $clientObj = new ClientController;
+        $countriesObj = new NewCountriesController;
 
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
+            $companyAdminId = Group_member::where('group_id','=',$project->company_id)->where('privileges', '=', 1)->first()->user_id;
+            $companyAdminEmail = User::select('email')->where('id','=',$companyAdminId)->first()->email;
+            $project->company_email = $companyAdminEmail;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
+            $company_country_id =  Company::select('country')->where('group_id', $project->company_id)->get()->first()->country;
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
 
 
@@ -274,6 +280,12 @@ class ProjectController extends Controller
             }
             if ($company_sector_id != '' && $company_sector_id != null) {
                 $project->company_sector = Category::find((int)$company_sector_id)->name;
+            }
+            if ($company_country_id != '' && $company_country_id != null) {
+                $countriesData = $countriesObj->getCountryFlag($company_country_id);
+                $project->company_country_flag = $countriesData->flag;
+                $project->company_country_name = $countriesData->name;
+                $project->company_country_code = $countriesData->code;
             }
 
             // dd($company_image);
@@ -381,7 +393,7 @@ class ProjectController extends Controller
             $projects = DB::table('projects')
                 ->select('projects.*')
                 ->where('projects.team_id', '=', $agency_id)
-                ->whereIn('projects.status',[1,4])
+                ->whereIn('projects.status', [1, 4])
                 ->distinct()
                 ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
@@ -661,18 +673,17 @@ class ProjectController extends Controller
     {
         $userData = $req->user();
         try {
-        $GroupControllerObj = new GroupController;
-        $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
-        if ($group_id == $company_id) {
-            $project_info = $this->getCompanyActiveProjectDetailsInfo($project_id);
-            $response = Controller::returnResponse(200, "successful", $project_info);
-            return (json_encode($response));
-        } else {
-            $response = Controller::returnResponse(422, "You are trying to get another company data", []);
-            return (json_encode($response));
-        }
-        }catch(Exception $error)
-        {
+            $GroupControllerObj = new GroupController;
+            $group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
+            if ($group_id == $company_id) {
+                $project_info = $this->getCompanyActiveProjectDetailsInfo($project_id);
+                $response = Controller::returnResponse(200, "successful", $project_info);
+                return (json_encode($response));
+            } else {
+                $response = Controller::returnResponse(422, "You are trying to get another company data", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
             return (json_encode($response));
         }
@@ -774,7 +785,7 @@ class ProjectController extends Controller
                     $response = Controller::returnResponse(401, "unauthrized", []);
                     return (json_encode($response));
                 }
-            }elseif($userData['type']==1){
+            } elseif ($userData['type'] == 1) {
                 if ($projectInfo->team_id != $userData['group_id']) {
                     $response = Controller::returnResponse(401, "unauthrized", []);
                     return (json_encode($response));
@@ -804,12 +815,19 @@ class ProjectController extends Controller
         $clientObj = new ClientController;
         $finalPropObj = new Final_proposals;
         $initPropObj = new Proposals;
+        $countriesObj = new NewCountriesController;
+
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
+            $companyAdminId = Group_member::where('group_id','=',$project->company_id)->where('privileges', '=', 1)->first()->user_id;
+            $companyAdminEmail = User::select('email')->where('id','=',$companyAdminId)->first()->email;
+            $project->company_email = $companyAdminEmail;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
             $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
             $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
+            $company_country_id =  Company::select('country')->where('group_id', $project->company_id)->get()->first()->country;
+
             $user_info = json_decode($clientObj->get_client_info($project->user_id));
             $finalProp = $finalPropObj->checkIfExists($project->id, $agency_id);
             $initProp = $initPropObj->checkIfProposalExists($project->id, $agency_id);
@@ -830,6 +848,12 @@ class ProjectController extends Controller
             }
             if ($company_sector_id != '' && $company_sector_id != null) {
                 $project->company_sector = Category::find((int)$company_sector_id)->name;
+            }
+            if ($company_country_id != '' && $company_country_id != null) {
+                $countriesData = $countriesObj->getCountryFlag($company_country_id);
+                $project->company_country_flag = $countriesData->flag;
+                $project->company_country_name = $countriesData->name;
+                $project->company_country_code = $countriesData->code;
             }
 
             // dd($company_image);
