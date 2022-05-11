@@ -504,7 +504,7 @@ class Milestones extends Controller
                 if (count($milestone['deliverables']) >= 0) {
                     $deliverables = serialize($milestone['deliverables']);
                 }
-                $price = $this->calculatePrice($milestone['milestone_num_hours'], $milestone->milestone_hourly_rate);
+                $price = $this->calculatePrice($milestone['milestone_num_hours'], $milestone['milestone_hourly_rate']);
                 $req['milestone_price'] = $price;
                 Milestone::where('id', $milestone['milestone_id'])->update([
                     "project_id" => $project_id, "final_proposal_id" => $final_proposal_id,
