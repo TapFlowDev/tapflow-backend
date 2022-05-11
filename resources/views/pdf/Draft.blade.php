@@ -26,26 +26,30 @@
     <table role="presentation" style="border:0; color:black;  font-size: medium" cellspacing='0' width="100%">
         <tbody>
             <tr >
-                <td colspan="20">
+                <td colspan="6">
                     <h3>{{$agency_name}}</h3>
                 </td>
             </tr>
             <tr>
-                <td><strong>Hours</strong></td>
-                <td >{{$hours}}</td>
-                <td ><strong>Final Cost</strong></td>
-                <td>{{$price}}</td>
-                <td ><strong>Starting Date</strong></td>
-                <td>{{$starting_date}}</td>
+                <td width="10%"><strong>Hours</strong></td>
+                <td width="10%">{{$hours}}</td>
+                <td width="20%"><strong>Final Cost</strong></td>
+                <td width="20%">{{$price}}</td>
+                <td width="20%"><strong>Starting Date</strong></td>
+                <td width="20%">{{$starting_date}}</td>
             </tr>
             <tr>
-                <td  colspan="20">
-                    <h4> {{$title}}</h4>
+                <td  colspan="6">
+                    <h3> {{$title}}</h3 >
                     <p>{{$description}}</p>
                 </td>
             </tr>
-            
-            <tr ><td  colspan="20">{!! $milestones !!}</td></tr>
+            <tr>
+                <td  colspan="6">
+                    <h4>Milestones </h4>
+                </td>
+            </tr>
+           {!! $milestones !!}
         </tbody>
     </table>
 </body>

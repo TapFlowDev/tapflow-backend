@@ -840,29 +840,29 @@ class Final_proposals extends Controller
     function generateHtml($milestones)
     {
 
-        $text = '<table> <strong>Milestones</strong >';
+        $text = '';
         foreach ($milestones as $keyM => &$milestone) {
             $dev = unserialize($milestone->deliverables);
             $length = count($dev);
             $counter = 0;
             $text2 = '';
-            $text .= "<tr><td>Name:</td>
-            <td>$milestone->name</td>
+            $text .= "<tr><td colspan='3'>Name:</td>
+            <td colspan='3'>$milestone->name</td>
             </tr>
-            <tr><td>Number of Hours:</td>
-            <td>$milestone->hours</td>
-            </tr>
-            <tr>
-            <td>Hourly Rate:</td>
-            <td>$milestone->hourly_rate</td>
+            <tr><td colspan='3'>Number of Hours:</td>
+            <td colspan='3'>$milestone->hours</td>
             </tr>
             <tr>
-            <td>Price:</td>
-            <td>$milestone->price</td>
-            </tr> <tr><td>";
-            $text .= $this->leveldown($dev, $length, $counter, $text2)." </td></tr>";
+            <td colspan='3'>Hourly Rate:</td>
+            <td colspan='3'>$milestone->hourly_rate</td>
+            </tr>
+            <tr>
+            <td colspan='3'>Price:</td>
+            <td colspan='3'>$milestone->price</td>
+            </tr>";
+            $text .= $this->leveldown($dev, $length, $counter, $text2);
         }
-        $text .= "</table>";
+    
        
         return $text;
     }
@@ -891,7 +891,7 @@ class Final_proposals extends Controller
     function leveldown($dev, $length, $counter, $text)
     {
         if ($counter < $length) {
-            $text .= "<tr><td>deliverables:</td> <td>$dev[$counter]</td></tr>";
+            $text .= "<tr style='border-bottom:1px solid black;'><td colspan='3'>deliverables:</td> <td colspan='3'>$dev[$counter]</td></tr>";
             // $text .="haaaaaaaaaaaaaaaaaaaaaaa";
 
             $counter += 1;
