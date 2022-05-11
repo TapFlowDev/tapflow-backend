@@ -69,6 +69,8 @@ use phpDocumentor\Reflection\ProjectFactory;
 
 // });
 // for testing test
+Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
+
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
 Route::get('updateMilestonesPrices/{m}/{f}', [Milestones::class, 'updateMilestonesPrices']);

@@ -560,7 +560,7 @@ class ProjectController extends Controller
         foreach ($projects as $keyProj => &$project) {
             $project->duration = Category::find((int)$project->days)->name;
             $initial_proposals =  proposal::where('project_id', $project->id)->select('id')->get();
-            $final_proposals =  Final_proposal::where('project_id', $project->id)->select('id')->get();
+            $final_proposals =  Final_proposal::where('project_id', $project->id)->where('status', '!=', -1)->select('id')->get();
             $project->initial_proposal_number = count($initial_proposals);
             $project->final_proposal_number = count($final_proposals);
         }
