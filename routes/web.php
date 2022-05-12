@@ -111,7 +111,7 @@ Route::get('/checkout', function () {
 Route::get('/donePayment', function () {
     return view('donePayment');
 });
-Route::get('/mailchimptest', [MailChimpController::class, 'test']);
+Route::get('/sendStaticMail/{id}', [EmailController::class, 'sendStaticMail']);
 
 // Route::get('/notifications', [NotificationsSettings::class, 'test']);
 // Route::get('/testEst', [Proposals::class, 'testPropsal']);
