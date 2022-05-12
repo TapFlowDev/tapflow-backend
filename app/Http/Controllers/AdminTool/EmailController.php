@@ -54,7 +54,7 @@ class EmailController extends Controller
     function sendStaticMail($proposalId){
         // $proposal_id = $req->id;
         $propsal = proposal::find($proposalId);
-        // dd($propsal);
+        dd($propsal);
         $projectData = Project::find($propsal->project_id);
         $teamData = Group::find($projectData->team_id);
         $companyAdminData = User::find($projectData->user_id);
