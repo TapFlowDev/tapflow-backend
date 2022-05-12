@@ -910,7 +910,7 @@ class Final_proposals extends Controller
     function leveldown($dev, $length, $counter, $text)
     {
         if ($counter < $length) {
-            $text .= "<tr style='border-bottom:1px solid black;'><td colspan='3'></td> <td colspan='3'>$dev[$counter]</td></tr>";
+            $text .= "<tr> <td colspan='6'>$dev[$counter]</td></tr>";
             // $text .="haaaaaaaaaaaaaaaaaaaaaaa";
 
             $counter += 1;
