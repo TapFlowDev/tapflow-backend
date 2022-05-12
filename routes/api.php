@@ -210,6 +210,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
     Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
     Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
+    Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);
 
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
