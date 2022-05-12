@@ -28,7 +28,7 @@ use App\Models\payments;
 use App\Http\Controllers\WalletsTransactionsController;
 use App\Models\Group;
 use App\Models\wallets_transaction;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class Milestones extends Controller
@@ -61,6 +61,7 @@ class Milestones extends Controller
                             $deliverables = [];
 
                             if ($finalProposal['exist'] == 0) {
+
                                 $new_final_proposal = $finalProposalObj->createEmptyFinalProposal($req->proposal_id, $req->team_id, $req->project_id, $userData['user_id'], $req->type);
                                 if ($new_final_proposal['code'] == 422 || $new_final_proposal['code'] == 500) {
                                     $response = Controller::returnResponse($new_final_proposal['code'], 'error generating final proposal', $new_final_proposal['msg']);
@@ -70,6 +71,7 @@ class Milestones extends Controller
                                     if (count($req->deliverables) >= 0) {
                                         $deliverables = serialize($req->deliverables);
                                     }
+
                                     $price = $this->calculatePrice($req->milestone_num_hours, $req->milestone_hourly_rate);
                                     $req['milestone_price'] = $price;
                                     $countDeliverables = "";
@@ -89,8 +91,15 @@ class Milestones extends Controller
                                         "deliverables" => serialize($req->deliverables),
                                         "is_valid" => $isValid
                                     );
-
-                                    $milestone = Milestone::create($data);
+                                    if ($req->type = 2) {
+                                        $create_months = $this->createMonthlyMilestones($data, $req->counter);
+                                        if ($create_months['code'] != 200) {
+                                            $response = Controller::returnResponse(500, "something went wrong milestones controller", $create_months['msg']);
+                                            return (json_encode($response));
+                                        }
+                                    } else {
+                                        $milestone = Milestone::create($data);
+                                    }
                                     $all_milestones = Milestone::where('final_proposal_id',  $new_final_proposal['msg'])->select('id', 'price', 'hours')->get();
                                     $this->calculate_final_price($all_milestones,  $new_final_proposal['msg']);
 
@@ -135,7 +144,15 @@ class Milestones extends Controller
                                     //         return (json_encode($response));
                                     //     }
                                     // }
-                                    $milestone = Milestone::create($data);
+                                    if ($req->type = 2) {
+                                        $create_months = $this->createMonthlyMilestones($data, $req->counter);
+                                        if ($create_months['code'] != 200) {
+                                            $response = Controller::returnResponse(500, "something went wrong milestones controller", $create_months['msg']);
+                                            return (json_encode($response));
+                                        }
+                                    } else {
+                                        $milestone = Milestone::create($data);
+                                    }
                                     // $FP=Final_proposal::where('id',$finalProposal['final_proposal_id'])->update('')
                                     $all_milestones = Milestone::where('final_proposal_id',  $final_proposal_id)->select('id', 'price', 'hours')->get();
                                     $this->calculate_final_price($all_milestones,  $final_proposal_id);
@@ -920,5 +937,17 @@ class Milestones extends Controller
         $total_price = number_format($total_price, 2, ".", "");
 
         Final_proposal::where('id', $FP_id)->update(['price' => $total_price, 'hours' => $total_hours]);
+    }
+    function createMonthlyMilestones($milestone, $counter)
+    {
+        try {
+            for ($i = 0; $i < $counter; $i++) {
+                $milestone = Milestone::create($milestone);
+            }
+            return ['code' => 200];
+        } catch (Exception $error) {
+
+            return ['code' => 500, 'msg' => $error->getMessage()];
+        }
     }
 }
