@@ -837,7 +837,7 @@ class Final_proposals extends Controller
        
         $dist = public_path() . "/drafts/" ;
         if (!File::exists($dist)) {
-          
+            File::makeDirectory(public_path() . '/drafts/' . 0755, true);
             $pdf->save($filename);
             
         } else {
