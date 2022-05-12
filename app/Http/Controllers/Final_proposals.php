@@ -799,7 +799,7 @@ class Final_proposals extends Controller
     }
     function SendDraft(Request $req)
     {
-        // try{
+        try{
         $milestoneObj = new Milestones;
         $GroupControllerObj = new GroupController;
         $final_proposal = Final_proposal::where('id', $req->id)->first();
@@ -849,14 +849,13 @@ class Final_proposals extends Controller
         $mailObj=new MailController;
         $company_admin=$GroupMembersObj->getCompanyAdminByGroupId($project->company_id);
         $mailObj->testEmailWithPDF($Att,$req->email_body,$subject,$agency_name,$company_admin->email,$company_admin->first_name);
-        // ini_set('max_execution_time', 180);
-        // $this->savePdf($pdf,$filename,$final_proposal->project_id);
-        // return $pdf->download($filename);
+        $response = Controller::returnResponse(200, "send successfully",[]);
+        return (json_encode($response));
     }
-    // catch(Exception $error) 
-    // {  $response = Controller::returnResponse(500, "something went wrong",$error->getMessage());
-    //     return (json_encode($response));}
-    // }
+    catch(Exception $error) 
+    {  $response = Controller::returnResponse(500, "something went wrong",$error->getMessage());
+        return (json_encode($response));}
+    }
     function generateHtml($milestones)
     {
 
@@ -918,22 +917,6 @@ class Final_proposals extends Controller
             return $this->leveldown($dev, $length, $counter, $text);
         } else {
             return $text;
-        }
-    }
-    function savePdf($pdf,$filename,$project_id){
-     
-        $submission_file = $pdf;
-        $dist = public_path() . '/drafts/' . $project_id;
-        if (!File::exists($dist)) {
-          
-            File::makeDirectory(public_path() . '/drafts/' . $project_id, 0755, true);
-            $submission_file->move(public_path() . '/drafts/' . $project_id, $filename);
-            $this->updateSubmissionFile($project_id, $filename);
-            
-        } else {
-            $submission_file->move(public_path() . '/drafts/' . $project_id, $filename);
-            $this->updateSubmissionFile($project_id, $filename);
-           
         }
     }
 }
