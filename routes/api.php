@@ -70,8 +70,8 @@ use phpDocumentor\Reflection\ProjectFactory;
 
 // });
 // for testing test
-Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
-
+// Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
+Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
 Route::get('updateMilestonesPrices/{m}/{f}', [Milestones::class, 'updateMilestonesPrices']);
@@ -210,7 +210,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
     Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
     Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
-    Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);
+  
 
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
