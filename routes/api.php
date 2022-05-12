@@ -39,6 +39,7 @@ use App\Http\Controllers\FormOptionsController;
 use App\Http\Controllers\Milestones;
 use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\DepositRequestController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
 use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
