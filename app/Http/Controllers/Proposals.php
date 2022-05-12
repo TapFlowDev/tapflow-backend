@@ -76,6 +76,7 @@ class Proposals extends Controller
                         $details = [
                             'subject' => 'Initial Proposal ' . $projectData->name,
                             'project_name' => $projectData->name,
+                            'project_id' => $projectData->id,
                             'team_info' => $teamInfo,
                             'admin_name' => $companyAdminData->first_name,
                             'proposal' => $proposal,
