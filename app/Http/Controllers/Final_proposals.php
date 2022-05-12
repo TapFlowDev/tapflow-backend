@@ -879,7 +879,7 @@ class Final_proposals extends Controller
             <td colspan='3'>Price:</td>
             <td colspan='3'>$milestone->price</td>
             </tr><tr><td colspan='3'>deliverables:</td></tr>";
-            $text .= $this->leveldown($dev, $length, $counter, $text2)."<tr style='border-bottom:1px solid black;'></tr>";
+            $text .= $this->leveldown($dev, $length, $counter, $text2)."<tr style='border-bottom:1px solid black;'><td colspan='6'></td></tr>";
         }
     
        
