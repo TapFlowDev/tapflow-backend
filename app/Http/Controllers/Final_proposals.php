@@ -834,7 +834,6 @@ class Final_proposals extends Controller
         $filename = public_path() . "/drafts/"."Draft-".$final_proposal->id.".pdf";
         $Att="/drafts/"."Draft-".$final_proposal->id.".pdf";
         $pdf = PDF::loadView('pdf/Draft', $data);
-       
         $dist = public_path() . "/drafts/" ;
         if (!File::exists($dist)) {
             File::makeDirectory(public_path() . '/drafts/' . 0755, true);
@@ -846,8 +845,6 @@ class Final_proposals extends Controller
         }
         $subject=$final_proposal->title. 'draft';
         $project=Project::where('id',$final_proposal->project_id)->first();
-      
-        
         $GroupMembersObj=new GroupMembersController;
         $mailObj=new MailController;
         $company_admin=$GroupMembersObj->getCompanyAdminByGroupId($project->company_id);
@@ -856,7 +853,7 @@ class Final_proposals extends Controller
         // $this->savePdf($pdf,$filename,$final_proposal->project_id);
         // return $pdf->download($filename);
     }
-    // catch(Exception $error)
+    // catch(Exception $error) 
     // {  $response = Controller::returnResponse(500, "something went wrong",$error->getMessage());
     //     return (json_encode($response));}
     // }
