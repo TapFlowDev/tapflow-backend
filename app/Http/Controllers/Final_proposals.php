@@ -865,20 +865,20 @@ class Final_proposals extends Controller
             $length = count($dev);
             $counter = 0;
             $text2 = '';
-            $text .= "<tr><td colspan='3'>Name:</td>
+            $text .= "<tr><td colspan='3'><strong>Name:</strong></td>
             <td colspan='3'>$milestone->name</td>
             </tr>
-            <tr><td colspan='3'>Number of Hours:</td>
+            <tr><td colspan='3'><strong>Number of Hours:</strong></td>
             <td colspan='3'>$milestone->hours</td>
             </tr>
             <tr>
-            <td colspan='3'>Hourly Rate:</td>
+            <td colspan='3'><strong>Hourly Rate:</strong></td>
             <td colspan='3'>$milestone->hourly_rate</td>
             </tr>
             <tr>
-            <td colspan='3'>Price:</td>
+            <td colspan='3'><strong>Price:</strong></td>
             <td colspan='3'>$milestone->price</td>
-            </tr><tr><td colspan='3'>deliverables:</td></tr>";
+            </tr><tr><td colspan='3'><strong>deliverables:</strong></td></tr>";
             $text .= $this->leveldown($dev, $length, $counter, $text2)."<tr style='border-bottom:1px solid black;'><td colspan='6'></td></tr>";
         }
     
