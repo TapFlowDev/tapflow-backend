@@ -67,9 +67,9 @@ class EmailController extends Controller
         ];
         // dd($details);
         Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-        // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-        // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-        // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+        Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+        Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+        Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
         return $companyAdminData->email;
     }
 }
