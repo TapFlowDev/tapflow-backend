@@ -54,18 +54,18 @@ class EmailController extends Controller
     function sendStaticMail($proposalId){
         // $proposal_id = $req->id;
         $propsal = proposal::find($proposalId);
-        dd($propsal);
         $projectData = Project::find($propsal->project_id);
-        $teamData = Group::find($projectData->team_id);
+        $teamData = Group::find($propsal->team_id);
         $companyAdminData = User::find($projectData->user_id);
         $teamInfo['name'] = $teamData->name;
-
+        
         $details = [
             'subject' => 'Initial Proposal ' . $projectData->name,
             'project_id' => $projectData->id,
             'team_info' => $teamInfo,
             'admin_name' => $companyAdminData->first_name
         ];
+        dd($details);
         Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
         // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
         // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
