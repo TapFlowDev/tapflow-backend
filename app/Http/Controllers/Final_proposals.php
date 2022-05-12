@@ -27,7 +27,7 @@ use App\Mail\SubmitFinalProposal;
 use App\Mail\FinalProposalActions;
 use App\Mail\SendFPDraft;
 use App\Models\Group;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\MailChimpController;
 
