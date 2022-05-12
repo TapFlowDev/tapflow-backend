@@ -878,7 +878,7 @@ class Final_proposals extends Controller
             <tr>
             <td colspan='3'>Price:</td>
             <td colspan='3'>$milestone->price</td>
-            </tr>";
+            </tr><tr style='border-bottom:1px solid black;'><td colspan='3'>deliverables:</td></tr>";
             $text .= $this->leveldown($dev, $length, $counter, $text2);
         }
     
@@ -910,7 +910,7 @@ class Final_proposals extends Controller
     function leveldown($dev, $length, $counter, $text)
     {
         if ($counter < $length) {
-            $text .= "<tr style='border-bottom:1px solid black;'><td colspan='3'>deliverables:</td> <td colspan='3'>$dev[$counter]</td></tr>";
+            $text .= "<tr style='border-bottom:1px solid black;'><td colspan='3'></td> <td colspan='3'>$dev[$counter]</td></tr>";
             // $text .="haaaaaaaaaaaaaaaaaaaaaaa";
 
             $counter += 1;
