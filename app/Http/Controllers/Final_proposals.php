@@ -27,7 +27,9 @@ use App\Mail\SubmitFinalProposal;
 use App\Mail\FinalProposalActions;
 use App\Mail\SendFPDraft;
 use App\Models\Group;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
+use App\Http\Controllers\MailChimpController;
 
 class Final_proposals extends Controller
 {
@@ -795,7 +797,7 @@ class Final_proposals extends Controller
             return (json_encode($response));
         }
     }
-    function GeneratePdf(Request $req)
+    function SendDraft(Request $req)
     {
         // try{
         $milestoneObj = new Milestones;
@@ -829,10 +831,30 @@ class Final_proposals extends Controller
             'milestones' => $mHtml,
         );
         // dd($mHtml);
-        $filename = "Draft-" . $final_proposal->title . $final_proposal->id . ".pdf";
+        $filename = public_path() . "/drafts/"."Draft-".$final_proposal->id.".pdf";
+        $Att="/drafts/"."Draft-".$final_proposal->id.".pdf";
         $pdf = PDF::loadView('pdf/Draft', $data);
-        ini_set('max_execution_time', 180);
-        return $pdf->download($filename);
+       
+        $dist = public_path() . "/drafts/" ;
+        if (!File::exists($dist)) {
+          
+            $pdf->save($filename);
+            
+        } else {
+            $pdf->save($filename);
+           
+        }
+        $subject=$final_proposal->title. 'draft';
+        $project=Project::where('id',$final_proposal->project_id)->first();
+      
+        
+        $GroupMembersObj=new GroupMembersController;
+        $mailObj=new MailController;
+        $company_admin=$GroupMembersObj->getCompanyAdminByGroupId($project->company_id);
+        $mailObj->testEmailWithPDF($Att,$req->email_body,$subject,$agency_name,$company_admin->email,$company_admin->first_name);
+        // ini_set('max_execution_time', 180);
+        // $this->savePdf($pdf,$filename,$final_proposal->project_id);
+        // return $pdf->download($filename);
     }
     // catch(Exception $error)
     // {  $response = Controller::returnResponse(500, "something went wrong",$error->getMessage());
@@ -899,6 +921,22 @@ class Final_proposals extends Controller
             return $this->leveldown($dev, $length, $counter, $text);
         } else {
             return $text;
+        }
+    }
+    function savePdf($pdf,$filename,$project_id){
+     
+        $submission_file = $pdf;
+        $dist = public_path() . '/drafts/' . $project_id;
+        if (!File::exists($dist)) {
+          
+            File::makeDirectory(public_path() . '/drafts/' . $project_id, 0755, true);
+            $submission_file->move(public_path() . '/drafts/' . $project_id, $filename);
+            $this->updateSubmissionFile($project_id, $filename);
+            
+        } else {
+            $submission_file->move(public_path() . '/drafts/' . $project_id, $filename);
+            $this->updateSubmissionFile($project_id, $filename);
+           
         }
     }
 }

@@ -29,10 +29,10 @@ class draftMail extends Mailable
     public function build()
     {
         // ini_set('max_execution_time', 180);
-        return $this->markdown('mail.testPDF')->with([
-            'status' => $this->data['status'],
-            'projectName' => $this->data['projectName'],
-            'clientEmail' => $this->data['clientEmail'],
+        return $this->subject($this->data['subject'])->markdown('mail.testPDF')->with([
+            'agency_name' => $this->data['AgencyName'],
+            'client_name' => $this->data['ClientName'],
+            'email_body' => $this->data['email_body'],
         ])->attach($this->data['pdf_file']);
     }
 }
