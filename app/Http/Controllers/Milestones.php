@@ -36,7 +36,7 @@ class Milestones extends Controller
     function Insert(Request $req)
     {
 
-        // try {
+        try {
 
             $finalProposalObj = new Final_proposals;
             $rules = array(
@@ -183,10 +183,10 @@ class Milestones extends Controller
                     return (json_encode($response));
                 }
             }
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "something went wrong milestones controller", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong milestones controller", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 
     function updateMilestone(Request $req)
@@ -945,18 +945,10 @@ class Milestones extends Controller
     }
     function createMonthlyMilestones($data, $counter)
     {
-        $arr=array( "project_id" => $data['project_id'],
-        "final_proposal_id" => $data['final_proposal_id'],
-        "hours" => $data['hours'],
-        "hourly_rate" => $data['hourly_rate'],
-        "price" => $data['price'],
-        "name" => $data['name'],
-        "description" =>$data['description'],
-        "deliverables" => serialize($data['deliverables']),
-        "is_valid" => $data['is_valid']);
+       
         try {
             for ($i = 0; $i < $counter; $i++) {
-                 Milestone::create($arr);
+                 Milestone::create($data);
             }
             return ['code' => 200];
         } catch (Exception $error) {
