@@ -945,18 +945,10 @@ class Milestones extends Controller
     }
     function createMonthlyMilestones($data, $counter)
     {
-        $arr=array( "project_id" => $data['project_id'],
-        "final_proposal_id" => $data['final_proposal_id'],
-        "hours" => $data['hours'],
-        "hourly_rate" => $data['hourly_rate'],
-        "price" => $data['price'],
-        "name" => $data['name'],
-        "description" =>$data['description'],
-        "deliverables" => serialize($data['deliverables']),
-        "is_valid" => $data['is_valid']);
+       
         try {
             for ($i = 0; $i < $counter; $i++) {
-                 Milestone::create($arr);
+                 Milestone::create($data);
             }
             return ['code' => 200];
         } catch (Exception $error) {
