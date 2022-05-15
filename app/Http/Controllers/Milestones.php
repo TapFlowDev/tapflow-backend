@@ -36,7 +36,7 @@ class Milestones extends Controller
     function Insert(Request $req)
     {
 
-        try {
+        // try {
 
             $finalProposalObj = new Final_proposals;
             $rules = array(
@@ -145,21 +145,26 @@ class Milestones extends Controller
                                     //     }
                                     // }
                                     if ($req->type == 2) {
-                                        $create_months = $this->createMonthlyMilestones($data, $req->counter);
-                                        if ($create_months['code'] != 200) {
-                                            $response = Controller::returnResponse(500, "something went wrong milestones controller", $create_months['msg']);
+                                        $milestone = $this->createMonthlyMilestones($data, $req->counter);
+                                        if ($milestone['code'] != 200) {
+                                            $response = Controller::returnResponse(500, "something went wrong milestones controller", $milestone['msg']);
                                             return (json_encode($response));
-                                        }
+                                        } $all_milestones = Milestone::where('final_proposal_id',  $final_proposal_id)->select('id', 'price', 'hours')->get();
+                                        $this->calculate_final_price($all_milestones,  $final_proposal_id);
+                                        $response = Controller::returnResponse(200, "months added successfully", []);
+                                        return (json_encode($response));
+
                                     } else {
                                         $milestone = Milestone::create($data);
+                                        $all_milestones = Milestone::where('final_proposal_id',  $final_proposal_id)->select('id', 'price', 'hours')->get();
+                                        $this->calculate_final_price($all_milestones,  $final_proposal_id);
+    
+    
+                                        $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
+                                        return (json_encode($response));
                                     }
                                     // $FP=Final_proposal::where('id',$finalProposal['final_proposal_id'])->update('')
-                                    $all_milestones = Milestone::where('final_proposal_id',  $final_proposal_id)->select('id', 'price', 'hours')->get();
-                                    $this->calculate_final_price($all_milestones,  $final_proposal_id);
-
-
-                                    $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
-                                    return (json_encode($response));
+                                   
                                 } else {
                                     $response = Controller::returnResponse(422, "You already submit your proposal", []);
                                     return (json_encode($response));
@@ -178,10 +183,10 @@ class Milestones extends Controller
                     return (json_encode($response));
                 }
             }
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something went wrong milestones controller", $error->getMessage());
-            return (json_encode($response));
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, "something went wrong milestones controller", $error->getMessage());
+        //     return (json_encode($response));
+        // }
     }
 
     function updateMilestone(Request $req)
@@ -938,11 +943,20 @@ class Milestones extends Controller
 
         Final_proposal::where('id', $FP_id)->update(['price' => $total_price, 'hours' => $total_hours]);
     }
-    function createMonthlyMilestones($milestone, $counter)
+    function createMonthlyMilestones($data, $counter)
     {
+        $arr=array( "project_id" => $data['project_id'],
+        "final_proposal_id" => $data['final_proposal_id'],
+        "hours" => $data['hours'],
+        "hourly_rate" => $data['hourly_rate'],
+        "price" => $data['price'],
+        "name" => $data['name'],
+        "description" =>$data['description'],
+        "deliverables" => serialize($data['deliverables']),
+        "is_valid" => $data['is_valid']);
         try {
             for ($i = 0; $i < $counter; $i++) {
-                $milestone = Milestone::create($milestone);
+                 Milestone::create($arr);
             }
             return ['code' => 200];
         } catch (Exception $error) {
