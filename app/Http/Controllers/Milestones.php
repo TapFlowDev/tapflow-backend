@@ -211,7 +211,7 @@ class Milestones extends Controller
                         } else {
                             $price = $this->calculatePrice($req->milestone_num_hours, $req->milestone_hourly_rate);
                             $req['milestone_price'] = $price;
-
+                            
                             // $update = $this->milestoneDownPaymentHandler($req);
                             // if ($update['update'] == 1) {
                             //     if ($finalProposal['type'] == 1) {
@@ -240,6 +240,8 @@ class Milestones extends Controller
                                     'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price, 'hourly_rate' => $req->milestone_hourly_rate,
                                     'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables), 'is_valid' => $isValid
                                 ]);
+                                $all_milestones = Milestone::where('final_proposal_id',  $finalProposal['final_proposal_id'])->select('id', 'price', 'hours')->get();
+                            $this->calculate_final_price($all_milestones,  $finalProposal['final_proposal_id']);
                             $response = Controller::returnResponse(200, "milestone updated successful", []);
                             return (json_encode($response));
                             // } else {
@@ -281,6 +283,8 @@ class Milestones extends Controller
                             // $del = $this->downPaymentDelete($req->milestone_id);
                             // if ($del['delete'] == 1) {
                             $milestone = Milestone::where('id', $req->milestone_id)->delete();
+                            $all_milestones = Milestone::where('final_proposal_id',  $finalProposal['final_proposal_id'])->select('id', 'price', 'hours')->get();
+                            $this->calculate_final_price($all_milestones,  $finalProposal['final_proposal_id']);
                             $response = Controller::returnResponse(200, "milestone deleted successful", []);
                             return (json_encode($response));
                             // } else {
