@@ -859,7 +859,15 @@ class Final_proposals extends Controller
     }
     function generateHtml($milestones,$type)
     {
-
+        if($type == 1)
+        {
+            $hours_label="<strong>Number of Hours:</strong>";
+            $deliverables_label="<strong>Deliverables:</strong>";
+        }
+        elseif($type ==2 ){
+            $hours_label=" <strong>Number of Hours/Month:</strong>";
+            $deliverables_label="<strong>Resources:</strong>";
+        }
         $text = '';
         foreach ($milestones as $keyM => &$milestone) {
             $dev = unserialize($milestone->deliverables);
@@ -869,7 +877,7 @@ class Final_proposals extends Controller
             $text .= "<tr><td colspan='3'><strong>Name:</strong></td>
             <td colspan='3'>$milestone->name</td>
             </tr>
-            <tr><td colspan='3'@if ($type == 1) <strong>Number of Hours:</strong> @elseif ($type == 2) <strong>Number of Hours/Month:</strong> @endif</td>
+            <tr><td colspan='3' $hours_label</td>
             <td colspan='3'>$milestone->hours</td>
             </tr>
             <tr>
@@ -879,7 +887,7 @@ class Final_proposals extends Controller
             <tr>
             <td colspan='3'><strong>Price:</strong></td>
             <td colspan='3'>$milestone->price</td>
-            </tr><tr><td colspan='3'>if ($type == 1) {<strong>Deliverables:</strong>} elseif ($type == 2) {<strong>Resources:</strong>}</td></tr>";
+            </tr><tr><td colspan='3'>$deliverables_label</td></tr>";
             $text .= $this->leveldown($dev, $length, $counter, $text2)."<tr style='border-bottom:1px solid black;'><td colspan='6'></td></tr>";
         }
     
