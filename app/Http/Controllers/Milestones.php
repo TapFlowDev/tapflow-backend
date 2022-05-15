@@ -97,14 +97,19 @@ class Milestones extends Controller
                                             $response = Controller::returnResponse(500, "something went wrong milestones controller", $create_months['msg']);
                                             return (json_encode($response));
                                         }
+                                        $all_milestones = Milestone::where('final_proposal_id',  $new_final_proposal['msg'])->select('id', 'price', 'hours')->get();
+                                        $this->calculate_final_price($all_milestones,  $new_final_proposal['msg']);
+                                        $response = Controller::returnResponse(200, "months added successfully", []);
+                                        return (json_encode($response));
                                     } else {
                                         $milestone = Milestone::create($data);
+                                        $all_milestones = Milestone::where('final_proposal_id',  $new_final_proposal['msg'])->select('id', 'price', 'hours')->get();
+                                        $this->calculate_final_price($all_milestones,  $new_final_proposal['msg']);
+    
+                                        $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
+                                        return (json_encode($response));
                                     }
-                                    $all_milestones = Milestone::where('final_proposal_id',  $new_final_proposal['msg'])->select('id', 'price', 'hours')->get();
-                                    $this->calculate_final_price($all_milestones,  $new_final_proposal['msg']);
-
-                                    $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
-                                    return (json_encode($response));
+                              
                                 }
                             } else {
                                 if ($finalProposal['status'] == -1 || $finalProposal['status'] == 3) {
