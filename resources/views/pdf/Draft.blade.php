@@ -18,7 +18,7 @@
                 sans-serif,
                 "Apple Color Emoji",
                 "Segoe UI Emoji";
-            background-image: url('/images/client-watermark.png');
+            background-image: url('https://operations.tapflow.dev/images/client-watermark.png');
         }
     </style>
 </head>
