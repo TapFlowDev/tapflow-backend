@@ -18,6 +18,7 @@
                 sans-serif,
                 "Apple Color Emoji",
                 "Segoe UI Emoji";
+                background-image: url('/public/images/client-watermark.png');
         }
     </style>
 </head>
@@ -31,12 +32,14 @@
                 </td>
             </tr>
             <tr>
-                <td width="10%"><strong>Hours</strong></td>
+                <td width="10%"><strong>@if ($details['type'] == 1)Hours @elseif ($details['type'] == 2)Hours/Month @endif</strong></td>
                 <td width="10%">{{$hours}}</td>
                 <td width="20%"><strong>Final Cost</strong></td>
                 <td width="20%">{{$price}}</td>
                 <td width="20%"><strong>Starting Date</strong></td>
                 <td width="20%">{{$starting_date}}</td>
+                <td width="20%"><strong>Project Scope</strong></td>
+                <td width="20%">@if ($details['type'] == 1)Projects Based@elseif ($details['type'] == 2)Monthly Monthly Retainer @endif </td>
             </tr>
             <tr>
                 <td  colspan="6">
@@ -46,7 +49,7 @@
             </tr>
             <tr>
                 <td  colspan="6">
-                    <h4>Milestones </h4>
+                    <h4>@if ($details['type'] == 1)Milestones@elseif ($details['type'] == 2)Months @endif </h4>
                 </td>
             </tr>
            {!! $milestones !!}

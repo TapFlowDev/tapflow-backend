@@ -828,6 +828,7 @@ class Final_proposals extends Controller
             'title' => $final_proposal->title,
             'description' => $final_proposal->description,
             'starting_date' => $final_proposal->starting_date,
+            'type'=>$final_proposal->type,
             'milestones' => $mHtml,
         );
         // dd($mHtml);
