@@ -36,7 +36,7 @@ class Milestones extends Controller
     function Insert(Request $req)
     {
 
-        // try {
+        try {
 
             $finalProposalObj = new Final_proposals;
             $rules = array(
@@ -183,10 +183,10 @@ class Milestones extends Controller
                     return (json_encode($response));
                 }
             }
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "something went wrong milestones controller", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong milestones controller", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 
     function updateMilestone(Request $req)
