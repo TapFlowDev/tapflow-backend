@@ -34,14 +34,16 @@
                 </td>
             </tr>
             <tr>
-                <td width="10%"><strong>Hours</strong></td>
-                <td width="10%">{{$hours}}</td>
-                <td width="20%"><strong>Final Cost</strong></td>
-                <td width="20%">{{$price}}</td>
-                <td width="20%"><strong>Starting Date</strong></td>
-                <td width="20%">{{$starting_date}}</td>
-                <td width="20%"><strong>Project Scope</strong></td>
-                <td width="20%">@if ($type == 1) Projects Based @elseif ($type == 2) Monthly Retainer @endif </td>
+                <td width="25%"><strong>Hours</strong></td>
+                <td width="25%">{{$hours}}</td>
+                <td width="25%"><strong>Final Cost</strong></td>
+                <td width="25%">{{$price}}</td>
+            </tr>
+            <tr>
+                <td width="25%"><strong>Starting Date</strong></td>
+                <td width="25%">{{$starting_date}}</td>
+                <td width="25%"><strong>Project Scope</strong></td>
+                <td width="25%">@if ($type == 1) Projects Based @elseif ($type == 2) Monthly Retainer @endif </td>
             </tr>
             <tr>
                 <td colspan="6">
