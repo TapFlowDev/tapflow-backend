@@ -91,7 +91,7 @@ class Milestones extends Controller
                                         "deliverables" => serialize($req->deliverables),
                                         "is_valid" => $isValid
                                     );
-                                    if ($req->type = 2) {
+                                    if ($req->type == 2) {
                                         $create_months = $this->createMonthlyMilestones($data, $req->counter);
                                         if ($create_months['code'] != 200) {
                                             $response = Controller::returnResponse(500, "something went wrong milestones controller", $create_months['msg']);
@@ -144,7 +144,7 @@ class Milestones extends Controller
                                     //         return (json_encode($response));
                                     //     }
                                     // }
-                                    if ($req->type = 2) {
+                                    if ($req->type == 2) {
                                         $create_months = $this->createMonthlyMilestones($data, $req->counter);
                                         if ($create_months['code'] != 200) {
                                             $response = Controller::returnResponse(500, "something went wrong milestones controller", $create_months['msg']);
