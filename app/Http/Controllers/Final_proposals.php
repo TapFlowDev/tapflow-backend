@@ -865,7 +865,7 @@ class Final_proposals extends Controller
             $deliverables_label="<strong>Deliverables:</strong>";
         }
         elseif($type ==2 ){
-            $hours_label=" <strong>Number of Hours/Month:</strong>";
+            $hours_label="<strong> Number of Hours/Month:</strong>";
             $deliverables_label="<strong>Resources:</strong>";
         }
         $text = '';
@@ -877,7 +877,7 @@ class Final_proposals extends Controller
             $text .= "<tr><td colspan='3'><strong>Name:</strong></td>
             <td colspan='3'>$milestone->name</td>
             </tr>
-            <tr><td colspan='3' $hours_label</td>
+            <tr><td colspan='3'> $hours_label</td>
             <td colspan='3'>$milestone->hours</td>
             </tr>
             <tr>
