@@ -50,7 +50,7 @@ class CompanyController extends Controller
         $teamMembers = $GroupMembersController->getCompanyMembersByGroupId($id);
         $cats = $GroupCategoriesController->getTeamCategories($id);
         $info = $this->get_company_info($id);
-        $wallet_info=$this->$walletObj->getOrCreateWallet($id,1);
+        $wallet_info=$walletObj->getOrCreateWallet($id,1);
         $country_id = $info->country;
         $Country = $NewCountriesController->getCountryFlag($country_id);
         if ($info->image == '') {
@@ -76,7 +76,7 @@ class CompanyController extends Controller
         $info->countryName = $Country->name;
         $info->countryCode = $Country->code;
         $info->countryFlag = $Country->flag;
-        $info->wallet_balance = $wallet_info->balance;
+        $info->wallet_info = $wallet_info;
         $response = Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
         } catch (Exception $error) {
