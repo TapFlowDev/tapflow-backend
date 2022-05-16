@@ -614,6 +614,7 @@ class Final_proposals extends Controller
                         $rejectAll = $this->rejectAll($req->project_id, $req->proposal_id);
                         if ($rejectAll['code'] == 200) {
                             $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('team_id')->first();
+                            Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                             Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 4]);
                             // if ($final_proposal->down_payment == 0) {
                             //     Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 1]);
@@ -621,8 +622,8 @@ class Final_proposals extends Controller
                             //     Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 4]);
                             // }
                             $first_milestone_id=Milestone::where('final_proposal_id',$req->proposal_id)->first()->id;
-                            Milestone::where('id',$first_milestone_id)->update(['status',4]);
-                            Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
+                            Milestone::where('id',$first_milestone_id)->update(['status'=>4]);
+                           
                             $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('team_id', 'project_id')->first();
                             $groupMemsObj = new GroupMembersController;
                             $projectObj = new ProjectController;
