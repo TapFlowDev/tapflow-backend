@@ -38,17 +38,19 @@ class CompanyController extends Controller
     }
     function getCompany($id)
     {
-        // try {
+        try {
         $linksController = new GroupsLinksController;
         $GroupMembersController = new GroupMembersController;
         $GroupCategoriesController = new GroupCategoriesController;
         $NewCountriesController = new NewCountriesController;
         $ProjectControllerObj = new ProjectController;
+        $walletObj = new WalletsController;
         $projectsNo = $ProjectControllerObj->getNumberOfProjectForCompany($id);
         $links = $linksController->get_group_links($id);
         $teamMembers = $GroupMembersController->getCompanyMembersByGroupId($id);
         $cats = $GroupCategoriesController->getTeamCategories($id);
         $info = $this->get_company_info($id);
+        $wallet_info=$this->$walletObj->getOrCreateWallet($id,1);
         $country_id = $info->country;
         $Country = $NewCountriesController->getCountryFlag($country_id);
         if ($info->image == '') {
@@ -74,12 +76,13 @@ class CompanyController extends Controller
         $info->countryName = $Country->name;
         $info->countryCode = $Country->code;
         $info->countryFlag = $Country->flag;
+        $info->wallet_info = $wallet_info;
         $response = Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
-        //     return json_encode($response);
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
     }
     private function get_company_info($id)
     {
