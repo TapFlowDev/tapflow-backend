@@ -57,7 +57,7 @@ class TeamController extends Controller
             $cats = $GroupCategoriesController->getTeamCategories($id);
             $targets = $agencyTargetsController->getTargets($id);
             $info = $this->get_team_info($id);
-            $wallet_info=$this->$walletObj->getOrCreateWallet($id,1);
+            $wallet_info=$walletObj->getOrCreateWallet($id,1);
             $country_id = $info->country;
             $Country = $NewCountriesController->getCountryFlag($country_id);
             $info->image = asset('images/companies/' . $info->image);
