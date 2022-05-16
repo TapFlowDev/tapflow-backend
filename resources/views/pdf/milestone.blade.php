@@ -6,6 +6,9 @@
     <style>
         body {
             font-size: 16px;
+            background-image: url('https://operations.tapflow.dev/images/client-watermark.png');
+            background-size: contain;
+            background-position: center;
         }
 
         table {

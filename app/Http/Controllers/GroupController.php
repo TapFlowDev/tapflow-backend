@@ -18,10 +18,9 @@ use App\Http\Controllers\AgencyTargetsController;
 use Illuminate\Support\Facades\DB;
 use App\Models\Group_member;
 use Newsletter;
-
 use Exception;
-
 use function GuzzleHttp\Promise\each;
+use App\Http\Controllers\WalletsController;
 
 class   GroupController extends Controller
 {

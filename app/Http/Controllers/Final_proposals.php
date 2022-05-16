@@ -614,13 +614,13 @@ class Final_proposals extends Controller
                         $rejectAll = $this->rejectAll($req->project_id, $req->proposal_id);
                         if ($rejectAll['code'] == 200) {
                             $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('team_id')->first();
-                            Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 1]);
+                            Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 4]);
                             // if ($final_proposal->down_payment == 0) {
                             //     Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 1]);
                             // } else {
                             //     Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 4]);
                             // }
-
+ 
                             Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                             $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('team_id', 'project_id')->first();
                             $groupMemsObj = new GroupMembersController;
@@ -819,7 +819,7 @@ class Final_proposals extends Controller
         // $A=array_column($milestones,'deliverables');
 
         // dd($A);
-        $mHtml = $this->generateHtml($milestones);
+        $mHtml = $this->generateHtml($milestones,$final_proposal->type);
         $data = array(
             
             'agency_name' => $agency_name,
@@ -828,6 +828,7 @@ class Final_proposals extends Controller
             'title' => $final_proposal->title,
             'description' => $final_proposal->description,
             'starting_date' => $final_proposal->starting_date,
+            'type'=>$final_proposal->type,
             'milestones' => $mHtml,
         );
         // dd($mHtml);
@@ -856,30 +857,38 @@ class Final_proposals extends Controller
     {  $response = Controller::returnResponse(500, "something went wrong",$error->getMessage());
         return (json_encode($response));}
     }
-    function generateHtml($milestones)
+    function generateHtml($milestones,$type)
     {
-
+        if($type == 1)
+        {
+            $hours_label="<strong>Number of Hours:</strong>";
+            $deliverables_label="<strong>Deliverables:</strong>";
+        }
+        elseif($type ==2 ){
+            $hours_label="<strong> Number of Hours/Month:</strong>";
+            $deliverables_label="<strong>Resources:</strong>";
+        }
         $text = '';
         foreach ($milestones as $keyM => &$milestone) {
             $dev = unserialize($milestone->deliverables);
             $length = count($dev);
             $counter = 0;
             $text2 = '';
-            $text .= "<tr><td colspan='3'>Name:</td>
+            $text .= "<tr><td colspan='3'><strong>Name:</strong></td>
             <td colspan='3'>$milestone->name</td>
             </tr>
-            <tr><td colspan='3'>Number of Hours:</td>
+            <tr><td colspan='3'> $hours_label</td>
             <td colspan='3'>$milestone->hours</td>
             </tr>
             <tr>
-            <td colspan='3'>Hourly Rate:</td>
+            <td colspan='3'><strong>Hourly Rate:</strong></td>
             <td colspan='3'>$milestone->hourly_rate</td>
             </tr>
             <tr>
-            <td colspan='3'>Price:</td>
+            <td colspan='3'><strong>Price:</strong></td>
             <td colspan='3'>$milestone->price</td>
-            </tr>";
-            $text .= $this->leveldown($dev, $length, $counter, $text2);
+            </tr><tr><td colspan='3'>$deliverables_label</td></tr>";
+            $text .= $this->leveldown($dev, $length, $counter, $text2)."<tr style='border-bottom:1px solid black;'><td colspan='6'></td></tr>";
         }
     
        
@@ -910,7 +919,7 @@ class Final_proposals extends Controller
     function leveldown($dev, $length, $counter, $text)
     {
         if ($counter < $length) {
-            $text .= "<tr style='border-bottom:1px solid black;'><td colspan='3'>deliverables:</td> <td colspan='3'>$dev[$counter]</td></tr>";
+            $text .= "<tr> <td colspan='6'>$dev[$counter]</td></tr>";
             // $text .="haaaaaaaaaaaaaaaaaaaaaaa";
 
             $counter += 1;
