@@ -76,7 +76,7 @@ class CompanyController extends Controller
         $info->countryName = $Country->name;
         $info->countryCode = $Country->code;
         $info->countryFlag = $Country->flag;
-        $info->wallet_info = $wallet_info;
+        $info->wallet_balance = $wallet_info->balance;
         $response = Controller::returnResponse(200, "successful", $info);
         return (json_encode($response));
         } catch (Exception $error) {
