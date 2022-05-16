@@ -620,7 +620,8 @@ class Final_proposals extends Controller
                             // } else {
                             //     Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 4]);
                             // }
- 
+                            $first_milestone_id=Milestone::where('final_proposal_id',$req->proposal_id)->first()->id;
+                            Milestone::where('id',$first_milestone_id)->update(['status',4]);
                             Final_proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                             $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('team_id', 'project_id')->first();
                             $groupMemsObj = new GroupMembersController;
