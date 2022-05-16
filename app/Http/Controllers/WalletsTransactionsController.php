@@ -287,6 +287,8 @@ class WalletsTransactionsController extends Controller
         try {
             $walletObj = new WalletsController;
             $payment = payments::where('milestone_id', '=', $milestoneId)->where('status', '=', 1)->get()->first();
+            if(!$payment)
+            { return ['paymentStatus' => -1, 'paymentMsg' => 'payment not found', 'responseCode' => 500];}
             $wallet = $walletObj->getOrCreateWallet($payment->agency_id, 1);
             $walletBalance = $wallet->balance;
             $total = $payment->agency_total_price;
@@ -303,13 +305,15 @@ class WalletsTransactionsController extends Controller
                 $newBalance = number_format($walletBalance + $total, 2, '.', '');
                 $wallet->balance = $newBalance;
                 $wallet->save();
+                $payment->status=2;
+                $payment->save();
                 //notify admin
                 $mail = $this->notifyAdminWalletAction($wallet->reference_id, 2, $total, $newBalance);
                 return ['paymentStatus' => 1, 'paymentMsg' => 'paid successfully',  'responseCode' => 200];
             }
             return ['paymentStatus' => -1, 'paymentMsg' => 'error', 'responseCode' => 500];
         } catch (Exception $error) {
-            return ['paymentStatus' => -1, 'paymentMsg' => 'error', 'responseCode' => 500];
+            return ['paymentStatus' => -1, 'paymentMsg' => $error->getMessage(), 'responseCode' => 500];
         }
     }
 }

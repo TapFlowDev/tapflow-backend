@@ -105,11 +105,10 @@ class Milestones extends Controller
                                         $milestone = Milestone::create($data);
                                         $all_milestones = Milestone::where('final_proposal_id',  $new_final_proposal['msg'])->select('id', 'price', 'hours')->get();
                                         $this->calculate_final_price($all_milestones,  $new_final_proposal['msg']);
-    
+
                                         $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
                                         return (json_encode($response));
                                     }
-                              
                                 }
                             } else {
                                 if ($finalProposal['status'] == -1 || $finalProposal['status'] == 3) {
@@ -154,22 +153,22 @@ class Milestones extends Controller
                                         if ($milestone['code'] != 200) {
                                             $response = Controller::returnResponse(500, "something went wrong milestones controller", $milestone['msg']);
                                             return (json_encode($response));
-                                        } $all_milestones = Milestone::where('final_proposal_id',  $final_proposal_id)->select('id', 'price', 'hours')->get();
+                                        }
+                                        $all_milestones = Milestone::where('final_proposal_id',  $final_proposal_id)->select('id', 'price', 'hours')->get();
                                         $this->calculate_final_price($all_milestones,  $final_proposal_id);
                                         $response = Controller::returnResponse(200, "months added successfully", []);
                                         return (json_encode($response));
-
                                     } else {
                                         $milestone = Milestone::create($data);
                                         $all_milestones = Milestone::where('final_proposal_id',  $final_proposal_id)->select('id', 'price', 'hours')->get();
                                         $this->calculate_final_price($all_milestones,  $final_proposal_id);
-    
-    
+
+
                                         $response = Controller::returnResponse(200, "milestone added successfully", ["milestone_id" => $milestone->id]);
                                         return (json_encode($response));
                                     }
                                     // $FP=Final_proposal::where('id',$finalProposal['final_proposal_id'])->update('')
-                                   
+
                                 } else {
                                     $response = Controller::returnResponse(422, "You already submit your proposal", []);
                                     return (json_encode($response));
@@ -211,7 +210,7 @@ class Milestones extends Controller
                         } else {
                             $price = $this->calculatePrice($req->milestone_num_hours, $req->milestone_hourly_rate);
                             $req['milestone_price'] = $price;
-                            
+
                             // $update = $this->milestoneDownPaymentHandler($req);
                             // if ($update['update'] == 1) {
                             //     if ($finalProposal['type'] == 1) {
@@ -240,7 +239,7 @@ class Milestones extends Controller
                                     'name' => $req->milestone_name, 'hours' => $req->milestone_num_hours, 'price' => $req->milestone_price, 'hourly_rate' => $req->milestone_hourly_rate,
                                     'description' => $req->milestone_description, 'deliverables' => serialize($req->deliverables), 'is_valid' => $isValid
                                 ]);
-                                $all_milestones = Milestone::where('final_proposal_id',  $finalProposal['final_proposal_id'])->select('id', 'price', 'hours')->get();
+                            $all_milestones = Milestone::where('final_proposal_id',  $finalProposal['final_proposal_id'])->select('id', 'price', 'hours')->get();
                             $this->calculate_final_price($all_milestones,  $finalProposal['final_proposal_id']);
                             $response = Controller::returnResponse(200, "milestone updated successful", []);
                             return (json_encode($response));
@@ -610,6 +609,19 @@ class Milestones extends Controller
                     if ($userData['privileges'] == 1) {
                         milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, 'status' => 3]);
                         Milestone::where('id', $req->milestone_id)->update(['status' => 3]);
+                        $walletObj = new WalletsTransactionsController;
+                      $trans=  $walletObj -> makePaymentTransactionDepositAgency($req->milestone_id);
+                      if($trans['responseCode'] !=200)
+                      {
+                        $response = Controller::returnResponse(500, "something went wrong", $trans['paymentMsg']);
+                        return (json_encode($response));
+                      }
+                        $active= $this->ActivateNext($req->milestone_id);
+                        if ($active['code' != 200])
+                        {
+                            $response = Controller::returnResponse(500, "something went wrong", $active['msg']);
+                            return (json_encode($response));
+                        }
                         // $this->PayIfDownPayment($req->milestone_id);
                         $milestoneDetails = Milestone::where('id', $req->milestone_id)->select('name', 'final_proposal_id')->first();
                         $agency = DB::table('groups')
@@ -954,15 +966,38 @@ class Milestones extends Controller
     }
     function createMonthlyMilestones($data, $counter)
     {
-       
+
         try {
             for ($i = 0; $i < $counter; $i++) {
-                 Milestone::create($data);
+                Milestone::create($data);
             }
             return ['code' => 200];
         } catch (Exception $error) {
 
             return ['code' => 500, 'msg' => $error->getMessage()];
         }
+    }
+    private function ActivateNext($current_id)
+    {
+        try{
+        $current_milestone = Milestone::where('id', $current_id)->select('status', 'final_proposal_id')->first();
+        if ($current_milestone->status != 3) {
+            return ['code'=>500,'msg'=>'current milestone not closed'];
+        }
+        $all_milestones = Milestone::where('final_proposal_id', $current_milestone->final_proposal_id)->select('id', 'status')->first();
+        $milestones_ids = $all_milestones->pluck('id')->toArray();
+        $last_index = count($milestones_ids) - 1;
+        $project_id = Final_proposal::where('id', $current_milestone->final_proposal_id)->select('project_id')->first()->project_id;
+        $current_index = (int)array_search($current_id, $milestones_ids);
+        $next_index = $current_index + 1;
+        if ($current_index == $last_index) {
+            Project::where('id', $project_id)->update(['status' => 2]);
+        } else {
+            $status = Milestone::where('id', $next_index)->select('status')->first()->status;
+            Milestone::where('id', $milestones_ids[$next_index])->update(['status' => 4]);
+        }
+    }
+    catch(Exception $error)
+    { return ['code'=>500,'msg'=>$error->getMessage()];}
     }
 }
