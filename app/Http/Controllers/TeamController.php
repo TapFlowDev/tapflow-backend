@@ -60,7 +60,11 @@ class TeamController extends Controller
             $wallet_info=$walletObj->getOrCreateWallet($id,1);
             $country_id = $info->country;
             $Country = $NewCountriesController->getCountryFlag($country_id);
-            $info->image = asset('images/companies/' . $info->image);
+            if (!$info->image) {
+                $info->image = asset('images/profile-pic.jpg');
+            }else{
+                $info->image =  asset('images/companies/' . $info->image);
+            }
             $info->links = $links;
             $info->teamMembers = $teamMembers;
             $info->categories = $cats;
