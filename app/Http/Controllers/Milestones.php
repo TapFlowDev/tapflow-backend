@@ -977,6 +977,7 @@ class Milestones extends Controller
                 $name="Month ".$c;
                 $data['name']=$name;
                 Milestone::create($data);
+                $c+=1;
             }
             return ['code' => 200];
         } catch (Exception $error) {
