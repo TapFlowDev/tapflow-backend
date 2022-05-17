@@ -92,7 +92,7 @@ class Milestones extends Controller
                                         "is_valid" => $isValid
                                     );
                                     if ($req->type == 2) {
-                                        $create_months = $this->createMonthlyMilestones($data, $req->counter);
+                                        $create_months = $this->createMonthlyMilestones($data, $req->counter,$new_final_proposal['msg']);
                                         if ($create_months['code'] != 200) {
                                             $response = Controller::returnResponse(500, "something went wrong milestones controller", $create_months['msg']);
                                             return (json_encode($response));
@@ -149,7 +149,7 @@ class Milestones extends Controller
                                     //     }
                                     // }
                                     if ($req->type == 2) {
-                                        $milestone = $this->createMonthlyMilestones($data, $req->counter);
+                                        $milestone = $this->createMonthlyMilestones($data, $req->counter,$final_proposal_id);
                                         if ($milestone['code'] != 200) {
                                             $response = Controller::returnResponse(500, "something went wrong milestones controller", $milestone['msg']);
                                             return (json_encode($response));
@@ -964,11 +964,18 @@ class Milestones extends Controller
 
         Final_proposal::where('id', $FP_id)->update(['price' => $total_price, 'hours' => $total_hours]);
     }
-    function createMonthlyMilestones($data, $counter)
+    function createMonthlyMilestones($data, $counter,$final_proposal_id)
     {
 
         try {
+            $c=count(Milestone::where('final_proposal_id',$final_proposal_id)->select('id')->get());
+            if($c ==0)
+            {
+                $c=1;
+            }
             for ($i = 0; $i < $counter; $i++) {
+                $name="Month ".$c;
+                $data['name']=$name;
                 Milestone::create($data);
             }
             return ['code' => 200];
