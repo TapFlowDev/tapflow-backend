@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $agency = Group::where('type', '=', 1)->where('status', '=', 1)->count();
         $company = Group::where('type', '=', 2)->where('status', '=', 1)->count();
         // $waitingList = Waiting_List::count();
-        $projectRequests = $projectsObj->getProjectRequests();
+        $projectRequests = Project::where('status', '<>', 2)->where('status', '<>', -1)->count();
         $project = Project::where('status', 2)->count();
         $data = array(
             'agency' => $agency,
