@@ -35,7 +35,7 @@ class DepositRequestController extends Controller
                 $latestDepositArr = $latestDeposit->toArray();
                 $isAccepted = $this->timeDiff(date('Y-m-d H:i:s', strtotime($latestDepositArr['created_at'])));
                 if ($isAccepted != 1) {
-                    $response = Controller::returnResponse(422, "Action denied, You must wait 30 mintutes for your next deposit request", []);
+                    $response = Controller::returnResponse(422, "Action denied, You must wait 30 minutes for your next deposit request", []);
                     return (json_encode($response));
                 }
             }
