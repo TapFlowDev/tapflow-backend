@@ -798,7 +798,7 @@ class ProjectController extends Controller
             }
             $milestonesInfo = Milestone::where('project_id', $id)->where('final_proposal_id', '=', $finalProposal->id)->get()->makeHidden(['deliverables', 'created_at', 'updated_at']);
             $remainingAmount = number_format(Milestone::where('project_id', $id)->where('is_paid', '<>', 1)->sum('price'), 2, '.', '');
-            $remainingMilestones = Milestone::where('project_id', $id)->where('status', '<>', 3)->count();
+            $remainingMilestones = Milestone::where('project_id', $id)->where('final_proposal_id', '=', $finalProposal->id)->where('status', '<>', 3)->count();
             $responseData = array(
                 'projectInfo' => $projectInfo,
                 'milestones' => $milestonesInfo,
