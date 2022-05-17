@@ -972,8 +972,8 @@ class Milestones extends Controller
             $nameCounter=(int)$c+1;
             for ($i = 0; $i < $counter; $i++) {
                 $name="Month ". $nameCounter;
-                $data['name']=$name;
-                Milestone::create($data);
+              
+                Milestone::create($data->except(['name'])+['name'=>$name]);
                 $c+=1;
             }
             return ['code' => 200];
