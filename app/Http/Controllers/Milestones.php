@@ -968,10 +968,10 @@ class Milestones extends Controller
     {
 
         try {
-            $c=count(Milestone::where('final_proposal_id',$final_proposal_id)->select('id')->get());
-            $c=(int)$c;
+            $c=Milestone::where('final_proposal_id',$final_proposal_id)->select('id')->count();
+            $nameCounter=(int)$c+1;
             for ($i = 0; $i < $counter; $i++) {
-                $name="Month ". $c+1;
+                $name="Month ". $nameCounter;
                 $data['name']=$name;
                 Milestone::create($data);
                 $c+=1;
