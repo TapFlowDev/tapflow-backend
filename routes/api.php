@@ -39,6 +39,7 @@ use App\Http\Controllers\FormOptionsController;
 use App\Http\Controllers\Milestones;
 use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\DepositRequestController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
 use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
@@ -69,6 +70,8 @@ use phpDocumentor\Reflection\ProjectFactory;
 
 // });
 // for testing test
+// Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
+Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
 Route::get('updateMilestonesPrices/{m}/{f}', [Milestones::class, 'updateMilestonesPrices']);
@@ -133,8 +136,8 @@ Route::get('getNumberOfProjectForCompany/{id}', [ProjectController::class, 'getN
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('getFinalProposalByProjectIdAndTeamId', [Final_proposals::class, 'getProposalByProjectIdAndTeamId']);
-    Route::get('deleteMilestone/{id}', [Milestones::class, 'Delete']);
-    Route::post('updateMilestone', [Milestones::class, 'Update']);
+  
+  
 
     // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
     Route::post('submitMilestone', [Milestones::class, 'submitMilestone']);
@@ -207,6 +210,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
     Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
     Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
+  
 
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
@@ -233,7 +237,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('acceptProposal', [proposals::class, 'acceptProposal']);
     Route::post('reviseFinalProposal', [Final_proposals::class, 'reviseFinalProposal']);
     Route::get('dashboardProposals/{offset}/{limit}', [Proposals::class, 'getClientPropsals']);
-    Route::post('payMilestone/', [PaymentsController::class, 'makePayment']);
+    Route::post('payMilestone/', [PaymentsController::class, 'payMilestone']);
     Route::get('transactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getCompanyTransactions']);
     Route::post('depositRequest', [DepositRequestController::class, 'Insert']);
     Route::get('payMilestoneDetails/{id}', [Milestones::class, 'payMilestoneDetails']);

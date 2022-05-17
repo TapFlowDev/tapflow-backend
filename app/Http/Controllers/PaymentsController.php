@@ -207,4 +207,155 @@ class PaymentsController extends Controller
     
         return $pdf->download('test.pdf');
     }
+    function payMilestone(Request $request){
+        try{
+            $walletTransactionsObj = new WalletsTransactionsController;
+            $userData = $this->checkUser($request);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $rules = array(
+                "milestone_id" => "required|exists:milestones,id",
+            );
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $responseData = $validator->errors();
+                $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                return (json_encode($response));
+            }
+            /*
+            validate milestone
+            */
+            $milstoneInfo = Milestone::where('id', '=', $request->milestone_id)->get()->first();
+            //check if milestone exists
+            if (!$milstoneInfo) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $projectId = $milstoneInfo->project_id;
+            $contractId = $milstoneInfo->final_proposal_id;
+            /**
+             * validate final proposal
+             */
+            $contract = Final_proposal::where('id', '=', $contractId)->where('project_id', '=', $projectId)->get()->first();
+            //check if milestone exists
+            if (!$contract) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($contract->status != 1) {
+                $response = Controller::returnResponse(422, "final proposal is not accepted yet", []);
+                return (json_encode($response));
+            }
+
+            /*
+            validate project
+            */
+            //check if project is valid
+            $projectInfo = Project::where('id', '=', $projectId)->where('company_id', '=', $userData['group_id'])->get()->first();
+            if (!$projectInfo) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            // check if team id exists
+            if (!$projectInfo->team_id) {
+                $response = Controller::returnResponse(422, "project is not active", []);
+                return (json_encode($response));
+            }
+            // check if project active
+            if ($projectInfo->status != 4 && $projectInfo->status != 1) {
+                $response = Controller::returnResponse(422, "project is not active", []);
+                return (json_encode($response));
+            }
+            
+            /*
+                check if milestone is accepted
+            =>
+            if milestone is not downpayment and not active error will be returned 
+            */
+            // if ($milstoneInfo->status != 3) {
+            //     $response = Controller::returnResponse(422, "milestone is not accepted yet please review and accept milestone before payment", []);
+            //     return (json_encode($response));
+            // }
+
+            //check if milestone is paid
+            if ($milstoneInfo->is_paid == 1) {
+                $response = Controller::returnResponse(422, "You already paid for this milestone", []);
+                return (json_encode($response));
+            }
+            if ($milstoneInfo->status != 4) {
+                $response = Controller::returnResponse(422, "milestone is not active yet", []);
+                return (json_encode($response));
+            }
+
+            /*
+            create payment and make transaction from company wallet to agency wallet
+            */
+            // calculate prices
+            $milestonePrice = $milstoneInfo->price;
+            $tapflowFee = number_format($milestonePrice * 0.05, 2, '.', '');
+            $total = number_format($milestonePrice + $tapflowFee, 2, '.', '');
+            $agencyTotal = number_format($milestonePrice - $tapflowFee, 2, '.', '');
+            // create payment
+            $paymentData = array(
+                'user_id' => $userData['user_id'],
+                'company_id' => $userData['group_id'],
+                'agency_id' => $projectInfo->team_id,
+                'project_id' => $projectInfo->id,
+                'milestone_id' => $milstoneInfo->id,
+                'milestone_price' => $milstoneInfo->price,
+                'tapflow_fee' => $tapflowFee,
+                'total_price' => $total,
+                'agency_total_price' => $agencyTotal,
+            );
+            $payment = payments::create($paymentData);
+            // make wallet transaction
+            $paymentStatus = $walletTransactionsObj->makePaymentTransactionWithdraw($payment);
+            if ($paymentStatus['paymentStatus'] == -1) {
+                $response = Controller::returnResponse(500, 'Something Wrong ', $paymentStatus['paymentMsg']);
+                return (json_encode($response));
+            }
+            //$agencyTransaction = $this->makeWalletDeposit($payment);
+            /**
+             * check if milestone downpayment 
+             * if milestone downpayment agency will not get the deposit untill they submit milestone
+             * else if milestone is not downpayment and submitted we make sure $paymenStatus = 1 so we make sure 
+             *  the transaction was made successfully 
+             */
+            $isProjectActive = $projectInfo->status;
+            if ($paymentStatus['paymentStatus'] == 1) {
+                $milstoneInfo->is_paid = 1;
+                $milstoneInfo->save();
+                $payment->status = 1;
+                $payment->save();
+                $isProjectActive = $this->makeProjectActive($contract);
+            }elseif($paymentStatus['paymentStatus'] == 0){
+                $milstoneInfo->is_paid = 0;
+                $milstoneInfo->save();
+            }
+            $returnData = array(
+                'payment' => $payment,
+                'msg' => $paymentStatus['paymentMsg'],
+                'projectActive' => $isProjectActive
+            );
+            $response = Controller::returnResponse($paymentStatus['responseCode'], $paymentStatus['paymentMsg'], $returnData);
+            return (json_encode($response));
+        }catch(Exception $error){
+            $response = Controller::returnResponse(500, 'Something Wrong ', $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function activateProject($final)
+    {
+        $project = Project::where('id', '=', $final->project_id)->get()->first();
+        $projectStatus = $project->status;
+        if ($project->status == 4) {
+            $projectStatus = 1;   
+            $project->status = $projectStatus;
+            $project->save();
+        }
+        return $projectStatus;
+    }
 }

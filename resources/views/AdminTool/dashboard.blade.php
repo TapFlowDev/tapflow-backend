@@ -28,7 +28,7 @@
                 <div class="card">
                     <div>
                         <div class="numbers">{{ $stats['projectRequests'] }}</div>
-                        <div class="cardName">Project Requests</div>
+                        <div class="cardName">Projects</div>
                     </div>
                     <div class="iconBox">
                         <i class="far fa-folder-open"></i>

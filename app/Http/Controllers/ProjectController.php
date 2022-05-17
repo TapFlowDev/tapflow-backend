@@ -559,8 +559,8 @@ class ProjectController extends Controller
 
         foreach ($projects as $keyProj => &$project) {
             $project->duration = Category::find((int)$project->days)->name;
-            $initial_proposals =  proposal::where('project_id', $project->id)->select('id')->get();
-            $final_proposals =  Final_proposal::where('project_id', $project->id)->select('id')->get();
+            $initial_proposals =  proposal::where('project_id', $project->id)->where('status', '!=', 1)->select('id')->get();
+            $final_proposals =  Final_proposal::where('project_id', $project->id)->where('status', '!=', -1)->where('status', '!=', 1)->select('id')->get();
             $project->initial_proposal_number = count($initial_proposals);
             $project->final_proposal_number = count($final_proposals);
         }
@@ -604,9 +604,9 @@ class ProjectController extends Controller
         $project->categories = $projectCategoriesObj->getProjectCategories($id);
         $project->duration = Category::find((int)$project->days)->name;
         $user = json_decode($clientControllersObj->get_client_info((int)$project->user_id))->data;
-        $final_ids = Final_proposal::where('project_id', $id)->where('status', '!=', -1);
+        $final_ids = Final_proposal::where('project_id', $id)->where('status', '!=', -1)->where('status', '!=', 1);
         $no_finals = $final_ids->count();
-        $init_ids = proposal::where('project_id', $id);
+        $init_ids = proposal::where('project_id', $id)->where('status', '!=', 1);
         $no_init = $init_ids->count();
         $project->final_proposals_number = $no_finals;
         $project->initial_proposals_number = $no_init;
@@ -774,8 +774,13 @@ class ProjectController extends Controller
             $milestonesObj = new Milestones;
             $userData = $this->checkUser($req);
             $project = Project::where('id', $id)->get();
+            $finalProposal = Final_proposal::where('project_id', '=', $id)->where('status', '=', '1')->first();
             //check if project is not empty
             if (!$project->first()) {
+                $response = Controller::returnResponse(401, "unauthrized", []);
+                return (json_encode($response));
+            }
+            if (!$finalProposal) {
                 $response = Controller::returnResponse(401, "unauthrized", []);
                 return (json_encode($response));
             }
@@ -791,9 +796,9 @@ class ProjectController extends Controller
                     return (json_encode($response));
                 }
             }
-            $milestonesInfo = Milestone::where('project_id', $id)->get()->makeHidden(['deliverables', 'created_at', 'updated_at']);
-            $remainingAmount = number_format(Milestone::where('project_id', $id)->where('is_paid', '<>', 1)->sum('price'), 2, '.', '');
-            $remainingMilestones = Milestone::where('project_id', $id)->where('status', '<>', 3)->count();
+            $milestonesInfo = Milestone::where('project_id', $id)->where('final_proposal_id', '=', $finalProposal->id)->get()->makeHidden(['deliverables', 'created_at', 'updated_at']);
+            $remainingAmount = number_format(Milestone::where('project_id', $id)->where('final_proposal_id', '=', $finalProposal->id)->where('is_paid', '<>', 1)->sum('price'), 2, '.', '');
+            $remainingMilestones = Milestone::where('project_id', $id)->where('final_proposal_id', '=', $finalProposal->id)->where('status', '<>', 3)->count();
             $responseData = array(
                 'projectInfo' => $projectInfo,
                 'milestones' => $milestonesInfo,

@@ -51,11 +51,13 @@ class TeamController extends Controller
             $GroupCategoriesController = new GroupCategoriesController;
             $NewCountriesController = new NewCountriesController;
             $agencyTargetsController = new AgencyTargetsController;
+            $walletObj = new WalletsController;
             $links = $linksController->get_group_links($id);
             $teamMembers = $GroupMembersController->getTeamMembersByGroupId($id);
             $cats = $GroupCategoriesController->getTeamCategories($id);
             $targets = $agencyTargetsController->getTargets($id);
             $info = $this->get_team_info($id);
+            $wallet_info=$walletObj->getOrCreateWallet($id,1);
             $country_id = $info->country;
             $Country = $NewCountriesController->getCountryFlag($country_id);
             $info->image = asset('images/companies/' . $info->image);
@@ -66,6 +68,7 @@ class TeamController extends Controller
             $info->countryName = $Country->name;
             $info->countryCode = $Country->code;
             $info->countryFlag = $Country->flag;
+            $info->wallet_info = $wallet_info;
             $response = Controller::returnResponse(200, "successful", $info);
             return (json_encode($response));
         } catch (Exception $error) {
