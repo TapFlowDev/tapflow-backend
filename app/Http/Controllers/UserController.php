@@ -402,7 +402,7 @@ class UserController extends Controller
                
         //     }
         // }
-        $response = Controller::returnResponse(200, "user added successfully", $req->project);
+        $response = Controller::returnResponse(200, "user added successfully", $req->project['categories']);
         return $response;
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
