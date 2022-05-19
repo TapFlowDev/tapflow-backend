@@ -400,7 +400,9 @@ class UserController extends Controller
             $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
             $img = $req->image;
             $img->move(public_path($destPath), $imageName);
-            $teamObj->updateFiles(55, $imageName, 'image');
+            $teamObj->updateFiles(136, $imageName, 'image');
+            $response = Controller::returnResponse(200, "image saved", []);
+            return $response;  
         }
         $response = Controller::returnResponse(200, "user added successfully", $req->all());
         return $response;
