@@ -924,6 +924,11 @@ class ProjectController extends Controller
             $project_id = $project->id;
             $reqs = $requirementObj->Insert(($req['requirements_description']), $project_id, $req['user_id']);
             $priority = $projectPriortyObj->Insert($project_id, $req['priorities']);
+            // if ($priority['status'] == 500) {
+            //     $responseData = $priority['msg'];
+            //     $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            //     return $response;
+            // }
             $cats = $req['categories'];
             if (isset($cats)) {
                 foreach ($cats as $key => $value) {
