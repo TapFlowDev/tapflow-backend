@@ -391,18 +391,18 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
-        $cats = json_decode($req->project['categories']);
+        $categoryArr = json_decode($req->project['categories']);
         $categoryArr = array();
-        if (isset($cats)) {
-            foreach ($cats as $key => $value) {
-                foreach ($value->subCat as $keySub => $subValue) {
-                    $categoryArr[$keySub]['project_id'] = 11;
-                    $categoryArr[$keySub]['category_id'] = $value->catId;
-                    $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                }
+        // if (isset($cats)) {
+        //     foreach ($cats as $key => $value) {
+        //         foreach ($value->subCat as $keySub => $subValue) {
+        //             $categoryArr[$keySub]['project_id'] = 11;
+        //             $categoryArr[$keySub]['category_id'] = $value->catId;
+        //             $categoryArr[$keySub]['sub_category_id'] = $subValue;
+        //         }
                
-            }
-        }
+        //     }
+        // }
         $response = Controller::returnResponse(200, "user added successfully", $categoryArr);
         return $response;
         $groupObj = new GroupController;
