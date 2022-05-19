@@ -391,11 +391,19 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
-        // $response = Controller::returnResponse(200, "user added successfully", $req->all());
-        // return $response;
+        
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
         $projectObj = new ProjectController;
+        if ($req->hasFile('image')) {
+            $destPath = 'images/companies';
+            $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+            $img = $req->image;
+            $img->move(public_path($destPath), $imageName);
+            $teamObj->updateFiles(55, $imageName, 'image');
+        }
+        $response = Controller::returnResponse(200, "user added successfully", $req->all());
+        return $response;
         $userArr = array(
             'first_name' => $req->user['first_name'],
             'last_name' => $req->user['last_name'],
