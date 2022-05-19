@@ -391,7 +391,7 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
-        $cats = gettype($req->project['categories']);
+        $cats = gettype($req->project);
         // $categoryArr = array();
         // if (isset($cats)) {
         //     foreach ($cats as $key => $value) {
