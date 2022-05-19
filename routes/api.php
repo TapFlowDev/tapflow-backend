@@ -41,6 +41,7 @@ use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\DepositRequestController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
+use App\Http\Controllers\PriorityController;
 use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
@@ -94,6 +95,7 @@ Route::post('register', [UserController::class, 'Register']);
 Route::post('addUser', [UserController::class, 'add_user']);
 Route::post('Login', [UserController::class, 'login']);
 Route::post('addRequest', [ClientsRequestsController::class, 'Insert']);
+Route::post('clientRegester', [UserController::class, 'clientSignUpProcess']);
 
 // Route::get('getAnnouncements/{offset}', [AnnouncementsController::class, 'getAnnouncementsByLimit']);
 
@@ -126,6 +128,7 @@ Route::get('getGroupNameAndImage/{id}', [GroupController::class, 'getGroupNameAn
 Route::get('getQuestions', [FormOptionsController::class, 'getData']);
 Route::get('getDemoLink', [ContentDataController::class, 'getDemoLink']);
 Route::get('getTerms', [ContentDataController::class, 'getTerms']);
+Route::get('getPriorities', [PriorityController::class, 'getPriorities']);
 
 Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
