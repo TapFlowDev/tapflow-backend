@@ -391,7 +391,19 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
-        $response = Controller::returnResponse(200, "user added successfully", $req->all());
+        $cats = $req->project['categories'];
+        $categoryArr = array();
+        if (isset($cats)) {
+            foreach ($cats as $key => $value) {
+                // $categoryArr = array();
+                foreach ($value['subId'] as $keySub => $subValue) {
+                    $categoryArr[$keySub]['project_id'] = 11;
+                    $categoryArr[$keySub]['category_id'] = $value['catId'];
+                    $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                    }
+                }
+            }
+        $response = Controller::returnResponse(200, "user added successfully", $categoryArr);
         return $response;
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
