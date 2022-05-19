@@ -929,21 +929,26 @@ class ProjectController extends Controller
                 $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
                 return $response;
             }
-            $returnData['project'] = $project->toArray();
-            return $returnData;
-            /* 
-            ************REMOVE ON TESTING
             $cats = $req['categories'];
             if (isset($cats)) {
-            foreach ($cats as $key => $value) {
-                $categoryArr = array();
-                foreach ($value['subId'] as $keySub => $subValue) {
-                    $categoryArr[$keySub]['project_id'] = $projectId;
-                    $categoryArr[$keySub]['category_id'] = $value['catId'];
-                    $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                foreach ($cats as $key => $value) {
+                    $categoryArr = array();
+                    foreach ($value['subId'] as $keySub => $subValue) {
+                        $categoryArr[$keySub]['project_id'] = $project_id;
+                        $categoryArr[$keySub]['category_id'] = $value['catId'];
+                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                    }
+                    $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
+                    if ($add_cat == 500) {
+                        $delProject = Project::where('id', $project_id)->delete();
+                        $response['error']  = Controller::returnResponse(500, "add cat error", []);
+                        return $response;
                     }
                 }
             }
+            $returnData['project'] = $project->toArray();
+            return $returnData;
+            /* 
             $cats = json_decode($req['categories']);
             if (isset($cats)) {
                 foreach ($cats as $key => $value) {
