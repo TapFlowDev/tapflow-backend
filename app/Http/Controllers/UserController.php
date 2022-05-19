@@ -395,8 +395,6 @@ class UserController extends Controller
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
         $projectObj = new ProjectController;
-        $response = Controller::returnResponse(200, "user added successfully", $req->all());
-        return $response;
         $userArr = array(
             'first_name' => $req->user['first_name'],
             'last_name' => $req->user['last_name'],
@@ -437,7 +435,7 @@ class UserController extends Controller
             return json_encode($projectResponse['error']);
         }
         $project = $projectResponse['project'];
-        $responseData = $this->clientInternalLogin($admin['email'], $req->user['password']);
+        $responseData = $this->clientInternalLogin($admin['email'], $req->user['password'], $teamId);
         $response = Controller::returnResponse(200, "user added successfully", $responseData);
         return $response;
     }
@@ -477,7 +475,7 @@ class UserController extends Controller
             return $response;
         }
     }
-    function clientInternalLogin($email, $password)
+    function clientInternalLogin($email, $password, $teamId)
     {
         $credentials = array(
             'email' => $email,
@@ -503,6 +501,7 @@ class UserController extends Controller
 
         $response = array(
             "user_id" => $user->id,
+            "company_id" => $teamId,
             "user_type" => $user_type,
             "userToken" => $tokenResult,
             "tokenType" => "Bearer",
