@@ -395,15 +395,6 @@ class UserController extends Controller
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
         $projectObj = new ProjectController;
-        if ($req->hasFile('image')) {
-            $destPath = 'images/companies';
-            $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
-            $img = $req->image;
-            $img->move(public_path($destPath), $imageName);
-            $teamObj->updateFiles(136, $imageName, 'image');
-            $response = Controller::returnResponse(200, "image saved", []);
-            return $response;  
-        }
         $response = Controller::returnResponse(200, "user added successfully", $req->all());
         return $response;
         $userArr = array(
