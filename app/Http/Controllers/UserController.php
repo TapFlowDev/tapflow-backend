@@ -391,8 +391,8 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
-        $response = Controller::returnResponse(200, "user added successfully", $req->all());
-        return $response;
+        // $response = Controller::returnResponse(200, "user added successfully", $req->all());
+        // return $response;
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
         $projectObj = new ProjectController;

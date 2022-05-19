@@ -933,14 +933,14 @@ class ProjectController extends Controller
             if (isset($cats)) {
                 foreach ($cats as $key => $value) {
                     $categoryArr = array();
-                    foreach ($value['subId'] as $keySub => $subValue) {
+                    foreach ($value['subCat'] as $keySub => $subValue) {
                         $categoryArr[$keySub]['project_id'] = $project_id;
                         $categoryArr[$keySub]['category_id'] = $value['catId'];
                         $categoryArr[$keySub]['sub_category_id'] = $subValue;
                     }
                     $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
                     if ($add_cat == 500) {
-                        $delProject = Project::where('id', $project_id)->delete();
+                        // $delProject = Project::where('id', $project_id)->delete();
                         $response['error']  = Controller::returnResponse(500, "add cat error", []);
                         return $response;
                     }
