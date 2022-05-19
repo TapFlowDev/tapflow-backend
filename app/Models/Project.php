@@ -22,6 +22,7 @@ class Project extends Model
         "deleted",
         "status",
         'BA',
-        'design'
+        'design',
+        'type'
     ];
 }

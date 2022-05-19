@@ -101,7 +101,7 @@ class UserController extends Controller
                     $img->move(public_path($destPath), $imageName);
                     $this->updateFiles($user->id, $imageName, 'image');
                 }
-                Newsletter::subscribeOrUpdate($req->email, ['FNAME'=>$req->first_name, 'LNAME'=>$req->last_name,'ROLE'=>$req->role, "UTYPE"=>$mailchimpUserType, 'ADMIN'=>'not admin'], 'Tapflow');
+                //Newsletter::subscribeOrUpdate($req->email, ['FNAME'=>$req->first_name, 'LNAME'=>$req->last_name,'ROLE'=>$req->role, "UTYPE"=>$mailchimpUserType, 'ADMIN'=>'not admin'], 'Tapflow');
                 // dd(Newsletter::getLastError());
                 $responseData = $this->internal_login($req->email, $req->password);
                 $response = Controller::returnResponse(200, "user added successfully", $responseData);
@@ -388,5 +388,123 @@ class UserController extends Controller
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error);
             return (json_encode($response));
         }
+    }
+    function clientSignUpProcess(Request $req)
+    {
+        $groupObj = new GroupController;
+        $teamObj = new CompanyController;
+        $projectObj = new ProjectController;
+        $userArr = array(
+            'first_name' => $req->user['first_name'],
+            'last_name' => $req->user['last_name'],
+            'email' => $req->user['email'],
+            'password' => $req->user['password'],
+            'type' => 2,
+        );
+        $userResponse = $this->registerClient($userArr);
+        if ($userResponse['error']) {
+            return json_encode($userResponse['error']);
+        }
+        $admin = $userResponse['user'];
+        $teamArr =  array(
+            'admin_id' => $admin['id'],
+            'name' => $req->user['company_name'],
+            'country' => $req->user['country'],
+            'field' => $req->user['field'],
+            'sector' => $req->user['sector'],
+        );
+        $groupResponse = $groupObj->addCompany($teamArr);
+        if ($groupResponse['error']) {
+            return json_encode($groupResponse['error']);
+        }
+        $company = $groupResponse['company'];
+
+        $teamId = $company['id'];
+        if ($req->hasFile('image')) {
+            $destPath = 'images/companies';
+            $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+            $img = $req->image;
+            $img->move(public_path($destPath), $imageName);
+            $teamObj->updateFiles($teamId, $imageName, 'image');
+        }
+        $projectArr = $req->project;
+        $projectArr['user_id'] = $admin['id'];
+        $projectResponse = $projectObj->addProjectSignUp($projectArr);
+        if ($projectResponse['error']) {
+            return json_encode($projectResponse['error']);
+        }
+        $project = $projectResponse['project'];
+        $responseData = $this->clientInternalLogin($admin['email'], $req->user['password']);
+        $response = Controller::returnResponse(200, "user added successfully", $responseData);
+        return $response;
+    }
+
+    function registerClient($arr)
+    {
+        $returnData['error'] = [];
+        $returnData['user'] = [];
+        $rules = array(
+            "first_name" => "required|max:255",
+            "last_name" => "required|max:255",
+            "email" => "email|required|max:255|unique:users",
+            "password" => "required|min:8|max:255",
+        );
+        $validator = Validator::make($arr, $rules);
+        if ($validator->fails()) {
+            $responseData = $validator->errors();
+            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            return $response;
+        }
+        // return $returnData;
+        try {
+            // $user = User::find(156);
+            $user = User::create($arr + ['name' => $arr['first_name'] . " " . $arr['last_name'], 'terms' => 1]);
+            $array = array("user_id" => $user->id, 'type_freelancer' => (int)$arr['type']);
+            $freelancer = Client::create($array);
+            $mailchimpUserType = 'company-member';
+            // Newsletter::subscribeOrUpdate($req->email, ['FNAME'=>$req->first_name, 'LNAME'=>$req->last_name,'ROLE'=>$req->role, "UTYPE"=>$mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+            // dd(Newsletter::getLastError());
+            // $responseData = $this->internal_login($req->email, $req->password);
+            // $returnData = Controller::returnResponse(200, "user added successfully", $responseData);
+            $returnData['user'] = $user->toArray();
+            return $returnData;
+        } catch (Exception $error) {
+            $responseData = $error->getMessage();
+            $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return $response;
+        }
+    }
+    function clientInternalLogin($email, $password)
+    {
+        $credentials = array(
+            'email' => $email,
+            'password' => $password
+        );
+        if (!Auth::attempt($credentials)) {
+            $responseData = array();
+            $response = Controller::returnResponse(422, 'Unauthorized', $responseData);
+            return json_encode($response);
+        }
+
+        $user = User::where('email', $email)->first();
+        if (!Hash::check($password, $user->password)) {
+            $responseData = array();
+            $response = Controller::returnResponse(422, 'The Password does not match', $responseData);
+            return json_encode($response);
+        }
+        $tokenResult = $user->createToken('authToken')->plainTextToken;
+        $user->token = $tokenResult;
+        $user_type = $user->type;
+        $user->save();
+
+
+        $response = array(
+            "user_id" => $user->id,
+            "user_type" => $user_type,
+            "userToken" => $tokenResult,
+            "tokenType" => "Bearer",
+            "privileges" => 2,
+        );
+        return ($response);
     }
 }

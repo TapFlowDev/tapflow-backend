@@ -220,7 +220,7 @@ class   GroupController extends Controller
 
                 // return (json_encode($response));
                 $mailchimpUserType = 'agency-member';
-                Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+               // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
                 $responseData = array(
                     "group_id" => $group_id
                 );
@@ -328,7 +328,7 @@ class   GroupController extends Controller
                 "group_id" => $group_id
             );
             $mailchimpUserType = 'company-member';
-            Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+           // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
 
             $response = Controller::returnResponse(200, 'company added successfully', $responseData);
             return json_encode($response);
@@ -384,11 +384,78 @@ class   GroupController extends Controller
     }
     function isGroupVerified($id)
     {
-       $verified= DB::table('groups')
-        ->where('id','=',$id)
-        ->select('verified')
-        ->first();
+        $verified = DB::table('groups')
+            ->where('id', '=', $id)
+            ->select('verified')
+            ->first();
         return $verified;
+    }
 
+    function addCompany($teamArr)
+    {
+        $returnData['error'] = [];
+        $returnData['company'] = [];
+        $rules = array(
+            "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
+            "name" => "required|max:255",
+        );
+        $validator = Validator::make($teamArr, $rules);
+        // if ($validator->fails()) {
+        //     $responseData = $validator->errors();
+        //     $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+        //     return $response;
+        // }
+        // $group = new Group;
+        $type = 2;
+        $teamObj = new CompanyController;
+        $userObj = new ClientController;
+        $membersObj = new GroupMembersController;
+        try {
+            // $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
+            $groupArr = array(
+                'type' => $type,
+                'name' => $teamArr['name'],
+            );
+            //$group = Group::find(87);
+            $group = Group::create($groupArr);
+
+            $group_id = $group->id;
+            $userId = $teamArr['admin_id'];
+
+            $companyArr =  array(
+                'admin_id' => $teamArr['admin_id'],
+                'group_id' => $group->id,
+                'country' => $teamArr['country'],
+                'field' => $teamArr['field'],
+                'sector' => $teamArr['sector'],
+            );
+            $teamInfo = $teamObj->Insert($companyArr);
+
+            $membersObj->Insert($group_id, $userId, 1);
+            $returnData['company'] = $group->toArray();
+            return $returnData;
+            //  $teamId = $group_id;
+            //  if ($req->hasFile('image')) {
+            //      $destPath = 'images/companies';
+            //      // $ext = $req->file('image')->extension();
+            //      $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+            //      // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+            //      $img = $req->image;
+            //      $img->move(public_path($destPath), $imageName);
+            //      $teamObj->updateFiles($teamId, $imageName, 'image');
+            //  }
+
+            // $responseData = array(
+            //     "group_id" => $group_id
+            // );
+            // $mailchimpUserType = 'company-member';
+            // // Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+            // $response = Controller::returnResponse(200, 'company added successfully', $responseData);
+            // return json_encode($response);
+        } catch (Exception $error) {
+            $responseData = $error->getMessage();
+            $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return $response;
+        }
     }
 }
