@@ -391,6 +391,7 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
+        return $req->all();
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
         $projectObj = new ProjectController;
