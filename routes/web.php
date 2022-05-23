@@ -46,17 +46,17 @@ use Illuminate\Support\Facades\Mail;
 |
 */
 
-Route::get('/', function () {
-    return redirect('/AdminTool');
-});
-Route::get('/AdminTool', function () {
-    return view('index');
-});
+// Route::get('/', function () {
+//     return redirect('/AdminTool');
+// });
+// Route::get('/AdminTool', function () {
+//     return view('index');
+// });
 
 
-Route::get('/AdminTool/login', function () {
-    return view('AdminTool.login');
-});
+// Route::get('/AdminTool/login', function () {
+//     return view('AdminTool.login');
+// });
 
 Route::get('/AdminTool/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'auth.isAdmin']);
 

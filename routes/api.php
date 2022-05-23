@@ -46,7 +46,7 @@ use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
-
+use Illuminate\Support\Facades\Broadcast;
 // use App\Http\Controllers\PaymentController;
 
 /*
@@ -72,6 +72,13 @@ use phpDocumentor\Reflection\ProjectFactory;
 // });
 // for testing test
 // Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
+
+
+Route::get('sendMsg/{id}',function($id){
+    event(new \App\Events\PrivateMsg("hi from backend!!",$id));
+    return "Event has been sent";
+});
+
 Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
