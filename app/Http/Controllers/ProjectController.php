@@ -258,8 +258,8 @@ class ProjectController extends Controller
 
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
-            $companyAdminId = Group_member::where('group_id','=',$project->company_id)->where('privileges', '=', 1)->first()->user_id;
-            $companyAdminEmail = User::select('email')->where('id','=',$companyAdminId)->first()->email;
+            $companyAdminId = Group_member::where('group_id', '=', $project->company_id)->where('privileges', '=', 1)->first()->user_id;
+            $companyAdminEmail = User::select('email')->where('id', '=', $companyAdminId)->first()->email;
             $project->company_email = $companyAdminEmail;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
@@ -774,8 +774,13 @@ class ProjectController extends Controller
             $milestonesObj = new Milestones;
             $userData = $this->checkUser($req);
             $project = Project::where('id', $id)->get();
+            $finalProposal = Final_proposal::where('project_id', '=', $id)->where('status', '=', '1')->first();
             //check if project is not empty
             if (!$project->first()) {
+                $response = Controller::returnResponse(401, "unauthrized", []);
+                return (json_encode($response));
+            }
+            if (!$finalProposal) {
                 $response = Controller::returnResponse(401, "unauthrized", []);
                 return (json_encode($response));
             }
@@ -791,9 +796,9 @@ class ProjectController extends Controller
                     return (json_encode($response));
                 }
             }
-            $milestonesInfo = Milestone::where('project_id', $id)->get()->makeHidden(['deliverables', 'created_at', 'updated_at']);
-            $remainingAmount = number_format(Milestone::where('project_id', $id)->where('is_paid', '<>', 1)->sum('price'), 2, '.', '');
-            $remainingMilestones = Milestone::where('project_id', $id)->where('status', '<>', 3)->count();
+            $milestonesInfo = Milestone::where('project_id', $id)->where('final_proposal_id', '=', $finalProposal->id)->get()->makeHidden(['deliverables', 'created_at', 'updated_at']);
+            $remainingAmount = number_format(Milestone::where('project_id', $id)->where('final_proposal_id', '=', $finalProposal->id)->where('is_paid', '<>', 1)->sum('price'), 2, '.', '');
+            $remainingMilestones = Milestone::where('project_id', $id)->where('final_proposal_id', '=', $finalProposal->id)->where('status', '<>', 3)->count();
             $responseData = array(
                 'projectInfo' => $projectInfo,
                 'milestones' => $milestonesInfo,
@@ -819,8 +824,8 @@ class ProjectController extends Controller
 
         foreach ($projects as $keyProj => &$project) {
             $project->company_name = Group::find($project->company_id)->name;
-            $companyAdminId = Group_member::where('group_id','=',$project->company_id)->where('privileges', '=', 1)->first()->user_id;
-            $companyAdminEmail = User::select('email')->where('id','=',$companyAdminId)->first()->email;
+            $companyAdminId = Group_member::where('group_id', '=', $project->company_id)->where('privileges', '=', 1)->first()->user_id;
+            $companyAdminEmail = User::select('email')->where('id', '=', $companyAdminId)->first()->email;
             $project->company_email = $companyAdminEmail;
             $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
             $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
@@ -871,5 +876,145 @@ class ProjectController extends Controller
             $project->proposal_status =   $proposal_status;
         }
         return $projects;
+    }
+
+    function addProjectSignUp($req)
+    {
+        // return ($req['requirements_description']);
+
+        $userObj = new UserController;
+        $groupMemberObj = new GroupMembersController;
+        $requirementObj = new Requirement;
+        $ProjectCategoriesObj = new ProjectCategoriesController;
+        $projectPriortyObj = new ProjectPriorityController;
+        $returnData['error'] = [];
+        $returnData['project'] = [];
+
+
+        $userInfo = $userObj->getUserById($req['user_id']);
+        $userGroupInfo = $groupMemberObj->getMemberInfoByUserId($req['user_id']);
+
+        $rules = array(
+            "user_id" => "required|exists:users,id",
+            "name" => "required",
+            "description" => "required",
+            "requirements_description" => "required",
+            "budget_type" => "required|gte:0|lt:2",
+            "min" => "numeric",
+            "max" => "numeric",
+            "days" => "required|exists:categories,id",
+            "needs" => "required",
+            "design" => "required",
+            "type" => "required|gt:0|lt:3",
+        );
+
+        $validator = Validator::make($req, $rules);
+        if ($validator->fails()) {
+            $responseData = $validator->errors();
+            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            return $response;
+        }
+        try {
+            // return $req;
+            $req['company_id'] = $userGroupInfo->group_id;
+            $projectArr = $req;
+            unset($projectArr['requirements_description']);
+            unset($projectArr['categories']);
+            $project = Project::create($projectArr);
+            $project_id = $project->id;
+            $reqs = $requirementObj->Insert(($req['requirements_description']), $project_id, $req['user_id']);
+            $priority = $projectPriortyObj->Insert($project_id, $req['priorities']);
+            // if ($priority['status'] == 500) {
+            //     $responseData = $priority['msg'];
+            //     $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            //     return $response;
+            // }
+            $cats = $req['categories'];
+            if (isset($cats)) {
+                foreach ($cats as $key => $value) {
+                    $categoryArr = array();
+                    foreach ($value['subCat'] as $keySub => $subValue) {
+                        $categoryArr[$keySub]['project_id'] = $project_id;
+                        $categoryArr[$keySub]['category_id'] = $value['catId'];
+                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                    }
+                    $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
+                    if ($add_cat == 500) {
+                        // $delProject = Project::where('id', $project_id)->delete();
+                        $response['error']  = Controller::returnResponse(500, "add cat error", []);
+                        return $response;
+                    }
+                }
+            }
+            $returnData['project'] = $project->toArray();
+            return $returnData;
+            /* 
+            $cats = json_decode($req['categories']);
+            if (isset($cats)) {
+                foreach ($cats as $key => $value) {
+                    $categoryArr = array();
+                    foreach ($value->subCat as $keySub => $subValue) {
+                        $categoryArr[$keySub]['project_id'] = $project_id;
+                        $categoryArr[$keySub]['category_id'] = $value->catId;
+                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                    }
+                    $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
+                    if ($add_cat == 500) {
+                        $delProject = Project::where('id', $project_id)->delete();
+                        $response['error']  = Controller::returnResponse(500, "add cat error", []);
+                        return $response;
+                    }
+                }
+            }
+            */
+
+            // if (env('APP_ENV') !== 'local' && $postman < 1) {
+            //     $cats = json_decode($req->categories);
+            //     if (isset($cats)) {
+            //         foreach ($cats as $key => $value) {
+            //             $categoryArr = array();
+            //             foreach ($value->subCat as $keySub => $subValue) {
+            //                 $categoryArr[$keySub]['project_id'] = $project_id;
+            //                 $categoryArr[$keySub]['category_id'] = $value->catId;
+            //                 $categoryArr[$keySub]['sub_category_id'] = $subValue;
+            //             }
+            //             $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
+            //             if ($add_cat == 500) {
+            //                 $delProject = Project::where('id', $project_id)->delete();
+            //                 $response = Controller::returnResponse(500, 'add cast error', []);
+            //                 return json_encode($response);
+            //             }
+            //         }
+            //     }
+            // } else {
+            //     $cats = $req->categories;
+            //     if (isset($cats)) {
+            //         foreach ($cats as $key => $value) {
+            //             $categoryArr = array();
+            //             foreach ($value['subCat'] as $keySub => $subValue) {
+            //                 $categoryArr[$keySub]['project_id'] = $project_id;
+            //                 $categoryArr[$keySub]['category_id'] = $value['catId'];
+            //                 $categoryArr[$keySub]['sub_category_id'] = $subValue;
+            //             }
+            //             $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
+            //             if ($add_cat == 500) {
+            //                 $delProject = Project::where('id', $project_id)->delete();
+            //                 $response = Controller::returnResponse(500, 'add cast error', []);
+            //                 return json_encode($response);
+            //             }
+            //         }
+            //     }
+            // }
+
+            // $responseData = array(
+            //     "project_id" => $project->id,
+            // );
+            // $response = Controller::returnResponse(200, 'project created successfully', $responseData);
+            // return json_encode($response);
+        } catch (Exception $error) {
+            $responseData = $error->getMessage();
+            $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return $response;
+        }
     }
 }
