@@ -259,6 +259,19 @@ class Proposals extends Controller
         try {
             $userData = Controller::checkUser($req);
             $page = ($offset - 1) * $limit;
+    
+            // $final_status=[0,3];
+            // $projects=Project::where('company_id',$userData['group_id'])->select('id','name');
+            // $projects_ids=$projects->pluck('id')->toArray();
+            // $init_proposals=DB::table('proposals')
+            // ->select('*')->whereIn('project_id', $projects_ids)->where('status','<>',2)->get();
+            // $init_ids=$init_proposals->pluck('id')->toArray();
+            // $final_proposals=DB::table('final_proposals')
+            // ->select('*')->whereIn('proposal_id', $init_ids)->whereIn('status',$final_status)->get();
+          
+            // $proposals_array=array_merge($final_proposals->toArray() , $init_proposals->toArray());
+            // $proposals=$this->getProposaldata($proposals_array);
+            // $response = Controller::returnResponse(200, "data found", $proposals);
             $propsals = $this->getProposaldata(DB::table('proposals')
                 ->leftJoin('final_proposals', function ($join) {
                     $join->on('proposals.id', '=', 'final_proposals.proposal_id')
@@ -267,10 +280,10 @@ class Proposals extends Controller
                 ->join('projects', 'proposals.project_id', '=', 'projects.id')
                 ->select('proposals.*', 'projects.name as projectName', 'final_proposals.price as finalPrice', 'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
                 ->where('projects.company_id', '=', $userData['group_id'])
-                ->latest()->offset($page)->limit($limit)
+                ->latest()->offset($page)->limit($limit) 
                 ->distinct()
                 ->get());
-            // return $propsals;
+            return $propsals;
             $response = Controller::returnResponse(200, "data found", $propsals);
             return (json_encode($response));
         } catch (Exception $error) {
@@ -288,11 +301,11 @@ class Proposals extends Controller
             $proposalEstPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
             $proposal->estMin = $proposalEstPrice['min'];
             $proposal->estMax = $proposalEstPrice['max'];
-            // if (!isset($proposal->finalId)) {
-            //     $proposal->finalPrice = $proposal->finalRate * $proposal->finalHours;
-            // } else {
-            //     $proposal->finalPrice = '';
-            // }
+            if (!isset($proposal->finalId)) {
+                $proposal->finalPrice = $proposal->finalRate * $proposal->finalHours;
+            } else {
+                $proposal->finalPrice = '';
+            }
         }
 
         return $proposals;
