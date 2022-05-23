@@ -232,7 +232,7 @@ class ProjectController extends Controller
         $projectsData = $this->getProjectsInfo($projects);
  
         $projectsData['counter'] = $projectsCounter;
-        $responseData = json_encode($projectsData);
+        $responseData = $projectsData;
 
         $response = Controller::returnResponse(200, "Data Found", $responseData);
         return (json_encode($response));
