@@ -184,9 +184,20 @@ class ProjectController extends Controller
                 return $query->whereIn('days', $duration);
             })->where('status', '<', 1)->where('verified', '=', 1)->distinct()->latest()->offset($page)->limit($limit)->get();
             // return $projects;
+            $projectsCounter=Project::when($subCats, function ($query, $subCats) {
+                $projectIds = projects_category::select('project_id')->whereIn('sub_category_id', $subCats)->distinct()->pluck('project_id')->toArray();
+                return $query->whereIn('id', $projectIds);
+            })->when($max, function ($query, $max) {
+                return $query->where('max', '<=', $max);
+            })->when($min, function ($query, $min) {
+                return $query->where('min', '>=', $min);
+            })->when($duration, function ($query, $duration) {
+                return $query->whereIn('days', $duration);
+            })->where('status', '<', 1)->where('verified', '=', 1)
+            ->count();
             $projectsData = $this->getProjectsInfo($projects);
-            $count=count($projects);
-            $projectsData->counter=$count;
+            
+            $projectsData->counter = $projectsCounter;
             $response = Controller::returnResponse(200, "Data Found", $projectsData);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -210,9 +221,17 @@ class ProjectController extends Controller
             ->orderBy('updated_at', 'desc')
             ->latest()->offset($page)->limit($limit)
             ->get();
+            $projectsCounter =  DB::table('projects_categories')
+            ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
+            ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
+            ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.user_id', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.days', 'projects.created_at', 'projects.updated_at')
+            ->where('groups_categories.group_id', '=', $agency_id)
+            ->where('projects.status', '=', 0)
+            ->where('verified', '=', 1)
+            ->count();
         $projectsData = $this->getProjectsInfo($projects);
-        $count=count($projects);
-        $projectsData->counter=$count;
+ 
+        $projectsData['counter'] = $projectsCounter;
         $responseData = $projectsData;
 
         $response = Controller::returnResponse(200, "Data Found", $responseData);
@@ -371,16 +390,33 @@ class ProjectController extends Controller
                 ->distinct()
                 ->get();
             // // print_r(['project22'=> $projects2]);
+            $project1Counter = DB::table('projects')
+                ->join('proposals', 'proposals.project_id', '=', 'projects.id')
+                ->select('projects.*', 'proposals.status as proposal_status')
+                ->where('proposals.team_id', '=', $agency_id)
+                ->where('projects.status', '<>', 1)
+                ->where('projects.status', '<>', 4)
+                ->count();
+            $projects2Counter = DB::table('projects')
+                ->leftJoin('final_proposals', function ($join) {
+                    $join->on('projects.id', '=', 'final_proposals.project_id')
 
+                        ->where('final_proposals.status', '<>', 1);
+                })
+                ->select('projects.*', 'final_proposals.team_id as agency_id', 'final_proposals.status as final_proposal_status')
+                ->whereIn('projects.id', $projectIds1)
+                ->where('final_proposals.team_id', '=', $agency_id)
+                ->count();
+            $counter = (int)$projects2Counter + (int)$project1Counter;
             $projects = array_merge($projects1->toArray(), $projects2->toArray());
             // $projects=['init'=>$projectIds1,'final'=>$projectIds2];
 
             // $response = Controller::returnResponse(200, "data found", $projects);
             // return (json_encode($response));
 
-            $count=count($projects);
+
             $projectInfo = $this->getProjectsInfo2($projects, $agency_id);
-            $projectInfo->counter=$count;
+            $projectInfo['counter'] = $counter;
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -403,10 +439,14 @@ class ProjectController extends Controller
                 ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
                 ->get();
-
-            $count=count($projects);
+                $projectsCounter = DB::table('projects')
+                ->select('projects.*')
+                ->where('projects.team_id', '=', $agency_id)
+                ->whereIn('projects.status', [1, 4])
+                ->count();
+            
             $projectInfo = $this->getProjectsInfo($projects);
-            $projectInfo->counter=$count;
+            $projectInfo['counter'] =  $projectsCounter ;
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
