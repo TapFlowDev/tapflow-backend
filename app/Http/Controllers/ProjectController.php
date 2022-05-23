@@ -185,6 +185,8 @@ class ProjectController extends Controller
             })->where('status', '<', 1)->where('verified', '=', 1)->distinct()->latest()->offset($page)->limit($limit)->get();
             // return $projects;
             $projectsData = $this->getProjectsInfo($projects);
+            $count=count($projects);
+            $projectsData->counter=$count;
             $response = Controller::returnResponse(200, "Data Found", $projectsData);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -209,7 +211,10 @@ class ProjectController extends Controller
             ->latest()->offset($page)->limit($limit)
             ->get();
         $projectsData = $this->getProjectsInfo($projects);
+        $count=count($projects);
+        $projectsData->counter=$count;
         $responseData = $projectsData;
+
         $response = Controller::returnResponse(200, "Data Found", $responseData);
         return (json_encode($response));
         // } catch (\Exception $error) {
@@ -373,9 +378,9 @@ class ProjectController extends Controller
             // $response = Controller::returnResponse(200, "data found", $projects);
             // return (json_encode($response));
 
-
+            $count=count($projects);
             $projectInfo = $this->getProjectsInfo2($projects, $agency_id);
-
+            $projectInfo->counter=$count;
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -399,7 +404,9 @@ class ProjectController extends Controller
                 ->offset($page)->limit($limit)
                 ->get();
 
+            $count=count($projects);
             $projectInfo = $this->getProjectsInfo($projects);
+            $projectInfo->counter=$count;
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
