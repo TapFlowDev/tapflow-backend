@@ -221,15 +221,16 @@ class ProjectController extends Controller
             ->orderBy('updated_at', 'desc')
             ->latest()->offset($page)->limit($limit)
             ->get();
-            $projectsCounter =  DB::table('projects_categories')
+            $projectsCount =  DB::table('projects_categories')
             ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
             ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
-            ->select('projects.id', 'projects.id', 'projects.company_id', 'projects.name', 'projects.user_id', 'projects.budget_type', 'projects.min', 'projects.max', 'projects.description', 'projects.days', 'projects.created_at', 'projects.updated_at')
+            ->select('projects.id')
             ->where('groups_categories.group_id', '=', $agency_id)
             ->where('projects.status', '=', 0)
             ->where('verified', '=', 1)
             ->distinct()
-            ->count();
+            ->get();
+            $projectsCounter=$projectsCount->count();
 
 
 
