@@ -228,11 +228,15 @@ class ProjectController extends Controller
             ->where('groups_categories.group_id', '=', $agency_id)
             ->where('projects.status', '=', 0)
             ->where('verified', '=', 1)
+            ->distinct()
             ->count();
+
+
+
         $projectsData = $this->getProjectsInfo($projects);
  
-        // $projectsData['counter'] = $projectsCounter;
-        $responseData = array('allData'=>$projectsData,'counter'=>$projectsCounter);
+        $projectsData['counter'] = $projectsCounter;
+        $responseData = $projectsData;
 
         $response = Controller::returnResponse(200, "Data Found", $responseData);
         return (json_encode($response));
