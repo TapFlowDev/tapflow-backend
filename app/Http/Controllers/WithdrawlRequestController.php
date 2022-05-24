@@ -91,7 +91,9 @@ class WithdrawlRequestController extends Controller
                 return (json_encode($response));
             }
             $withdrawlRequests = $this->getWithdrawlData(withdrawl_request::where('group_id', '=', $userData['group_id'])->latest()->offset($page)->limit($limit)->get()->makeHidden(['wallet_transactiond_id', 'type', 'user_id']));
-            $response = Controller::returnResponse(200, "data found", $withdrawlRequests);
+            $withdrawlRequestsCounter = $this->getWithdrawlData(withdrawl_request::where('group_id', '=', $userData['group_id']))->count();
+            $responseData=array('allData'=>$withdrawlRequests,'counter'=>$withdrawlRequestsCounter);
+            $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
