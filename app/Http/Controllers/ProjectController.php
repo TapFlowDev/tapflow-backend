@@ -231,8 +231,8 @@ class ProjectController extends Controller
             ->count();
         $projectsData = $this->getProjectsInfo($projects);
  
-        $projectsData['counter'] = $projectsCounter;
-        $responseData = $projectsData;
+        // $projectsData['counter'] = $projectsCounter;
+        $responseData = array('allData'=>$projectsData,'counter'=>$projectsCounter);
 
         $response = Controller::returnResponse(200, "Data Found", $responseData);
         return (json_encode($response));
