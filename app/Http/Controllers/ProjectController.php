@@ -184,7 +184,7 @@ class ProjectController extends Controller
                 return $query->whereIn('days', $duration);
             })->where('status', '<', 1)->where('verified', '=', 1)->distinct()->latest()->offset($page)->limit($limit)->get();
             // return $projects;
-            $projectsCounter=Project::when($subCats, function ($query, $subCats) {
+                $projectsCounter=Project::when($subCats, function ($query, $subCats) {
                 $projectIds = projects_category::select('project_id')->whereIn('sub_category_id', $subCats)->distinct()->pluck('project_id')->toArray();
                 return $query->whereIn('id', $projectIds);
             })->when($max, function ($query, $max) {
@@ -197,8 +197,9 @@ class ProjectController extends Controller
             ->count();
             $projectsData = $this->getProjectsInfo($projects);
             
-            $projectsData->counter = $projectsCounter;
-            $response = Controller::returnResponse(200, "Data Found", $projectsData);
+            $responseData= array('allData'=>$projectsData,'counter'=>$projectsCounter);
+
+            $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
@@ -231,9 +232,6 @@ class ProjectController extends Controller
             ->distinct()
             ->get();
             $projectsCounter=$projectsCount->count();
-
-
-
         $projectsData = $this->getProjectsInfo($projects);
  
    
@@ -401,7 +399,8 @@ class ProjectController extends Controller
                 ->where('proposals.team_id', '=', $agency_id)
                 ->where('projects.status', '<>', 1)
                 ->where('projects.status', '<>', 4)
-                ->count();
+                ->distinct()
+                ->get();
             $projects2Counter = DB::table('projects')
                 ->leftJoin('final_proposals', function ($join) {
                     $join->on('projects.id', '=', 'final_proposals.project_id')
@@ -411,8 +410,9 @@ class ProjectController extends Controller
                 ->select('projects.*', 'final_proposals.team_id as agency_id', 'final_proposals.status as final_proposal_status')
                 ->whereIn('projects.id', $projectIds1)
                 ->where('final_proposals.team_id', '=', $agency_id)
-                ->count();
-            $counter = (int)$projects2Counter + (int)$project1Counter;
+                ->distinct()
+                ->get();
+            $projectsCounter = (int)$projects2Counter->count() + (int)$project1Counter->count();
             $projects = array_merge($projects1->toArray(), $projects2->toArray());
             // $projects=['init'=>$projectIds1,'final'=>$projectIds2];
 
@@ -421,8 +421,9 @@ class ProjectController extends Controller
 
 
             $projectInfo = $this->getProjectsInfo2($projects, $agency_id);
-            $projectInfo['counter'] = $counter;
-            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            $responseData= array('allData'=>$projectInfo,'counter'=>$projectsCounter);
+
+            $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
         } catch (\Exception $error) {
 
@@ -450,9 +451,9 @@ class ProjectController extends Controller
                 ->whereIn('projects.status', [1, 4])
                 ->count();
             
-            $projectInfo = $this->getProjectsInfo($projects);
-            $projectInfo['counter'] =  $projectsCounter ;
-            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            $projectInfo = $this->getProjectsInfo($projects); 
+             $responseData = array('allData'=>$projectInfo,'counter'=>$projectsCounter);
+            $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
         } catch (\Exception $error) {
 
@@ -592,9 +593,16 @@ class ProjectController extends Controller
                     ->latest()->offset($page)->limit($limit)
                     ->distinct()
                     ->get();
+                    $projectsCounter = DB::table('projects')
+                    ->select('*')
+                    ->where('projects.company_id', '=', $company_id)
+                    ->where('projects.status', '=', 0)
+                    ->distinct()
+                    ->get();
 
                 $projectInfo = $this->getProjectsDetails($projects);
-                $response = Controller::returnResponse(200, "data found", $projectInfo);
+                $responseData=array('allData'=>$projectInfo,'counter'=>$projectsCounter->count());
+                $response = Controller::returnResponse(200, "data found", $responseData);
                 return (json_encode($response));
             } catch (\Exception $error) {
 
@@ -689,8 +697,19 @@ class ProjectController extends Controller
                     ->orderBy('updated_at', 'desc')
                     ->latest()->offset($page)->limit($limit)
                     ->get();
+                    $projectsCounter = DB::table('projects')
+                    ->where('company_id', '=', $company_id)
+                    ->where(function ($query) {
+                        $query->where('status', '=', 1)->orWhere('status', '=', 4);
+                    })
+                    ->select('projects.*')
+                    ->distinct()
+                    ->get();
+
+                   
                 $projects_info = $this->getCompanyActiveProjectsInfo($projects);
-                $response = Controller::returnResponse(200, "successful", $projects_info);
+                $responseData=array('allData'=>$projects_info,'counter'=>$projectsCounter->count());
+                $response = Controller::returnResponse(200, "successful", $responseData);
                 return (json_encode($response));
             } else {
                 $response = Controller::returnResponse(422, "You are trying to get another company data", []);
