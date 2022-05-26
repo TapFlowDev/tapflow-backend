@@ -46,6 +46,7 @@ class ProjectController extends Controller
                 $response = Controller::returnResponse(401, "unauthorized user", []);
                 return (json_encode($response));
             }
+            $reqArray = $req->all();
             $reqArray['user_id'] = $userData['user_id'];
             $projectResponse = $this->addProjectSignUp($reqArray);
             if ($projectResponse['error']) {
