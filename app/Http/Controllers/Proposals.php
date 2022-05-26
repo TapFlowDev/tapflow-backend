@@ -82,10 +82,10 @@ class Proposals extends Controller
                             'proposal' => $proposal,
                             'est' => $estPrice
                         ];
-                        // Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-                        Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-                        Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-                        Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
                         return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, 'You can not apply now, your agency does not verified yet', []);
@@ -143,6 +143,11 @@ class Proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
+                    $proposalsCounter = DB::table('proposals')
+                    ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
+                    ->where('project_id', $project_id)
+                    ->distinct()
+                    ->count();
              
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
@@ -153,8 +158,8 @@ class Proposals extends Controller
                     $proposal->price_min = $priceMin;
                     $proposal->price_max = $priceMax;
                 }
-
-                $response = Controller::returnResponse(200, "successful", $proposals);
+                $responseData=array('allData'=>$proposals,'counter'=>$proposalsCounter);
+                $response = Controller::returnResponse(200, "successful", $responseData);
                 return (json_encode($response));
             } catch (Exception $error) {
                 $response = Controller::returnResponse(500, "something wrong", $error->getMessage());

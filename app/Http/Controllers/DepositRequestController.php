@@ -80,7 +80,10 @@ class DepositRequestController extends Controller
                 return (json_encode($response));
             }
             $deposits = deposit_request::where('company_id', '=', $userData['group_id'])->latest()->offset($page)->limit($limit)->get();
-            $response = Controller::returnResponse(200, "data found", $deposits);
+            $depositsCounter = deposit_request::where('company_id', '=', $userData['group_id'])->count();
+            $responseData=array('allData'=>$deposits,'counter'=>$depositsCounter);
+            $response = Controller::returnResponse(200, "data found", $responseData);
+
             return (json_encode($response));
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());

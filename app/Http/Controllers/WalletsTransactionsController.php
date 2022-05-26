@@ -155,9 +155,11 @@ class WalletsTransactionsController extends Controller
             }
             $wallet = $walletObj->getOrCreateWallet($userData['group_id'], 1);
             $transactions = wallets_transaction::where('wallet_id', '=', $wallet->id)->orderBy('created_at', 'desc')->offset($page)->limit($limit)->get();
+            $transactionsCounter= wallets_transaction::where('wallet_id', '=', $wallet->id)->count();
             $responseData = array(
                 'walletInfo' => $wallet,
-                'transactions' => $transactions
+                'transactions' => $transactions,
+                'counter'=>$transactionsCounter
             );
             $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
@@ -179,9 +181,11 @@ class WalletsTransactionsController extends Controller
             }
             $wallet = $walletObj->getOrCreateWallet($userData['group_id'], 1);
             $transactions = wallets_transaction::where('wallet_id', '=', $wallet->id)->orderBy('created_at', 'desc')->offset($page)->limit($limit)->get();
+            $transactionsCounter = wallets_transaction::where('wallet_id', '=', $wallet->id)->count();
             $responseData = array(
                 'walletInfo' => $wallet,
-                'transactions' => $transactions
+                'transactions' => $transactions,
+                'counter'=>$transactionsCounter
             );
             $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
