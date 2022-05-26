@@ -36,31 +36,31 @@ class ProjectController extends Controller
     function Insert(Request $req)
     {
         try {
-        $userData = $this->checkUser($req);
-        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
-        if (!$condtion) {
-            $response = Controller::returnResponse(401, "unauthorized user", []);
-            return (json_encode($response));
+            $reqArray = $req->all();
+            $testData = gettype($reqArray);
+            return (json_encode($testData));
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            $reqArray['user_id'] = $userData['user_id'];
+            $projectResponse = $this->addProjectSignUp($reqArray);
+            if ($projectResponse['error']) {
+                return json_encode($projectResponse['error']);
+            }
+            $responseData = array(
+                "project_id" => $projectResponse['project']['id'],
+            );
+            $response = Controller::returnResponse(200, 'project created successfully', $responseData);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There Is Error Occurred', $error->getMessage());
+            return json_encode($response);
         }
-        $reqArray = $req->all();
-        $reqArray['user_id'] = $userData['user_id'];
-        $testData = gettype($reqArray['priorities']);
-        return (json_encode($testData));
-        $projectResponse = $this->addProjectSignUp($reqArray);
-        if ($projectResponse['error']) {
-            return json_encode($projectResponse['error']);
-        }
-        $responseData = array(
-            "project_id" => $projectResponse['project']['id'],
-        );
-        $response = Controller::returnResponse(200, 'project created successfully', $responseData);
-        return json_encode($response);
-    } catch (Exception $error) {
-        $response = Controller::returnResponse(500, 'There Is Error Occurred', $error->getMessage());
-        return json_encode($response);
-    }
         // $userInfo = $userObj->getUserById($req->user_id);
-/*
+        /*
         $rules = array(
             "user_id" => "required|exists:users,id",
             "name" => "required",
@@ -211,7 +211,7 @@ class ProjectController extends Controller
                 return $query->whereIn('days', $duration);
             })->where('status', '<', 1)->where('verified', '=', 1)->distinct()->latest()->offset($page)->limit($limit)->get();
             // return $projects;
-                $projectsCounter=Project::when($subCats, function ($query, $subCats) {
+            $projectsCounter = Project::when($subCats, function ($query, $subCats) {
                 $projectIds = projects_category::select('project_id')->whereIn('sub_category_id', $subCats)->distinct()->pluck('project_id')->toArray();
                 return $query->whereIn('id', $projectIds);
             })->when($max, function ($query, $max) {
@@ -221,10 +221,10 @@ class ProjectController extends Controller
             })->when($duration, function ($query, $duration) {
                 return $query->whereIn('days', $duration);
             })->where('status', '<', 1)->where('verified', '=', 1)
-            ->count();
+                ->count();
             $projectsData = $this->getProjectsInfo($projects);
-            
-            $responseData= array('allData'=>$projectsData,'counter'=>$projectsCounter);
+
+            $responseData = array('allData' => $projectsData, 'counter' => $projectsCounter);
 
             $response = Controller::returnResponse(200, "Data Found", $responseData);
             return (json_encode($response));
@@ -249,7 +249,7 @@ class ProjectController extends Controller
             ->orderBy('updated_at', 'desc')
             ->latest()->offset($page)->limit($limit)
             ->get();
-            $projectsCount =  DB::table('projects_categories')
+        $projectsCount =  DB::table('projects_categories')
             ->join('groups_categories', 'projects_categories.sub_category_id', '=', 'groups_categories.sub_category_id')
             ->join('projects', 'projects_categories.project_id', '=', 'projects.id')
             ->select('projects.id')
@@ -258,11 +258,11 @@ class ProjectController extends Controller
             ->where('verified', '=', 1)
             ->distinct()
             ->get();
-            $projectsCounter=$projectsCount->count();
+        $projectsCounter = $projectsCount->count();
         $projectsData = $this->getProjectsInfo($projects);
- 
-   
-        $responseData = array('allData'=>$projectsData,'counter'=>$projectsCounter);
+
+
+        $responseData = array('allData' => $projectsData, 'counter' => $projectsCounter);
 
         $response = Controller::returnResponse(200, "Data Found", $responseData);
         return (json_encode($response));
@@ -448,7 +448,7 @@ class ProjectController extends Controller
 
 
             $projectInfo = $this->getProjectsInfo2($projects, $agency_id);
-            $responseData= array('allData'=>$projectInfo,'counter'=>$projectsCounter);
+            $responseData = array('allData' => $projectInfo, 'counter' => $projectsCounter);
 
             $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
@@ -472,14 +472,14 @@ class ProjectController extends Controller
                 ->orderBy('updated_at', 'desc')
                 ->offset($page)->limit($limit)
                 ->get();
-                $projectsCounter = DB::table('projects')
+            $projectsCounter = DB::table('projects')
                 ->select('projects.*')
                 ->where('projects.team_id', '=', $agency_id)
                 ->whereIn('projects.status', [1, 4])
                 ->count();
-            
-            $projectInfo = $this->getProjectsInfo($projects); 
-             $responseData = array('allData'=>$projectInfo,'counter'=>$projectsCounter);
+
+            $projectInfo = $this->getProjectsInfo($projects);
+            $responseData = array('allData' => $projectInfo, 'counter' => $projectsCounter);
             $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
         } catch (\Exception $error) {
@@ -620,7 +620,7 @@ class ProjectController extends Controller
                     ->latest()->offset($page)->limit($limit)
                     ->distinct()
                     ->get();
-                    $projectsCounter = DB::table('projects')
+                $projectsCounter = DB::table('projects')
                     ->select('*')
                     ->where('projects.company_id', '=', $company_id)
                     ->where('projects.status', '=', 0)
@@ -628,7 +628,7 @@ class ProjectController extends Controller
                     ->get();
 
                 $projectInfo = $this->getProjectsDetails($projects);
-                $responseData=array('allData'=>$projectInfo,'counter'=>$projectsCounter->count());
+                $responseData = array('allData' => $projectInfo, 'counter' => $projectsCounter->count());
                 $response = Controller::returnResponse(200, "data found", $responseData);
                 return (json_encode($response));
             } catch (\Exception $error) {
@@ -724,7 +724,7 @@ class ProjectController extends Controller
                     ->orderBy('updated_at', 'desc')
                     ->latest()->offset($page)->limit($limit)
                     ->get();
-                    $projectsCounter = DB::table('projects')
+                $projectsCounter = DB::table('projects')
                     ->where('company_id', '=', $company_id)
                     ->where(function ($query) {
                         $query->where('status', '=', 1)->orWhere('status', '=', 4);
@@ -733,9 +733,9 @@ class ProjectController extends Controller
                     ->distinct()
                     ->get();
 
-                   
+
                 $projects_info = $this->getCompanyActiveProjectsInfo($projects);
-                $responseData=array('allData'=>$projects_info,'counter'=>$projectsCounter->count());
+                $responseData = array('allData' => $projects_info, 'counter' => $projectsCounter->count());
                 $response = Controller::returnResponse(200, "successful", $responseData);
                 return (json_encode($response));
             } else {
