@@ -44,6 +44,8 @@ class ProjectController extends Controller
         }
         $reqArray = $req->all();
         $reqArray['user_id'] = $userData['user_id'];
+        $testData = gettype($reqArray['priorities']);
+        return (json_encode($testData));
         $projectResponse = $this->addProjectSignUp($reqArray);
         if ($projectResponse['error']) {
             return json_encode($projectResponse['error']);
