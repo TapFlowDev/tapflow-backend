@@ -35,6 +35,30 @@ class ProjectController extends Controller
     //add row 
     function Insert(Request $req)
     {
+        try {
+        $userData = $this->checkUser($req);
+        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
+        if (!$condtion) {
+            $response = Controller::returnResponse(401, "unauthorized user", []);
+            return (json_encode($response));
+        }
+        $reqArray = $req->all();
+        $reqArray['user_id'] = $userData['user_id'];
+        $projectResponse = $this->addProjectSignUp($reqArray);
+        if ($projectResponse['error']) {
+            return json_encode($projectResponse['error']);
+        }
+        $responseData = array(
+            "project_id" => $projectResponse['project']['id'],
+        );
+        $response = Controller::returnResponse(200, 'project created successfully', $responseData);
+        return json_encode($response);
+    } catch (Exception $error) {
+        $response = Controller::returnResponse(500, 'There Is Error Occurred', $error->getMessage());
+        return json_encode($response);
+    }
+        // $userInfo = $userObj->getUserById($req->user_id);
+/*
         $rules = array(
             "user_id" => "required|exists:users,id",
             "name" => "required",
@@ -147,6 +171,7 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(500, 'There Is Error Occurred', $error->getMessage());
             return json_encode($response);
         }
+        */
     }
     //update row according to row id
     function Update($id)
