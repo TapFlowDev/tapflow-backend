@@ -35,10 +35,11 @@ class ProjectController extends Controller
     //add row 
     function Insert(Request $req)
     {
+        $reqArray = $req->all();
+        $testData = gettype($reqArray['priorities']);
+        return (json_encode($req->all()));
         try {
-            $reqArray = $req->all();
-            $testData = gettype($reqArray['priorities']);
-            return (json_encode($req->all()));
+
             $userData = $this->checkUser($req);
             $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
             if (!$condtion) {
