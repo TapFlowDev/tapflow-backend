@@ -207,6 +207,12 @@ class Final_proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
+                    $proposalsCounter= DB::table('final_proposals')
+                    ->select('final_proposals.*')
+                    ->where('project_id', $project_id)
+                    ->where('status', '!=', -1)
+                    ->distinct()
+                    ->count();
                 $milestone = new Milestones;
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
@@ -227,7 +233,8 @@ class Final_proposals extends Controller
                     // $all_people = array_unique($all_people);
                     // $proposal->all_people = $all_people;
                 }
-                $response = Controller::returnResponse(200, "successful", $proposals);
+                $responseData=array('allData'=>$proposals,'counter'=>$proposalsCounter);
+                $response = Controller::returnResponse(200, "successful", $responseData);
                 return (json_encode($response));
             } catch (Exception $error) {
                 $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
