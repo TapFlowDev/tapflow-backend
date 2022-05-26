@@ -391,7 +391,7 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
-        
+
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
         $projectObj = new ProjectController;
@@ -435,6 +435,8 @@ class UserController extends Controller
             return json_encode($projectResponse['error']);
         }
         $project = $projectResponse['project'];
+        Newsletter::subscribeOrUpdate($req->user['email'], ['FNAME'=>$req->user['first_name'], 'LNAME'=>$req->user['last_name'],'ROLE'=>"unset", "UTYPE"=>'company-member', 'ADMIN'=>'admin'], 'Tapflow');
+        // dd(Newsletter::getLastError());
         $responseData = $this->clientInternalLogin($admin['email'], $req->user['password'], $teamId);
         $response = Controller::returnResponse(200, "user added successfully", $responseData);
         return $response;
