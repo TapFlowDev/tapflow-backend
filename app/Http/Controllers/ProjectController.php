@@ -37,7 +37,7 @@ class ProjectController extends Controller
     {
         try {
             $reqArray = $req->all();
-            $testData = gettype($reqArray);
+            $testData = gettype($reqArray['priorities']);
             return (json_encode($testData));
             $userData = $this->checkUser($req);
             $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2;
