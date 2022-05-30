@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<div>
+    <p>tapflow chat</p>
+</div>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
