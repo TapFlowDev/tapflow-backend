@@ -24,5 +24,5 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 Route::get('/push-notificaiton', [NotificationController::class, 'index'])->name('push-notificaiton');
-Route::post('/store-token', [NotificationController::class, 'storeToken'])->name('store.token');
+Route::post('/  ', [NotificationController::class, 'storeToken'])->name('store.token');
 Route::post('/send-notification', [NotificationController::class, 'sendNotification'])->name('send.notification');
