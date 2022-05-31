@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterTableMilestoneSubmissionsAddStatus extends Migration
+class AddScoreToCountriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AlterTableMilestoneSubmissionsAddStatus extends Migration
      */
     public function up()
     {
-        //
-        Schema::table('milestone_submissions', function (Blueprint $table) {
-            $table->integer('status')->default(0);//2=>in review 3=>accepted
+        Schema::table('countries', function (Blueprint $table) {
+            $table->string('score', 255)->default('0.0')->after('flag');
+
         });
     }
 
@@ -26,9 +26,8 @@ class AlterTableMilestoneSubmissionsAddStatus extends Migration
      */
     public function down()
     {
-        //
-        Schema::table('milestone_submissions', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('countries', function (Blueprint $table) {
+            $table->dropColumn('score');
         });
     }
 }
