@@ -59,10 +59,13 @@
     function startFCM() {
         messaging
             .requestPermission()
-            // .then(function() {
-            //     return messaging.getToken()
-            // })
+            .then(function() {
+                Promise.any(promises).then((value) => console.log(value));
+
+                return messaging.getToken()
+            })
             .then(function(response) {
+                console.log(response);
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
