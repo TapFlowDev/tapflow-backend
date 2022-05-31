@@ -72,6 +72,12 @@ use phpDocumentor\Reflection\ProjectFactory;
 // });
 // for testing test
 // Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
+/////////////////////////////////////
+Route::get('/push-notificaiton', [NotificationController::class, 'index'])->name('push-notificaiton');
+Route::post('/store-token', [NotificationController::class, 'storeToken'])->name('store.token');
+Route::post('/send-notification', [NotificationController::class, 'sendNotification'])->name('send.notification');
+//////////////////////////
+
 Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
