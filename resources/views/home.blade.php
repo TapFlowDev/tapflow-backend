@@ -81,12 +81,12 @@
                         alert('Token stored.');
                     },
                     error: function(error) {
-                        alert(error.message);
+                        console.error(error);
                     },
                 });
 
             }).catch(function(error) {
-                alert(error.message);
+                console.error(error);
             });
     }
 
