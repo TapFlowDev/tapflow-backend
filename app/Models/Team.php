@@ -29,5 +29,8 @@ class Team extends Model
         'min_work_hour',
         'max_work_hour',
         'lead_time',
+        'judgment',
+        'years_of_experience',
+        'response_time',
     ];
 }

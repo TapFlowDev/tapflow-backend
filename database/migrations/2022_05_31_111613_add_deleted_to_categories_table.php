@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterTableMilestoneSubmissionsAddStatus extends Migration
+class AddDeletedToCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AlterTableMilestoneSubmissionsAddStatus extends Migration
      */
     public function up()
     {
-        //
-        Schema::table('milestone_submissions', function (Blueprint $table) {
-            $table->integer('status')->default(0);//2=>in review 3=>accepted
+        Schema::table('categories', function (Blueprint $table) {
+            $table->integer('deleted')->default(0)->after('type')->nullable();
+
         });
     }
 
@@ -26,9 +26,8 @@ class AlterTableMilestoneSubmissionsAddStatus extends Migration
      */
     public function down()
     {
-        //
-        Schema::table('milestone_submissions', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropColumn('deleted');
         });
     }
 }

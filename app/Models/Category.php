@@ -18,6 +18,7 @@ class Category extends Model
         'image',
         'image_2',
         'type',
+        'deleted',
     ];
 
 
