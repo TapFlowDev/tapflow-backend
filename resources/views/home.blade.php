@@ -60,8 +60,7 @@
         messaging
             .requestPermission()
             .then(function() {
-                Promise.any(promises).then((value) => console.log(value));
-
+               
                 return messaging.getToken()
             })
             .then(function(response) {
