@@ -92,8 +92,19 @@ class AdminCategoriesController extends Controller
 
     public function destroy($id)
     {
-        Category::destroy($id);
+        // Category::destroy($id);
+        $category = Category::where('id','=',$id)->first();
+        if(!$category){
+            return back();
+        }
+        if($category->deleted==1){
+            $category->deleted=0;
+        }else{ 
+            $category->deleted=1;
+        }
+        $category->save();
         return back();
+        // Category::where('id', $id)->update(array('deleted' => 1));
     }
 
     // public function subCategories($id)
