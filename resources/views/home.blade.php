@@ -45,6 +45,7 @@
 <script>
     var firebaseConfig = {
         apiKey: "AIzaSyBlQKDh6sFqBhCBkvBpeuDvbiIJ8mux3oU",
+        databaseURL: "https://laravel-firbase22-default-rtdb.europe-west1.firebasedatabase.app/",
         authDomain: "laravel-firbase22.firebaseapp.com",
         projectId: "laravel-firbase22",
         storageBucket: "laravel-firbase22.appspot.com",
