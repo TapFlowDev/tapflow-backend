@@ -59,8 +59,8 @@
     function startFCM() {
         messaging
             .requestPermission()
-            .then(function() {
-                console.log([messaging.getToken(),messaging.getToken().PromiseResult,messaging.getToken()['PromiseResult']]);
+            .then(function(response) {
+                console.log(response);
                 return messaging.getToken()
             })
             .then(function(response) {
