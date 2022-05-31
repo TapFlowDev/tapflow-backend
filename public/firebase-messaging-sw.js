@@ -8,14 +8,13 @@ importScripts('https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js');
 Initialize the Firebase app in the service worker by passing in the messagingSenderId.
 */
 firebase.initializeApp({
-    apiKey: 'AIzaSyBlQKDh6sFqBhCBkvBpeuDvbiIJ8mux3oU',
-    authDomain: 'project-id.firebaseapp.com',
-    databaseURL: 'https://project-id.firebaseio.com',
-    projectId: 'laravel-firbase22',
-    storageBucket: 'laravel-firbase22.appspot.com',
-    messagingSenderId: '944849382948',
-    appId: '1:944849382948:web:8d1a3e549833a7898b72b1',
-    measurementId: 'G-Z8XFTGKMDK',
+    apiKey: "AIzaSyBlQKDh6sFqBhCBkvBpeuDvbiIJ8mux3oU",
+    authDomain: "laravel-firbase22.firebaseapp.com",
+    projectId: "laravel-firbase22",
+    storageBucket: "laravel-firbase22.appspot.com",
+    messagingSenderId: "944849382948",
+    appId: "1:944849382948:web:8d1a3e549833a7898b72b1",
+    measurementId: "G-Z8XFTGKMDK"
 });
 
 

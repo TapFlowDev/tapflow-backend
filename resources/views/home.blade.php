@@ -8,9 +8,8 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
 
-                <button onclick="startFCM()"
-                    class="btn btn-danger btn-flat">Allow notification
-                </button>
+            <button onclick="startFCM()" class="btn btn-danger btn-flat">Allow notification
+            </button>
 
             <div class="card mt-3">
                 <div class="card-body">
@@ -44,14 +43,13 @@
 
 <script>
     var firebaseConfig = {
-        apiKey: 'api-key',
-        authDomain: 'project-id.firebaseapp.com',
-        databaseURL: 'https://project-id.firebaseio.com',
-        projectId: 'project-id',
-        storageBucket: 'project-id.appspot.com',
-        messagingSenderId: 'sender-id',
-        appId: 'app-id',
-        measurementId: 'G-measurement-id',
+        apiKey: "AIzaSyBlQKDh6sFqBhCBkvBpeuDvbiIJ8mux3oU",
+        authDomain: "laravel-firbase22.firebaseapp.com",
+        projectId: "laravel-firbase22",
+        storageBucket: "laravel-firbase22.appspot.com",
+        messagingSenderId: "944849382948",
+        appId: "1:944849382948:web:8d1a3e549833a7898b72b1",
+        measurementId: "G-Z8XFTGKMDK"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -60,10 +58,10 @@
     function startFCM() {
         messaging
             .requestPermission()
-            .then(function () {
+            .then(function() {
                 return messaging.getToken()
             })
-            .then(function (response) {
+            .then(function(response) {
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -76,20 +74,20 @@
                         token: response
                     },
                     dataType: 'JSON',
-                    success: function (response) {
+                    success: function(response) {
                         alert('Token stored.');
                     },
-                    error: function (error) {
+                    error: function(error) {
                         alert(error);
                     },
                 });
 
-            }).catch(function (error) {
+            }).catch(function(error) {
                 alert(error);
             });
     }
 
-    messaging.onMessage(function (payload) {
+    messaging.onMessage(function(payload) {
         const title = payload.notification.title;
         const options = {
             body: payload.notification.body,
@@ -97,6 +95,5 @@
         };
         new Notification(title, options);
     });
-
 </script>
 @endsection
