@@ -20,7 +20,7 @@ class NotificationController extends Controller
   
     public function storeToken(Request $request)
     {
-        dd($request->token);
+        dd(['token: '=>$request->token]);
         auth()->user()->update(['fcm_token'=>$request->token]);
         return response()->json(['Token successfully stored.']);
     }
