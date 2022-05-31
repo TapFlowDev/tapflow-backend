@@ -61,6 +61,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="/AdminTool/countries">
+                        <span class="icon"><i class="fas fa-flag"></i></span>
+                        <span class="title">Countries</span>
+                    </a>
+                </li>
+                <li>
                     <a href="#">
                         <span class="icon"><i class="fas fa-users"></i></span>
                         <span class="title dropdown-toggle">Agencies</span>

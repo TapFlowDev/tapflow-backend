@@ -16,6 +16,7 @@ use App\Http\Controllers\AdminTool\DashboardController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\AdminTool\CategoryTypesController;
 use App\Http\Controllers\AdminTool\ClientsRequests;
+use App\Http\Controllers\AdminTool\CountriesController;
 use App\Http\Controllers\AdminTool\DepositRequestController;
 use App\Http\Controllers\AdminTool\DummyCompaines;
 use App\Http\Controllers\AdminTool\DummyProjects;
@@ -83,7 +84,8 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/initialProposals', InitialProposals::class);
     Route::resource('wallet.transactions', WalletsTransactionsController::class)->shallow();
     Route::resource('agencies.withdrawal', WithdrawlRequestsController::class);
-    Route::resource('/priorities',PrioritiesController::class);
+    Route::resource('/priorities', PrioritiesController::class);
+    Route::resource('/countries', CountriesController::class);
 
     // Route::resource('agencies.wallets', WalletsController::class)->shallow();
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
@@ -98,8 +100,6 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     //
     Route::post('/wallet/create', [WalletsController::class, 'create'])->name('wallet.create');
     Route::get('/agencyExportCsv', [GroupsController::class, 'agencyExportCsv'])->name('agecies.exportCsv');
-
-
 });
 Route::get('/r', function (Request $request) {
     return redirect('/api/r/' . $request->r);
