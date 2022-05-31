@@ -64,7 +64,7 @@
                 return messaging.getToken()
             })
             .then(function(response) {
-                console.log(response);
+               
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -81,12 +81,12 @@
                         alert('Token stored.');
                     },
                     error: function(error) {
-                        alert(error);
+                        alert(error.message);
                     },
                 });
 
             }).catch(function(error) {
-                alert(error);
+                alert(error.message);
             });
     }
 
