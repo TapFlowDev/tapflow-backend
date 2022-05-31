@@ -59,10 +59,9 @@
     function startFCM() {
         messaging
             .requestPermission()
-            .then(function(response) {
-                console.log(response);
-                return messaging.getToken()
-            })
+            // .then(function() {
+            //     return messaging.getToken()
+            // })
             .then(function(response) {
                 $.ajaxSetup({
                     headers: {
