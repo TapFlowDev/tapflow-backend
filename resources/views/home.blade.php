@@ -71,7 +71,7 @@
                     }
                 });
                 $.ajax({
-                    url: '{{ route("store.token") }}',
+                    url: '{{ "https://ben.tapflow.dev/store-token" }}',
                     type: 'POST',
                     data: {
                         token: response
