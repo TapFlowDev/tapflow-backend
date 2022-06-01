@@ -46,6 +46,7 @@ use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
+use App\Http\Controllers\NotificationController;
 
 // use App\Http\Controllers\PaymentController;
 
@@ -73,9 +74,10 @@ use phpDocumentor\Reflection\ProjectFactory;
 // for testing test
 // Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
 /////////////////////////////////////
-Route::get('/push-notificaiton', [NotificationController::class, 'index'])->name('push-notificaiton');
-Route::post('/store-token', [NotificationController::class, 'storeToken'])->name('store.token');
-Route::post('/send-notification', [NotificationController::class, 'sendNotification'])->name('send.notification');
+Route::post('storeToken', [NotificationController::class, 'storeToken']);
+Route::post('sendNotification', [NotificationController::class, 'sendNotification']);
+// Route::get('pushNotificaiton', [NotificationController::class, 'push-notificaiton']);
+
 //////////////////////////
 
 Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);

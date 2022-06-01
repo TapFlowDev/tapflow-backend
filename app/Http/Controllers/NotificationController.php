@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Exception;
+
 class NotificationController extends Controller
 {
    
@@ -20,15 +22,24 @@ class NotificationController extends Controller
   
     public function storeToken(Request $request)
     {
+        try{
         auth()->user()->update(['fcm_token'=>$request->token]);
-        return response()->json(['Token successfully stored.']);
+    
+        $response=Controller::returnResponse(200,'successful',['Token successfully stored.']);
+        return (json_encode($response));
+        }catch(Exception $error)
+        {
+            $response=Controller::returnResponse(200,'successful',$error->getMessage());
+            return (json_encode($response));   
+        }
     }
   
     public function sendNotification(Request $request)
     {
+        try{
         $url = 'https://fcm.googleapis.com/fcm/send';
-        $FcmToken = User::whereNotNull('fcm_token')->pluck('fcm_token')->all();
-          
+        // $FcmToken = User::whereNotNull('fcm_token')->pluck('fcm_token')->all();
+        $FcmToken=User::where('id',$request->to_id)->select('fcm_token')->first()->fcm_token;
         $serverKey = env('FCM_SERVER_KEY');
   
         $data = [
@@ -70,6 +81,11 @@ class NotificationController extends Controller
         // FCM response 
         $response=Controller::returnResponse(200,'successful',$result);
         return (json_encode($response));
-      
+    }catch(Exception $error)
+    {
+        $response=Controller::returnResponse(200,'successful',$error->getMessage());
+        return (json_encode($response));   
     }
+    }
+    
 }
