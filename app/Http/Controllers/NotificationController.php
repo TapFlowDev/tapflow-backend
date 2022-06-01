@@ -72,14 +72,16 @@ class NotificationController extends Controller
         $result = curl_exec($ch);
 
         if ($result === FALSE) {
+            $response=['res'=>'false','data'=>$result];
             die('Curl failed: ' . curl_error($ch));
         }        
 
         // Close connection
+        $response=['res'=>'true','data'=>$result];
         curl_close($ch);
 
         // FCM response 
-        $response=Controller::returnResponse(200,'successful',$result);
+        $response=Controller::returnResponse(200,'successful',$response);
         return (json_encode($response));
     }catch(Exception $error)
     {
