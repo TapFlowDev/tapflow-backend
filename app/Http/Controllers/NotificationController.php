@@ -23,8 +23,8 @@ class NotificationController extends Controller
     public function storeToken(Request $request)
     {
         try{
-        auth()->user()->update(['fcm_token'=>$request->token]);
-    
+        // auth()->user()->update(['fcm_token'=>$request->token]);
+        User::where($request->user_id)->update(['fcm_token'=>$request->token]);
         $response=Controller::returnResponse(200,'successful',['Token successfully stored.']);
         return (json_encode($response));
         }catch(Exception $error)
