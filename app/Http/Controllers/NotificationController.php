@@ -38,8 +38,8 @@ class NotificationController extends Controller
     {
         try{
         $url = 'https://fcm.googleapis.com/fcm/send';
-        $FcmToken = User::whereNotNull('fcm_token')->pluck('fcm_token')->all();
-        // $FcmToken=User::where('id',$request->to_id)->select('fcm_token')->pluck('fcm_token')->toArray();
+        // $FcmToken = User::whereNotNull('fcm_token')->pluck('fcm_token')->all();
+        $FcmToken=User::where('id',$request->to_id)->select('fcm_token')->pluck('fcm_token')->toArray();
         $response=Controller::returnResponse(200,'successful',$FcmToken);
         return (json_encode($response));
         $serverKey = env('FCM_SERVER_KEY');
