@@ -25,6 +25,7 @@ use App\Http\Controllers\AdminTool\FromOptions;
 use App\Http\Controllers\AdminTool\InitialProposals;
 use App\Http\Controllers\AdminTool\NotificationSettings;
 use App\Http\Controllers\AdminTool\PrioritiesController;
+use App\Http\Controllers\AdminTool\SkillsController;
 use App\Http\Controllers\AdminTool\StaticDataController;
 use App\Http\Controllers\AdminTool\WalletsController;
 use App\Http\Controllers\AdminTool\WalletsTransactionsController;
@@ -86,6 +87,8 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('agencies.withdrawal', WithdrawlRequestsController::class);
     Route::resource('/priorities', PrioritiesController::class);
     Route::resource('/countries', CountriesController::class);
+    Route::resource('/skills', SkillsController::class);
+    Route::get('/checkSkill/{skill}', [SkillsController::class, 'isSkillExsits']);
 
     // Route::resource('agencies.wallets', WalletsController::class)->shallow();
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');

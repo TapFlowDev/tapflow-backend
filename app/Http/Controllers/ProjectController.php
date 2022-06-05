@@ -987,6 +987,7 @@ class ProjectController extends Controller
         $requirementObj = new Requirement;
         $ProjectCategoriesObj = new ProjectCategoriesController;
         $projectPriortyObj = new ProjectPriorityController;
+        $skillsObj = new SkillsController;
         $returnData['error'] = [];
         $returnData['project'] = [];
 
@@ -1005,7 +1006,7 @@ class ProjectController extends Controller
             "days" => "required|exists:categories,id",
             "needs" => "required",
             "design" => "required",
-            "type" => "required|gt:0|lt:3",
+            "type" => "required|gt:0|lt:4",
         );
 
         $validator = Validator::make($req, $rules);
@@ -1013,6 +1014,22 @@ class ProjectController extends Controller
             $responseData = $validator->errors();
             $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
             return $response;
+        }
+        if($req['type']==3){
+            if(count($req['skills'])>3){
+                $responseData = array(
+                    'skills' => 'skills must be less than 4'
+                );
+                $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+                return $response; 
+            }
+            if(count($req['skills'])<1){
+                $responseData = array(
+                    'skills' => 'skills are required'
+                );
+                $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+                return $response; 
+            }
         }
         try {
             // return $req;
@@ -1024,6 +1041,9 @@ class ProjectController extends Controller
             $project_id = $project->id;
             $reqs = $requirementObj->Insert(($req['requirements_description']), $project_id, $req['user_id']);
             $priority = $projectPriortyObj->Insert($project_id, $req['priorities']);
+            if($req['type']==3){
+                $skills = $skillsObj->Insert(($req['skills']), $project_id);
+            }
             // if ($priority['status'] == 500) {
             //     $responseData = $priority['msg'];
             //     $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);

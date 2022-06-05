@@ -42,6 +42,7 @@ use App\Http\Controllers\DepositRequestController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\SkillsController;
 use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
@@ -129,6 +130,10 @@ Route::get('getQuestions', [FormOptionsController::class, 'getData']);
 Route::get('getDemoLink', [ContentDataController::class, 'getDemoLink']);
 Route::get('getTerms', [ContentDataController::class, 'getTerms']);
 Route::get('getPriorities', [PriorityController::class, 'getPriorities']);
+Route::get('getBudget', [CategoriesController::class, 'getBudget']);
+Route::get('getHourlyRate', [CategoriesController::class, 'getHourlyRate']);
+Route::get('getSeniority', [CategoriesController::class, 'getSeniority']);
+Route::get('getSkill', [SkillsController::class, 'search']);
 
 Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
