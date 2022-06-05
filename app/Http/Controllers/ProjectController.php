@@ -987,7 +987,7 @@ class ProjectController extends Controller
         $requirementObj = new Requirement;
         $ProjectCategoriesObj = new ProjectCategoriesController;
         $projectPriortyObj = new ProjectPriorityController;
-        $skillsObj = new SkillsController;
+        $skillsObj = new ProjectSkillsController;
         $returnData['error'] = [];
         $returnData['project'] = [];
 
