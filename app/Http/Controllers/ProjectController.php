@@ -1037,6 +1037,8 @@ class ProjectController extends Controller
             $projectArr = $req;
             unset($projectArr['requirements_description']);
             unset($projectArr['categories']);
+            unset($projectArr['skills']);
+            unset($projectArr['priorities']);
             $project = Project::create($projectArr);
             $project_id = $project->id;
             $reqs = $requirementObj->Insert(($req['requirements_description']), $project_id, $req['user_id']);
