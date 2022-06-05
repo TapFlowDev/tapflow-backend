@@ -24,8 +24,10 @@ use App\Http\Controllers\FreeLancerController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InviteUsersController;
 use App\Http\Controllers\GroupMembersController;
+use App\Models\Company;
 use Illuminate\Support\Facades\Http;
 use App\Models\country;
+use App\Models\Group;
 use App\Models\User_link;
 use Newsletter;
 
@@ -406,6 +408,9 @@ class UserController extends Controller
         if ($userResponse['error']) {
             return json_encode($userResponse['error']);
         }
+        /**
+         * register company
+         */
         $admin = $userResponse['user'];
         $teamArr =  array(
             'admin_id' => $admin['id'],
@@ -416,27 +421,40 @@ class UserController extends Controller
         );
         $groupResponse = $groupObj->addCompany($teamArr);
         if ($groupResponse['error']) {
+            User::where('id', '=', $admin['id'])->destroy();
+            Client::where('user_id', '=', $admin['id'])->destroy();
             return json_encode($groupResponse['error']);
         }
         $company = $groupResponse['company'];
-
         $teamId = $company['id'];
-        if ($req->hasFile('image')) {
-            $destPath = 'images/companies';
-            $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
-            $img = $req->image;
-            $img->move(public_path($destPath), $imageName);
-            $teamObj->updateFiles($teamId, $imageName, 'image');
-        }
+
+        // if ($req->hasFile('image')) {
+        //     $destPath = 'images/companies';
+        //     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+        //     $img = $req->image;
+        //     $img->move(public_path($destPath), $imageName);
+        //     $teamObj->updateFiles($teamId, $imageName, 'image');
+        // }
+
+        /**
+         * register project
+         */
         $projectArr = $req->project;
         $projectArr['user_id'] = $admin['id'];
         $projectResponse = $projectObj->addProjectSignUp($projectArr);
         if ($projectResponse['error']) {
+            User::where('id', '=', $admin['id'])->destroy();
+            Client::where('user_id', '=', $admin['id'])->destroy();
+            Group::where('id', '=', $teamId)->destroy();
+            Company::where('group_id', '=', $teamId)->destroy();
             return json_encode($projectResponse['error']);
         }
         $project = $projectResponse['project'];
         //Newsletter::subscribeOrUpdate($req->user['email'], ['FNAME'=>$req->user['first_name'], 'LNAME'=>$req->user['last_name'],'ROLE'=>"unset", "UTYPE"=>'company-member', 'ADMIN'=>'admin'], 'Tapflow');
         // dd(Newsletter::getLastError());
+        /**
+         * login user
+         */
         $responseData = $this->clientInternalLogin($admin['email'], $req->user['password'], $teamId);
         $response = Controller::returnResponse(200, "user added successfully", $responseData);
         return $response;
