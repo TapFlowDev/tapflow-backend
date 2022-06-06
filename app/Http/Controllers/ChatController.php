@@ -17,7 +17,7 @@ class ChatController extends Controller
     //add row 
     function sendMessage(Request $req)
     {
-        try {
+        // try {
             $rules = array(
                 "body" => "required",
                 "user_id" => "required|exists:user,id",
@@ -31,11 +31,11 @@ class ChatController extends Controller
             } else {
                 $firebaseObj = new FireBaseNotificationsController;
                 $roomMembers = RoomMembers::where('room_id', $req->room_id)->select('user_id')->pluck('user_id')->all()->toArray();
-                // $fcmTokens = DB::table('users')
-                //     ->whereIn('id', $roomMembers)
-                //     ->select('fcm_token')
-                //     ->pluck('fcm_token')
-                //     ->toArray();
+                $fcmTokens = DB::table('users')
+                    ->whereIn('id', $roomMembers)
+                    ->select('fcm_token')
+                    ->pluck('fcm_token')
+                    ->toArray();
                 $userName = User::where('id', $req->user_id)->select('first_name', 'last_name')->first();
                 $msgTitle = $userName->first_name . ' ' . $userName->last_name;
                 $data = array('FcmToken' => $fcmTokens, 'title' => $msgTitle, 'body' => $req->body);
@@ -48,10 +48,10 @@ class ChatController extends Controller
                 $response = Controller::returnResponse(200, "send message successful", []);
                 return json_encode($response);
             }
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
-            return json_encode($response);
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+        //     return json_encode($response);
+        // }
     }
     function messageSeen($id)
     {
