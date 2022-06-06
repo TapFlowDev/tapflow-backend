@@ -20,7 +20,6 @@ class ChatController extends Controller
         try {
             $rules = array(
                 "body" => "required",
-                "user_id" => "required|exists:users,id",
                 "room_id" => "required|exists:rooms,id",
             );
             $validator = Validator::make($req->all(), $rules);
@@ -37,7 +36,8 @@ class ChatController extends Controller
                 ->pluck('user_id')
                 ->toArray();
                 
-               
+               return $roomMembers ;
+
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('*')
