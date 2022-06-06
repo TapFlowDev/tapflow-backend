@@ -33,7 +33,7 @@ class ChatController extends Controller
                 $roomMembers = DB::table('room_members')
                 ->where('room_id', $req->room_id)
                 ->select('*')
-                ->pluck('fcm_token')
+                ->pluck('user_id')
                 ->toArray();
                 
                 $response = Controller::returnResponse(101, "Validation Error", $roomMembers);
