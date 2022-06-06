@@ -34,10 +34,10 @@ class FireBaseNotificationsController extends Controller
         $serverKey = env('FCM_SERVER_KEY');
         
         $data = array(
-            "registration_ids" => $request->FcmToken,
+            "registration_ids" => $request['FcmToken'],
             "notification" => array(
-                "title" => $request->title,
-                "body" => $request->body,  
+                "title" => $request['title'],
+                "body" => $request['body'],  
             )
             );
         $encodedData = json_encode($data);
