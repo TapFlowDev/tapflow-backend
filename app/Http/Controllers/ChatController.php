@@ -17,7 +17,7 @@ class ChatController extends Controller
     //add row 
     function sendMessage(Request $req)
     {
-        try {
+        // try {
             $rules = array(
                 "body" => "required",
                 "room_id" => "required|exists:rooms,id",
@@ -55,10 +55,10 @@ class ChatController extends Controller
                 $response = Controller::returnResponse(200, "send message successful", []);
                 return json_encode($response);
             }
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
-            return json_encode($response);
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+        //     return json_encode($response);
+        // }
     }
     function messageSeen($id)
     {
