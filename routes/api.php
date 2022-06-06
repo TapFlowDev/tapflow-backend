@@ -134,6 +134,8 @@ Route::get('getBudget', [CategoriesController::class, 'getBudget']);
 Route::get('getHourlyRate', [CategoriesController::class, 'getHourlyRate']);
 Route::get('getSeniority', [CategoriesController::class, 'getSeniority']);
 Route::get('getSkill', [SkillsController::class, 'search']);
+Route::get('getLeadtime', [CategoriesController::class, 'getLeadtime']);
+Route::get('getDeveloperHours', [CategoriesController::class, 'getDeveloperHours']);
 
 Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 

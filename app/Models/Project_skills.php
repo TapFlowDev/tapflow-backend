@@ -9,7 +9,7 @@ class Project_skills extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'group_id',
+        'project_id',
         'skill_id'
     ];
     public $timestamps = false;
