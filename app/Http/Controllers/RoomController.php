@@ -11,7 +11,7 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 use Money\Exchange;
 use App\Models\Group_member;
-
+use Illuminate\Support\Facades\DB;
 
 class RoomController extends Controller
 {
@@ -103,5 +103,12 @@ class RoomController extends Controller
             $response = Controller::returnResponse(422, "unauthorized action ", []);
             return json_encode($response);
         }
+    }
+    function allmembers()
+    {
+        // try {
+            $roomMembers =DB::table('users')->all();
+
+          return $roomMembers;
     }
 }
