@@ -25,7 +25,7 @@ class FireBaseNotificationsController extends Controller
   
     public function sendFireBaseNotification($request)
     {
-        try{
+        // try{
         
         $url = 'https://fcm.googleapis.com/fcm/send';
         // $FcmToken = User::whereNotNull('fcm_token')->pluck('fcm_token')->all();
@@ -73,9 +73,9 @@ class FireBaseNotificationsController extends Controller
 
         // FCM response 
        return ['code'=>200,'msg'=>'successful'];
-    }catch(Exception $error)
-    {
-        return ['code'=>500,'msg'=>$error->getMessage()];
-    }
+    // }catch(Exception $error)
+    // {
+    //     return ['code'=>500,'msg'=>$error->getMessage()];
+    // }
     }
 }
