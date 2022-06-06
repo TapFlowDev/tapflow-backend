@@ -20,7 +20,7 @@ class ChatController extends Controller
         try {
             $rules = array(
                 "body" => "required",
-                "user_id" => "required|exists:user,id",
+                "user_id" => "required|exists:users,id",
                 "room_id" => "required|exists:rooms,id",
             );
             $validator = Validator::make($req->all(), $rules);
@@ -30,11 +30,9 @@ class ChatController extends Controller
                 return json_encode($response);
             } else {
                 $firebaseObj = new FireBaseNotificationsController;
-                $roomMembers =DB::table('room_members')->all();
-                // ->where('room_id', '=',$req->room_id)
-                // ->pluck('user_id')->toArray();
-                $response = Controller::returnResponse(101, "Validation Error", $roomMembers);
-                return json_encode($response);
+                $roomMembers =DB::table('room_members')->where('room_id', '=',$req->room_id)
+                ->pluck('user_id')->toArray();
+            
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('fcm_token')
