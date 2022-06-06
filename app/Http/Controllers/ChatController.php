@@ -79,4 +79,12 @@ class ChatController extends Controller
             return json_encode($response);
         }
     }
+
+    function allmembers()
+    {
+        // try {
+            $roomMembers =DB::table('room_members')->all();
+
+          return $roomMembers;
+    }
 }
