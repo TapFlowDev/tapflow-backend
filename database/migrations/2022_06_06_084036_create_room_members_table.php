@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeRoomMembersConstraints extends Migration
+class CreateRoomMembersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class ChangeRoomMembersConstraints extends Migration
      */
     public function up()
     {
-        //
         Schema::create('room_members', function (Blueprint $table) {
-            $table->integer('room_id')->change();
-            $table->integer('user_id')->change();
+            $table->integer('room_id');
+            $table->integer('user_id');
         });
     }
 
@@ -27,10 +26,6 @@ class ChangeRoomMembersConstraints extends Migration
      */
     public function down()
     {
-        //
-        Schema::create('room_members', function (Blueprint $table) {
-            $table->dropColumn('room_id');
-            $table->dropColumn('user_id');
-        });
+        Schema::dropIfExists('room_members');
     }
 }
