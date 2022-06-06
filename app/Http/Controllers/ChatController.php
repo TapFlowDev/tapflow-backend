@@ -67,12 +67,13 @@ class ChatController extends Controller
         try {
             $userData = Controller::checkUser($req);
             if (RoomMembers::where('user_id', '=', $userData['user_id'])->exists()) {
-                $response = Controller::returnResponse(422, "failed request you are not a member of this room", []);
-                return json_encode($response);
-            } else {
                 $allMessages = Messages::where('room_id', $req->room_id)->select('*')->get();
                 $response = Controller::returnResponse(200, "successful", $allMessages);
                 return json_encode($response);
+            } else {
+                $response = Controller::returnResponse(422, "failed request you are not a member of this room", []);
+                return json_encode($response);
+                
             }
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
