@@ -46,7 +46,9 @@ use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\FireBaseNotificationsController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ChatController;
 
 // use App\Http\Controllers\PaymentController;
 
@@ -179,6 +181,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
     Route::post('printInvoice', [WalletsTransactionsController::class, 'printInvoice']);
     Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
+    Route::post('storeToken', [FireBaseNotificationsController::class, 'storeToken']);
+    Route::post('addMember', [RoomController::class, 'addMember']);
+    Route::post('getRooms', [RoomController::class, 'getRooms']);
+    Route::post('sendMessage', [ChatController::class, 'sendMessage']);
+    Route::post('getRoomMessages', [ChatController::class, 'getRoomMessages']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
@@ -251,6 +258,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('reviewSubmission', [Milestones::class, 'reviseSubmission']);
     Route::get('deposits/{offset}/{limit}', [DepositRequestController::class, 'getDeposits']);
     Route::post('printDepositDeails', [DepositRequestController::class, 'printDepositDeails']);
-    Route::post('storeToken', [NotificationController::class, 'storeToken']);
-    Route::post('sendNotification', [NotificationController::class, 'sendNotification']);
+
+
+   
 });
