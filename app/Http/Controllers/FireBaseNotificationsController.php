@@ -26,6 +26,8 @@ class FireBaseNotificationsController extends Controller
     public function sendFireBaseNotification($request)
     {
         try{
+            $response = Controller::returnResponse(101, "Validation Error", $request);
+            return json_encode($response);
         $url = 'https://fcm.googleapis.com/fcm/send';
         // $FcmToken = User::whereNotNull('fcm_token')->pluck('fcm_token')->all();
         // $FcmToken=User::where('id',$request->to_id)->select('fcm_token')->pluck('fcm_token')->toArray();

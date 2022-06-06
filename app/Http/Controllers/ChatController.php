@@ -42,8 +42,7 @@ class ChatController extends Controller
                     ->select('*')
                     ->pluck('fcm_token')
                     ->toArray();
-                    $response = Controller::returnResponse(101, "Validation Error", $fcmTokens);
-                    return json_encode($response);
+                  
                 $userName = User::where('id', $req->user_id)->select('first_name', 'last_name')->first();
                 $msgTitle = $userName->first_name . ' ' . $userName->last_name;
                 $data = array('FcmToken' => $fcmTokens, 'title' => $msgTitle, 'body' => $req->body);
