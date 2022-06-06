@@ -17,6 +17,7 @@ class ChatController extends Controller
     //add row 
     function sendMessage(Request $req)
     {
+        return json_encode($req);
         // try {
             $rules = array(
                 "body" => "required",
@@ -29,11 +30,11 @@ class ChatController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return json_encode($response);
             } else {
-                // $firebaseObj = new FireBaseNotificationsController;
+                $firebaseObj = new FireBaseNotificationsController;
                 $roomMembers =DB::table('room_members')->select('user_id')
                 ->where('room_id', $req->room_id)
                 ->pluck('user_id')->toArray();
-                return json_encode($roomMembers);
+              
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('fcm_token')
