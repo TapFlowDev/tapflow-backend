@@ -12,8 +12,9 @@ class FireBaseNotificationsController extends Controller
     public function storeToken(Request $request)
     {
         try{
+            $userData=Controller::checkUser($request);
         // auth()->user()->update(['fcm_token'=>$request->token]);
-        User::where('id',$request->user_id)->update(['fcm_token'=>$request->token]);
+        User::where('id',$userData['user_id'])->update(['fcm_token'=>$request->token]);
         $response=Controller::returnResponse(200,'successful',['Token successfully stored.']);
         return (json_encode($response));
         }catch(Exception $error)
