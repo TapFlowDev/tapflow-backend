@@ -31,6 +31,7 @@ class ChatController extends Controller
             } else {
                 $firebaseObj = new FireBaseNotificationsController;
                 $roomMembers = RoomMembers::where('room_id', $req->room_id)->select('user_id')->pluck('user_id')->all()->toArray();
+                return json_encode($roomMembers);
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('fcm_token')
