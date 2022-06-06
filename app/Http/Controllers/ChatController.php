@@ -30,9 +30,7 @@ class ChatController extends Controller
                 return json_encode($response);
             } else {
                 $firebaseObj = new FireBaseNotificationsController;
-                $roomMembers =DB::table('room_members')->where('room_id', '=',$req->room_id)
-                ->pluck('user_id')->toArray();
-            
+                $roomMembers = RoomMembers::where('room_id', $req->room_id)->select('user_id')->pluck('user_id')->all()->toArray();
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('fcm_token')
@@ -71,19 +69,11 @@ class ChatController extends Controller
             } else {
                 $response = Controller::returnResponse(422, "failed request you are not a member of this room", []);
                 return json_encode($response);
-                
+               
             }
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
         }
-    }
-
-    function allmembers()
-    {
-        // try {
-            $roomMembers =DB::table('users')->all();
-
-          return $roomMembers;
     }
 }
