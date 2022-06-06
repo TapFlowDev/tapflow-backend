@@ -32,6 +32,7 @@ class ChatController extends Controller
                 $firebaseObj = new FireBaseNotificationsController;
                 $roomMembers = DB::table('room_members')
                 ->where('room_id', $req->room_id)
+                ->where('user_id' ,'!=' ,$req->user_id)
                 ->select('*')
                 ->pluck('user_id')
                 ->toArray();
@@ -40,6 +41,7 @@ class ChatController extends Controller
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('*')
+                    ->where('fcm_token' ,'!=' ,null)
                     ->pluck('fcm_token')
                     ->toArray();
                   
