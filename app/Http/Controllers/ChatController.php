@@ -36,8 +36,7 @@ class ChatController extends Controller
                 ->pluck('user_id')
                 ->toArray();
                 
-                $response = Controller::returnResponse(101, "Validation Error", $roomMembers);
-                return json_encode($response);
+               
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('fcm_token')
