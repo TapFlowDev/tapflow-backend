@@ -36,8 +36,6 @@ class ChatController extends Controller
                 ->pluck('user_id')
                 ->toArray();
                 
-               return $roomMembers ;
-
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('*')
