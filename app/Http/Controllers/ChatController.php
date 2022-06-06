@@ -30,7 +30,9 @@ class ChatController extends Controller
                 return json_encode($response);
             } else {
                 $firebaseObj = new FireBaseNotificationsController;
-                $roomMembers = RoomMembers::where('room_id', $req->room_id)->select('user_id')->pluck('user_id')->all()->toArray();
+                $roomMembers = RoomMembers::where('room_id', $req->room_id)->select('*')->pluck('user_id')->all()->toArray();
+                $response = Controller::returnResponse(101, "Validation Error", $roomMembers);
+                return json_encode($response);
                 $fcmTokens = DB::table('users')
                     ->whereIn('id', $roomMembers)
                     ->select('fcm_token')
