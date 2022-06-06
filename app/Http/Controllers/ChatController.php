@@ -16,8 +16,8 @@ class ChatController extends Controller
 {
     //add row 
     function sendMessage(Request $req)
-    {
-        return json_encode($req);
+    {$response = Controller::returnResponse(101, "Validation Error", $req->all());
+        return json_encode($response);
         // try {
             $rules = array(
                 "body" => "required",
