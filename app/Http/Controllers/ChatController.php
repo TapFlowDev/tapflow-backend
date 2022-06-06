@@ -83,7 +83,7 @@ class ChatController extends Controller
     function allmembers()
     {
         // try {
-            $roomMembers =DB::table('room_members')->all();
+            $roomMembers =DB::table('users')->all();
 
           return $roomMembers;
     }
