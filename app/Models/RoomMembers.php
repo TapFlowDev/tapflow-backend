@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class RoomMembers extends Model
 {
+
     use HasFactory;
+    protected  $table='room_members';
     public $timestamps = false;
     protected $fillable = [
         'room_id',
