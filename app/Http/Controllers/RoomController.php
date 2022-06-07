@@ -37,9 +37,8 @@ class RoomController extends Controller
             $users = array_merge($teamAdmins, $companyAdmins);
        
             foreach ($users as $user_id) {
-                $member = array('room_id' => $room_id, 'user_id' => $user_id->user_id);
             
-                RoomMembers::create($member);
+                RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id->user_id]);
             }
 
             return ['code' => 200, 'msg' => 'successful'];
