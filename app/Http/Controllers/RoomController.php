@@ -21,13 +21,13 @@ use  App\Http\Controllers\CompanyController;
 class RoomController extends Controller
 {
     //add row 
-    function createRoom($data)
+    function createRoom( $data)
     {
         try {
 
 
             $data['name'] = $this->roomName($data['team_id'], $data['company_id']);
-            $room = Rooms::create( $data);
+            $room = Rooms::create( ['name' => $data['name']]);
             $room_id = $room->id;
             $groupMembersObj = new GroupMembersController;
 
@@ -37,7 +37,8 @@ class RoomController extends Controller
             $users = array_merge($teamAdmins, $companyAdmins);
        
             foreach ($users as $user_id) {
-                $member = array('room_id' => $room_id, 'user_id' => $user_id);
+                $member = array('room_id' => $room_id, 'user_id' => $user_id->user_id);
+            
                 RoomMembers::create($member);
             }
 
