@@ -38,7 +38,8 @@ class RoomController extends Controller
           
             foreach ($users as $user_id) {
              
-                $this->createMem($user_id,$room_id);
+                RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id->user_id]);
+               
             }
 
             return ['code' => 200, 'msg' => 'successful'];
@@ -171,10 +172,5 @@ class RoomController extends Controller
        else{
            return 1;
        }
-    }
-    function createMem($user_id,$room_id)
-    {
-     
-        RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id->user_id]);
     }
 }
