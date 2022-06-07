@@ -156,7 +156,7 @@ class RoomController extends Controller
     }
     function IsRoomMember($user_id,$room_id)
     {
-       if(RoomMembers::where('user_id', $user_id,'room_id',$room_id)->exists())   
+       if(RoomMembers::where('user_id', $user_id)->where('room_id',$room_id)->exists())   
        {
            return 1;
        }
