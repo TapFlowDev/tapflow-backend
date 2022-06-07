@@ -92,8 +92,7 @@ class ChatController extends Controller
     function getRoomLastMessage($room_id)
     {
         $lastMessage = Messages::where('room_id', $room_id)->select('body','created_at')->distinct()->latest()
-            ->offset(1)->limit(1)->get();
-
+            ->offset(1)->limit(1)->first();
             if ($lastMessage === null)
             {
                 return 'send your first message';
@@ -101,7 +100,7 @@ class ChatController extends Controller
             }
             else
             {
-                return $lastMessage[0]->body;
+                return $lastMessage->body;
             }
        
     }
