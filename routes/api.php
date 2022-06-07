@@ -89,7 +89,6 @@ Route::get('canSubmit/{id}', [Milestones::class, 'canSubmit']);
 Route::get('getRoomLastMessage/{id}', [ChatController::class, 'getRoomLastMessage']);
 
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
-Route::post('createRoom', [RoomController::class, 'createRoom']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);
@@ -187,8 +186,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('addMember', [RoomController::class, 'addMember']);
     Route::post('getRooms', [RoomController::class, 'getRooms']);
     Route::post('sendMessage', [ChatController::class, 'sendMessage']);
-    Route::get('allmembers', [RoomController::class, 'allmembers']);
-
+    Route::get('updateRoomName', [RoomController::class, 'updateRoomName']);
     Route::post('getRoomMessages', [ChatController::class, 'getRoomMessages']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
