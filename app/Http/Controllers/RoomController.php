@@ -38,7 +38,7 @@ class RoomController extends Controller
           
             foreach ($users as $user_id) {
              
-               return $this->createMem($user_id,$room_id);
+                $this->createMem($user_id,$room_id);
             }
 
             return ['code' => 200, 'msg' => 'successful'];
