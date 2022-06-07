@@ -92,8 +92,8 @@ class ChatController extends Controller
     function getRoomLastMessage($room_id)
     {
         $lastMessage = Messages::where('room_id', $room_id)->select('body')->distinct()->latest()
-            ->offset(1)->limit(1)->get();
-        return $lastMessage[0]->body;
+            ->offset(1)->limit(1)->first();
+        return $lastMessage->body;
     }
     function getSenderInfo($allMessages)
     {
