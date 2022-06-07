@@ -393,7 +393,10 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
-
+        $validation = $this->validateclientSignUpProcess($req);
+        if ($validation['error']) {
+            return json_encode($validation['error']);
+        }
         $groupObj = new GroupController;
         $teamObj = new CompanyController;
         $projectObj = new ProjectController;
@@ -421,8 +424,8 @@ class UserController extends Controller
         );
         $groupResponse = $groupObj->addCompany($teamArr);
         if ($groupResponse['error']) {
-            User::where('id', '=', $admin['id'])->destroy();
-            Client::where('user_id', '=', $admin['id'])->destroy();
+            // User::where('id', '=', $admin['id'])->destroy();
+            // Client::where('user_id', '=', $admin['id'])->destroy();
             return json_encode($groupResponse['error']);
         }
         $company = $groupResponse['company'];
@@ -443,10 +446,10 @@ class UserController extends Controller
         $projectArr['user_id'] = $admin['id'];
         $projectResponse = $projectObj->addProjectSignUp($projectArr);
         if ($projectResponse['error']) {
-            User::where('id', '=', $admin['id'])->destroy();
-            Client::where('user_id', '=', $admin['id'])->destroy();
-            Group::where('id', '=', $teamId)->destroy();
-            Company::where('group_id', '=', $teamId)->destroy();
+            // User::where('id', '=', $admin['id'])->destroy();
+            // Client::where('user_id', '=', $admin['id'])->destroy();
+            // Group::where('id', '=', $teamId)->destroy();
+            // Company::where('group_id', '=', $teamId)->destroy();
             return json_encode($projectResponse['error']);
         }
         $project = $projectResponse['project'];
@@ -464,18 +467,18 @@ class UserController extends Controller
     {
         $returnData['error'] = [];
         $returnData['user'] = [];
-        $rules = array(
-            "first_name" => "required|max:255",
-            "last_name" => "required|max:255",
-            "email" => "email|required|max:255|unique:users",
-            "password" => "required|min:8|max:255",
-        );
-        $validator = Validator::make($arr, $rules);
-        if ($validator->fails()) {
-            $responseData = $validator->errors();
-            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
-            return $response;
-        }
+        // $rules = array(
+        //     "first_name" => "required|max:255",
+        //     "last_name" => "required|max:255",
+        //     "email" => "email|required|max:255|unique:users",
+        //     "password" => "required|min:8|max:255",
+        // );
+        // $validator = Validator::make($arr, $rules);
+        // if ($validator->fails()) {
+        //     $responseData = $validator->errors();
+        //     $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+        //     return $response;
+        // }
         // return $returnData;
         try {
             // $user = User::find(156);
@@ -528,5 +531,100 @@ class UserController extends Controller
             "privileges" => 2,
         );
         return ($response);
+    }
+    private function validateclientSignUpProcess($req)
+    {
+        $returnData['error'] = [];
+        $returnData['user'] = [];
+        $userAndCompany = $req->user;
+        $project = $req->project;
+        /**
+         * user validation
+         */
+        $userArr = array(
+            'first_name' => $userAndCompany['first_name'],
+            'last_name' => $userAndCompany['last_name'],
+            'email' => $userAndCompany['email'],
+            'password' => $userAndCompany['password'],
+        );
+        $userRules = array(
+            "first_name" => "required|max:255",
+            "last_name" => "required|max:255",
+            "email" => "email|required|max:255|unique:users",
+            "password" => "required|min:8|max:255",
+        );
+        $userValidator = Validator::make($userArr, $userRules);
+        if ($userValidator->fails()) {
+            $responseData = $userValidator->errors();
+            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            return $response;
+        }
+        /**
+         * company validation
+         */
+        $companyArr = array(
+            'name' => $userAndCompany['company_name']
+        );
+        $companyRules = array(
+            "name" => "required|max:255",
+        );
+        $companyValidator = Validator::make($companyArr, $companyRules);
+        if ($companyValidator->fails()) {
+            $responseData = $companyValidator->errors();
+            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            return $response;
+        }
+        /**
+         * project validation
+         */
+        $min = 0;
+        $max = 0;
+        if ($project['min'] > 0) {
+            $min = $project['min'];
+        }
+        if ($project['max'] > 0) {
+            $max = $project['max'];
+        }
+        $projectArr = array(
+            "name" => $project['name'],
+            "description" => $project['description'],
+            "requirements_description" => $project['requirements_description'],
+            "budget_type" => $project['budget_type'],
+            "min" => $min,
+            "max" => $max,
+            "days" => $project['days'],
+            "needs" => $project['needs'],
+            "design" => $project['design'],
+            "type" => $project['type'],
+        );
+        $projectRules = array(
+            "name" => "required",
+            "description" => "required",
+            "requirements_description" => "required",
+            "budget_type" => "required|gte:0|lt:2",
+            "min" => "numeric",
+            "max" => "numeric",
+            "days" => "required|exists:categories,id",
+            "needs" => "required",
+            "design" => "required",
+            "type" => "required|gt:0|lt:4",
+            "start_project" => "required|exists:categories,id",
+        );
+
+        $projectValidator = Validator::make($projectArr, $projectRules);
+        if ($projectValidator->fails()) {
+            $responseData = $projectValidator->errors();
+            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            return $response;
+        }
+        if ($project['type'] == 3) {
+            if (isset($project['skills']) && (count($project['skills']) > 3 || count($project['skills']) < 1)) {
+                $responseData = array(
+                    'skills' => 'skills are required and must be less than 3'
+                );
+                $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+                return $response;
+            }
+        }
     }
 }

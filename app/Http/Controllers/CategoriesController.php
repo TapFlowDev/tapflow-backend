@@ -141,4 +141,26 @@ class CategoriesController extends Controller
             return json_encode($response);
         }
     }
+    function getLeadtime()
+    {
+        try {
+            $categories = Category::select('id', 'name')->where('type', 8)->where('deleted', '=', 0)->get();
+            $response = Controller::returnResponse(200, 'data found', $categories);
+            return json_encode($response);
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+    function getDeveloperHours()
+    {
+        try {
+            $categories = Category::select('id', 'name')->where('type', 9)->where('deleted', '=', 0)->get();
+            $response = Controller::returnResponse(200, 'data found', $categories);
+            return json_encode($response);
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
 }

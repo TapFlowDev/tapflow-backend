@@ -395,11 +395,11 @@ class   GroupController extends Controller
     {
         $returnData['error'] = [];
         $returnData['company'] = [];
-        $rules = array(
-            "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
-            "name" => "required|max:255",
-        );
-        $validator = Validator::make($teamArr, $rules);
+        // $rules = array(
+        //     "admin_id" => "required|unique:group_members,user_id|exists:clients,user_id",
+        //     "name" => "required|max:255",
+        // );
+        // $validator = Validator::make($teamArr, $rules);
         // if ($validator->fails()) {
         //     $responseData = $validator->errors();
         //     $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
