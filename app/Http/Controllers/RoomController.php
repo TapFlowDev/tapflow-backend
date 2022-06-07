@@ -136,7 +136,7 @@ class RoomController extends Controller
 
         $team_name = $TeamObj->get_team_info($team_id)->name;
         $company_name = $CompanyObj->get_company_info($company_id)->name;
-        return $team_name . ' ' . $company_name;
+        return $team_name . ' & ' . $company_name;
     }
     function updateRoomName(Request $req)
     {
