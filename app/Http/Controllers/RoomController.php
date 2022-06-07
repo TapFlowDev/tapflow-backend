@@ -43,7 +43,7 @@ class RoomController extends Controller
 
             return ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
-            return ['code' => 500, 'msg' => 'can not create room'];
+            return ['code' => 500, 'msg' =>$error->getMessage()];
         }
     }
 

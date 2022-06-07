@@ -223,7 +223,12 @@ class Proposals extends Controller
                         $RoomObj=new RoomController();
                         $company_id= $projectObj->getCompanyInfoByProjectId($project_id)->id;
                         $data=array('name'=>null,'team_id'=>$team_id,'company_id'=>$company_id);
-                        $RoomObj->createRoom($data);
+                        $room=$RoomObj->createRoom($data);
+                        if($room['code'] != 200)
+                        {
+                            $response = Controller::returnResponse(500, "something wrong", $room['msg']);
+                            return (json_encode($response));
+                        }
                         $mail = $this->notifyAgency($req->proposal_id, 1);
                         $response = Controller::returnResponse(200, "proposal accepted", []);
                         return (json_encode($response));
