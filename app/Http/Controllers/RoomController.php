@@ -174,7 +174,7 @@ class RoomController extends Controller
     }
     function createMem($user_id,$room_id)
     {
-        return (['r'=>$room_id ,'u'=>$user_id]);
+     
         RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id->user_id]);
     }
 }
