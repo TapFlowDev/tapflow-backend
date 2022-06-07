@@ -89,6 +89,7 @@ Route::get('canSubmit/{id}', [Milestones::class, 'canSubmit']);
 Route::get('getRoomLastMessage/{id}', [ChatController::class, 'getRoomLastMessage']);
 
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
+Route::post('createRoom', [RoomController::class, 'createRoom']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 Route::post('Deposit', [WalletsTransactionsController::class, 'deposit']);

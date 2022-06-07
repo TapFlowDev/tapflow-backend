@@ -27,13 +27,15 @@ class RoomController extends Controller
 
 
             $data['name'] = $this->roomName($data['team_id'], $data['company_id']);
-            $room = Rooms::create($data);
+            $room = Rooms::create( $data);
             $room_id = $room->id;
             $groupMembersObj = new GroupMembersController;
 
-            $teamAdmins = $groupMembersObj->getGroupAdminsIds($data->team_id);
-            $companyAdmins = $groupMembersObj->getGroupAdminsIds($data->company_id);
+            $teamAdmins = $groupMembersObj->getGroupAdminsIds($data->team_id)->toArray();
+            $companyAdmins = $groupMembersObj->getGroupAdminsIds($data->company_id)->toArray();
+
             $users = array_merge($teamAdmins, $companyAdmins);
+       
             foreach ($users as $user_id) {
                 $member = array('room_id' => $room_id, 'user_id' => $user_id);
                 RoomMembers::create($member);
