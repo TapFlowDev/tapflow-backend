@@ -156,12 +156,18 @@ class RoomController extends Controller
     }
     function IsRoomMember($user_id,$room_id)
     {
-       if(RoomMembers::where('user_id', $user_id)->where('room_id',$room_id)->exists())   
+        $member=DB::table('room_members')
+        ->where('user_id', '=', $user_id)
+        ->where('room_id', '=', $room_id)
+        ->select('*')
+        ->first();
+
+       if($member === null)   
        {
-           return 1;
+           return 0;
        }
        else{
-           return 0;
+           return 1;
        }
     }
 }
