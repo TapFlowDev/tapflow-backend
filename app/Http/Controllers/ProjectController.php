@@ -29,6 +29,7 @@ use App\Models\Milestone;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Arr;
+use App\Http\Controllers\CompanyController;
 
 class ProjectController extends Controller
 {
@@ -1088,4 +1089,11 @@ class ProjectController extends Controller
             return $response;
         }
     }
+    function getCompanyInfoByProjectId($project_id)
+    {
+        $company_obj=new CompanyController;
+        $company_id=Project::where('id',$project_id)->select('company_id')->first()->company_id;
+        return $company_obj-> get_company_info ($company_id);
+    }
+
 }

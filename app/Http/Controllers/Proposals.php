@@ -20,6 +20,8 @@ use App\Models\Group;
 use App\Models\Group_member;
 use App\Models\Team;
 use App\Models\User;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ProjectController;
 
 
 class Proposals extends Controller
@@ -215,6 +217,13 @@ class Proposals extends Controller
 
                         Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                         // notify agency
+                        $team_id= Proposal::where('id', $req->proposal_id)->select('team_id')->first()->team_id;
+                        $project_id= Proposal::where('id', $req->proposal_id)->select('project_id')->first()->project_id;
+                        $projectObj=new ProjectController;
+                        $RoomObj=new RoomController();
+                        $company_id= $projectObj->getCompanyInfoByProjectId($project_id)->id;
+                        $data=array('name'=>null,'team_id'=>$team_id,'company_id'=>$company_id);
+                        $RoomObj->createRoom($data);
                         $mail = $this->notifyAgency($req->proposal_id, 1);
                         $response = Controller::returnResponse(200, "proposal accepted", []);
                         return (json_encode($response));

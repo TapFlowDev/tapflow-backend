@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Validator;
 use Money\Exchange;
 use App\Models\Group_member;
 use Illuminate\Support\Facades\DB;
+use  App\Http\Controllers\GroupMembersController;
+use  App\Http\Controllers\TeamController;
+use  App\Http\Controllers\CompanyController;
+
+
 
 class RoomController extends Controller
 {
@@ -19,7 +24,21 @@ class RoomController extends Controller
     function createRoom($data)
     {
         try {
-            Rooms::create($data);
+
+
+            $data['name'] = $this->roomName($data['team_id'], $data['company_id']);
+            $room = Rooms::create($data);
+            $room_id = $room->id;
+            $groupMembersObj = new GroupMembersController;
+
+            $teamAdmins = $groupMembersObj->getGroupAdminsIds($data->team_id);
+            $companyAdmins = $groupMembersObj->getGroupAdminsIds($data->company_id);
+            $users = array_merge($teamAdmins, $companyAdmins);
+            foreach ($users as $user_id) {
+                $member = array('room_id' => $room_id, 'user_id' => $user_id);
+                RoomMembers::create($member);
+            }
+
             return ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
             return ['code' => 500, 'msg' => 'can not create room'];
@@ -44,7 +63,7 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return json_encode($response);
             } else {
-                RoomMembers::create($req);
+                RoomMembers::create($req->all());
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
             }
@@ -63,28 +82,31 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(422, "unauthorized action ", []);
                 return json_encode($response);
             }
-            $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->pluck('room_id')->toArray();
-            $rooms = array();
+                $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->pluck('room_id')->toArray();
+                $rooms = array();
 
-            foreach ($rooms_ids as $room_id) {
-                $roomType = 1;
-                $room = array();
-                $name = Rooms::where('id', $room_id)->select('name')->first()->name;
-                $membersCount = RoomMembers::where('room_id', $room_id)->count();
-                if ($membersCount > 2) {
-                    $roomType = 2;
+                foreach ($rooms_ids as $room_id) {
+                    $roomType = 1;
+                    $room = array();
+                    $name = Rooms::where('id', $room_id)->select('name')->first()->name;
+                    $membersCount = RoomMembers::where('room_id', $room_id)->count();
+                    if ($membersCount > 2) {
+                        $roomType = 2;
+                    }
+                    $chatObj=new ChatController;
+
+                    $lastMessage = $chatObj->getRoomLastMessage($room_id);
+                    $room = array(
+                        'room_id' => $room_id,
+                        'name' => $name,
+                        'roomType' => $roomType,
+                        'lastMessage' => $lastMessage
+                    );
+                    array_push($rooms, $room);
                 }
-                $lastMessage = Messages::where('room_id', $room_id)->select('body')->distinct()->latest();
-                $room = array(
-                    'name' => $name,
-                    'roomType' => $roomType,
-                    'lastMessage' => $lastMessage
-                );
-                array_push($rooms, $room);
-            }
-            $response = Controller::returnResponse(200, "successful", $rooms);
-            return json_encode($response);
-        } catch (Exception $error) {
+                $response = Controller::returnResponse(200, "successful", $rooms);
+                return json_encode($response);
+            } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something wen wrong", $error->getMessage());
             return json_encode($response);
         }
@@ -104,11 +126,42 @@ class RoomController extends Controller
             return json_encode($response);
         }
     }
-    function allmembers()
+    function roomName($team_id, $company_id)
     {
-        // try {
-            $roomMembers =DB::table('users')->all();
+        $TeamObj = new TeamController;
+        $CompanyObj = new CompanyController;
 
-          return $roomMembers;
+        $team_name = $TeamObj->get_team_info($team_id)->name;
+        $company_name = $CompanyObj->get_company_info($company_id)->name;
+        return $team_name . ' ' . $company_name;
+    }
+    function updateRoomName(Request $req)
+    {
+        try{
+        $userData=Controller::checkUser($req);
+        $isMember=  $this->IsRoomMember($userData['user_id'],$req->room_id);
+        if($isMember == 1){
+        Rooms::where('id',$req->room_id)->update(['name'=>$req->name]);
+        }
+        else{
+            $response = Controller::returnResponse(422, "unauthorized action ", []);
+            return json_encode($response);
+        }
+    }
+    catch(Exception $error)
+    {
+        $response = Controller::returnResponse(500, "something went wrong ",$error->getMessage());
+        return json_encode($response);
+    }
+    }
+    function IsRoomMember($user_id,$room_id)
+    {
+       if(RoomMembers::where('user_id', '=', $user_id,'room_id','=',$room_id)->exists())   
+       {
+           return 1;
+       }
+       else{
+           return 0;
+       }
     }
 }
