@@ -33,7 +33,7 @@ class SkillsController extends Controller
         try {
             $skillTrimed = $this->trimedSkill($skill);
             $skills = Skills::where('unique_name', 'LIKE','%'. $skillTrimed. '%')->get();
-            $response = Controller::returnResponse(200, 'data found', $skill);
+            $response = Controller::returnResponse(200, 'data found', $skills);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
