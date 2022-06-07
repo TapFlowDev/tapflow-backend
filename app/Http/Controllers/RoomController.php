@@ -21,7 +21,7 @@ use  App\Http\Controllers\CompanyController;
 class RoomController extends Controller
 {
     //add row 
-    function createRoom( $data)
+    function createRoom($data)
     {
         try {
 
@@ -35,10 +35,10 @@ class RoomController extends Controller
             $companyAdmins = $groupMembersObj->getGroupAdminsIds($data->company_id)->toArray();
 
             $users = array_merge($teamAdmins, $companyAdmins);
-       
+          
             foreach ($users as $user_id) {
-            
-                RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id->user_id]);
+             
+                $this->createMem($user_id,$room_id);
             }
 
             return ['code' => 200, 'msg' => 'successful'];
@@ -171,5 +171,9 @@ class RoomController extends Controller
        else{
            return 1;
        }
+    }
+    function createMem($user_id,$room_id)
+    {
+        RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id->user_id]);
     }
 }
