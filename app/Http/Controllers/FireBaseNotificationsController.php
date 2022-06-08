@@ -72,7 +72,7 @@ class FireBaseNotificationsController extends Controller
                             "title" => "fixed title",
                             "body" => "asdasdasd asd asd asd asd",  
                         ),
-                        "link"=>array("link"=>$request['link'])
+                        "data"=>array("link"=>$request['link'])
                         );
             $encodedData = json_encode($data);
 
