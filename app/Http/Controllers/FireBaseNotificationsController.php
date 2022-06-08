@@ -37,14 +37,11 @@ class FireBaseNotificationsController extends Controller
        
         // if($request['type']==2)
         // {
+            $extradata=array("title" => $request['title'],
+            "body" => $request['body'], 'link'=>$request['link']);
             $data = array(
                 "registration_ids" => $request['FcmToken'],
-                "notification" => array(
-                    "title" => $request['title'],
-                    "body" => $request['body'],  
-                   
-                )
-                "link"=>$request['link'],
+                "notification" =>$extradata
                 );
            
         // }/
