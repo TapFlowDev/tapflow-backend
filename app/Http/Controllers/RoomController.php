@@ -34,7 +34,7 @@ class RoomController extends Controller
 
             // $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
             $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id']);
-            ['code' => 500, 'msg' =>  $teamAdmins];
+            return['code' => 500, 'msg' =>  $teamAdmins];
             $companyAdmins = $groupMembersObj->getGroupAdminsIds($data['company_id'])->pluck('user_id')->toArray();
 
             $users = array_merge($teamAdmins, $companyAdmins);
