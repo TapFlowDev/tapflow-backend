@@ -41,7 +41,7 @@ class RoomController extends Controller
 
             foreach ($users as $user_id) {
 
-                RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id->user_id]);
+                RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id]);
             }
 
             return ['code' => 200, 'msg' => 'successful'];
