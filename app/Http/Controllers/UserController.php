@@ -599,9 +599,9 @@ class UserController extends Controller
         );
         $projectRules = array(
             "name" => "required",
-            "description" => "required",
+            // "description" => "required",
             "requirements_description" => "required",
-            "budget_type" => "required|gte:0|lt:2",
+            "budget_type" => "required|gte:0|lt:4",
             "min" => "numeric",
             "max" => "numeric",
             "days" => "required|exists:categories,id",
@@ -617,14 +617,14 @@ class UserController extends Controller
             $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
             return $response;
         }
-        if ($project['type'] == 3) {
-            if (isset($project['skills']) && (count($project['skills']) > 3 || count($project['skills']) < 1)) {
-                $responseData = array(
-                    'skills' => 'skills are required and must be less than 3'
-                );
-                $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
-                return $response;
-            }
-        }
+        // if ($project['type'] == 3) {
+        //     if (isset($project['skills']) && (count($project['skills']) > 3 || count($project['skills']) < 1)) {
+        //         $responseData = array(
+        //             'skills' => 'skills are required and must be less than 3'
+        //         );
+        //         $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+        //         return $response;
+        //     }
+        // }
     }
 }

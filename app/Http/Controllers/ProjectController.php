@@ -999,9 +999,9 @@ class ProjectController extends Controller
             $rules = array(
                 "user_id" => "required|exists:users,id",
                 "name" => "required",
-                "description" => "required",
+                // "description" => "required",
                 "requirements_description" => "required",
-                "budget_type" => "required|gte:0|lt:2",
+                "budget_type" => "required|gte:0|lt:4",
                 "min" => "numeric",
                 "max" => "numeric",
                 "days" => "required|exists:categories,id",
@@ -1016,22 +1016,22 @@ class ProjectController extends Controller
                 $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
                 return $response;
             }
-            if ($req['type'] == 3) {
-                if (count($req['skills']) > 3) {
-                    $responseData = array(
-                        'skills' => 'skills must be less than 4'
-                    );
-                    $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
-                    return $response;
-                }
-                if (count($req['skills']) < 1) {
-                    $responseData = array(
-                        'skills' => 'skills are required'
-                    );
-                    $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
-                    return $response;
-                }
-            }
+            // if ($req['type'] == 3) {
+            //     if (count($req['skills']) > 3) {
+            //         $responseData = array(
+            //             'skills' => 'skills must be less than 4'
+            //         );
+            //         $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            //         return $response;
+            //     }
+            //     if (count($req['skills']) < 1) {
+            //         $responseData = array(
+            //             'skills' => 'skills are required'
+            //         );
+            //         $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            //         return $response;
+            //     }
+            // }
         }
 
         try {
