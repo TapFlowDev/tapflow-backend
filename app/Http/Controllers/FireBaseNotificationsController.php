@@ -42,8 +42,9 @@ class FireBaseNotificationsController extends Controller
                 "notification" => array(
                     "title" => $request['title'],
                     "body" => $request['body'],  
-                    "link"=>$request['link'],
+                   
                 )
+                "link"=>$request['link'],
                 );
            
         // }/
