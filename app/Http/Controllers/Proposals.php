@@ -234,7 +234,7 @@ class Proposals extends Controller
                         }
                         $fenLink="a-user/main/pending-project/".$req->project_id;
                         Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal accepted!',$fenLink);
-                        // $mail = $this->notifyAgency($req->proposal_id, 1);
+                        $mail = $this->notifyAgency($req->proposal_id, 1);
                         $response = Controller::returnResponse(200, "proposal accepted", []);
                         return (json_encode($response));
                     } else {

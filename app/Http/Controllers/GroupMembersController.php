@@ -185,7 +185,7 @@ class GroupMembersController extends Controller
     {
         return  DB::table('group_members')
             ->leftJoin('users', 'group_members.user_id', '=', 'users.id')
-            ->select('users.id as user_id','users.fcm_token')
+            ->select('group_members.user_id','users.fcm_token')
             ->where('group_members.group_id', '=', $id)
             ->where('group_members.privileges', '=', 1)
             ->get();
