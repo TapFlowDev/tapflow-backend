@@ -69,8 +69,8 @@ class FireBaseNotificationsController extends Controller
             $data = array(
                         "registration_ids" => $request['FcmToken'],
                         "notification" => array(
-                            "title" => "fixed title",
-                            "body" => "asdasdasd asd asd asd asd",  
+                            "title" => $request['title'],
+                            "body" => $request['body'],  
                         ),
                         "data"=>array(
                             "link"=>$request['link'],
