@@ -7,6 +7,7 @@ use App\Models\Messages;
 use Illuminate\Http\Request;
 use App\Models\Rooms;
 use App\Models\RoomMembers;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use Money\Exchange;
@@ -27,7 +28,7 @@ class RoomController extends Controller
 
 
             $data['name'] = $this->roomName($data['team_id'], $data['company_id']);
-            $room = Rooms::create( ['name' => $data['name']]);
+            $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
             $groupMembersObj = new GroupMembersController;
 
@@ -35,16 +36,15 @@ class RoomController extends Controller
             $companyAdmins = $groupMembersObj->getGroupAdminsIds($data['company_id'])->toArray();
 
             $users = array_merge($teamAdmins, $companyAdmins);
-          
+
             foreach ($users as $user_id) {
-             
+
                 RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id->user_id]);
-               
             }
 
             return ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
-            return ['code' => 500, 'msg' =>$error->getMessage()];
+            return ['code' => 500, 'msg' => $error->getMessage()];
         }
     }
 
@@ -85,47 +85,56 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(422, "unauthorized action ", []);
                 return json_encode($response);
             }
-                $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->pluck('room_id')->toArray();
-                $rooms = array();
+            $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->pluck('room_id')->toArray();
+            $rooms = array();
 
-                foreach ($rooms_ids as $room_id) {
-                    $roomType = 1;
-                    $room = array();
-                    $name = Rooms::where('id', $room_id)->select('name')->first()->name;
-                    $membersCount = RoomMembers::where('room_id', $room_id)->count();
-                    if ($membersCount > 2) {
-                        $roomType = 2;
-                    }
-                    $chatObj=new ChatController;
-
-                    $lastMessage = $chatObj->getRoomLastMessage($room_id);
-                    $room = array(
-                        'room_id' => $room_id,
-                        'name' => $name,
-                        'roomType' => $roomType,
-                        'lastMessage' => $lastMessage
-                    );
-                    array_push($rooms, $room);
+            foreach ($rooms_ids as $room_id) {
+                $roomType = 1;
+                $room = array();
+                $name = Rooms::where('id', $room_id)->select('name')->first()->name;
+                $membersCount = RoomMembers::where('room_id', $room_id)->count();
+                if ($membersCount > 2) {
+                    $roomType = 2;
                 }
-                $response = Controller::returnResponse(200, "successful", $rooms);
-                return json_encode($response);
-            } catch (Exception $error) {
+                $chatObj = new ChatController;
+
+                $lastMessage = $chatObj->getRoomLastMessage($room_id);
+                $room = array(
+                    'room_id' => $room_id,
+                    'name' => $name,
+                    'roomType' => $roomType,
+                    'lastMessage' => $lastMessage
+                );
+                array_push($rooms, $room);
+            }
+            $response = Controller::returnResponse(200, "successful", $rooms);
+            return json_encode($response);
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something wen wrong", $error->getMessage());
             return json_encode($response);
         }
     }
 
-    function searchForUsers(Request $req)
+    function searchForUsers(Request $req, $name)
     {
-        $userData = Controller::checkUser($req);
-        if ($userData['user_id'] == $req->user_id) {
+        try {
+            $userData = Controller::checkUser($req);
             $group_id = $userData['group_id'];
-            $groupMembersIds = Group_member::where('group_id', $group_id)->select('user_id')->pluck('user_id')->toArray();
-            if ($userData['type'] == 1) {
-            } else {
-            }
-        } else {
-            $response = Controller::returnResponse(422, "unauthorized action ", []);
+            $groupMembersIds = Group_member::where('group_id', $group_id)->select('*')->pluck('user_id')->toArray();
+            $teamMembers = DB::table('users')
+                ->select(
+                    "users.id",
+                    "users.first_name",
+                    "users.last_name",
+                    "users.email",
+                )
+                ->whereIn('id', $groupMembersIds)
+                ->where('name', 'LIKE', '%' . $name . '%')
+                ->get();
+            $response = Controller::returnResponse(200, "successful", $teamMembers);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wen wrong", $error->getMessage());
             return json_encode($response);
         }
     }
@@ -140,37 +149,32 @@ class RoomController extends Controller
     }
     function updateRoomName(Request $req)
     {
-        try{
-        $userData=Controller::checkUser($req);
-        $isMember=  $this->IsRoomMember($userData['user_id'],$req->room_id);
-        if($isMember == 1){
-        Rooms::where('id',$req->room_id)->update(['name'=>$req->name]);
-        }
-        else{
-            $response = Controller::returnResponse(422, "unauthorized action ", []);
+        try {
+            $userData = Controller::checkUser($req);
+            $isMember =  $this->IsRoomMember($userData['user_id'], $req->room_id);
+            if ($isMember == 1) {
+                Rooms::where('id', $req->room_id)->update(['name' => $req->name]);
+            } else {
+                $response = Controller::returnResponse(422, "unauthorized action ", []);
+                return json_encode($response);
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
             return json_encode($response);
         }
     }
-    catch(Exception $error)
+    function IsRoomMember($user_id, $room_id)
     {
-        $response = Controller::returnResponse(500, "something went wrong ",$error->getMessage());
-        return json_encode($response);
-    }
-    }
-    function IsRoomMember($user_id,$room_id)
-    {
-        $member=DB::table('room_members')
-        ->where('user_id', '=', $user_id)
-        ->where('room_id', '=', $room_id)
-        ->select('*')
-        ->first();
+        $member = DB::table('room_members')
+            ->where('user_id', '=', $user_id)
+            ->where('room_id', '=', $room_id)
+            ->select('*')
+            ->first();
 
-       if($member === null)   
-       {
-           return 0;
-       }
-       else{
-           return 1;
-       }
+        if ($member === null) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 }

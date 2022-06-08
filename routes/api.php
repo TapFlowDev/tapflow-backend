@@ -187,6 +187,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('getRooms', [RoomController::class, 'getRooms']);
     Route::post('sendMessage', [ChatController::class, 'sendMessage']);
     Route::get('updateRoomName', [RoomController::class, 'updateRoomName']);
+    Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
+    Route::post('updateRoomName', [RoomController::class, 'updateRoomName']);
     Route::post('getRoomMessages', [ChatController::class, 'getRoomMessages']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
