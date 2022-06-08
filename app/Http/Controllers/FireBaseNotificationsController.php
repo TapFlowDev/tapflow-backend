@@ -35,8 +35,8 @@ class FireBaseNotificationsController extends Controller
         $serverKey = env('FCM_SERVER_KEY');
         
        
-        if($request['type']==2)
-        {
+        // if($request['type']==2)
+        // {
             $data = array(
                 "registration_ids" => $request['FcmToken'],
                 "notification" => array(
@@ -46,17 +46,17 @@ class FireBaseNotificationsController extends Controller
                 )
                 );
            
-        }
-        elseif($request['type'] ==1)
-        {
-            $data = array(
-                "registration_ids" => $request['FcmToken'],
-                "notification" => array(
-                    "title" => $request['title'],
-                    "body" => $request['body'],  
-                )
-                );
-        }
+        // }/
+        // elseif($request['type'] ==1)
+        // {
+        //     $data = array(
+        //         "registration_ids" => $request['FcmToken'],
+        //         "notification" => array(
+        //             "title" => $request['title'],
+        //             "body" => $request['body'],  
+        //         )
+        //         );
+        // }
        
         $encodedData = json_encode($data);
     
