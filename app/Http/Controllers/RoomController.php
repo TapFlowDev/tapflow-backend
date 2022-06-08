@@ -32,9 +32,9 @@ class RoomController extends Controller
             $room_id = $room->id;
             $groupMembersObj = new GroupMembersController;
 
-            // $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
+           
             $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
-            return['code' => 500, 'msg' =>  $teamAdmins];
+           
             $companyAdmins = $groupMembersObj->getGroupAdminsIds($data['company_id'])->pluck('user_id')->toArray();
 
             $users = array_merge($teamAdmins, $companyAdmins);
