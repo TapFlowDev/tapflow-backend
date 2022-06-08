@@ -393,9 +393,9 @@ class UserController extends Controller
     }
     function clientSignUpProcess(Request $req)
     {
-        $responseData = $req->all();
-        $response = Controller::returnResponse(500, "user added successfully", $responseData);
-        return $response;
+        // $responseData = $req->all();
+        // $response = Controller::returnResponse(500, "user added successfully", $responseData);
+        // return $response;
         $validation = $this->validateclientSignUpProcess($req);
         if ($validation['error']) {
             return json_encode($validation['error']);
