@@ -42,16 +42,17 @@ class FireBaseNotificationsController extends Controller
             //     "registration_ids" => $request['FcmToken'],
             //     "notification" =>$extradata
             //     );
-            $notification = array('title' => $request['title'], 'text' =>  $request['body']);
+            // $notification = array('title' => $request['title'], 'text' =>  $request['body']);
 
-            $fields = array(
-                'to' => $request['FcmToken'],
-                'data' => $message = array(
+            // $fields = array(
+            //     'registration_ids' => $request['FcmToken'],
+            //     'data' =>array(
 
-                    'link' => $request['link']
-                ),
-                'notification' => $notification
-            );
+            //         'link' => $request['link']
+            //     ),
+            //     'notification' => $notification,
+            //     'link'=>array('aed')
+            // );
 
             // }/
             // elseif($request['type'] ==1)
@@ -65,7 +66,15 @@ class FireBaseNotificationsController extends Controller
             //         );
             // }
 
-            $encodedData = json_encode($fields);
+            $data = array(
+                        "registration_ids" => $request['FcmToken'],
+                        "notification" => array(
+                            "title" => $request['title'],
+                            "body" => $request['body'],  
+                        ),
+                        "link"=>array("link"=>$request['link'])
+                        );
+            $encodedData = json_encode($data);
 
             $headers = [
                 'Authorization:key=' . $serverKey,
