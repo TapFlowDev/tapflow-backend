@@ -184,7 +184,8 @@ class GroupMembersController extends Controller
     function getGroupAdminsIds($id)
     {
         return  DB::table('group_members')
-            ->select('user_id')
+            ->leftJoin('users', 'group_members.user_id', '=', 'users.id')
+            ->select('users.id as user_id','users.fcm_token')
             ->where('group_members.group_id', '=', $id)
             ->where('group_members.privileges', '=', 1)
             ->get();

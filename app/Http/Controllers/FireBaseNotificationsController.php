@@ -26,7 +26,7 @@ class FireBaseNotificationsController extends Controller
   
     public function sendFireBaseNotification($request)
     {
-        // try{
+        try{
         
         $url = 'https://fcm.googleapis.com/fcm/send';
         // $FcmToken = User::whereNotNull('fcm_token')->pluck('fcm_token')->all();
@@ -34,13 +34,30 @@ class FireBaseNotificationsController extends Controller
     //    array_push($FcmToken,$FcmToken[0]);
         $serverKey = env('FCM_SERVER_KEY');
         
-        $data = array(
-            "registration_ids" => $request['FcmToken'],
-            "notification" => array(
-                "title" => $request['title'],
-                "body" => $request['body'],  
-            )
-            );
+       
+        if($request['type']==2)
+        {
+            $data = array(
+                "registration_ids" => $request['FcmToken'],
+                "notification" => array(
+                    "title" => $request['title'],
+                    "body" => $request['body'],  
+                    "link"=>$request['link'],
+                )
+                );
+           
+        }
+        elseif($request['type'] ==1)
+        {
+            $data = array(
+                "registration_ids" => $request['FcmToken'],
+                "notification" => array(
+                    "title" => $request['title'],
+                    "body" => $request['body'],  
+                )
+                );
+        }
+       
         $encodedData = json_encode($data);
     
         $headers = [
@@ -74,9 +91,9 @@ class FireBaseNotificationsController extends Controller
 
         // FCM response 
        return ['code'=>200,'msg'=>'successful'];
-    // }catch(Exception $error)
-    // {
-    //     return ['code'=>500,'msg'=>$error->getMessage()];
-    // }
+    }catch(Exception $error)
+    {
+        return ['code'=>500,'msg'=>$error->getMessage()];
+    }
     }
 }

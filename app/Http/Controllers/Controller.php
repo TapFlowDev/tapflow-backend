@@ -40,12 +40,12 @@ class Controller extends BaseController
             if ($member === null) {
                 return ['exist' => 0];
             } else {
-                $verified= DB::table('groups')
-                ->where('id','=',$member->group_id)
-                ->select('verified')
-                ->first();
-           
-                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges,"type"=>$userData['type'],'verified'=>$verified->verified];
+                $verified = DB::table('groups')
+                    ->where('id', '=', $member->group_id)
+                    ->select('verified')
+                    ->first();
+
+                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges, "type" => $userData['type'], 'verified' => $verified->verified];
             }
         } catch (Exception  $error) {
             $response = Controller::returnResponse(500, "check user error", $error->getMessage());
@@ -66,7 +66,7 @@ class Controller extends BaseController
             $admin = User::where('id', $groupMember->user_id)->get()->first();
         }
         $details = array(
-            'subject'=>'Wallet Transaction',
+            'subject' => 'Wallet Transaction',
             'transactionType' => $transactionType,
             'amount' => $amount,
             'currentAmount' => $currentBalance
@@ -74,5 +74,26 @@ class Controller extends BaseController
         return Mail::mailer('smtp')->to($admin->email)->send(new WalletActions($details));
         // dd($details);
         //return Mail::mailer('smtp')->to('hamzahshajrawi@gmail.com')->send(new WalletActions($details));
+    }
+    /**
+     * receiver id  == group id you want to send the notification for them
+     * notification type 1 chat
+     * notification type 2 actions
+     */
+    
+    public function sendNotification($receiver_id, $title, $body,$link)
+    {
+        	 $serverLink="https://tapflow.dev";
+            //  $serverLink="https://testtest.tapflow.app";
+            //  $serverLink="https://tapflow.app";
+           
+       
+        $firebaseObj = new FireBaseNotificationsController;
+        $groupMembersObj = new GroupMembersController;
+        $actionLink=$serverLink.$link;
+        $fcmTokens = $groupMembersObj->getGroupAdminsIds($receiver_id)->pluck('fcm_token')->toArray();
+        $data = array('FcmToken' => $fcmTokens, 'title' => $title, 'body' => $body,'link'=>$actionLink,'type'=>2);
+        $notify = $firebaseObj->sendFireBaseNotification($data);
+        return $notify;
     }
 }

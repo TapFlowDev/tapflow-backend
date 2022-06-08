@@ -472,6 +472,9 @@ class Final_proposals extends Controller
                                         "Proposal_description" => $final_proposal->description,
                                         "agency_name" => $agency->name
                                     ];
+
+                                   $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
+                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink);
                                     Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
@@ -645,6 +648,8 @@ class Final_proposals extends Controller
                                 "type" => 1
 
                             ];
+                            $fenLink="/a-user/main/active-project/". $req->project_id;
+                            Controller::sendNotification($final_proposal->team_id, $projectInfo->name,'Final proposal accepted',$fenLink);
                             Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                             $response = Controller::returnResponse(200, "proposal accepted", []);
                             return (json_encode($response));
@@ -691,6 +696,8 @@ class Final_proposals extends Controller
                             "type" => 2
 
                         ];
+                        $fenLink="#";
+                        Controller::sendNotification($final_proposal->team_id,"Proposals",'Final proposal rejected',$fenLink);
                         Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
@@ -721,9 +728,9 @@ class Final_proposals extends Controller
                         Final_proposal::where('id', $req->proposal_id)->update(['status' => 3]);
                         $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('team_id', 'project_id')->first();
                         $groupMemsObj = new GroupMembersController;
-                        // $projectObj = new ProjectController;
+                        $projectObj = new ProjectController;
                         $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($final_proposal->team_id);
-                        // $projectInfo = json_decode($projectObj->getProject($final_proposal->project_id))->data;
+                        $projectInfo = json_decode($projectObj->getProject($final_proposal->project_id))->data;
                         // $adminName = $agencyAdmin->first_name . $agencyAdmin->last_name;
                         // $details = [
                         //     "subject" => 'Review Your FinalProposal',
@@ -734,6 +741,8 @@ class Final_proposals extends Controller
 
                         // ];
                         // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
+                        $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
+                        Controller::sendNotification($final_proposal->team_id,$projectInfo->name,'Your received a comment on the final proposal',$fenLink);
                         $response = Controller::returnResponse(200, "Please contact the agency via email ", ['admin_email' => $agencyAdmin->email]);
                         return (json_encode($response));
                     } else {

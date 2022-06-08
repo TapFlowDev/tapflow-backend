@@ -84,6 +84,8 @@ class Proposals extends Controller
                             'proposal' => $proposal,
                             'est' => $estPrice
                         ];
+                        $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
+                        Controller::sendNotification($projectData->company_id,$projectData->name,'Initial proposal submitted',$fenLink);
                         Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
                         // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
                         // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
@@ -222,6 +224,7 @@ class Proposals extends Controller
                         $projectObj=new ProjectController;
                         $RoomObj=new RoomController();
                         $company_id= $projectObj->getCompanyInfoByProjectId($project_id)->id;
+                        $projectInfo = json_decode($projectObj->getProject($project_id))->data;
                         $data=array('name'=>null,'team_id'=>$team_id,'company_id'=>$company_id);
                         $room=$RoomObj->createRoom($data);
                         if($room['code'] != 200)
@@ -229,6 +232,8 @@ class Proposals extends Controller
                             $response = Controller::returnResponse(500, "something wrong", $room['msg']);
                             return (json_encode($response));
                         }
+                        $fenLink="a-user/main/pending-project/".$req->project_id;
+                        Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal accepted!',$fenLink);
                         $mail = $this->notifyAgency($req->proposal_id, 1);
                         $response = Controller::returnResponse(200, "proposal accepted", []);
                         return (json_encode($response));
@@ -257,6 +262,12 @@ class Proposals extends Controller
                 if ($userData['privileges'] == 1) {
                     Proposal::where('id', $req->proposal_id)->update(['status' => 2]);
                     // notify agency
+                    $team_id= Proposal::where('id', $req->proposal_id)->select('team_id')->first()->team_id;
+                    $project_id= Proposal::where('id', $req->proposal_id)->select('project_id')->first()->project_id;
+                    $projectObj=new ProjectController;
+                    $projectInfo = json_decode($projectObj->getProject($project_id))->data;
+
+                    Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal rejected',"#");
                     $mail = $this->notifyAgency($req->proposal_id, 2);
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));

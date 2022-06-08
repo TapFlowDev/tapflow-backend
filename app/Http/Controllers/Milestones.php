@@ -426,6 +426,9 @@ class Milestones extends Controller
                                 $this->updateSubmissionFile($submission_id, $submissionName);
                                 $this->updateStatus($req->milestone_id, '1');
                             }
+                            $projectObj=new ProjectController;
+                            $company_id = $projectObj->getCompanyInfoByProjectId( $req->project_id)->id;
+                            // Controller::sendNotification($company_id,"Proposals",'Milestone Submitted');
                             $response = Controller::returnResponse(200, "submit successful", ['submissionId' => $submission_id]);
                             return (json_encode($response));
                         }
