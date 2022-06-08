@@ -599,6 +599,7 @@ class UserController extends Controller
             "needs" => $project['needs'],
             "design" => $project['design'],
             "type" => $project['type'],
+            "start_project" => $project['start_project'],
         );
         $projectRules = array(
             "name" => "required",
