@@ -621,6 +621,7 @@ class UserController extends Controller
             $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
             return $response;
         }
+        return $returnData;
         // if ($project['type'] == 3) {
         //     if (isset($project['skills']) && (count($project['skills']) > 3 || count($project['skills']) < 1)) {
         //         $responseData = array(
