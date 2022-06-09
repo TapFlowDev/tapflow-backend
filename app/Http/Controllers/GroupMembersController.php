@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Group;
 use Illuminate\Http\Request;
 use App\Models\Group_member;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use BaconQrCode\Renderer\Color\Gray;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 
@@ -189,6 +191,10 @@ class GroupMembersController extends Controller
             ->where('group_members.group_id', '=', $id)
             ->where('group_members.privileges', '=', 1)
             ->get();
+    }
+    function getGroupType ($id)
+    {
+        return Group::where('id',$id)->select('type')->first()->type;
     }
     
 }
