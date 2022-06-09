@@ -32,9 +32,9 @@ class RoomController extends Controller
             $room_id = $room->id;
             $groupMembersObj = new GroupMembersController;
 
-           
+
             $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
-           
+
             $companyAdmins = $groupMembersObj->getGroupAdminsIds($data['company_id'])->pluck('user_id')->toArray();
 
             $users = array_merge($teamAdmins, $companyAdmins);
@@ -69,12 +69,11 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return json_encode($response);
             } else {
-               $isMember= $this->IsRoomMember($req->user_id,$req->room_id);
-               if($isMember == 1)
-               {
-                $response = Controller::returnResponse(422, "this user already room member", []);
-                return json_encode($response);
-               }
+                $isMember = $this->IsRoomMember($req->user_id, $req->room_id);
+                if ($isMember == 1) {
+                    $response = Controller::returnResponse(422, "this user already room member", []);
+                    return json_encode($response);
+                }
                 RoomMembers::create($req->all());
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
@@ -185,5 +184,22 @@ class RoomController extends Controller
         } else {
             return 1;
         }
+    }
+    function getRoomMembersTokens($user_id,$room_id)
+    {
+        $roomMembers = DB::table('room_members')
+        ->where('room_id', $room_id)
+        ->where('user_id', '!=', $user_id)
+        ->select('*')
+        ->pluck('user_id')
+        ->toArray();
+
+    $fcmTokens = DB::table('users')
+        ->whereIn('id', $roomMembers)
+        ->select('*')
+        ->where('fcm_token', '!=', null)
+        ->pluck('fcm_token')
+        ->toArray();
+        return $fcmTokens;
     }
 }

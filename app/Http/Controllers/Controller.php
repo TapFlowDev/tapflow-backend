@@ -81,7 +81,7 @@ class Controller extends BaseController
      * notification type 2 actions
      */
     
-    public function sendNotification($receiver_id, $title, $body,$link)
+    public function sendNotification($receiver_id, $title, $body,$link,$type)
     {
         	 $serverLink="https://tapflow.dev";
             //  $serverLink="https://testtest.tapflow.app";

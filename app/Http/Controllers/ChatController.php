@@ -32,30 +32,19 @@ class ChatController extends Controller
                 return json_encode($response);
             } else {
                 $firebaseObj = new FireBaseNotificationsController;
-                $roomMembers = DB::table('room_members')
-                    ->where('room_id', $req->room_id)
-                    ->where('user_id', '!=', $userData['user_id'])
-                    ->select('*')
-                    ->pluck('user_id')
-                    ->toArray();
-
-                $fcmTokens = DB::table('users')
-                    ->whereIn('id', $roomMembers)
-                    ->select('*')
-                    ->where('fcm_token', '!=', null)
-                    ->pluck('fcm_token')
-                    ->toArray();
+               
 
                 $userName = User::where('id', $userData['user_id'])->select('first_name', 'last_name')->first();
                 $msgTitle = $userName->first_name . ' ' . $userName->last_name;
-                $data = array('FcmToken' => $fcmTokens, 'title' => $msgTitle, 'body' => $req->body);
+                // $data = array('FcmToken' => $fcmTokens, 'title' => $msgTitle, 'body' => $req->body);
 
                 Messages::create(['body' => $req->body, 'user_id' => $userData['user_id'], 'room_id' => $req->room_id]);
-                $firebaseMsg = $firebaseObj->sendFireBaseNotification($data);
-                if ($firebaseMsg['code'] != 200) {
-                    $response = Controller::returnResponse(500, "send message failed", $firebaseMsg['msg']);
-                    return json_encode($response);
-                }
+                // $firebaseMsg = $firebaseObj->sendFireBaseNotification($data);
+                Controller::sendNotification($room_id,$$msgTitle,$req->body,'');
+                // if ($firebaseMsg['code'] != 200) {
+                //     $response = Controller::returnResponse(500, "send message failed", $firebaseMsg['msg']);
+                //     return json_encode($response);
+                // }
 
                 $response = Controller::returnResponse(200, "send message successful", []);
                 return json_encode($response);
