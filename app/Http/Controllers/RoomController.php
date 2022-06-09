@@ -143,7 +143,7 @@ class RoomController extends Controller
                         "freelancers.image",
                         "users.role"
                     )
-                    ->where('group_members','=',$$userData['group_id'])
+                    ->where('group_members.group_id','=',$userData['group_id'])
                     ->where('group_members.user_id','<>',$userData['user_id'])
                     ->where('name', 'LIKE', '%' . $name . '%')
                     ->get();
@@ -167,7 +167,7 @@ class RoomController extends Controller
                         "clients.image",
                         "users.role"
                     ) 
-                    ->where('group_members','=',$$userData['group_id'])
+                    ->where('group_members.group_id','=',$userData['group_id'])
                     ->where('group_members.user_id','<>',$userData['user_id'])
                     ->where('name', 'LIKE', '%' . $name . '%')
                     ->get();
