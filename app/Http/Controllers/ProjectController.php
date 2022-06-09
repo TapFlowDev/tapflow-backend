@@ -988,6 +988,7 @@ class ProjectController extends Controller
         $ProjectCategoriesObj = new ProjectCategoriesController;
         $projectPriortyObj = new ProjectPriorityController;
         $skillsObj = new ProjectSkillsController;
+        $projectServicesObj = new ProjectServiceController;
         $returnData['error'] = [];
         $returnData['project'] = [];
 
@@ -1042,13 +1043,16 @@ class ProjectController extends Controller
             unset($projectArr['categories']);
             unset($projectArr['skills']);
             unset($projectArr['priorities']);
+            unset($projectArr['services']);
             $project = Project::create($projectArr);
             $project_id = $project->id;
             $reqs = $requirementObj->Insert(($req['requirements_description']), $project_id, $req['user_id']);
             $priority = $projectPriortyObj->Insert($project_id, $req['priorities']);
-            if ($req['type'] == 3) {
-                $skills = $skillsObj->Insert(($req['skills']), $project_id);
-            }
+            $services = $projectServicesObj ->Insert($project_id, $req['services']);
+
+            // if ($req['type'] == 3) {
+            //     $skills = $skillsObj->Insert(($req['skills']), $project_id);
+            // }
             // if ($priority['status'] == 500) {
             //     $responseData = $priority['msg'];
             //     $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
@@ -1058,11 +1062,14 @@ class ProjectController extends Controller
             if (isset($cats)) {
                 foreach ($cats as $key => $value) {
                     $categoryArr = array();
-                    foreach ($value['subCat'] as $keySub => $subValue) {
-                        $categoryArr[$keySub]['project_id'] = $project_id;
-                        $categoryArr[$keySub]['category_id'] = $value['catId'];
-                        $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                    }
+                    $categoryArr[$key]['project_id'] = $project_id;
+                    $categoryArr[$key]['category_id'] = $value['catId'];
+                    $categoryArr[$key]['sub_category_id'] = 0;
+                    // foreach ($value['subCat'] as $keySub => $subValue) {
+                    //     $categoryArr[$keySub]['project_id'] = $project_id;
+                    //     $categoryArr[$keySub]['category_id'] = $value['catId'];
+                    //     $categoryArr[$keySub]['sub_category_id'] = $subValue;
+                    // }
                     $add_cat = $ProjectCategoriesObj->addMultiRows($categoryArr);
                     if ($add_cat == 500) {
                         // $delProject = Project::where('id', $project_id)->delete();
