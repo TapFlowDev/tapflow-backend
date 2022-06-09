@@ -48,7 +48,7 @@ class ProjectController extends Controller
             }
             $reqArray = $req->all();
             $reqArray['user_id'] = $userData['user_id'];
-            $projectResponse = $this->addProjectSignUp($reqArray);
+            $projectResponse = $this->addProjectSignUp($reqArray, 1);
             if ($projectResponse['error']) {
                 return json_encode($projectResponse['error']);
             }
@@ -978,7 +978,7 @@ class ProjectController extends Controller
         return $projects;
     }
 
-    function addProjectSignUp($req)
+    function addProjectSignUp($req, $insert = 0)
     {
         // return ($req['requirements_description']);
 
@@ -987,43 +987,68 @@ class ProjectController extends Controller
         $requirementObj = new Requirement;
         $ProjectCategoriesObj = new ProjectCategoriesController;
         $projectPriortyObj = new ProjectPriorityController;
+        $skillsObj = new ProjectSkillsController;
         $returnData['error'] = [];
         $returnData['project'] = [];
 
 
         $userInfo = $userObj->getUserById($req['user_id']);
         $userGroupInfo = $groupMemberObj->getMemberInfoByUserId($req['user_id']);
+        if ($insert == 1) {
 
-        $rules = array(
-            "user_id" => "required|exists:users,id",
-            "name" => "required",
-            "description" => "required",
-            "requirements_description" => "required",
-            "budget_type" => "required|gte:0|lt:2",
-            "min" => "numeric",
-            "max" => "numeric",
-            "days" => "required|exists:categories,id",
-            "needs" => "required",
-            "design" => "required",
-            "type" => "required|gt:0|lt:3",
-        );
+            $rules = array(
+                "user_id" => "required|exists:users,id",
+                "name" => "required",
+                // "description" => "required",
+                "requirements_description" => "required",
+                "budget_type" => "required|gte:0|lt:4",
+                "min" => "numeric",
+                "max" => "numeric",
+                "days" => "required|exists:categories,id",
+                "needs" => "required",
+                "design" => "required",
+                "type" => "required|gt:0|lt:4",
+            );
 
-        $validator = Validator::make($req, $rules);
-        if ($validator->fails()) {
-            $responseData = $validator->errors();
-            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
-            return $response;
+            $validator = Validator::make($req, $rules);
+            if ($validator->fails()) {
+                $responseData = $validator->errors();
+                $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+                return $response;
+            }
+            // if ($req['type'] == 3) {
+            //     if (count($req['skills']) > 3) {
+            //         $responseData = array(
+            //             'skills' => 'skills must be less than 4'
+            //         );
+            //         $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            //         return $response;
+            //     }
+            //     if (count($req['skills']) < 1) {
+            //         $responseData = array(
+            //             'skills' => 'skills are required'
+            //         );
+            //         $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            //         return $response;
+            //     }
+            // }
         }
+
         try {
             // return $req;
             $req['company_id'] = $userGroupInfo->group_id;
             $projectArr = $req;
             unset($projectArr['requirements_description']);
             unset($projectArr['categories']);
+            unset($projectArr['skills']);
+            unset($projectArr['priorities']);
             $project = Project::create($projectArr);
             $project_id = $project->id;
             $reqs = $requirementObj->Insert(($req['requirements_description']), $project_id, $req['user_id']);
             $priority = $projectPriortyObj->Insert($project_id, $req['priorities']);
+            if ($req['type'] == 3) {
+                $skills = $skillsObj->Insert(($req['skills']), $project_id);
+            }
             // if ($priority['status'] == 500) {
             //     $responseData = $priority['msg'];
             //     $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
