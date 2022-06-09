@@ -53,13 +53,13 @@ class RoomController extends Controller
     function addMember(Request $req)
     {
         try {
-            $userData = Controller::checkUser($req);
+            $userData = $this->checkUser($req);
             if ($userData['privileges'] != 1) {
                 $response = Controller::returnResponse(422, "unauthorized this action for admins", []);
                 return json_encode($response);
             }
             $rules = array(
-                "user_id" => "requires|exists:users,id",
+                // "user_id" => "requires|exists:users,id",
                 'room_id' => "requires|exists:rooms,id",
             );
             $validator = Validator::make($req->all(), $rules);
@@ -68,6 +68,7 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return json_encode($response);
             } else {
+                $req['user_id']=$userData['user_id'];
                 RoomMembers::create($req->all());
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
