@@ -128,17 +128,66 @@ class RoomController extends Controller
         try {
             $userData = Controller::checkUser($req);
             $group_id = $userData['group_id'];
-            $groupMembersIds = Group_member::where('group_id', $group_id)->select('*')->pluck('user_id')->toArray();
-            $teamMembers = DB::table('users')
-                ->select(
-                    "users.id",
-                    "users.first_name",
-                    "users.last_name",
-                    "users.email",
-                )
-                ->whereIn('id', $groupMembersIds)
-                ->where('name', 'LIKE', '%' . $name . '%')
-                ->get();
+            $groupMembersObj = new GroupMembersController;
+            $groupType = $groupMembersObj->getGroupType($group_id);
+            // $groupMembersIds = Group_member::where('group_id', $group_id)->where('user_id','!=' ,$userData['user_id'])->select('*')->pluck('user_id')->toArray();
+            if ($groupType == 1) {
+                $teamMembers = DB::table('group_members')
+                    ->leftJoin('freelancers', 'group_members.user_id', '=', 'freelancers.user_id')
+                    ->leftJoin('users', 'group_members.user_id', '=', 'users.id')
+                    ->select(
+                        "users.id",
+                        "users.first_name",
+                        "users.last_name",
+                        "users.email",
+                        "freelancers.image",
+                        "users.role"
+                    )
+                    ->where('group_members.user_id','<>',$userData['user_id'])
+                    ->where('name', 'LIKE', '%' . $name . '%')
+                    ->get();
+                    foreach ($teamMembers as $keyUser => &$user) {
+                        if ($user->image != '') {
+                            $image = asset('images/users/' . $user->image);
+                            $user->image = $image;
+                        } else {
+                            $user->image = asset('images/profile-pic.jpg');
+                        }
+                    }
+            } elseif ($groupType == 2) {
+                $teamMembers = DB::table('group_members')
+                    ->leftjoin('clients', 'group_members.user_id', '=', 'clients.user_id')
+                    ->leftjoin('users', 'group_members.user_id', '=', 'users.id')
+                    ->select(
+                        "users.id",
+                        "users.first_name",
+                        "users.last_name",
+                        "users.email",
+                        "clients.image",
+                        "users.role"
+                    )
+                    ->where('group_members.user_id','<>',$userData['user_id'])
+                    ->where('name', 'LIKE', '%' . $name . '%')
+                    ->get();
+                    foreach ($teamMembers as $keyUser => &$user) {
+                        if ($user->image != '') {
+                            $image = asset('images/users/' . $user->image);
+                            $user->image = $image;
+                        } else {
+                            $user->image = asset('images/profile-pic.jpg');
+                        }
+                    }
+            }
+            // $teamMembers = DB::table('users')
+            //     ->select(
+            //         "users.id",
+            //         "users.first_name",
+            //         "users.last_name",
+            //         "users.email",
+            //     )
+            //     ->whereIn('id', $groupMembersIds)
+            //     ->where('name', 'LIKE', '%' . $name . '%')
+            //     ->get();
             $response = Controller::returnResponse(200, "successful", $teamMembers);
             return json_encode($response);
         } catch (Exception $error) {
@@ -185,21 +234,21 @@ class RoomController extends Controller
             return 1;
         }
     }
-    function getRoomMembersTokens($user_id,$room_id)
+    function getRoomMembersTokens($user_id, $room_id)
     {
         $roomMembers = DB::table('room_members')
-        ->where('room_id', $room_id)
-        ->where('user_id', '!=', $user_id)
-        ->select('*')
-        ->pluck('user_id')
-        ->toArray();
+            ->where('room_id', $room_id)
+            ->where('user_id', '!=', $user_id)
+            ->select('*')
+            ->pluck('user_id')
+            ->toArray();
 
-    $fcmTokens = DB::table('users')
-        ->whereIn('id', $roomMembers)
-        ->select('*')
-        ->where('fcm_token', '!=', null)
-        ->pluck('fcm_token')
-        ->toArray();
+        $fcmTokens = DB::table('users')
+            ->whereIn('id', $roomMembers)
+            ->select('*')
+            ->where('fcm_token', '!=', null)
+            ->pluck('fcm_token')
+            ->toArray();
         return $fcmTokens;
     }
 }

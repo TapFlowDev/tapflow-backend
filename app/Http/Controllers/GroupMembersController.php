@@ -190,4 +190,5 @@ class GroupMembersController extends Controller
             ->where('group_members.privileges', '=', 1)
             ->get();
     }
+    
 }

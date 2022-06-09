@@ -90,9 +90,13 @@ class Controller extends BaseController
        
         $firebaseObj = new FireBaseNotificationsController;
         $groupMembersObj = new GroupMembersController;
+      
         $actionLink=$serverLink.$link;
-        $fcmTokens = $groupMembersObj->getGroupAdminsIds($receiver_id)->pluck('fcm_token')->toArray();
-        $data = array('FcmToken' => $fcmTokens, 'title' => $title, 'body' => $body,'link'=>$actionLink,'type'=>2);
+        if($type== 2){
+        $fcmTokens = $groupMembersObj->getGroupAdminsIds($receiver_id)->pluck('fcm_token')->toArray();}
+        else{$fcmTokens=$receiver_id;}
+        
+        $data = array('FcmToken' => $fcmTokens, 'title' => $title, 'body' => $body,'link'=>$actionLink,$type);
         $notify = $firebaseObj->sendFireBaseNotification($data);
         return $notify;
     }

@@ -460,8 +460,6 @@ class   GroupController extends Controller
     }
     function getGroupType($group_id)
     {
-        
-        return Group::where('id',$group_id)->
+       return Group::where('id',$group_id)->select('type')->first()->type;
     }
-
 }

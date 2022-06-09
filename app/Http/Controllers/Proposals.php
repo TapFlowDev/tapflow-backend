@@ -85,7 +85,7 @@ class Proposals extends Controller
                             'est' => $estPrice
                         ];
                         $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
-                        Controller::sendNotification($projectData->company_id,$projectData->name,'Initial proposal submitted',$fenLink);
+                        Controller::sendNotification($projectData->company_id,$projectData->name,'Initial proposal submitted',$fenLink,2);
                         Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
                         // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
                         // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
@@ -233,7 +233,7 @@ class Proposals extends Controller
                             return (json_encode($response));
                         }
                         $fenLink="a-user/main/pending-project/".$req->project_id;
-                        Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal accepted!',$fenLink);
+                        Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal accepted!',$fenLink,2);
                         $mail = $this->notifyAgency($req->proposal_id, 1);
                         $response = Controller::returnResponse(200, "proposal accepted", []);
                         return (json_encode($response));
@@ -267,7 +267,7 @@ class Proposals extends Controller
                     $projectObj=new ProjectController;
                     $projectInfo = json_decode($projectObj->getProject($project_id))->data;
 
-                    Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal rejected',"#");
+                    Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal rejected',"#",2);
                     $mail = $this->notifyAgency($req->proposal_id, 2);
                     $response = Controller::returnResponse(200, "proposal rejected", []);
                     return (json_encode($response));

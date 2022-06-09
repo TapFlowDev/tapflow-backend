@@ -20,7 +20,7 @@ class ChatController extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-            return $userData;
+            
             $rules = array(
                 "body" => "required",
                 "room_id" => "required|exists:rooms,id",
@@ -31,20 +31,24 @@ class ChatController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return json_encode($response);
             } else {
-                $firebaseObj = new FireBaseNotificationsController;
-               
-
+                $groupObj = new GroupController;
+                $roomObj = new RoomController;
+                $group_type=$groupObj->getGroupType($userData['group_id']);
+                if($group_type==1)
+                {
+                    $link="/Client-user/main/chat#/".$req->room_id;
+                }
+                elseif($group_type ==2 )
+                {
+                    $link="/a-user/main/chat#/".$req->room_id;
+                }
                 $userName = User::where('id', $userData['user_id'])->select('first_name', 'last_name')->first();
                 $msgTitle = $userName->first_name . ' ' . $userName->last_name;
-                // $data = array('FcmToken' => $fcmTokens, 'title' => $msgTitle, 'body' => $req->body);
+                $fcmTokens=$roomObj->getRoomMembersTokens($userData['user_id'],$req->room_id);
 
                 Messages::create(['body' => $req->body, 'user_id' => $userData['user_id'], 'room_id' => $req->room_id]);
-                // $firebaseMsg = $firebaseObj->sendFireBaseNotification($data);
-                Controller::sendNotification($room_id,$$msgTitle,$req->body,'');
-                // if ($firebaseMsg['code'] != 200) {
-                //     $response = Controller::returnResponse(500, "send message failed", $firebaseMsg['msg']);
-                //     return json_encode($response);
-                // }
+                Controller::sendNotification($fcmTokens,$msgTitle,$req->body,$link,1);
+                
 
                 $response = Controller::returnResponse(200, "send message successful", []);
                 return json_encode($response);
