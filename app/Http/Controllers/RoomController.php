@@ -60,7 +60,7 @@ class RoomController extends Controller
             }
             $rules = array(
                 // "user_id" => "requires|exists:users,id",
-                'room_id' => "requires|exists:rooms,id",
+                'room_id' => "required|exists:rooms,id",
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
@@ -74,7 +74,7 @@ class RoomController extends Controller
                 return json_encode($response);
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something wen wrong", $error->getMessage());
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
         }
     }
