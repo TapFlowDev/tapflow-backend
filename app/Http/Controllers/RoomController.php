@@ -59,16 +59,22 @@ class RoomController extends Controller
                 return json_encode($response);
             }
             $rules = array(
-                // "user_id" => "requires|exists:users,id",
+                'user_id' => "required|exists:users,id",
                 'room_id' => "required|exists:rooms,id",
             );
+
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
                 $responseData = $validator->errors();
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return json_encode($response);
             } else {
-                $req['user_id']=$userData['user_id'];
+               $isMember= $this->IsRoomMember($req->user_id,$req->room_id);
+               if($isMember == 1)
+               {
+                $response = Controller::returnResponse(422, "this user already room member", []);
+                return json_encode($response);
+               }
                 RoomMembers::create($req->all());
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
