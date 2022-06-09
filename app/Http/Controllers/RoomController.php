@@ -94,7 +94,7 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(422, "unauthorized action ", []);
                 return json_encode($response);
             }
-            $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->pluck('room_id')->toArray();
+            $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->pluck('room_id')->groupBy('room_id')->toArray();
             $rooms = array();
 
             foreach ($rooms_ids as $room_id) {
