@@ -20,6 +20,7 @@ class ChatController extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
+            return $userData;
             $rules = array(
                 "body" => "required",
                 "room_id" => "required|exists:rooms,id",
