@@ -19,6 +19,7 @@ class NotificationController extends Controller
                 ->select('*')
                 ->where('receiver_id', '=', $userData['id'])
                 ->where('seen', '<>', 1)
+                ->latest()
                 ->offset($page)->limit($limit)
                 ->distinct()
                 ->get();
