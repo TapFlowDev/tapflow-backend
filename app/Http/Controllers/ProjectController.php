@@ -1050,11 +1050,11 @@ class ProjectController extends Controller
             $project_id = $project->id;
             $requirementsDescriptionArr = array();
             if ((int)$req['type'] == 3) {
+                $requirementsDescriptionArr = $req['requirements_description'];
+            } else {
                 foreach ($req['requirements_description'] as $keyR => $valR) {
                     $requirementsDescriptionArr[] = $valR['name'];
                 }
-            } else {
-                $requirementsDescriptionArr = $req['requirements_description'];
             }
             $reqs = $requirementObj->Insert($requirementsDescriptionArr, $project_id, $req['user_id']);
             $priority = $projectPriortyObj->Insert($project_id, $req['priorities']);
