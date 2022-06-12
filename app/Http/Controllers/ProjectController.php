@@ -1009,6 +1009,7 @@ class ProjectController extends Controller
                 "needs" => "required",
                 "design" => "required",
                 "type" => "required|gt:0|lt:4",
+                "start_project" => "required|exists:categories,id",
             );
 
             $validator = Validator::make($req, $rules);
