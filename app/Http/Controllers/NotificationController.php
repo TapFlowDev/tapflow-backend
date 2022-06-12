@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
-    function getUserNotification(Request $req, $limit, $offset)
+    function getUserNotification(Request $req, $offset, $limit)
     {
         try {
             $userData = Controller::checkUser($req);
