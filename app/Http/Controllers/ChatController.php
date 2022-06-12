@@ -47,7 +47,7 @@ class ChatController extends Controller
                 $fcmTokens=$roomObj->getRoomMembersTokens($userData['user_id'],$req->room_id);
 
                 Messages::create(['body' => $req->body, 'user_id' => $userData['user_id'], 'room_id' => $req->room_id]);
-                Controller::sendNotification($fcmTokens,$msgTitle,$req->body,$link,1);
+                Controller::sendNotification($fcmTokens,$msgTitle,$req->body,$link,1,'chat','');
                 
 
                 $response = Controller::returnResponse(200, "send message successful", []);

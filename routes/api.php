@@ -49,6 +49,7 @@ use phpDocumentor\Reflection\ProjectFactory;
 use App\Http\Controllers\FireBaseNotificationsController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\NotificationController;
 
 // use App\Http\Controllers\PaymentController;
 
@@ -189,6 +190,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
     Route::post('updateRoomName', [RoomController::class, 'updateRoomName']);
     Route::post('getRoomMessages', [ChatController::class, 'getRoomMessages']);
+    Route::post('getUserNotification', [NotificationController::class, 'getUserNotification']);
+    Route::post('notificationSeen', [NotificationController::class, 'notificationSeen']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);

@@ -43,7 +43,9 @@ class RoomController extends Controller
 
                 RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id]);
             }
-
+            // $fenLink = "/a-user/main/chat#/" . $room_id;
+            Controller::sendNotification($data['team_id'], '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 2,'rooms',$room_id);
+            Controller::sendNotification($data['company_id'], '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 2,'rooms',$room_id);
             return ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
             return ['code' => 500, 'msg' => $error->getMessage()];

@@ -427,7 +427,9 @@ class Milestones extends Controller
                                 $this->updateStatus($req->milestone_id, '1');
                             }
                             $projectObj=new ProjectController;
-                            $company_id = $projectObj->getCompanyInfoByProjectId( $req->project_id)->id;
+                            $projectInfo =json_decode($projectObj->getProject( $req->project_id))->data;
+                            $fenLink="/Client-user/main/active-projects-details/".$projectInfo->id;
+                            Controller::sendNotification( $projectInfo->company_id,$projectInfo->name,'Milestone submitted',$fenLink,2,'milestones',$req->milestone_id);
                             // Controller::sendNotification($company_id,"Proposals",'Milestone Submitted');
                             $response = Controller::returnResponse(200, "submit successful", ['submissionId' => $submission_id]);
                             return (json_encode($response));
@@ -645,6 +647,8 @@ class Milestones extends Controller
                             "milestone" => ['name' => $milestoneDetails->name, 'client_comments' => $req->comments]
                         ];
                         Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new AcceptMilestone($details));
+                        $fenLink="/a-user/main/active-project/".$projectInfo->id;
+                        Controller::sendNotification( $projectInfo->team_id,$projectInfo->name,'Your submission was accepted',$fenLink,2,'milestones',$req->milestone_id);
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
                     } else {
@@ -693,6 +697,8 @@ class Milestones extends Controller
                             "milestone" => ['name' => $milestoneDetails->name, 'client_comments' => $req->comments]
                         ];
                         Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new ReviseMilestone($details));
+                        $fenLink="/a-user/main/active-project/".$projectInfo->id;
+                        Controller::sendNotification( $projectInfo->team_id,$projectInfo->name,'Your received a comment on the submission',$fenLink,2,'milestones',$req->milestone_id);
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
                     }

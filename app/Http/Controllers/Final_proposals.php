@@ -30,6 +30,7 @@ use App\Models\Group;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\MailChimpController;
+use App\Http\Controllers\NotificationController;
 
 class Final_proposals extends Controller
 {
@@ -474,7 +475,7 @@ class Final_proposals extends Controller
                                     ];
 
                                    $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
-                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2);
+                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals',$final_proposal ->id);
                                     Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
@@ -649,7 +650,7 @@ class Final_proposals extends Controller
 
                             ];
                             $fenLink="/a-user/main/active-project/". $req->project_id;
-                            Controller::sendNotification($final_proposal->team_id, $projectInfo->name,'Final proposal accepted',$fenLink,2);
+                            Controller::sendNotification($final_proposal->team_id, $projectInfo->name,'Final proposal accepted',$fenLink,2,'final_proposals',$req->proposal_id);
                             Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                             $response = Controller::returnResponse(200, "proposal accepted", []);
                             return (json_encode($response));
@@ -697,7 +698,8 @@ class Final_proposals extends Controller
 
                         ];
                         $fenLink="#";
-                        Controller::sendNotification($final_proposal->team_id,"Proposals",'Final proposal rejected',$fenLink,2);
+
+                        Controller::sendNotification($final_proposal->team_id,$projectInfo->name,'Final proposal rejected',$fenLink,2,'final_proposals',$req->proposal_id);
                         Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
@@ -742,7 +744,7 @@ class Final_proposals extends Controller
                         // ];
                         // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                         $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
-                        Controller::sendNotification($final_proposal->team_id,$projectInfo->name,'Your received a comment on the final proposal',$fenLink,2);
+                        Controller::sendNotification($final_proposal->team_id,$projectInfo->name,'Your received a comment on the final proposal',$fenLink,2,'final_proposals',$req->proposal_id);
                         $response = Controller::returnResponse(200, "Please contact the agency via email ", ['admin_email' => $agencyAdmin->email]);
                         return (json_encode($response));
                     } else {
