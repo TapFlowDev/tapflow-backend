@@ -657,7 +657,7 @@ class ProjectController extends Controller
     }
     function getCompanyPendingProjectDetails(Request $req, $project_id, $company_id)
     {
-        // try {
+        try {
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
                 if ($userData['group_id'] == $company_id) {
@@ -678,10 +678,10 @@ class ProjectController extends Controller
                 $response = Controller::returnResponse(422, "the user does not have company", []);
                 return (json_encode($response));
             }
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "Something Wrong", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "Something Wrong", $error->getMessage());
+            return (json_encode($response));
+        }
     }
     function getPendingProjectInfo($id)
     {
