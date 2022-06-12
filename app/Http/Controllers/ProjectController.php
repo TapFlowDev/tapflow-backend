@@ -1055,10 +1055,10 @@ class ProjectController extends Controller
                 foreach ($req['requirements_description'] as $keyR => $valR) {
                     $requirementsDescriptionArr[] = $valR['name'];
                 }
+                $services = $projectServicesObj->Insert($project_id, $req['services']);
             }
             $reqs = $requirementObj->Insert($requirementsDescriptionArr, $project_id, $req['user_id']);
             $priority = $projectPriortyObj->Insert($project_id, $req['priorities']);
-            $services = $projectServicesObj->Insert($project_id, $req['services']);
 
             // if ($req['type'] == 3) {
             //     $skills = $skillsObj->Insert(($req['skills']), $project_id);
