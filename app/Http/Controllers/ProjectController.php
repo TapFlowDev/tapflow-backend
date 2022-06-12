@@ -1049,7 +1049,7 @@ class ProjectController extends Controller
             $project = Project::create($projectArr);
             $project_id = $project->id;
             $requirementsDescriptionArr = array();
-            if ((int)$req['type'] == 3) {
+            if ((int)$req['type'] != 3) {
                 foreach ($req['requirements_description'] as $keyR => $valR) {
                     $requirementsDescriptionArr[] = $valR['name'];
                 }
