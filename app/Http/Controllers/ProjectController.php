@@ -1048,7 +1048,11 @@ class ProjectController extends Controller
             unset($projectArr['services']);
             $project = Project::create($projectArr);
             $project_id = $project->id;
-            $reqs = $requirementObj->Insert(($req['requirements_description']), $project_id, $req['user_id']);
+            $requirementsDescriptionArr = array();
+            foreach($req['requirements_description'] as $keyR => $valR){
+                $requirementsDescriptionArr[] = $valR['name'];
+            }
+            $reqs = $requirementObj->Insert($requirementsDescriptionArr, $project_id, $req['user_id']);
             $priority = $projectPriortyObj->Insert($project_id, $req['priorities']);
             $services = $projectServicesObj->Insert($project_id, $req['services']);
 
