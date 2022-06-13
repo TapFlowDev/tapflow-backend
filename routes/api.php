@@ -39,6 +39,7 @@ use App\Http\Controllers\FormOptionsController;
 use App\Http\Controllers\Milestones;
 use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\DepositRequestController;
+use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\PriorityController;
@@ -137,6 +138,7 @@ Route::get('getSkill/{skill}', [SkillsController::class, 'search']);
 Route::get('getLeadtime', [CategoriesController::class, 'getLeadtime']);
 Route::get('getDeveloperHours', [CategoriesController::class, 'getDeveloperHours']);
 Route::get('getServices', [CategoriesController::class, 'getServices']);
+Route::get('getFeature/{feature}', [FeatureController::class, 'search']);
 
 Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
