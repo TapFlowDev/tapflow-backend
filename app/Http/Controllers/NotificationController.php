@@ -18,7 +18,7 @@ class NotificationController extends Controller
             $page = ($offset - 1) * $limit;
             $userNotifications = DB::table('system_notifications')
                 ->select('*')
-                ->where('receiver_id', '=', $userData['id'])
+                ->where('receiver_id', '=', $userData['user_id'])
                 ->where('seen', '<>', 1)
                 ->latest()
                 ->offset($page)->limit($limit)
