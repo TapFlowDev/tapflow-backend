@@ -88,6 +88,8 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/priorities', PrioritiesController::class);
     Route::resource('/countries', CountriesController::class);
     Route::resource('/skills', SkillsController::class);
+    Route::get('/addSkillsCSV', [SkillsController::class, 'addByCSV'])->name('skills.showAddByCSV');
+    Route::post('/addSkillsCSV', [SkillsController::class, 'createByCSV'])->name('skills.creatAddByCSV');
     Route::get('/checkSkill/{skill}', [SkillsController::class, 'isSkillExsits']);
 
     // Route::resource('agencies.wallets', WalletsController::class)->shallow();

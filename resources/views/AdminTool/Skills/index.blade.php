@@ -4,10 +4,22 @@
         <div class="row">
             <div class="col-12">
                 <div class="content-container">
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @elseif (session('fail'))
+                        <div class="alert alert-danger" role="alert">
+                            {{ session('fail') }}
+                        </div>
+                    @endif
                     <h1> Skills </h1>
                     <a class="btn btn-sm btn-success float-right mb-3"
                         href="{{ route('AdminTool.skills.create') }}"
                         role="button">Add</a>
+                        <a class="btn btn-sm btn-success float-right mb-3"
+                        href="{{ route('AdminTool.skills.showAddByCSV') }}"
+                        role="button">Add by CSV</a>
                     <table class="table">
                         <thead>
                             <tr>
