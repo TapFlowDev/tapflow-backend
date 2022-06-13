@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 class System_Notification extends Model
 {
     use  HasFactory, Notifiable;
+    protected $table = 'system_notifications';
+
     protected $fillable = [
         'title',
         'body',
