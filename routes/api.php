@@ -190,8 +190,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
     Route::post('updateRoomName', [RoomController::class, 'updateRoomName']);
     Route::post('getRoomMessages', [ChatController::class, 'getRoomMessages']);
-    Route::get('getUserNotification/{offset}/{limit}', [NotificationController::class, 'getUserNotification']);
-    Route::post('notificationSeen', [NotificationController::class, 'notificationSeen']);
+     Route::post('notificationSeen', [NotificationController::class, 'notificationSeen']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
@@ -264,7 +263,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('reviewSubmission', [Milestones::class, 'reviseSubmission']);
     Route::get('deposits/{offset}/{limit}', [DepositRequestController::class, 'getDeposits']);
     Route::post('printDepositDeails', [DepositRequestController::class, 'printDepositDeails']);
-
-
-   
+    Route::get('getUserNotification/{offset}/{limit}', [NotificationController::class, 'getUserNotification']);
 });
