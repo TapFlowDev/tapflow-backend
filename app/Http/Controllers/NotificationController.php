@@ -12,7 +12,7 @@ class NotificationController extends Controller
 {
     function getUserNotification(Request $req, $offset, $limit)
     {
-        // try {
+        try {
             $userData = Controller::checkUser($req);
             // return($userData);
             $page = ($offset - 1) * $limit;
@@ -26,10 +26,10 @@ class NotificationController extends Controller
                 ->get();
             $response = Controller::returnResponse(200, "successful", $userNotifications);
             return json_encode($response);
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
-        //     return json_encode($response);
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return json_encode($response);
+        }
     }
     function notificationSeen(Request $req)
     {
