@@ -190,7 +190,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
     Route::post('updateRoomName', [RoomController::class, 'updateRoomName']);
     Route::post('getRoomMessages', [ChatController::class, 'getRoomMessages']);
-    Route::get('getUserNotification/{offset}/{limit}', [NotificationController::class, 'getUserNotification']);
+    Route::post('getUserNotification/{offset}/{limit}', [NotificationController::class, 'getUserNotification']);
     Route::post('notificationSeen', [NotificationController::class, 'notificationSeen']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
