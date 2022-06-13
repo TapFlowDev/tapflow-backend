@@ -14,7 +14,7 @@ class NotificationController extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-            return($userData);
+            // return($userData);
             $page = ($offset - 1) * $limit;
             $userNotifications = DB::table('system_notifications')
                 ->select('*')
