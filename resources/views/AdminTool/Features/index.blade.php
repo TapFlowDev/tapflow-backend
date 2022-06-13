@@ -13,12 +13,12 @@
                             {{ session('fail') }}
                         </div>
                     @endif
-                    <h1> Skills </h1>
+                    <h1> Features </h1>
                     <a class="btn btn-sm btn-success float-right mb-3"
-                        href="{{ route('AdminTool.skills.create') }}"
+                        href="{{ route('AdminTool.features.create') }}"
                         role="button">Add</a>
                         <a class="btn btn-sm btn-success float-right mb-3"
-                        href="{{ route('AdminTool.skills.showAddByCSV') }}"
+                        href="{{ route('AdminTool.features.showAddByCSV') }}"
                         role="button">Add by CSV</a>
                     <table class="table">
                         <thead>
@@ -29,30 +29,30 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($skills as $skill)
+                            @foreach ($features as $feature)
                                 <tr>
-                                    <th scope="row">{{ $skill->id }}</th>
-                                    <td>{{ $skill->name }}</td>
+                                    <th scope="row">{{ $feature->id }}</th>
+                                    <td>{{ $feature->name }}</td>
                                     <td>
                                         <a class="btn btn-sm btn-primary"
-                                            href="{{ route('AdminTool.skills.edit', $skill->id) }}"
+                                            href="{{ route('AdminTool.features.edit', $feature->id) }}"
                                             role="button">edit</a>
                                         <button
                                             class="btn btn-sm 
-                                            @if ($skill->deleted == 1) btn-success 
+                                            @if ($feature->deleted == 1) btn-success 
                                              @else
                                              btn-danger @endif
                                              "
                                             onclick="event.preventDefault();
-                                                            document.getElementById('delete-cat-form-{{ $skill->id }}').submit()">
-                                            @if ($skill->deleted == 1)
+                                                            document.getElementById('delete-cat-form-{{ $feature->id }}').submit()">
+                                            @if ($feature->deleted == 1)
                                             Show
                                             @else
                                             Hide
                                             @endif
                                         </button>
-                                        <form id="delete-cat-form-{{ $skill->id }}"
-                                            action="{{ route('AdminTool.skills.destroy', $skill->id) }}"
+                                        <form id="delete-cat-form-{{ $feature->id }}"
+                                            action="{{ route('AdminTool.features.destroy', $feature->id) }}"
                                             method="POST" style="display: none;">
                                             @csrf
                                             @method('DELETE')
@@ -63,7 +63,7 @@
 
                         </tbody>
                     </table>
-                    {{ $skills->links() }}
+                    {{ $features->links() }}
                 </div>
             </div>
         </div>

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\AdminTool;
 
 use App\Http\Controllers\Controller;
-use App\Models\Skills;
+use App\Models\Feature;
 use Exception;
 use Illuminate\Http\Request;
 
-class SkillsController extends Controller
+class FeaturesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,8 @@ class SkillsController extends Controller
      */
     public function index()
     {
-        return view('AdminTool.Skills.index', ['skills' => Skills::paginate(20)]);
+        return view('AdminTool.Features.index', ['features' => Feature::paginate(20)]);
+
     }
 
     /**
@@ -26,7 +27,8 @@ class SkillsController extends Controller
      */
     public function create()
     {
-        return view('AdminTool.Skills.add');
+        return view('AdminTool.Features.add');
+
     }
 
     /**
@@ -37,15 +39,15 @@ class SkillsController extends Controller
      */
     public function store(Request $request)
     {
-        $skills = $request->skill;
-        foreach ($skills as $skill) {
-            $skillArr = array(
-                'name' => $skill,
-                'unique_name' => $this->trimedSkill($skill),
+        $features = $request->feature;
+        foreach ($features as $feature) {
+            $featureArr = array(
+                'name' => $feature,
+                'unique_name' => $this->trimedfeature($feature),
             );
-            Skills::create($skillArr);
+            Feature::create($featureArr);
         }
-        return redirect('/AdminTool/skills');
+        return redirect('/AdminTool/features');
     }
 
     /**
@@ -67,8 +69,8 @@ class SkillsController extends Controller
      */
     public function edit($id)
     {
-        $skill = Skills::where('id', '=', $id)->first();
-        return view('AdminTool.Skills.edit', ['skill' => $skill]);
+        $feature = Feature::where('id', '=', $id)->first();
+        return view('AdminTool.Features.edit', ['feature' => $feature]);
     }
 
     /**
@@ -80,21 +82,21 @@ class SkillsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $skillData = Skills::find($id);
-        $skill = $request->name;
-        $trimedSkill = $this->trimedSkill($skill);
-        $doesExist = Skills::select('unique_name')->where('unique_name', '=', $trimedSkill)->first();
+        $featureData = Feature::find($id);
+        $feature = $request->name;
+        $trimedFeature = $this->trimedFeature($feature);
+        $doesExist = Feature::select('unique_name')->where('unique_name', '=', $trimedFeature)->first();
         if (!$doesExist) {
-            $skills = array(
-                'name' => $skill,
-                'unique_name' => $trimedSkill,
+            $features = array(
+                'name' => $feature,
+                'unique_name' => $trimedFeature,
             );
-            $skillData->update($skills);
-            $skillData->save();
-            $request->session()->flash('success', 'Skill Edited Successfully');
-            return redirect('/AdminTool/skills');
+            $featureData->update($features);
+            $featureData->save();
+            $request->session()->flash('success', 'Feature Edited Successfully');
+            return redirect('/AdminTool/features');
         }
-        $request->session()->flash('fail', 'Skill Already Exists');
+        $request->session()->flash('fail', 'Feature Already Exists');
         return redirect()->back();
     }
 
@@ -106,30 +108,31 @@ class SkillsController extends Controller
      */
     public function destroy($id)
     {
-        $skill = Skills::where('id', '=', $id)->first();
-        if (!$skill) {
+        $feature = Feature::where('id', '=', $id)->first();
+        if (!$feature) {
             return back();
         }
-        if ($skill->deleted == 1) {
-            $skill->deleted = 0;
+        if ($feature->deleted == 1) {
+            $feature->deleted = 0;
         } else {
-            $skill->deleted = 1;
+            $feature->deleted = 1;
         }
-        $skill->save();
+        $feature->save();
         return back();
     }
-    private function trimedSkill($skill)
+
+    private function trimedFeature($feature)
     {
-        $trimed = str_replace(' ', '-', strtolower(trim($skill)));
+        $trimed = str_replace(' ', '-', strtolower(trim($feature)));
         return $trimed;
     }
-    function isSkillExsits($skill)
+    function isFeatureExsits($feature)
     {
         $responseData['status'] = 200;
         $responseData['msg'] = 'success';
         $responseData['data'] = [];
-        $trimed = $this->trimedSkill($skill);
-        $doesExist = Skills::where('unique_name', '=', $trimed)->first();
+        $trimed = $this->trimedFeature($feature);
+        $doesExist = Feature::where('unique_name', '=', $trimed)->first();
         if ($doesExist) {
             $responseData['status'] = 101;
             $responseData['msg'] = 'already exists';
@@ -141,7 +144,7 @@ class SkillsController extends Controller
     }
     function addByCSV()
     {
-        return view('AdminTool.Skills.addCSV');
+        return view('AdminTool.Features.addCSV');
     }
     function createByCSV(Request $request)
     {
@@ -149,7 +152,7 @@ class SkillsController extends Controller
         try {
 
 
-            $skills = array();
+            $features = array();
             if ($request->hasFile('CSV')) {
                 $file = $request->file('CSV');
                 $type = $file->getClientOriginalExtension();
@@ -162,21 +165,21 @@ class SkillsController extends Controller
                 }
                 if (($open = fopen($real_path, "r")) !== FALSE) {
                     while (($data = fgetcsv($open, 1000, ",")) !== FALSE) {
-                        $skill = $data[0];
-                        $trimedSkill = $this->trimedSkill($skill);
-                        $doesExist = Skills::select('unique_name')->where('unique_name', '=', $trimedSkill)->first();
+                        $feature = $data[0];
+                        $trimedFeature = $this->trimedFeature($feature);
+                        $doesExist = Feature::select('unique_name')->where('unique_name', '=', $trimedFeature)->first();
                         if (!$doesExist) {
-                            $skills = array(
-                                'name' => $skill,
-                                'unique_name' => $trimedSkill,
+                            $features = array(
+                                'name' => $feature,
+                                'unique_name' => $trimedFeature,
                             );
-                            Skills::create($skills);
+                            Feature::create($features);
                         }
                     }
                     fclose($open);
                 }
-                $request->session()->flash('success', 'Skills Added Successfully');
-                return redirect('/AdminTool/skills');
+                $request->session()->flash('success', 'features Added Successfully');
+                return redirect('/AdminTool/features');
             }
             $request->session()->flash('fail', 'File must be csv');
             return redirect()->back();

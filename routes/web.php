@@ -20,6 +20,7 @@ use App\Http\Controllers\AdminTool\CountriesController;
 use App\Http\Controllers\AdminTool\DepositRequestController;
 use App\Http\Controllers\AdminTool\DummyCompaines;
 use App\Http\Controllers\AdminTool\DummyProjects;
+use App\Http\Controllers\AdminTool\FeaturesController;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Http\Controllers\AdminTool\FromOptions;
 use App\Http\Controllers\AdminTool\InitialProposals;
@@ -88,7 +89,14 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/priorities', PrioritiesController::class);
     Route::resource('/countries', CountriesController::class);
     Route::resource('/skills', SkillsController::class);
+    Route::resource('/features', FeaturesController::class);
+    Route::get('/addSkillsCSV', [SkillsController::class, 'addByCSV'])->name('skills.showAddByCSV');
+    Route::post('/addSkillsCSV', [SkillsController::class, 'createByCSV'])->name('skills.creatAddByCSV');
     Route::get('/checkSkill/{skill}', [SkillsController::class, 'isSkillExsits']);
+
+    Route::get('/addFeatureCSV', [FeaturesController::class, 'addByCSV'])->name('features.showAddByCSV');
+    Route::post('/addFeatureCSV', [FeaturesController::class, 'createByCSV'])->name('features.creatAddByCSV');
+    Route::get('/checkFeature/{feature}', [FeaturesController::class, 'isFeatureExsits']);
 
     // Route::resource('agencies.wallets', WalletsController::class)->shallow();
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
