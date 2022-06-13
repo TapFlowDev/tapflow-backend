@@ -21,8 +21,8 @@ class NotificationController extends Controller
                 ->where('receiver_id', '=', $userData['user_id'])
                 ->where('seen', '<>', 1)
                 ->latest()
-                ->offset($page)->limit($limit)
                 ->distinct()
+                ->offset($page)->limit($limit)
                 ->get();
             $response = Controller::returnResponse(200, "successful", $userNotifications);
             return json_encode($response);
