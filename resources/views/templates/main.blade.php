@@ -67,6 +67,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="/AdminTool/features">
+                        <span class="icon"><i class="fas fa-laptop-code"></i></i></span>
+                        <span class="title">Features</span>
+                    </a>
+                </li>
+                <li>
                     <a href="/AdminTool/countries">
                         <span class="icon"><i class="fas fa-flag"></i></span>
                         <span class="title">Countries</span>
