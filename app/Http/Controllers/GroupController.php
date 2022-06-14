@@ -56,8 +56,6 @@ class   GroupController extends Controller
     function add_group_team(Request $req)
     {
         //check if the team agency or team of freelancers-
-        $response = Controller::returnResponse(500, 'There IS Error Occurred', $req->all());
-                return json_encode($response);
         $rules = array(
             "name" => "required|max:255",
             "bio" => "required|max:255",
@@ -209,12 +207,18 @@ class   GroupController extends Controller
                     // }
                     // DB::table('agency_targets')->where('group_id', $teamId)->delete();
 
-                    foreach ($req->targets as $keyLink => $valTarget) {
-                        DB::table('agency_targets')->insert([
-                            'group_id' => (int)$teamId,
-                            'category_id' => (int)$valTarget
-                        ]);
-                    }
+                    // foreach ($req->targets as $keyLink => $valTarget) {
+                    //     DB::table('agency_targets')->insert([
+                    //         'group_id' => (int)$teamId,
+                    //         'category_id' => (int)$valTarget
+                    //     ]);
+                    // }
+                }
+                foreach ($req->targets as $keyLink => $valTarget) {
+                    DB::table('agency_targets')->insert([
+                        'group_id' => (int)$teamId,
+                        'category_id' => (int)$valTarget
+                    ]);
                 }
                 $services = $agencyServicesObj->Insert($teamId, $req->services);
                 $projectTypes = $agencyProjectTypeObj->Insert($teamId, $req->projectTypes);
