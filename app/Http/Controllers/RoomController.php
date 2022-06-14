@@ -95,7 +95,7 @@ class RoomController extends Controller
                 return json_encode($response);
             }
             $page=($offset -1 )*$limit;
-            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->offset($page)->limit($limit)->get();
+            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->latest()->offset($page)->limit($limit)->get();
             
             $rooms=$this->roomsInfo($userRooms);
       
