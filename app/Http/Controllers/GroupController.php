@@ -58,11 +58,13 @@ class   GroupController extends Controller
         //check if the team agency or team of freelancers-
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id",
-            "analysis" => "required",
-            "design" => "required",
-            "minPerHour" => "numeric",
-            "maxPerHour" => "numeric"
+            "bio" => "required|max:255",
+            "country" => "required",
+            "link" => "required",
+            "employees_number" => "required",
+            "hourlyRate" => "required",
+            "leadTime" => "required",
+            "projectTypes" => "required",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -148,10 +150,12 @@ class   GroupController extends Controller
                 $teamArr['country'] = $req->country;
                 $teamArr['employees_number'] = $req->employees_number;
                 $teamArr['field'] = $req->field;
-                $teamArr['BA'] = $req->analysis;
-                $teamArr['design'] = $req->design;
-                $teamArr['minPerHour'] = $req->minPerHour;
-                $teamArr['maxPerHour'] = $req->maxPerHour;
+                $teamArr['BA'] = 0;
+                $teamArr['design'] = 0;
+                $teamArr['minPerHour'] = 0;
+                $teamArr['maxPerHour'] = 0;
+                $teamArr['lead_time'] = $req->leadTime;
+                $teamArr['hourly_rate'] = $req->hourlyRate;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
