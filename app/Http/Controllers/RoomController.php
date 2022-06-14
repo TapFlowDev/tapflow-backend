@@ -321,7 +321,7 @@ class RoomController extends Controller
                     $roomType = 2;
                 }
            $room1= DB::table('messages')
-            ->Join('rooms', 'messages.rooms_id', '=', 'rooms.id')
+            ->Join('rooms', 'messages.room_id', '=', 'rooms.id')
             ->Join('room_members', 'messages.room_id', '=', 'room_members.room_id')
             ->select('messages.id','rooms.name','messages.body','messages.created_at','room_members.seen')
             ->where('messages.room_id','=',$room)
