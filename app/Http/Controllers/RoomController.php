@@ -316,7 +316,7 @@ class RoomController extends Controller
         foreach( $rooms as $room)
         {
             $roomType = 1;
-            $membersCount = RoomMembers::where('room_id', $room->room_id)->count();
+            $membersCount = RoomMembers::where('room_id', $room)->count();
                   if ($membersCount > 2) {
                     $roomType = 2;
                 }
