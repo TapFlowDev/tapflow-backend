@@ -323,7 +323,7 @@ class RoomController extends Controller
            $room1= DB::table('messages')
             ->Join('rooms', 'messages.room_id', '=', 'rooms.id')
             ->Join('room_members', 'messages.room_id', '=', 'room_members.room_id')
-            ->select('messages.id','rooms.name','messages.body','messages.created_at','room_members.seen')
+            ->select('messages.room_id','rooms.name','messages.body','messages.created_at','room_members.seen')
             ->where('messages.room_id','=',$room)
             ->latest()
             ->offset($page)->limit($limit)
