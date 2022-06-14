@@ -40,7 +40,7 @@ class NotificationController extends Controller
         } catch (Exception $error) {
         }
     }
-    function ChatNotifications(Request $req, $offset, $limit)
+    function ChatNotifications(Request $req)
     {
         try {
             $userData=Controller::checkUser($req);
