@@ -43,34 +43,4 @@ class NotificationController extends Controller
         } catch (Exception $error) {
         }
     }
-    function ChatNotifications(Request $req)
-    {
-        try {
-            $userData=Controller::checkUser($req);
-            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
-            $rooms=$this->roomsInfo($userRooms);
-      
-           $response = Controller::returnResponse(200, "successful",$rooms);
-           return json_encode($response);
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
-            return json_encode($response);
-        }
-    }
-    function roomsInfo($rooms)
-    {
-        $Rooms=array();
-        foreach( $rooms as $room)
-        {
-            
-           $room= DB::table('rooms')
-            ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
-            ->select('rooms.name','messages.body','messages.created_at')
-            ->where('rooms.id','=',$room->room_id)
-            ->orderBy('messages.created_at','desc')
-            ->get();
-            array_push($Rooms,$room);
-        }
-        return $Rooms;
-    }
 }
