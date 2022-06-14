@@ -255,4 +255,24 @@ class RoomController extends Controller
             ->toArray();
         return $fcmTokens;
     }
+    function seenRoomMessages(Request $req)
+    {
+        try{
+        $userData=Controller::checkUser($req);
+        $roomMember=$this->IsRoomMember($userData['user_id'],$req->room_id);
+        if($roomMember == 0)
+        {
+            $response = Controller::returnResponse(422, "unauthorized action ", []);
+            return json_encode($response);
+        }
+        RoomMembers::where('user_id',$userData['user_id'])->where('room_id',$req->room_id)->update(['seen'=>1]);
+        $response = Controller::returnResponse(200, "successful ", []);
+        return json_encode($response);
+    }catch(Exception $error)
+    {
+        $response = Controller::returnResponse(500, "something went wrong", []);
+        return json_encode($response);
+    }
+    }
+    
 }

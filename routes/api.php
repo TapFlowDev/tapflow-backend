@@ -193,6 +193,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('getRoomMessages', [ChatController::class, 'getRoomMessages']);
     Route::get('getUserNotification/{offset}/{limit}', [NotificationController::class, 'getUserNotification']);
     Route::post('notificationSeen', [NotificationController::class, 'notificationSeen']);
+    Route::post('ChatNotifications', [NotificationController::class, 'ChatNotifications']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);

@@ -131,5 +131,5 @@ class ChatController extends Controller
     
         return $allMessages;
     }
-    
+   
 }
