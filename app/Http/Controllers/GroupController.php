@@ -127,8 +127,8 @@ class   GroupController extends Controller
                     //     }
                     // }
                 } else {
-                    // $cats = json_decode($req->categories);
-                    $cats = $req->categories;
+                    $cats = json_decode($req->categories);
+                    // $cats = $req->categories;
                     if (isset($cats)) {
                         foreach ($cats as $key => $value) {
                             $categoryArr = array();
@@ -216,14 +216,14 @@ class   GroupController extends Controller
                     //     ]);
                     // }
                 // }
-                foreach ($req->targets as $keyLink => $valTarget) {
+                foreach (json_decode($req->targets) as $keyLink => $valTarget) {
                     DB::table('agency_targets')->insert([
                         'group_id' => (int)$teamId,
                         'category_id' => (int)$valTarget
                     ]);
                 }
-                $services = $agencyServicesObj->Insert($teamId, $req->services);
-                $projectTypes = $agencyProjectTypeObj->Insert($teamId, $req->projectTypes);
+                $services = $agencyServicesObj->Insert($teamId, json_decode($req->services));
+                $projectTypes = $agencyProjectTypeObj->Insert($teamId, json_decode($req->projectTypes));
 
                 // $response = array("data" => array(
                 //     "message" => "team added successfully",
