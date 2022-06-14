@@ -370,8 +370,11 @@ class RoomController extends Controller
                         'lastMessage' => 'first msg',
                          'date'=>'',
                     );
+                    array_push($rooms2, $room2);
+
                 }
                 // dd($lastMessage->body);
+                else{
                 $room = array(
                     'room_id' => $room_id,
                     'name' => $name,
@@ -379,12 +382,14 @@ class RoomController extends Controller
                     'lastMessage' => $lastMessage->body,
                      'date'=>$lastMessage->created_at,
                 );
-                // $dates=array_column($rooms,'date');
-                // array_multisort($dates, SORT_DESC,$rooms);
                 array_push($rooms, $room);
-                array_push($rooms2, $room2);
                 $dates=array_column($rooms,'date');
                 array_multisort($dates, SORT_DESC,$rooms);
+            }
+                // $dates=array_column($rooms,'date');
+                // array_multisort($dates, SORT_DESC,$rooms);
+               
+               
             }
             $all=array_merge($rooms,$rooms2);
             $response = Controller::returnResponse(200, "successful", $all);
