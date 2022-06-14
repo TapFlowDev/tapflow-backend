@@ -120,7 +120,7 @@ class RoomController extends Controller
                 }
            $room= DB::table('rooms')
             ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
-            ->select('rooms.id','rooms.name','messages.body','messages.created_at')
+            ->select('rooms.name','messages.body','messages.created_at')
             ->where('rooms.id','=',$room->room_id)
             ->orderBy('messages.created_at','desc')
             ->first();
