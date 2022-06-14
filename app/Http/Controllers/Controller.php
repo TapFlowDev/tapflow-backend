@@ -83,6 +83,7 @@ class Controller extends BaseController
     
     public function sendNotification($receiver_id, $title, $body,$link,$type,$action,$action_id)
     {
+        try{
         	 $serverLink="https://tapflow.dev";
             //  $serverLink="https://testtest.tapflow.app";
             //  $serverLink="https://tapflow.app";
@@ -96,18 +97,22 @@ class Controller extends BaseController
         $groupAdmins = $groupMembersObj->getGroupAdminsIds($receiver_id);
         $fcmTokens=$groupAdmins->pluck('fcm_tokens')->toArray();
         $admins=$groupAdmins->pluck('user_id')->toArray();
-    //   foreach( $admins as $id)
-    //   {
-    //     DB::table('system_notifications')->insert([
-    //         ['title' => $title,'body'=>$body,'receiver_id'=>$id,"action"=>$action,"action_id"=>$action_id,"link"=>$link],
+      foreach( $admins as $id)
+      {
+        DB::table('system_notifications')->insert([
+            ['title' => $title,'body'=>$body,'receiver_id'=>$id,"action"=>$action,"action_id"=>$action_id,"link"=>$link],
             
-    //     ]);
-    //   }
+        ]);
+      }
     }
         else{$fcmTokens=$receiver_id;}
         
         $data = array('FcmToken' => $fcmTokens, 'title' => $title, 'body' => $body,'link'=>$actionLink,$type);
         $notify = $firebaseObj->sendFireBaseNotification($data);
         return $notify;
+    }catch(Exception $error)
+    {
+      return  ['code'=>500,'msg'=>$error->getMessage()];
     }
+}
 }
