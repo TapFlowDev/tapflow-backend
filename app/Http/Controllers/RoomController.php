@@ -112,12 +112,13 @@ class RoomController extends Controller
                 $chatObj = new ChatController;
 
                 $lastMessage = $chatObj->getRoomLastMessage($room_id);
+                $seen=$this->roomSeen($room_id,$user_id);
                 $room = array(
                     'room_id' => $room_id,
                     'name' => $name,
                     'roomType' => $roomType,
                     'lastMessage' => $lastMessage,
-                    'seen'=>$members->seen,
+                    'seen'=>$seen,
                 );
                 array_push($rooms, $room);
             }
@@ -258,6 +259,10 @@ class RoomController extends Controller
             ->pluck('fcm_token')
             ->toArray();
         return $fcmTokens;
+    }
+    private function roomSeen($room_id,$user_id){
+        return RoomMembers::where('room_id', $room_id)->where('user_id',$user_id)->select('seen')->first();
+
     }
     function seenRoomMessages(Request $req)
     {
