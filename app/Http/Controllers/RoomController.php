@@ -289,8 +289,8 @@ class RoomController extends Controller
             $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
             $ids=$userRooms->pluck('room_id')->toArray();
             $rooms=  DB::table('room_members')
-            ->leftJoin('rooms', 'room_members.room_id', '=', 'rooms.id')
-            ->leftJoin('messages', 'room_members.room_id', '=', 'messages.room_id')
+            ->join('rooms', 'room_members.room_id', '=', 'rooms.id')
+            ->join('messages', 'room_members.room_id', '=', 'messages.room_id')
             ->select('rooms.id','rooms.name','messages.body','messages.created_at','room_members.seen')
             // ->whereIn('rooms.id',$ids)
             ->latest()
