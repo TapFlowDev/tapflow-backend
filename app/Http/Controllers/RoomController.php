@@ -335,4 +335,48 @@ class RoomController extends Controller
         }
         return $Rooms;
     }
+    function testNotRoom(Request $req)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            $user_id = $userData['user_id'];
+            if ($userData['user_id'] != $user_id) {
+                $response = Controller::returnResponse(422, "unauthorized action ", []);
+                return json_encode($response);
+            }
+            $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
+            $rooms = array();
+
+            foreach ($rooms_ids as  $room_id) {
+                $roomType = 1;
+                $room = array();
+                $name = Rooms::where('id', $room_id)->select('name')->first()->name;
+                $membersCount = RoomMembers::where('room_id', $room_id)->select('room_id')->count();
+                // $membersCount=$members->count();
+                if ($membersCount > 2) {
+                    $roomType = 2;
+                }
+                $chatObj = new ChatController;
+
+                $lastMessage = $chatObj->getRoomLastMessage($room_id);
+                $room = array(
+                    'room_id' => $room_id,
+                    'name' => $name,
+                    'roomType' => $roomType,
+                    'lastMessage' => $lastMessage->body,
+                     'date'=>$lastMessage->created_at,
+                );
+                // $dates=array_column($rooms,'date');
+                // array_multisort($dates, SORT_DESC,$rooms);
+                array_push($rooms, $room);
+                $dates=array_column($rooms,'date');
+                array_multisort($dates, SORT_DESC,$rooms);
+            }
+            $response = Controller::returnResponse(200, "successful", $rooms);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return json_encode($response);
+        }
+    }
 }

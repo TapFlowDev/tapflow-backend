@@ -90,7 +90,7 @@ class ChatController extends Controller
             }
             else
             {
-                return $lastMessage->body;
+                return $lastMessage;
             }
        
     }
