@@ -276,5 +276,59 @@ class RoomController extends Controller
         return json_encode($response);
     }
     }
-
+    function getcjtNot(Request $req,$offset,$limit)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            $user_id = $userData['user_id'];
+            if ($userData['user_id'] != $user_id) {
+                $response = Controller::returnResponse(422, "unauthorized action ", []);
+                return json_encode($response);
+            }
+            $page=($offset -1 )*$limit;
+            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
+            $ids=$userRooms->pluck('room_id')->toArray();
+            $rooms=  DB::table('room_members')
+            ->leftJoin('rooms', 'room_members.room_id', '=', 'rooms.id')
+            ->leftJoin('messages', 'room_members.room_id', '=', 'messages.room_id')
+            ->select('rooms.id','rooms.name','messages.body','messages.created_at','room_members.seen')
+            ->whereIn('rooms.id',$ids)
+            ->distinct()
+            ->offset($page)->limit($limit)
+            ->orderBy('messages.created_at','desc')
+            ->get();
+      
+           $response = Controller::returnResponse(200, "successful",$rooms);
+           return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return json_encode($response);
+        }
+    }
+    //room type 1 individual 2 group
+    function roomsInfo($rooms,$offset,$limit)
+    {
+        $page=($offset -1 )*$limit;
+        $Rooms=array();
+        foreach( $rooms as $room)
+        {
+            $roomType = 1;
+            $membersCount = RoomMembers::where('room_id', $room->room_id)->count();
+                  if ($membersCount > 2) {
+                    $roomType = 2;
+                }
+           $room= DB::table('messages')
+            ->Join('rooms', 'messages.rooms_id', '=', 'rooms.id')
+            ->Join('room_members', 'messages.room_id', '=', 'room_members.room_id')
+            ->select('messages.id','rooms.name','messages.body','messages.created_at','room_members.seen')
+            ->where('messages.room_id','=',$room->room_id)
+            ->latest()
+            ->offset($page)->limit($limit)
+            // ->orderBy('messages.created_at','desc')
+            ->first();
+           $room->type=$roomType;
+            array_push($Rooms,$room);
+        }
+        return $Rooms;
+    }
 }
