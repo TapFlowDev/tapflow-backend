@@ -62,7 +62,7 @@ class NotificationController extends Controller
         $Rooms=array();
         foreach( $rooms as $room)
         {
-            dd($room->id);
+            dd($room);
            $room= DB::table('rooms')
             ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
             ->select('rooms.name','messages.body','messages.created_at')
