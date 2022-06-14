@@ -68,6 +68,6 @@ class NotificationController extends Controller
             ->orderBy('messages.created_at')
             ->get();
         }
-        return $room;
+        return $rooms;
     }
 }
