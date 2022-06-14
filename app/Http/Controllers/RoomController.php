@@ -346,10 +346,12 @@ class RoomController extends Controller
             }
             $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
             $rooms = array();
+            $rooms2 = array();
 
             foreach ($rooms_ids as  $room_id) {
                 $roomType = 1;
                 $room = array();
+                $room2= array();
                 $name = Rooms::where('id', $room_id)->select('name')->first()->name;
                 $membersCount = RoomMembers::where('room_id', $room_id)->select('room_id')->count();
                 // $membersCount=$members->count();
@@ -361,7 +363,13 @@ class RoomController extends Controller
                 $lastMessage = $chatObj->getRoomLastMessage($room_id);
                 if ($lastMessage === null )
                 {
-                    continue;
+                    $room2= array(
+                        'room_id' => $room_id,
+                        'name' => $name,
+                        'roomType' => $roomType,
+                        'lastMessage' => 'first msg',
+                         'date'=>'',
+                    );
                 }
                 // dd($lastMessage->body);
                 $room = array(
@@ -374,10 +382,12 @@ class RoomController extends Controller
                 // $dates=array_column($rooms,'date');
                 // array_multisort($dates, SORT_DESC,$rooms);
                 array_push($rooms, $room);
+                array_push($rooms2, $room2);
                 $dates=array_column($rooms,'date');
                 array_multisort($dates, SORT_DESC,$rooms);
             }
-            $response = Controller::returnResponse(200, "successful", $rooms);
+            $all=array_merge($rooms,$rooms2);
+            $response = Controller::returnResponse(200, "successful", $all);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
