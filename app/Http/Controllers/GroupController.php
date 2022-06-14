@@ -56,6 +56,8 @@ class   GroupController extends Controller
     function add_group_team(Request $req)
     {
         //check if the team agency or team of freelancers-
+        $response = Controller::returnResponse(500, 'There IS Error Occurred', $req->all());
+                return json_encode($response);
         $rules = array(
             "name" => "required|max:255",
             "bio" => "required|max:255",
