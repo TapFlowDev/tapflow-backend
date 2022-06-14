@@ -85,7 +85,7 @@ class RoomController extends Controller
             return json_encode($response);
         }
     }
-    function getRooms(Request $req)
+    function getRooms(Request $req,$offset,$limit)
     {
         try {
             $userData = Controller::checkUser($req);
@@ -95,7 +95,7 @@ class RoomController extends Controller
                 return json_encode($response);
             }
             $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
-            $rooms=$this->roomsInfo($userRooms);
+            $rooms=$this->roomsInfo($userRooms,$offset,$limit);
       
            $response = Controller::returnResponse(200, "successful",$rooms);
            return json_encode($response);
@@ -105,8 +105,9 @@ class RoomController extends Controller
         }
     }
     //room type 1 individual 2 group
-    function roomsInfo($rooms)
+    function roomsInfo($rooms,$offset ,$limit)
     {
+        $page=($offset -1 )*$limit;
         $Rooms=array();
         foreach( $rooms as $room)
         {
@@ -120,6 +121,7 @@ class RoomController extends Controller
             ->select('rooms.name','messages.body','messages.created_at')
             ->where('rooms.id','=',$room->room_id)
             ->orderBy('messages.created_at','desc')
+            ->offset($page)->limit($limit)
             ->get();
            $room->roomType=$roomType;
             array_push($Rooms,$room);
