@@ -193,7 +193,7 @@ class   GroupController extends Controller
                 //         ]);
                 //     }
                 // }
-                if (isset($req->targets) && count($req->targets) > 0) {
+                // if (isset($req->targets) && count($req->targets) > 0) {
                     // $targetArray = array();
                     // foreach ($targets as $keyTarget => $target) {
                     //     $targetArray[$keyTarget]['group_id'] = $group_id;
@@ -213,7 +213,7 @@ class   GroupController extends Controller
                     //         'category_id' => (int)$valTarget
                     //     ]);
                     // }
-                }
+                // }
                 foreach ($req->targets as $keyLink => $valTarget) {
                     DB::table('agency_targets')->insert([
                         'group_id' => (int)$teamId,
