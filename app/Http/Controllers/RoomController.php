@@ -346,6 +346,7 @@ class RoomController extends Controller
             }
             $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
             $rooms = array();
+            $rooms2 = array();
 
             foreach ($rooms_ids as  $room_id) {
                 $roomType = 1;
@@ -361,7 +362,12 @@ class RoomController extends Controller
                 $lastMessage = $chatObj->getRoomLastMessage($room_id);
                 if ($lastMessage === null )
                 {
-                    continue;
+                    $room2 = array(
+                        'room_id' => $room_id,
+                        'name' => $name,
+                        'roomType' => $roomType,
+                        'lastMessage' => 'send your first message',
+                    );
                 }
                 // dd($lastMessage->body);
                 $room = array(
@@ -374,8 +380,10 @@ class RoomController extends Controller
                 // $dates=array_column($rooms,'date');
                 // array_multisort($dates, SORT_DESC,$rooms);
                 array_push($rooms, $room);
+                array_push($rooms2, $room2);
                 $dates=array_column($rooms,'date');
                 array_multisort($dates, SORT_DESC,$rooms);
+                array_merge($rooms,$rooms2);
             }
             $response = Controller::returnResponse(200, "successful", $rooms);
             return json_encode($response);
