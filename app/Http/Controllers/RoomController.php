@@ -104,7 +104,7 @@ class RoomController extends Controller
             ->where('room_members.user_id','=',$userData['user_id'])
             ->offset($page)->limit($limit)
             ->orderBy('messages.created_at','desc')
-            ->first();
+            ->get();
       
            $response = Controller::returnResponse(200, "successful",$rooms);
            return json_encode($response);
