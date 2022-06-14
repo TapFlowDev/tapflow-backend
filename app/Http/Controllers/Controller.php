@@ -106,7 +106,7 @@ class Controller extends BaseController
       }
     }
         else{$fcmTokens=$receiver_id;}
-        return['tokens'=>$fcmTokens];
+       
         $data = array('FcmToken' => $fcmTokens, 'title' => $title, 'body' => $body,'link'=>$actionLink,$type);
         $notify = $firebaseObj->sendFireBaseNotification($data);
         return $notify;
