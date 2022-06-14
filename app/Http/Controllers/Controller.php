@@ -95,7 +95,7 @@ class Controller extends BaseController
         $actionLink=$serverLink.$link;
         if($type== 2){
         $groupAdmins = $groupMembersObj->getGroupAdminsIds($receiver_id);
-        $fcmTokens=$groupAdmins->pluck('fcm_tokens')->toArray();
+        $fcmTokens=$groupAdmins->pluck('fcm_token')->toArray();
         $admins=$groupAdmins->pluck('user_id')->toArray();
       foreach( $admins as $id)
       {
@@ -106,7 +106,7 @@ class Controller extends BaseController
       }
     }
         else{$fcmTokens=$receiver_id;}
-        return['admins'=>$groupAdmins];
+        return['tokens'=>$fcmTokens];
         $data = array('FcmToken' => $fcmTokens, 'title' => $title, 'body' => $body,'link'=>$actionLink,$type);
         $notify = $firebaseObj->sendFireBaseNotification($data);
         return $notify;
