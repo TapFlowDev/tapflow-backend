@@ -260,7 +260,7 @@ class RoomController extends Controller
         return $fcmTokens;
     }
     private function roomSeen($room_id,$user_id){
-        return RoomMembers::where('room_id', $room_id)->where('user_id',$user_id)->select('seen')->first();
+        return RoomMembers::where('room_id', $room_id)->where('user_id',$user_id)->select('seen')->first()->seen;
 
     }
     function seenRoomMessages(Request $req)
