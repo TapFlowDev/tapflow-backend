@@ -293,6 +293,7 @@ class RoomController extends Controller
             ->leftJoin('messages', 'room_members.room_id', '=', 'messages.room_id')
             ->select('rooms.id','rooms.name','messages.body','messages.created_at','room_members.seen')
             // ->whereIn('rooms.id',$ids)
+            ->latest()
             ->distinct()
             ->offset($page)->limit($limit)
             ->orderBy('messages.created_at','desc')
