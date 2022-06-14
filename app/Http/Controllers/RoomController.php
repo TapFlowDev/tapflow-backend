@@ -351,6 +351,7 @@ class RoomController extends Controller
             foreach ($rooms_ids as  $room_id) {
                 $roomType = 1;
                 $room = array();
+                $room2 = array();
                 $name = Rooms::where('id', $room_id)->select('name')->first()->name;
                 $membersCount = RoomMembers::where('room_id', $room_id)->select('room_id')->count();
                 // $membersCount=$members->count();
