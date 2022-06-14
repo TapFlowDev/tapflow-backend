@@ -88,7 +88,7 @@ Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
 Route::get('Notify/{id}', [Final_proposals::class, 'testsendnot']);
 Route::get('updateMilestonesPrices/{m}/{f}', [Milestones::class, 'updateMilestonesPrices']);
 Route::get('canSubmit/{id}', [Milestones::class, 'canSubmit']);
-Route::get('    /{id}', [ChatController::class, 'getRoomLastMessage']);
+Route::get('getRoomLastMessage/{id}', [ChatController::class, 'getRoomLastMessage']);
 
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
 
@@ -186,7 +186,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
     Route::post('storeToken', [FireBaseNotificationsController::class, 'storeToken']);
     Route::post('addMember', [RoomController::class, 'addMember']);
-    Route::get('getRooms/{offset}/{limit}', [RoomController::class, 'getRooms']);
+    Route::post('getRooms', [RoomController::class, 'getRooms']);
     Route::post('sendMessage', [ChatController::class, 'sendMessage']);
     Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
     Route::post('updateRoomName', [RoomController::class, 'updateRoomName']);

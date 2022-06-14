@@ -85,7 +85,8 @@ class RoomController extends Controller
             return json_encode($response);
         }
     }
-    function getRooms(Request $req,$offset,$limit)
+    //room type 1 individual 2 group
+    function getRooms(Request $req)
     {
         try {
             $userData = Controller::checkUser($req);
@@ -94,53 +95,37 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(422, "unauthorized action ", []);
                 return json_encode($response);
             }
-            $page=($offset -1 )*$limit;
-            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
-            $ids=$userRooms->pluck('room_id')->toArray();
-            $rooms=  DB::table('room_members')
-            ->leftJoin('rooms', 'room_members.room_id', '=', 'rooms.id')
-            ->leftJoin('messages', 'room_members.room_id', '=', 'messages.room_id')
-            ->select('rooms.id','rooms.name','messages.body','messages.created_at','room_members.seen')
-            ->whereIn('rooms.id',$ids)
-            ->distinct()
-            ->offset($page)->limit($limit)
-            ->orderBy('messages.created_at','desc')
-            ->get();
-      
-           $response = Controller::returnResponse(200, "successful",$rooms);
-           return json_encode($response);
+            $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
+            $rooms = array();
+
+            foreach ($rooms_ids as $room_id) {
+                $roomType = 1;
+                $room = array();
+                $name = Rooms::where('id', $room_id)->select('name')->first()->name;
+                $members = RoomMembers::where('room_id', $room_id)->select('room_id','seen')->get();
+                $membersCount=$members->count();
+                if ($membersCount > 2) {
+                    $roomType = 2;
+                }
+                $chatObj = new ChatController;
+
+                $lastMessage = $chatObj->getRoomLastMessage($room_id);
+                $room = array(
+                    'room_id' => $room_id,
+                    'name' => $name,
+                    'roomType' => $roomType,
+                    'lastMessage' => $lastMessage,
+                    'seen'=>$members->seen,
+                );
+                array_push($rooms, $room);
+            }
+            $response = Controller::returnResponse(200, "successful", $rooms);
+            return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
         }
     }
-    //room type 1 individual 2 group
-    function roomsInfo($rooms,$offset,$limit)
-    {
-        $page=($offset -1 )*$limit;
-        $Rooms=array();
-        foreach( $rooms as $room)
-        {
-            $roomType = 1;
-            $membersCount = RoomMembers::where('room_id', $room->room_id)->count();
-                  if ($membersCount > 2) {
-                    $roomType = 2;
-                }
-           $room= DB::table('rooms')
-            ->leftJoin('room_members', 'rooms.id', '=', 'room_members.room_id')
-            ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
-            ->select('messages.id','rooms.name','messages.body','messages.created_at','room_members.seen')
-            ->where('rooms.id','=',$room->room_id)
-            ->offset($page)->limit($limit)
-            ->orderBy('messages.created_at','desc')
-            ->first();
-           $room->type=$roomType;
-            array_push($Rooms,$room);
-        }
-        return $Rooms;
-    }
-    
-    
 
     function searchForUsers(Request $req, $name)
     {
@@ -271,10 +256,6 @@ class RoomController extends Controller
             ->pluck('fcm_token')
             ->toArray();
         return $fcmTokens;
-    }
-    private function roomSeen($room_id,$user_id){
-        return RoomMembers::where('room_id', $room_id)->where('user_id',$user_id)->select('seen')->first()->seen;
-
     }
     function seenRoomMessages(Request $req)
     {
