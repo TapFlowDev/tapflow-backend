@@ -451,13 +451,14 @@ class Final_proposals extends Controller
                                     // $req['price'] = $price;
                                     $title = $this->createTitle($req->project_id);
                                     $req['title'] = $title;
-                                    $final_proposal = Final_proposal::create($req->except(['down_payment']) + ['status' => $final_proposal_status]);
+                                    // $final_proposal = Final_proposal::create($req->except(['down_payment']) + ['status' => $final_proposal_status]);
                                     // if ($req->down_payment['status'] == 1) {
                                     //     // $this->downPaymentHandler($req->down_payment, $final_proposal->id);
                                     // } else {
                                     //     Final_proposal::where('id', $final_proposal->id)->update(['down_payment' => 0, 'down_payment_value' => 0.00]);
                                     //     Milestone::where('final_proposal_id', $final_proposal->id)->update(['down_payment' => 0]);
                                     // }
+                                    
                                     $GroupControllerObj = new GroupController;
                                     $GroupMemsObj = new GroupMembersController;
                                     $projectObj = new ProjectController;
@@ -470,15 +471,15 @@ class Final_proposals extends Controller
                                         "name" => $adminName,
                                         "project_id" =>  $projectInfo->id,
                                         "project_name" =>  $projectInfo->name,
-                                        "Proposal_description" => $final_proposal->description,
+                                        // "Proposal_description" => $final_proposal->description,
                                         "agency_name" => $agency->name
                                     ];
-
+                                    return $projectInfo->company_id;
                                    $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
-                                   return $projectInfo->company_id;
-                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals',$final_proposal ->id);
+                                   
+                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals','$final_proposal ->id');
                                     Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
-                                    $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
+                                    $response = Controller::returnResponse(200, 'Final proposal add successfully', ['$final_proposal->id']);
                                     return (json_encode($response));
                                 } catch (Exception $error) {
                                     $response = Controller::returnResponse(500, 'something wrong', $error->getMessage());
@@ -744,7 +745,7 @@ class Final_proposals extends Controller
 
                         // ];
                         // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
-                        $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
+                        $fenLink="a-user/main/pending-project/".$req->project_id;
                         Controller::sendNotification($final_proposal->team_id,$projectInfo->name,'Your received a comment on the final proposal',$fenLink,2,'final_proposals',$req->proposal_id);
                         $response = Controller::returnResponse(200, "Please contact the agency via email ", ['admin_email' => $agencyAdmin->email]);
                         return (json_encode($response));
