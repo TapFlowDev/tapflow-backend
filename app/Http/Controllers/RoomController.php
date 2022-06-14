@@ -288,17 +288,19 @@ class RoomController extends Controller
             $page=($offset -1 )*$limit;
             $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
             $ids=$userRooms->pluck('room_id')->toArray();
-            $rooms=  DB::table('room_members')
-            ->join('rooms', 'room_members.room_id', '=', 'rooms.id')
-            ->join('messages', 'room_members.room_id', '=', 'messages.room_id')
-            ->select('rooms.id','rooms.name','messages.body','messages.created_at','room_members.seen')
-            // ->whereIn('rooms.id',$ids)
-            ->latest()
-            ->distinct()
-            ->offset($page)->limit($limit)
-            ->orderBy('messages.created_at','desc')
-            ->get();
-      
+            $rooms=$this->roomsInfo($ids,$offset,$limit);
+            // $ids=array();
+            // $rooms=  DB::table('room_members')
+            // ->join('rooms', 'room_members.room_id', '=', 'rooms.id')
+            // ->join('messages', 'room_members.room_id', '=', 'messages.room_id')
+            // ->select('rooms.id','rooms.name','messages.body','messages.created_at','room_members.seen')
+            // // ->whereIn('rooms.id',$ids)
+            // ->latest()
+            // ->distinct()
+            // ->offset($page)->limit($limit)
+            // ->orderBy('messages.created_at','desc')
+            // ->first();
+            // array_push($ids,$r)
            $response = Controller::returnResponse(200, "successful",$rooms);
            return json_encode($response);
         } catch (Exception $error) {
