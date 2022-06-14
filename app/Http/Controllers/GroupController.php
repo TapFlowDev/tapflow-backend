@@ -77,6 +77,7 @@ class   GroupController extends Controller
             $membersObj = new GroupMembersController;
             $targetObj = new AgencyTargetsController;
             $agencyServicesObj = new AgencyServiceController;
+            $agencyProjectTypeObj = new AgencyProjectTypeController;
 
 
             try {
@@ -122,22 +123,20 @@ class   GroupController extends Controller
                     //     }
                     // }
                 } else {
-                    $cats = json_decode($req->categories);
+                    // $cats = json_decode($req->categories);
+                    $cats = $req->categories;
                     if (isset($cats)) {
-
                         foreach ($cats as $key => $value) {
                             $categoryArr = array();
-                            foreach ($value->subCat as $keySub => $subValue) {
-                                $categoryArr[$keySub]['group_id'] = $group_id;
-                                $categoryArr[$keySub]['category_id'] = $value->catId;
-                                $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                            }
-                            $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
-                            if ($add_cat == 500) {
-                                $delGroup = Group::where('id', $group_id)->delete();
-                                $response = Controller::returnResponse(500, 'add cast error', []);
-                                return json_encode($response);
-                            }
+                            $categoryArr[$key]['group_id'] = $group_id;
+                            $categoryArr[$key]['category_id'] = $value;
+                            $categoryArr[$key]['sub_category_id'] = 0;
+                        }
+                        $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
+                        if ($add_cat == 500) {
+                            $delGroup = Group::where('id', $group_id)->delete();
+                            $response = Controller::returnResponse(500, 'add cast error', []);
+                            return json_encode($response);
                         }
                     }
                 }
@@ -210,8 +209,9 @@ class   GroupController extends Controller
                             'category_id' => (int)$valTarget
                         ]);
                     }
-                    $services = $agencyServicesObj->Insert($teamId, $req->services);
                 }
+                $services = $agencyServicesObj->Insert($teamId, $req->services);
+                $projectTypes = $agencyProjectTypeObj->Insert($teamId, $req->projectTypes);
 
                 // $response = array("data" => array(
                 //     "message" => "team added successfully",
