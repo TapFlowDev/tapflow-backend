@@ -67,7 +67,7 @@ class NotificationController extends Controller
             ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
             ->select('rooms.name','messages.body','messages.created_at')
             ->where('rooms.id','=',$room->room_id)
-            ->orderBy('messages.created_at')
+            ->orderBy('messages.created_at','desc')
             ->get();
             array_push($Rooms,$room);
         }
