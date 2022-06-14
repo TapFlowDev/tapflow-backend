@@ -105,19 +105,22 @@ class GroupCategoriesController extends Controller
                     } else {
                         $team_categories[$category->category_id]['image'] = asset('images/profile-pic.jpg');
                     }
-                    // $sub_image = DB::table('sub_categories')
-                    //     ->select('image')
-                    //     ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                    // if ($sub_image != "") {
 
-                    //     $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                    //         ->select('category_id', 'id', 'name', "image")
-                    //         ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                    // } else {
-                    //     $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                    //         ->select('category_id', 'id', 'name')
-                    //         ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                    // }
+                    $team_categories[$category->category_id]['subs'][] = array();
+                     
+                    //          $sub_image = DB::table('sub_categories')
+                    //      ->select('image')
+                    //      ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    //  if ($sub_image != "") {
+
+                    //      $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                    //          ->select('category_id', 'id', 'name', "image")
+                    //          ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    //  } else {
+                    //      $team_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                    //          ->select('category_id', 'id', 'name')
+                    //          ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    //  }
                 }
             }
             foreach ($team_categories as $val) {
