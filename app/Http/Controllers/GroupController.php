@@ -65,6 +65,8 @@ class   GroupController extends Controller
             "hourlyRate" => "required",
             "leadTime" => "required",
             "projectTypes" => "required",
+            "categories" => "required",
+            "targets" => "required",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -125,23 +127,39 @@ class   GroupController extends Controller
                     //     }
                     // }
                 } else {
-                    $cats = json_decode($req->categories);
-                    // $cats = $req->categories;
-                    if (isset($cats)) {
-                        $categoryArr = array();
-                        foreach ($cats as $key => $value) {
-                            $categoryArr[$key]['group_id'] = $group_id;
-                            $categoryArr[$key]['category_id'] = $value;
-                            $categoryArr[$key]['sub_category_id'] = 0;
-                        }
-                        $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
-                        if ($add_cat == 500) {
-                            $delGroup = Group::where('id', $group_id)->delete();
-                            $response = Controller::returnResponse(500, 'add cast error', []);
-                            return json_encode($response);
-                        }
-                    }
+                    // $cats = json_decode($req->categories);
+                    // // $cats = $req->categories;
+                    // // if (isset($cats)) {
+                    //     $categoryArr = array();
+                    //     foreach ($cats as $key => $value) {
+                    //         $categoryArr[$key]['group_id'] = $group_id;
+                    //         $categoryArr[$key]['category_id'] = $value;
+                    //         $categoryArr[$key]['sub_category_id'] = 0;
+                    //     }
+                    //     $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
+                    //     if ($add_cat == 500) {
+                    //         $delGroup = Group::where('id', $group_id)->delete();
+                    //         $response = Controller::returnResponse(500, 'add cast error', []);
+                    //         return json_encode($response);
+                    //     }
+                    // // }
                 }
+                // $cats = json_decode($req->categories);
+                // $cats = $req->categories;
+                // if (isset($cats)) {
+                $categoryArr = array();
+                foreach (json_decode($req->categories) as $key => $value) {
+                    $categoryArr[$key]['group_id'] = $group_id;
+                    $categoryArr[$key]['category_id'] = $value;
+                    $categoryArr[$key]['sub_category_id'] = 0;
+                }
+                $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
+                if ($add_cat == 500) {
+                    $delGroup = Group::where('id', $group_id)->delete();
+                    $response = Controller::returnResponse(500, 'add cast error', []);
+                    return json_encode($response);
+                }
+                // }
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
                 $teamArr['bio'] = $req->bio;
@@ -194,25 +212,25 @@ class   GroupController extends Controller
                 //     }
                 // }
                 // if (isset($req->targets) && count($req->targets) > 0) {
-                    // $targetArray = array();
-                    // foreach ($targets as $keyTarget => $target) {
-                    //     $targetArray[$keyTarget]['group_id'] = $group_id;
-                    //     $targetArray[$keyTarget]['category_id'] = $target;
-                    // }
-                    // $successTarget = $targetObj->addMultiRows($targetArray);
-                    // if ($successTarget == 500) {
-                    //     // $delGroupTarget = Group::where('id', $group_id)->delete();
-                    //     $response = Controller::returnResponse(500, 'add cast error', []);
-                    //     return json_encode($response);
-                    // }
-                    // DB::table('agency_targets')->where('group_id', $teamId)->delete();
+                // $targetArray = array();
+                // foreach ($targets as $keyTarget => $target) {
+                //     $targetArray[$keyTarget]['group_id'] = $group_id;
+                //     $targetArray[$keyTarget]['category_id'] = $target;
+                // }
+                // $successTarget = $targetObj->addMultiRows($targetArray);
+                // if ($successTarget == 500) {
+                //     // $delGroupTarget = Group::where('id', $group_id)->delete();
+                //     $response = Controller::returnResponse(500, 'add cast error', []);
+                //     return json_encode($response);
+                // }
+                // DB::table('agency_targets')->where('group_id', $teamId)->delete();
 
-                    // foreach ($req->targets as $keyLink => $valTarget) {
-                    //     DB::table('agency_targets')->insert([
-                    //         'group_id' => (int)$teamId,
-                    //         'category_id' => (int)$valTarget
-                    //     ]);
-                    // }
+                // foreach ($req->targets as $keyLink => $valTarget) {
+                //     DB::table('agency_targets')->insert([
+                //         'group_id' => (int)$teamId,
+                //         'category_id' => (int)$valTarget
+                //     ]);
+                // }
                 // }
                 foreach (json_decode($req->targets) as $keyLink => $valTarget) {
                     DB::table('agency_targets')->insert([
