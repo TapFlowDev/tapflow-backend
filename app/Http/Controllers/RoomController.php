@@ -100,7 +100,7 @@ class RoomController extends Controller
             $rooms=  DB::table('room_members')
             ->leftJoin('rooms', 'room_members.room_id', '=', 'rooms.id')
             ->leftJoin('messages', 'room_members.room_id', '=', 'messages.room_id')
-            ->select('messages.room_id','rooms.name','messages.body','messages.created_at','room_members.seen')
+            ->select('rooms.id','rooms.name','messages.body','messages.created_at','room_members.seen')
             ->whereIn('rooms.id',$ids)
             ->distinct()
             ->offset($page)->limit($limit)
