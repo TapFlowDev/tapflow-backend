@@ -103,7 +103,7 @@ Route::post('clientRegester', [UserController::class, 'clientSignUpProcess']);
 
 
 
-Route::post('addTeam', [GroupController::class, 'add_group_team']);
+// Route::post('addTeam', [GroupController::class, 'add_group_team']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 // testing
