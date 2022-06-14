@@ -954,7 +954,7 @@ class Final_proposals extends Controller
     }
     function testsendnot()
     {
-        Controller::sendNotification(121,'test','hi from backend','linkahmad.com',2,'final_proposals',26);
+        return Controller::sendNotification(121,'test','hi from backend','linkahmad.com',2,'final_proposals',26);
 
     }
 
