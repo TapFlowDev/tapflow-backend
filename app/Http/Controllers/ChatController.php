@@ -85,7 +85,7 @@ class ChatController extends Controller
             ->offset(1)->limit(1)->first();
             if ($lastMessage === null)
             {
-                return 'send your first message';
+                return null;
                
             }
             else
