@@ -102,8 +102,8 @@ class RoomController extends Controller
                 $roomType = 1;
                 $room = array();
                 $name = Rooms::where('id', $room_id)->select('name')->first()->name;
-                $members = RoomMembers::where('room_id', $room_id)->select('room_id','seen')->get();
-                $membersCount=$members->count();
+                $membersCount = RoomMembers::where('room_id', $room_id)->select('room_id')->count();
+                // $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
                 }
@@ -115,7 +115,7 @@ class RoomController extends Controller
                     'name' => $name,
                     'roomType' => $roomType,
                     'lastMessage' => $lastMessage,
-                    'seen'=>$members->seen,
+                    // 'seen'=>$members->seen,
                 );
                 array_push($rooms, $room);
             }
