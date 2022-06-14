@@ -96,8 +96,8 @@ class RoomController extends Controller
             }
             $page=($offset -1 )*$limit;
             $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->offset($page)->limit($limit)->get();
-            dd($userRooms);
-            $rooms=$this->roomsInfo($userRooms,$offset,$limit);
+            
+            $rooms=$this->roomsInfo($userRooms);
       
            $response = Controller::returnResponse(200, "successful",$rooms);
            return json_encode($response);
@@ -107,7 +107,7 @@ class RoomController extends Controller
         }
     }
     //room type 1 individual 2 group
-    function roomsInfo($rooms,$offset ,$limit)
+    function roomsInfo($rooms)
     {
      
         $Rooms=array();
