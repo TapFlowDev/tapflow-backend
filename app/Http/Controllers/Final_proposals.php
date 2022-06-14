@@ -541,7 +541,7 @@ class Final_proposals extends Controller
                                             ];
                                             $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
                                    
-                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals',$final_proposal ->id);
+                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals',$ifExist['final_proposal_id']);
                                             Mail::mailer('smtp2')->to($companyAdmin->email)->send(new SubmitFinalProposal($details));
                                             $response = Controller::returnResponse(200, 'update data successful', []);
                                             return json_encode($response);
