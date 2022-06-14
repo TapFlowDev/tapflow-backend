@@ -97,7 +97,7 @@ class RoomController extends Controller
             $page=($offset -1 )*$limit;
             $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
             
-            $rooms=$this->roomsInfo($userRooms);
+            $rooms=$this->roomsInfo($userRooms,$offset,$limit);
       
            $response = Controller::returnResponse(200, "successful",$rooms);
            return json_encode($response);
@@ -107,9 +107,9 @@ class RoomController extends Controller
         }
     }
     //room type 1 individual 2 group
-    function roomsInfo($rooms)
+    function roomsInfo($rooms,$offset,$limit)
     {
-     
+        $page=($offset -1 )*$limit;
         $Rooms=array();
         foreach( $rooms as $room)
         {
@@ -122,6 +122,7 @@ class RoomController extends Controller
             ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
             ->select('rooms.id','rooms.name','messages.body','messages.created_at')
             ->where('rooms.id','=',$room->room_id)
+            ->offset($page)->limit($limit)
             ->orderBy('messages.created_at','desc')
             ->first();
            $room->type=$roomType;
