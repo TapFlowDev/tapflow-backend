@@ -96,12 +96,12 @@ class RoomController extends Controller
             }
             $page=($offset -1 )*$limit;
             $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
-            
+            $ids=$userRooms->pluck('room_id')->toArray();
             $rooms=  DB::table('room_members')
             ->leftJoin('rooms', 'room_members.room_id', '=', 'rooms.id')
             ->leftJoin('messages', 'room_members.room_id', '=', 'messages.room_id')
             ->select('messages.room_id','rooms.name','messages.body','messages.created_at','room_members.seen')
-            ->where('room_members.user_id','=',$userData['user_id'])
+            ->whereIn('rooms.id',$ids)
             ->distinct()
             ->offset($page)->limit($limit)
             ->orderBy('messages.created_at','desc')
