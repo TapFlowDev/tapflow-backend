@@ -86,7 +86,7 @@ class   GroupController extends Controller
                 $userData = $req->user();
                 $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
                 $group_id = $group->id;
-                $userId = $req->admin_id;
+                $userId = $userData->id;
                 $member = $membersObj->Insert($group_id, $userId, 1);
 
                 $targets = $req->targets;
