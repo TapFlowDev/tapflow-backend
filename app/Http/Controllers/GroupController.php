@@ -128,8 +128,8 @@ class   GroupController extends Controller
                     $cats = json_decode($req->categories);
                     // $cats = $req->categories;
                     if (isset($cats)) {
+                        $categoryArr = array();
                         foreach ($cats as $key => $value) {
-                            $categoryArr = array();
                             $categoryArr[$key]['group_id'] = $group_id;
                             $categoryArr[$key]['category_id'] = $value;
                             $categoryArr[$key]['sub_category_id'] = 0;
