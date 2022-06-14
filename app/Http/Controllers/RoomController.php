@@ -103,6 +103,7 @@ class RoomController extends Controller
                 $room = array();
                 $name = Rooms::where('id', $room_id)->select('name')->first()->name;
                 $members = RoomMembers::where('room_id', $room_id)->select('room_id','seen')->get();
+                $response = Controller::returnResponse(200, "successful", $members);
                 $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
@@ -122,7 +123,7 @@ class RoomController extends Controller
             $response = Controller::returnResponse(200, "successful", $rooms);
             return json_encode($response);
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something wen wrong", $error->getMessage());
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
         }
     }
