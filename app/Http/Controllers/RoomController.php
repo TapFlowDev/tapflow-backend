@@ -329,7 +329,7 @@ class RoomController extends Controller
             ->offset($page)->limit($limit)
             // ->orderBy('messages.created_at','desc')
             ->first();
-           $room1->type=$roomType;
+        //    $room1->type=$roomType;
             array_push($Rooms,$room);
         }
         return $Rooms;
