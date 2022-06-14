@@ -96,13 +96,13 @@ class Controller extends BaseController
         $groupAdmins = $groupMembersObj->getGroupAdminsIds($receiver_id);
         $fcmTokens=$groupAdmins->pluck('fcm_tokens')->toArray();
         $admins=$groupAdmins->pluck('user_id')->toArray();
-      foreach( $admins as $id)
-      {
-        DB::table('system_notifications')->insert([
-            ['title' => $title,'body'=>$body,'receiver_id'=>$id,"action"=>$action,"action_id"=>$action_id,"link"=>$link],
+    //   foreach( $admins as $id)
+    //   {
+    //     DB::table('system_notifications')->insert([
+    //         ['title' => $title,'body'=>$body,'receiver_id'=>$id,"action"=>$action,"action_id"=>$action_id,"link"=>$link],
             
-        ]);
-      }
+    //     ]);
+    //   }
     }
         else{$fcmTokens=$receiver_id;}
         
