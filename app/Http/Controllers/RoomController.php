@@ -359,6 +359,7 @@ class RoomController extends Controller
                 $chatObj = new ChatController;
 
                 $lastMessage = $chatObj->getRoomLastMessage($room_id);
+                dd($lastMessage);
                 $room = array(
                     'room_id' => $room_id,
                     'name' => $name,
