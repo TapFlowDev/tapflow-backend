@@ -320,7 +320,7 @@ class RoomController extends Controller
                   if ($membersCount > 2) {
                     $roomType = 2;
                 }
-           $room= DB::table('messages')
+           $room1= DB::table('messages')
             ->Join('rooms', 'messages.rooms_id', '=', 'rooms.id')
             ->Join('room_members', 'messages.room_id', '=', 'room_members.room_id')
             ->select('messages.id','rooms.name','messages.body','messages.created_at','room_members.seen')
@@ -329,7 +329,7 @@ class RoomController extends Controller
             ->offset($page)->limit($limit)
             // ->orderBy('messages.created_at','desc')
             ->first();
-           $room->type=$roomType;
+           $room1->type=$roomType;
             array_push($Rooms,$room);
         }
         return $Rooms;
