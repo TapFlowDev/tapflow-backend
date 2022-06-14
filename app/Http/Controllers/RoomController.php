@@ -97,7 +97,14 @@ class RoomController extends Controller
             $page=($offset -1 )*$limit;
             $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
             
-            $rooms=$this->roomsInfo($userRooms,$offset,$limit);
+            $rooms=  DB::table('room_members')
+            ->leftJoin('rooms', 'room_members.room_id', '=', 'rooms.id')
+            ->leftJoin('messages', 'room_members.room_id', '=', 'messages.room_id')
+            ->select('messages.id','rooms.name','messages.body','messages.created_at','room_members.seen')
+            ->where('room_members.user_id','=',$userData['user_id'])
+            ->offset($page)->limit($limit)
+            ->orderBy('messages.created_at','desc')
+            ->first();
       
            $response = Controller::returnResponse(200, "successful",$rooms);
            return json_encode($response);
@@ -119,8 +126,9 @@ class RoomController extends Controller
                     $roomType = 2;
                 }
            $room= DB::table('rooms')
+            ->leftJoin('room_members', 'rooms.id', '=', 'room_members.room_id')
             ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
-            ->select('rooms.id','rooms.name','messages.body','messages.created_at')
+            ->select('messages.id','rooms.name','messages.body','messages.created_at','room_members.seen')
             ->where('rooms.id','=',$room->room_id)
             ->offset($page)->limit($limit)
             ->orderBy('messages.created_at','desc')
