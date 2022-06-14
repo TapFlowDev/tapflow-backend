@@ -189,6 +189,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('getRooms', [RoomController::class, 'getRooms']);
     Route::post('sendMessage', [ChatController::class, 'sendMessage']);
     Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
+    Route::post('getcjtNot', [RoomController::class, 'getcjtNot']);
     Route::post('updateRoomName', [RoomController::class, 'updateRoomName']);
     Route::post('getRoomMessages', [ChatController::class, 'getRoomMessages']);
     Route::get('getUserNotification/{offset}/{limit}', [NotificationController::class, 'getUserNotification']);
