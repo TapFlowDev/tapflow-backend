@@ -474,7 +474,8 @@ class Final_proposals extends Controller
                                         // "Proposal_description" => $final_proposal->description,
                                         "agency_name" => $agency->name
                                     ];
-                                    return $projectInfo->company_id;
+                                    $response = Controller::returnResponse(200, 'Final proposal add successfully', $projectInfo->company_id);
+                                    return (json_encode($response));
                                    $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
                                    
                                     Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals','$final_proposal ->id');
