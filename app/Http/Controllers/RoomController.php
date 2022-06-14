@@ -95,7 +95,7 @@ class RoomController extends Controller
                 return json_encode($response);
             }
             $page=($offset -1 )*$limit;
-            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->offset($page)->limit($limit)->get();
+            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
             
             $rooms=$this->roomsInfo($userRooms);
       
@@ -120,7 +120,7 @@ class RoomController extends Controller
                 }
            $room= DB::table('rooms')
             ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
-            ->select('rooms.name','messages.body','messages.created_at')
+            ->select('rooms.id','rooms.name','messages.body','messages.created_at')
             ->where('rooms.id','=',$room->room_id)
             ->orderBy('messages.created_at','desc')
             ->first();
