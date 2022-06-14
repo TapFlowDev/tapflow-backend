@@ -104,6 +104,7 @@ class RoomController extends Controller
                 $name = Rooms::where('id', $room_id)->select('name')->first()->name;
                 $members = RoomMembers::where('room_id', $room_id)->select('room_id','seen')->get();
                 $response = Controller::returnResponse(200, "successful", $members);
+                return json_encode($response);
                 $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
