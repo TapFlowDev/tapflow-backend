@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\RoomMembers;
 use Illuminate\Http\Request;
 use App\Models\System_Notification;
 use Exception;
 use Illuminate\Support\Facades\DB;
+
+use function GuzzleHttp\Promise\each;
 
 class NotificationController extends Controller
 {
@@ -44,13 +47,27 @@ class NotificationController extends Controller
     {
         try {
             $userData=Controller::checkUser($req);
-            $roomObj=new RoomController;
-           $rooms=json_decode($roomObj->getRooms($req));
+            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
+            $rooms=$this->roomsInfo($userRooms);
+      
            $response = Controller::returnResponse(200, "successful",$rooms);
            return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
         }
+    }
+    function roomsInfo($rooms)
+    {
+        foreach( $rooms as $room)
+        {
+           $room= DB::table('rooms')
+            ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
+            ->select('rooms.name','messages.body','messages.title','messages.created_at')
+            ->where('rooms.id','=',$room->id)
+            ->orderBy('messages.created_at')
+            ->get();
+        }
+        return $room;
     }
 }
