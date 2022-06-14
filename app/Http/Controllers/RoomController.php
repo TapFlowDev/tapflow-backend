@@ -121,7 +121,7 @@ class RoomController extends Controller
             ->where('rooms.id','=',$room->room_id)
             ->orderBy('messages.created_at','desc')
             ->get();
-           $room['roomType']=$roomType;
+           $room->roomType=$roomType;
             array_push($Rooms,$room);
         }
         return $Rooms;
