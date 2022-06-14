@@ -59,6 +59,7 @@ class NotificationController extends Controller
     }
     function roomsInfo($rooms)
     {
+        $Rooms=array();
         foreach( $rooms as $room)
         {
            $room= DB::table('rooms')
@@ -67,7 +68,8 @@ class NotificationController extends Controller
             ->where('rooms.id','=',$room->id)
             ->orderBy('messages.created_at')
             ->get();
+            array_push($Rooms,$room);
         }
-        return $rooms;
+        return $Rooms;
     }
 }
