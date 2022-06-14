@@ -120,11 +120,10 @@ class RoomController extends Controller
                 }
            $room= DB::table('rooms')
             ->leftJoin('messages', 'rooms.id', '=', 'messages.room_id')
-            ->select('messages.room_id','rooms.name','messages.body','messages.created_at as message_date')
+            ->select('rooms.id','rooms.name','messages.body','messages.created_at')
             ->where('rooms.id','=',$room->room_id)
-            ->distinct('messages.room_id')
             ->orderBy('messages.created_at','desc')
-            ->get();
+            ->first();
            $room->type=$roomType;
             array_push($Rooms,$room);
         }
