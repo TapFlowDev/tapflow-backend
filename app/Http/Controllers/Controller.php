@@ -13,6 +13,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Mail;
+use App\Models\System_Notification;
 
 class Controller extends BaseController
 {
@@ -99,10 +100,7 @@ class Controller extends BaseController
         $admins=$groupAdmins->pluck('user_id')->toArray();
       foreach( $admins as $id)
       {
-        DB::table('system_notifications')->insert([
-            ['title' => $title,'body'=>$body,'receiver_id'=>$id,"action"=>$action,"action_id"=>$action_id,"link"=>$link],
-            
-        ]);
+        System_Notification::create( ['title' => $title,'body'=>$body,'receiver_id'=>$id,"action"=>$action,"action_id"=>$action_id,"link"=>$link]);
       }
     }
         else{$fcmTokens=$receiver_id;}

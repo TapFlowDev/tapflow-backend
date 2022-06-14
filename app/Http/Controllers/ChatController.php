@@ -58,10 +58,6 @@ class ChatController extends Controller
             return json_encode($response);
         }
     }
-    function messageSeen($id)
-    {
-        Messages::where('id', $id)->update(['seen' => 1]);
-    }
 
     function getRoomMessages(Request $req)
     {
@@ -135,4 +131,5 @@ class ChatController extends Controller
     
         return $allMessages;
     }
+    
 }
