@@ -325,9 +325,10 @@ class RoomController extends Controller
             ->Join('room_members', 'messages.room_id', '=', 'room_members.room_id')
             ->select('messages.room_id','rooms.name','messages.body','messages.created_at','room_members.seen')
             ->where('messages.room_id','=',$room)
-            ->latest()
+            // ->latest()
+            ->orderBy('messages.created_at','desc')
+
             ->offset($page)->limit($limit)
-            // ->orderBy('messages.created_at','desc')
             ->first();
         //    $room1->type=$roomType;
             array_push($Rooms,$room1);
