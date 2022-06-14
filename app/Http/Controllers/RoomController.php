@@ -363,8 +363,8 @@ class RoomController extends Controller
                     'room_id' => $room_id,
                     'name' => $name,
                     'roomType' => $roomType,
-                    'lastMessage' => $lastMessage->body,
-                     'date'=>$lastMessage->created_at,
+                    'lastMessage' => $lastMessage['body'],
+                     'date'=>$lastMessage['created_at'],
                 );
                 // $dates=array_column($rooms,'date');
                 // array_multisort($dates, SORT_DESC,$rooms);
