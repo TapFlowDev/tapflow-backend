@@ -330,7 +330,7 @@ class RoomController extends Controller
             // ->orderBy('messages.created_at','desc')
             ->first();
         //    $room1->type=$roomType;
-            array_push($Rooms,$room);
+            array_push($Rooms,$room1);
         }
         return $Rooms;
     }
