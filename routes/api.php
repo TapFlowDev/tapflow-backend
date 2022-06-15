@@ -89,6 +89,7 @@ Route::get('Notify/{id}', [Final_proposals::class, 'testsendnot']);
 Route::get('updateMilestonesPrices/{m}/{f}', [Milestones::class, 'updateMilestonesPrices']);
 Route::get('canSubmit/{id}', [Milestones::class, 'canSubmit']);
 Route::get('getRoomLastMessage/{id}', [ChatController::class, 'getRoomLastMessage']);
+Route::get('checkIfRoomExist/{id}/{id2}', [RoomController::class, 'checkIfRoomExist']);
 
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
 
