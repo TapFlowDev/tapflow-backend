@@ -350,24 +350,24 @@ class RoomController extends Controller
             $rooms2 = array();
             $start=($offset-1)*$limit;
             $ids=array_slice($rooms_ids,$start);
-            foreach($ids as $id) {
-            
+            for($i=0 ; $i < $limit ;$i++) {
+                // dd(['i: '=>$i,'ids: '=>$rooms_ids]);
                 $roomType = 1;
                 $room = array();
                 $room2= array();
-                $name = Rooms::where('id', $id)->select('name')->first()->name;
-                $membersCount = RoomMembers::where('room_id', $id)->select('room_id')->count();
+                $name = Rooms::where('id', $ids[$i])->select('name')->first()->name;
+                $membersCount = RoomMembers::where('room_id',  $ids[$i])->select('room_id')->count();
                 // $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
                 }
                 $chatObj = new ChatController;
 
-                $lastMessage = $chatObj->getRoomLastMessage( $id);
+                $lastMessage = $chatObj->getRoomLastMessage( $ids[$i]);
                 if ($lastMessage === null )
                 {
                     $room2= array(
-                        'room_id' =>  $id,
+                        'room_id' =>  $ids[$i],
                         'name' => $name,
                         'roomType' => $roomType,
                         'lastMessage' => 'first msg',
@@ -379,7 +379,7 @@ class RoomController extends Controller
                 // dd($lastMessage->body);
                 else{
                 $room = array(
-                    'room_id' =>  $id,
+                    'room_id' =>  $ids[$i],
                     'name' => $name,
                     'roomType' => $roomType,
                     'lastMessage' => $lastMessage->body,
