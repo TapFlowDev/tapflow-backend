@@ -256,7 +256,7 @@ class Proposals extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            $response = Controller::returnResponse(500, "something wrong pppppppppppppppppppppppppppppp", $error->getMessage());
             return (json_encode($response));
         }
     }
