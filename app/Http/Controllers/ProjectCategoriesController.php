@@ -73,20 +73,20 @@ class ProjectCategoriesController extends Controller
                     } else {
                         $project_categories[$category->category_id]['image'] = "Null";
                     }
-                    $sub_image = DB::table('sub_categories')
-                        ->select('image')
-                        ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                    if ($sub_image != "") {
+                    // $sub_image = DB::table('sub_categories')
+                    //     ->select('image')
+                    //     ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    // if ($sub_image != "") {
 
-                        $project_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                            ->select('category_id', 'id', 'name', "image")
-                            ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                    } else {
+                    //     $project_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                    //         ->select('category_id', 'id', 'name', "image")
+                    //         ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    // } else {
 
-                        $project_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
-                            ->select('category_id', 'id', 'name')
-                            ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
-                    }
+                    //     $project_categories[$category->category_id]['subs'][] = DB::table('sub_categories')
+                    //         ->select('category_id', 'id', 'name')
+                    //         ->where([['category_id', '=', $category->category_id], ['id', '=', $category->sub_category_id]])->first();
+                    // }
                 }
             }
             // foreach ($project_categories as $val) {
