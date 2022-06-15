@@ -28,7 +28,7 @@ class RoomController extends Controller
 
 
             // $data['name'] = $this->roomName($data['agencyAdmin'], $data['agencyAdmin']);
-            $room = Rooms::create(['name' => $data['name']]);
+            $room = Rooms::create(['name' => "tes ts"]);
             $room_id = $room->id;
             $exist=$this->checkIfRoomExist($data['agencyAdmin'],$data['companyAdmin']);
             if($exist ==1 ){
