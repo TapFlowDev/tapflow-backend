@@ -437,7 +437,7 @@ class RoomController extends Controller
         $d=array();
         foreach ($agencyAdminRooms as $room_id) {
             // dd(['id'=>$room_id,'ff'=>in_array($room_id, $clientAdminRooms)]);
-            array_push($d,["id"=>$room_id, 'ff'=>in_array($room_id, $clientAdminRooms)]);
+            array_push($d,$room_id,in_array($room_id, $clientAdminRooms));
             if (in_array($room_id, $clientAdminRooms)) {
                 return 1;
             } else {
