@@ -349,7 +349,9 @@ class RoomController extends Controller
             $rooms = array();
             $rooms2 = array();
             $start=($offset-1)*$limit;
+
             $ids=array_slice($rooms_ids,$start);
+return(['len rooms '=> count($rooms_ids),"start" =>$start]);
             for($i=0 ; $i < $limit ;$i++) {
                 // dd(['i: '=>$i,'ids: '=>$rooms_ids]);
                 $roomType = 1;
