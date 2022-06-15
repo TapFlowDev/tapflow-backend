@@ -394,7 +394,7 @@ class RoomController extends Controller
             }
             // dd($rooms);
             $all=array_merge($rooms,$rooms2);
-            $response = Controller::returnResponse(200, "successful", $rooms);
+            $response = Controller::returnResponse(200, "successful", $rooms2);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
