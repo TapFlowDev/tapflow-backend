@@ -210,13 +210,15 @@ class RoomController extends Controller
             return json_encode($response);
         }
     }
-    function roomName($team_id, $company_id)
+    function roomName($agencyAdmin, $companyAdmin)
     {
         $TeamObj = new TeamController;
         $CompanyObj = new CompanyController;
-
-        $team_name = $TeamObj->get_team_info($team_id)->name;
-        $company_name = $CompanyObj->get_company_info($company_id)->name;
+        $memberObj = new GroupMembersController;
+        $team_id=$memberObj->getGroupId($agencyAdmin);
+        $company_id=$memberObj->getGroupId($companyAdmin);
+        $team_name = $TeamObj->get_team_info($team_id->group_id)->name;
+        $company_name = $CompanyObj->get_company_info($company_id->group_id)->name;
         return $team_name . ' & ' . $company_name;
     }
     function updateRoomName(Request $req)

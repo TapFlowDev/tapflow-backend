@@ -196,5 +196,4 @@ class GroupMembersController extends Controller
     {
         return Group::where('id',$id)->select('type')->first()->type;
     }
-    
 }

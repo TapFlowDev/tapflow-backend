@@ -221,8 +221,6 @@ class Proposals extends Controller
                         Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                         // notify agency
                         $proposal=Proposal::where('id', $req->proposal_id)->select('team_id','project_id','user_id')->first();
-                        $response = Controller::returnResponse(500, "something wrong",$proposal->team_id);
-                        return (json_encode($response));
                         $team_id=$proposal->team_id;
                         $project_id= $proposal->project_id;
                         $agencyAdmin= $proposal->user_id;
