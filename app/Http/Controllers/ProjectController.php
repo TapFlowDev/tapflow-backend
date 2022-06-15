@@ -30,6 +30,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use App\Http\Controllers\CompanyController;
+use GuzzleHttp\Handler\Proxy;
 
 class ProjectController extends Controller
 {
@@ -1094,6 +1095,10 @@ class ProjectController extends Controller
         $company_obj=new CompanyController;
         $company_id=Project::where('id',$project_id)->select('company_id')->first()->company_id;
         return $company_obj-> get_company_info ($company_id);
+    }
+    function getCompanyProjectAdmin($project_id)
+    {
+        return Project::where('id',$project_id)->select('user_id')->first()->user_id;
     }
 
 }

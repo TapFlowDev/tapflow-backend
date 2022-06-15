@@ -31,18 +31,22 @@ class RoomController extends Controller
             $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
             $groupMembersObj = new GroupMembersController;
-
-
-            $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
-
-            $companyAdmins = $groupMembersObj->getGroupAdminsIds($data['company_id'])->pluck('user_id')->toArray();
-
-            $users = array_merge($teamAdmins, $companyAdmins);
-
-            foreach ($users as $user_id) {
-
-                RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id]);
+            $exist=$this->checkIfRoomExist($data['agencyAdmin'],$data['companyAdmin']);
+            if($exist ==1 ){
+                return ['code' => 200, 'msg' => 'chat already exist between these pepole'];
             }
+            RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agencyAdmin']]);
+            RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['companyAdmin']]);
+            // $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
+
+            // $companyAdmins = $groupMembersObj->getGroupAdminsIds($data['company_id'])->pluck('user_id')->toArray();
+
+            // $users = array_merge($teamAdmins, $companyAdmins);
+
+            // foreach ($users as $user_id) {
+
+            //     RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id]);
+            // }
             // $fenLink = "/a-user/main/chat#/" . $room_id;
             Controller::sendNotification($data['team_id'], '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
             Controller::sendNotification($data['company_id'], '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
@@ -337,7 +341,7 @@ class RoomController extends Controller
         }
         return $Rooms;
     }
-     //room type 1 individual 2 group
+    //room type 1 individual 2 group
     function getRooms(Request $req, $offset, $limit)
     {
         try {
@@ -351,7 +355,7 @@ class RoomController extends Controller
             $rooms = array();
             $rooms2 = array();
             $start = ($offset - 1) * $limit;
-            if ($start == count($rooms_ids) or $start >count( $rooms_ids)) {
+            if ($start == count($rooms_ids) or $start > count($rooms_ids)) {
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
             }
@@ -378,7 +382,7 @@ class RoomController extends Controller
                         'roomType' => $roomType,
                         'lastMessage' => 'first msg',
                         'date' => '',
-                        'seen'=>$seen,
+                        'seen' => $seen,
                     );
                     array_push($rooms2, $room2);
                 }
@@ -390,7 +394,7 @@ class RoomController extends Controller
                         'roomType' => $roomType,
                         'lastMessage' => $lastMessage->body,
                         'date' => $lastMessage->created_at,
-                        'seen'=>$seen,
+                        'seen' => $seen,
                     );
                     array_push($rooms, $room);
                     $dates = array_column($rooms, 'date');
@@ -408,6 +412,18 @@ class RoomController extends Controller
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
+        }
+    }
+    private function checkIfRoomExist($agencyAdmin, $companyAdmin)
+    {
+        $agencyAdminRooms = RoomMembers::where('user_id', $agencyAdmin)->select('room_id')->pluck('room_id')->toArray();
+        $clientAdminRooms = RoomMembers::where('user_id', $companyAdmin)->select('room_id')->pluck('room_id')->toArray();
+        foreach ($agencyAdminRooms as $room_id) {
+            if (in_array($room_id, $clientAdminRooms)) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
     }
 }
