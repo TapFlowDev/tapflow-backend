@@ -436,14 +436,13 @@ class RoomController extends Controller
         $clientAdminRooms = RoomMembers::where('user_id', $companyAdmin)->select('room_id')->pluck('room_id')->toArray();
         $d=array();
         foreach ($agencyAdminRooms as $room_id) {
-            // dd(['id'=>$room_id,'ff'=>in_array($room_id, $clientAdminRooms)]);
-            array_push($d,$room_id,in_array($room_id, $clientAdminRooms));
+            
             if (in_array($room_id, $clientAdminRooms)) {
                 return 1;
             } else {
              continue;
             }
         }
-        dd($d);
+        
     }
 }
