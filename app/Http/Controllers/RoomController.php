@@ -110,11 +110,12 @@ class RoomController extends Controller
                 $chatObj = new ChatController;
 
                 $lastMessage = $chatObj->getRoomLastMessage($room_id);
+                if($lastMessage === null){$msg='send first messages';}else{$msg=$lastMessage->body;}
                 $room = array(
                     'room_id' => $room_id,
                     'name' => $name,
                     'roomType' => $roomType,
-                    'lastMessage' => $lastMessage,
+                    'lastMessage' => $msg,
                     // 'seen'=>$members->seen,
                 );
                 array_push($rooms, $room);
