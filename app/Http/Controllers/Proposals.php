@@ -230,7 +230,7 @@ class Proposals extends Controller
                         $projectInfo = json_decode($projectObj->getProject($project_id))->data;
                         $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
                         $room=$RoomObj->createRoom($data);
-                        dd($room);
+                       
                         if($room['code'] != 200)
                         {
                             $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
