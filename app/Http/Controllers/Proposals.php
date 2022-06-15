@@ -231,7 +231,7 @@ class Proposals extends Controller
                         $companyAdmin=$projectObj->getCompanyProjectAdmin($project_id);
                         $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
                         $room=$RoomObj->createRoom($data);
-                        
+                        dd($room);
                         if($room['code'] != 200)
                         {
                             $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
