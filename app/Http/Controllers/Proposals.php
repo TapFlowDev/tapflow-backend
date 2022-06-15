@@ -231,11 +231,13 @@ class Proposals extends Controller
                         $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
                         $room=$RoomObj->createRoom($data);
                        
-                        if($room['code'] != 200)
-                        {
-                            $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
-                            return (json_encode($response));
-                        }
+                        $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
+                        return (json_encode($response));
+                        // if($room['code'] != 200)
+                        // {
+                        //     $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
+                        //     return (json_encode($response));
+                        // }
                         $fenLink="a-user/main/pending-project/".$req->project_id;
                         Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal accepted!',$fenLink,2,'proposals',$req->proposal_id);
                         $mail = $this->notifyAgency($req->proposal_id, 1);
