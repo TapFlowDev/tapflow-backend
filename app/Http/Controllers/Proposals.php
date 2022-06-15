@@ -231,11 +231,11 @@ class Proposals extends Controller
                         $companyAdmin=$projectObj->getCompanyProjectAdmin($project_id);
                         $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
                         $room=$RoomObj->createRoom($data);
-                        $response = Controller::returnResponse(800, "something wrong", $room['msg']);
+                        $response = Controller::returnResponse(800, "something wrong chat", $room['msg']);
                         return (json_encode($response));
                         if($room['code'] != 200)
                         {
-                            $response = Controller::returnResponse(500, "something wrong", $room['msg']);
+                            $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
                             return (json_encode($response));
                         }
                         $fenLink="a-user/main/pending-project/".$req->project_id;
