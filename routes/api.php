@@ -186,7 +186,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
     Route::post('storeToken', [FireBaseNotificationsController::class, 'storeToken']);
     Route::post('addMember', [RoomController::class, 'addMember']);
-    Route::post('getRooms', [RoomController::class, 'getRooms']);
+    // Route::post('getRooms', [RoomController::class, 'getRooms']);
     Route::post('sendMessage', [ChatController::class, 'sendMessage']);
     Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
     Route::post('getcjtNot/{offset}/{limit}', [RoomController::class, 'getcjtNot']);
