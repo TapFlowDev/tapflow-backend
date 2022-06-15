@@ -220,17 +220,21 @@ class Proposals extends Controller
 
                         Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                         // notify agency
-                        $team_id= Proposal::where('id', $req->proposal_id)->select('team_id')->first()->team_id;
-                        $project_id= Proposal::where('id', $req->proposal_id)->select('project_id')->first()->project_id;
+                        $proposal=Proposal::where('id', $req->proposal_id)->select('team_id','project_id','user_id')->first();
+                        $team_id=$proposal->team_id;
+                        $project_id= $proposal->project_id;
+                        $agencyAdmin= $proposal->user_id;
                         $projectObj=new ProjectController;
                         $RoomObj=new RoomController();
-                        $company_id= $projectObj->getCompanyInfoByProjectId($project_id)->id;
+                        // $company_id= $projectObj->getCompanyInfoByProjectId($project_id)->id;
                         $projectInfo = json_decode($projectObj->getProject($project_id))->data;
-                        $data=array('name'=>null,'team_id'=>$team_id,'company_id'=>$company_id);
+                        $companyAdmin=$projectObj->getCompanyProjectAdmin($project_id);
+                        $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
                         $room=$RoomObj->createRoom($data);
+                        
                         if($room['code'] != 200)
                         {
-                            $response = Controller::returnResponse(500, "something wrong", $room['msg']);
+                            $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
                             return (json_encode($response));
                         }
                         $fenLink="a-user/main/pending-project/".$req->project_id;
@@ -251,7 +255,7 @@ class Proposals extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            $response = Controller::returnResponse(500, "something wrong pppppp", $error->getMessage());
             return (json_encode($response));
         }
     }
