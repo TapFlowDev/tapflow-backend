@@ -226,7 +226,6 @@ class Proposals extends Controller
                         $agencyAdmin= $proposal->user_id;
                         $projectObj=new ProjectController;
                         $RoomObj=new RoomController();
-                        $company_id= $projectObj->getCompanyInfoByProjectId($project_id)->id;
                         $projectInfo = json_decode($projectObj->getProject($project_id))->data;
                         $companyAdmin=$projectObj->getCompanyProjectAdmin($project_id);
                         $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
