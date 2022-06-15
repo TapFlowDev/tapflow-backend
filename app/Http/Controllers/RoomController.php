@@ -441,7 +441,7 @@ class RoomController extends Controller
             if (in_array($room_id, $clientAdminRooms)) {
                 return 1;
             } else {
-                return 0;
+             continue;
             }
         }
         dd($d);
