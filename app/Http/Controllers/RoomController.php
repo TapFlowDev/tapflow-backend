@@ -27,12 +27,12 @@ class RoomController extends Controller
         try {
 
 
-            $data['name'] = $this->roomName($data['agecnyAdmin'], $data['companyAdmin']);
+            $data['name'] = $this->roomName($data['agencyAdmin'], $data['companyAdmin']);
             $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
             $groupMembersObj = new GroupMembersController;
 
-            RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agecnyAdmin']]);
+            RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agencyAdmin']]);
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['companyAdmin']]);
             // $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
 
