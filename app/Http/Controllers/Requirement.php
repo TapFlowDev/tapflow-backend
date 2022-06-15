@@ -51,8 +51,7 @@ class Requirement extends Controller
   function getRequirementsAndHourlyRateByProjectId($projectId)
   {
     $requirements = DB::table('requirements')
-      ->leftJoin('proposal_requirements', 'requirements.id', '=', 'proposal_requirements.requirement_id')
-      ->select('requirements.id as requirementId', 'proposal_requirements.hourly_rate as hourlyRate', 'requirements.description')
+      ->select('requirements.id as requirementId','requirements.description')
       ->where('requirements.project_id', '=', $projectId)
       ->get();
 
