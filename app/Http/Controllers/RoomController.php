@@ -27,7 +27,7 @@ class RoomController extends Controller
         try {
 
 
-            $data['name'] = $this->roomName($data['agencyAdmin'], $data['agencyAdmin']);
+            $data['name'] = $this->roomName($data['agencyAdmin'], $data['companyAdmin']);
             $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
             $exist=$this->checkIfRoomExist($data['agencyAdmin'],$data['companyAdmin']);
@@ -218,7 +218,7 @@ class RoomController extends Controller
         $groupberObj = new GroupController;
         $team_id=$groupberObj->getGroupIdByUserId($agencyAdmin);
         $company_id=$groupberObj->getGroupIdByUserId($companyAdmin);
-        dd(['team'=>$team_id,'comp'=>$company_id]);
+        
         $team_name = $TeamObj->get_team_info($team_id)->name;
         $company_name = $CompanyObj->get_company_info($company_id)->name;
     
