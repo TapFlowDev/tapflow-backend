@@ -212,7 +212,7 @@ class Proposals extends Controller
 
     function acceptProposal(Request $req)
     {
-        // try {
+        try {
             $userData = Controller::checkUser($req);
             if ($userData['exist'] == 1) {
                 if ($userData['group_id'] == $req->company_id) {
@@ -239,7 +239,7 @@ class Proposals extends Controller
                             return (json_encode($response));
                         }
                         $fenLink="a-user/main/pending-project/". $project_id;
-                        Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal accepted!',$fenLink,2,'proposals',$req->proposal_id);
+                        Controller::sendNotification($team_id,'any name','Initial proposal accepted!',$fenLink,2,'proposals',$req->proposal_id);
                         $mail = $this->notifyAgency($req->proposal_id, 1);
                         $response = Controller::returnResponse(200, "proposal accepted", []);
                         return (json_encode($response));
@@ -255,10 +255,10 @@ class Proposals extends Controller
                 $response = Controller::returnResponse(422, "this user does not have team", []);
                 return (json_encode($response));
             }
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
-        //     return (json_encode($response));
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            return (json_encode($response));
+        }
     }
     function rejectProposal(Request $req)
     {
