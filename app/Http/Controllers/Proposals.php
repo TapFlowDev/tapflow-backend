@@ -18,6 +18,7 @@ use App\Mail\ProposalMail;
 use App\Models\Countries;
 use App\Models\Group;
 use App\Models\Group_member;
+use App\Models\Proposal_requirement;
 use App\Models\Team;
 use App\Models\User;
 
@@ -345,25 +346,45 @@ class Proposals extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return (json_encode($response));
             }
-            
+
             $requirementObj = new Requirement;
-            $projectId = $req->projectId;
+            $projectId = $req->project_id;
             $teamId = $userData['group_id'];
             $userId = $userData['user_id'];
             $requirements = json_decode($req->requirements);
-             
-            $doesExsist = Proposal::where('project_id', '=', $projectId)->where('team_id', '=', $teamId)->first();
-            if ($doesExsist) {
-                $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $doesExsist]);
+
+            $project = Project::where('id', '=', $projectId)->first();
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Project does not exsist', []);
                 return (json_encode($response));
             }
+            if ($project->type != 3) {
+                $response = Controller::returnResponse(422, 'this function not possible for this type of projects', []);
+                return (json_encode($response));
+            }
+
+            $proposalDoesExsist = Proposal::where('project_id', '=', $projectId)->where('team_id', '=', $teamId)->first();
+            if ($proposalDoesExsist) {
+                $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposalDoesExsist]);
+                return (json_encode($response));
+            }
+
             /**
              * check requirements ids if valid
              */
-           
+            $projectRequirements = $requirementObj->getRequirementsAndHourlyRateByProjectId($projectId);
+            $projectRequirements = $projectRequirements->toArray();
+            $projectRequirementsIds = array_column($projectRequirements, 'requirementId');
+            $requirementsIds = array_column($requirements, 'requirementId');
+            if ($requirementsIds != $projectRequirementsIds) {
+                $response = Controller::returnResponse(101, 'Requirments not right', []);
+                return (json_encode($response));
+            }
+
+
             $proposalArr = array(
                 'team_id' => $teamId,
-                'user_id' =>$userId,
+                'user_id' => $userId,
                 'project_id' => $projectId,
                 'price_min' => 0,
                 'price_max' => 0,
@@ -371,7 +392,20 @@ class Proposals extends Controller
                 'to' => 0,
                 'our_offer' => $req->our_offer,
             );
-
+            $proposal = proposal::create($proposalArr);
+            foreach ($requirements as $keyRequ => $valRequ) {
+                $requirementArr = array(
+                    'proposal_id' => $proposal->id,
+                    'requirement_id' => $valRequ['requirementId'],
+                    'hourly_rate' => $valRequ['hourlyRate'],
+                );
+                Proposal_requirement::create($requirementArr);
+            }
+            $responseData = array("proposal_id" => $proposal->id);
+            $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
+            /** 
+             * send email
+            */
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
             return (json_encode($response));
