@@ -92,7 +92,7 @@ class ProjectCategoriesController extends Controller
              foreach ($project_categories as $val) {
 
                  $allCategory[] = $val;
-                 $subs_length = count($val['subs']);
+                //  $subs_length = count($val['subs']);
                 //  for ($i = 0; $i < $subs_length; $i++) {
                 //      if (isset($val['subs'][$i]->image)) {
                 //          $val['subs'][$i]->image = asset('images/categories/' . $val['subs'][$i]->image);
