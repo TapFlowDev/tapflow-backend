@@ -355,16 +355,15 @@ class RoomController extends Controller
                 return json_encode($response);
             }
             $ids = array_slice($rooms_ids, $start);
-
-           
             for ($i = 0; $i < $limit; $i++) {
                 // dd(['i: '=>$i,'ids: '=>$rooms_ids]);
                 $roomType = 1;
                 $room = array();
                 $room2 = array();
                 $name = Rooms::where('id', $ids[$i])->select('name')->first()->name;
-                $membersCount = RoomMembers::where('room_id',  $ids[$i])->select('room_id')->count();
-                // $membersCount=$members->count();
+                $members = RoomMembers::where('room_id',  $ids[$i])->select('seen')->get();
+                return($members);
+                $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
                 }
