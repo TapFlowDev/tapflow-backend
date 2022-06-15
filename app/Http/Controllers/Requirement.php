@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\Requirement as requirementModel;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Svg\Tag\Rect;
 
 /*
@@ -47,20 +48,13 @@ class Requirement extends Controller
 
     return ($requirements);
   }
-  function getRequirementsByProjectIdSelectedColumns(Request $req, $projectId)
+  function getRequirementsAndHourlyRateByProjectId($projectId)
   {
-    try {
-      $project = Project::select('id')->where('id', '=', $projectId)->first();
-      if (!$project) {
-        $response = Controller::returnResponse(422, 'project does not exsist', []);
-        return (json_encode($response));
-      }
-      $requirements = requirementModel::select('id as requirementId', 'description')->where('project_id', '=', $projectId)->get();
-    } catch (Exception $error) {
-      $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
-      return (json_encode($response));
-    }
-    // $requirements = requirementModel::where('project_id', $id)->select('description')->get();
+    $requirements = DB::table('requirements')
+      ->leftJoin('proposal_requirements', 'requirements.id', '=', 'proposal_requirements.requirement_id')
+      ->select('requirements.id as requirementId', 'proposal_requirements.hourly_rate as hourlyRate', 'requirements.description')
+      ->where('requirements.project_id', '=', $projectId)
+      ->get();
 
     return $requirements;
   }

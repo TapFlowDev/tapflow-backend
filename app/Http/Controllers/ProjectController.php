@@ -354,6 +354,7 @@ class ProjectController extends Controller
             $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            $project->requirmentsDetails = $requirementsObj->getRequirementsAndHourlyRateByProjectId($project->id);
             $project->admin_info = $admin_info;
         }
         return $projects;
