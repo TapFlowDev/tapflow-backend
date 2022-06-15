@@ -30,10 +30,10 @@ class RoomController extends Controller
             // $data['name'] = $this->roomName($data['agencyAdmin'], $data['companyAdmin']);
             $room = Rooms::create(['name' => 'asd']);
             $room_id = $room->id;
-            $exist = $this->checkIfRoomExist($data['agencyAdmin'], $data['companyAdmin']);
-            if ($exist == 1) {
-                return ['code' => 200, 'msg' => 'chat already exist between these pepole'];
-            }
+            // $exist = $this->checkIfRoomExist($data['agencyAdmin'], $data['companyAdmin']);
+            // if ($exist == 1) {
+            //     return ['code' => 200, 'msg' => 'chat already exist between these pepole'];
+            // }
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agencyAdmin']]);
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['companyAdmin']]);
             $fcmTokenAgency = DB::table('users')
