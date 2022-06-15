@@ -27,8 +27,8 @@ class RoomController extends Controller
         try {
 
 
-            // $data['name'] = $this->roomName($data['agencyAdmin'], $data['agencyAdmin']);
-            $room = Rooms::create(['name' => "tes ts"]);
+            $data['name'] = $this->roomName($data['agencyAdmin'], $data['agencyAdmin']);
+            $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
             $exist=$this->checkIfRoomExist($data['agencyAdmin'],$data['companyAdmin']);
             if($exist ==1 ){
@@ -420,6 +420,7 @@ class RoomController extends Controller
     }
     private function checkIfRoomExist($agencyAdmin, $companyAdmin)
     {
+        
         $agencyAdminRooms = RoomMembers::where('user_id', $agencyAdmin)->select('room_id')->pluck('room_id')->toArray();
         $clientAdminRooms = RoomMembers::where('user_id', $companyAdmin)->select('room_id')->pluck('room_id')->toArray();
         foreach ($agencyAdminRooms as $room_id) {
