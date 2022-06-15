@@ -361,9 +361,9 @@ class RoomController extends Controller
                 $room = array();
                 $room2 = array();
                 $name = Rooms::where('id', $ids[$i])->select('name')->first()->name;
-                $members = RoomMembers::where('room_id',  $ids[$i])->select('seen')->get();
-                return($members);
-                $membersCount=$members->count();
+                $membersCount = RoomMembers::where('room_id',  $ids[$i])->select('seen')->count();
+                $seen = RoomMembers::where('room_id',  $ids[$i])->select('seen')->first()->seen;
+                // $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
                 }
@@ -377,6 +377,7 @@ class RoomController extends Controller
                         'roomType' => $roomType,
                         'lastMessage' => 'first msg',
                         'date' => '',
+                        'seen'=>$seen,
                     );
                     array_push($rooms2, $room2);
                 }
@@ -388,6 +389,7 @@ class RoomController extends Controller
                         'roomType' => $roomType,
                         'lastMessage' => $lastMessage->body,
                         'date' => $lastMessage->created_at,
+                        'seen'=>$seen,
                     );
                     array_push($rooms, $room);
                     $dates = array_column($rooms, 'date');
