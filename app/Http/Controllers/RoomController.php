@@ -24,20 +24,18 @@ class RoomController extends Controller
     //add row 
     function createRoom($data)
     {
-        try {
+        // try {
 
 
             $data['name'] = $this->roomName($data['agencyAdmin'], $data['agencyAdmin']);
             $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
-            $groupMembersObj = new GroupMembersController;
             $exist=$this->checkIfRoomExist($data['agencyAdmin'],$data['companyAdmin']);
             if($exist ==1 ){
                 return ['code' => 200, 'msg' => 'chat already exist between these pepole'];
             }
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agencyAdmin']]);
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['companyAdmin']]);
-            
             $fcmTokenAgency=DB::table('users')
             ->whereIn('id', $data['agencyAdmin'])
             ->select('*')
@@ -54,9 +52,9 @@ class RoomController extends Controller
             Controller::sendNotification( $fcmTokenAgency, '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 1, 'rooms', $room_id);
             Controller::sendNotification( $fcmTokenCompany, '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 1, 'rooms', $room_id);
             return ['code' => 200, 'msg' => 'successful'];
-        } catch (Exception $error) {
-            return ['code' => 500, 'msg' => $error->getMessage()];
-        }
+        // } catch (Exception $error) {
+        //     return ['code' => 500, 'msg' => $error->getMessage()];
+        // }
     }
 
     function addMember(Request $req)
