@@ -27,30 +27,26 @@ class RoomController extends Controller
         try {
 
 
-            $data['name'] = $this->roomName($data['agencyAdmin'], $data['companyAdmin']);
+            $data['name'] = $this->roomName($data['agecnyAdmin'], $data['companyAdmin']);
             $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
-            $exist = $this->checkIfRoomExist($data['agencyAdmin'], $data['companyAdmin']);
-            if ($exist == 1) {
-                return ['code' => 422, 'msg' => 'chat already exist between these pepole'];
-            }
-            RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agencyAdmin']]);
-            RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['companyAdmin']]);
-            $fcmTokenAgency = DB::table('users')
-                ->whereIn('id', $data['agencyAdmin'])
-                ->select('*')
-                ->where('fcm_token', '!=', null)
-                ->pluck('fcm_token')
-                ->toArray();
-            $fcmTokenCompany = DB::table('users')
-                ->whereIn('id', $data['companyAdmin'])
-                ->select('*')
-                ->where('fcm_token', '!=', null)
-                ->pluck('fcm_token')
-                ->toArray();
+            $groupMembersObj = new GroupMembersController;
 
-            Controller::sendNotification($fcmTokenAgency, '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 1, 'rooms', $room_id);
-            Controller::sendNotification($fcmTokenCompany, '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 1, 'rooms', $room_id);
+            RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agecnyAdmin']]);
+            RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['companyAdmin']]);
+            // $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
+
+            // $companyAdmins = $groupMembersObj->getGroupAdminsIds($data['company_id'])->pluck('user_id')->toArray();
+
+            // $users = array_merge($teamAdmins, $companyAdmins);
+
+            // foreach ($users as $user_id) {
+
+            //     RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id]);
+            // }
+            // $fenLink = "/a-user/main/chat#/" . $room_id;
+            Controller::sendNotification($data['agecnyAdmin'], '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
+            Controller::sendNotification($data['companyAdmin'], '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
             return ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
             return ['code' => 500, 'msg' => $error->getMessage()];
@@ -211,19 +207,14 @@ class RoomController extends Controller
             return json_encode($response);
         }
     }
-    function roomName($agencyAdmin, $companyAdmin)
+    function roomName($team_id, $company_id)
     {
-        try {
-            $TeamObj = new TeamController;
-            $CompanyObj = new CompanyController;
-            $groupberObj = new GroupController;
-            $team_id = $groupberObj->getGroupIdByUserId($agencyAdmin);
-            $company_id = $groupberObj->getGroupIdByUserId($companyAdmin);
-            $team_name = $TeamObj->get_team_info($team_id)->name;
-            $company_name = $CompanyObj->get_company_info($company_id)->name;
-            return $team_name . ' & ' . $company_name;
-        } catch (Exception $e) {
-        }
+        $TeamObj = new TeamController;
+        $CompanyObj = new CompanyController;
+
+        $team_name = $TeamObj->get_team_info($team_id)->name;
+        $company_name = $CompanyObj->get_company_info($company_id)->name;
+        return $team_name . ' & ' . $company_name;
     }
     function updateRoomName(Request $req)
     {
@@ -347,7 +338,7 @@ class RoomController extends Controller
         }
         return $Rooms;
     }
-    //room type 1 individual 2 group
+     //room type 1 individual 2 group
     function getRooms(Request $req, $offset, $limit)
     {
         try {
@@ -361,7 +352,7 @@ class RoomController extends Controller
             $rooms = array();
             $rooms2 = array();
             $start = ($offset - 1) * $limit;
-            if ($start == count($rooms_ids) or $start > count($rooms_ids)) {
+            if ($start == count($rooms_ids) or $start >count( $rooms_ids)) {
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
             }
@@ -388,7 +379,7 @@ class RoomController extends Controller
                         'roomType' => $roomType,
                         'lastMessage' => 'first msg',
                         'date' => '',
-                        'seen' => $seen,
+                        'seen'=>$seen,
                     );
                     array_push($rooms2, $room2);
                 }
@@ -400,7 +391,7 @@ class RoomController extends Controller
                         'roomType' => $roomType,
                         'lastMessage' => $lastMessage->body,
                         'date' => $lastMessage->created_at,
-                        'seen' => $seen,
+                        'seen'=>$seen,
                     );
                     array_push($rooms, $room);
                     $dates = array_column($rooms, 'date');
@@ -418,21 +409,6 @@ class RoomController extends Controller
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
-        }
-    }
-    private function checkIfRoomExist($agencyAdmin, $companyAdmin)
-    {
-        try {
-            $agencyAdminRooms = RoomMembers::where('user_id', $agencyAdmin)->select('*')->pluck('room_id')->toArray();
-            $clientAdminRooms = RoomMembers::where('user_id', $companyAdmin)->select('*')->pluck('room_id')->toArray();
-            foreach ($agencyAdminRooms as $room_id) {
-                if (in_array($room_id, $clientAdminRooms)) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        } catch (Exception $e) {
         }
     }
 }

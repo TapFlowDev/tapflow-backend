@@ -220,23 +220,21 @@ class Proposals extends Controller
 
                         Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                         // notify agency
-                        $proposal=Proposal::where('id', $req->proposal_id)->select('team_id','project_id','user_id')->first();
-                        $team_id=$proposal->team_id;
-                        $project_id= $proposal->project_id;
-                        $agencyAdmin= $proposal->user_id;
+                        $team_id= Proposal::where('id', $req->proposal_id)->select('team_id')->first()->team_id;
+                        $project_id= Proposal::where('id', $req->proposal_id)->select('project_id')->first()->project_id;
+                        $agencyAdmin= Proposal::where('id', $req->proposal_id)->select('user_id')->first()->user_id;
                         $projectObj=new ProjectController;
                         $RoomObj=new RoomController();
-                        $projectInfo = json_decode($projectObj->getProject($project_id))->data;
+                        // $company_id= $projectObj->getCompanyInfoByProjectId($project_id)->id;
                         $companyAdmin=$projectObj->getCompanyProjectAdmin($project_id);
+                        $projectInfo = json_decode($projectObj->getProject($project_id))->data;
                         $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
                         $room=$RoomObj->createRoom($data);
-                        $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
-                        return (json_encode($response));
-                        // if($room['code'] != 200)
-                        // {
-                        //     $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
-                        //     return (json_encode($response));
-                        // }
+                        if($room['code'] != 200)
+                        {
+                            $response = Controller::returnResponse(500, "something wrong", $room['msg']);
+                            return (json_encode($response));
+                        }
                         $fenLink="a-user/main/pending-project/".$req->project_id;
                         Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal accepted!',$fenLink,2,'proposals',$req->proposal_id);
                         $mail = $this->notifyAgency($req->proposal_id, 1);
@@ -255,7 +253,7 @@ class Proposals extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something wrong pppppp", $error->getMessage());
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
             return (json_encode($response));
         }
     }
