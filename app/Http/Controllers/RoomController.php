@@ -44,8 +44,8 @@ class RoomController extends Controller
                 RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id]);
             }
             // $fenLink = "/a-user/main/chat#/" . $room_id;
-            Controller::sendNotification($data['team_id'], '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 2,'rooms',$room_id);
-            Controller::sendNotification($data['company_id'], '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 2,'rooms',$room_id);
+            Controller::sendNotification($data['team_id'], '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
+            Controller::sendNotification($data['company_id'], '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
             return ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
             return ['code' => 500, 'msg' => $error->getMessage()];
@@ -110,7 +110,11 @@ class RoomController extends Controller
                 $chatObj = new ChatController;
 
                 $lastMessage = $chatObj->getRoomLastMessage($room_id);
-                if($lastMessage === null){$msg='send first messages';}else{$msg=$lastMessage->body;}
+                if ($lastMessage === null) {
+                    $msg = 'send first messages';
+                } else {
+                    $msg = $lastMessage->body;
+                }
                 $room = array(
                     'room_id' => $room_id,
                     'name' => $name,
@@ -148,18 +152,18 @@ class RoomController extends Controller
                         "freelancers.image",
                         "users.role"
                     )
-                    ->where('group_members.group_id','=',$userData['group_id'])
-                    ->where('group_members.user_id','<>',$userData['user_id'])
+                    ->where('group_members.group_id', '=', $userData['group_id'])
+                    ->where('group_members.user_id', '<>', $userData['user_id'])
                     ->where('name', 'LIKE', '%' . $name . '%')
                     ->get();
-                    foreach ($teamMembers as $keyUser => &$user) {
-                        if ($user->image != '') {
-                            $image = asset('images/users/' . $user->image);
-                            $user->image = $image;
-                        } else {
-                            $user->image = asset('images/profile-pic.jpg');
-                        }
+                foreach ($teamMembers as $keyUser => &$user) {
+                    if ($user->image != '') {
+                        $image = asset('images/users/' . $user->image);
+                        $user->image = $image;
+                    } else {
+                        $user->image = asset('images/profile-pic.jpg');
                     }
+                }
             } elseif ($groupType == 2) {
                 $teamMembers = DB::table('group_members')
                     ->leftjoin('clients', 'group_members.user_id', '=', 'clients.user_id')
@@ -171,19 +175,19 @@ class RoomController extends Controller
                         "users.email",
                         "clients.image",
                         "users.role"
-                    ) 
-                    ->where('group_members.group_id','=',$userData['group_id'])
-                    ->where('group_members.user_id','<>',$userData['user_id'])
+                    )
+                    ->where('group_members.group_id', '=', $userData['group_id'])
+                    ->where('group_members.user_id', '<>', $userData['user_id'])
                     ->where('name', 'LIKE', '%' . $name . '%')
                     ->get();
-                    foreach ($teamMembers as $keyUser => &$user) {
-                        if ($user->image != '') {
-                            $image = asset('images/users/' . $user->image);
-                            $user->image = $image;
-                        } else {
-                            $user->image = asset('images/profile-pic.jpg');
-                        }
+                foreach ($teamMembers as $keyUser => &$user) {
+                    if ($user->image != '') {
+                        $image = asset('images/users/' . $user->image);
+                        $user->image = $image;
+                    } else {
+                        $user->image = asset('images/profile-pic.jpg');
                     }
+                }
             }
             // $teamMembers = DB::table('users')
             //     ->select(
@@ -260,24 +264,22 @@ class RoomController extends Controller
     }
     function seenRoomMessages(Request $req)
     {
-        try{
-        $userData=Controller::checkUser($req);
-        $roomMember=$this->IsRoomMember($userData['user_id'],$req->room_id);
-        if($roomMember == 0)
-        {
-            $response = Controller::returnResponse(422, "unauthorized action ", []);
+        try {
+            $userData = Controller::checkUser($req);
+            $roomMember = $this->IsRoomMember($userData['user_id'], $req->room_id);
+            if ($roomMember == 0) {
+                $response = Controller::returnResponse(422, "unauthorized action ", []);
+                return json_encode($response);
+            }
+            RoomMembers::where('user_id', $userData['user_id'])->where('room_id', $req->room_id)->update(['seen' => 1]);
+            $response = Controller::returnResponse(200, "successful ", []);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", []);
             return json_encode($response);
         }
-        RoomMembers::where('user_id',$userData['user_id'])->where('room_id',$req->room_id)->update(['seen'=>1]);
-        $response = Controller::returnResponse(200, "successful ", []);
-        return json_encode($response);
-    }catch(Exception $error)
-    {
-        $response = Controller::returnResponse(500, "something went wrong", []);
-        return json_encode($response);
     }
-    }
-    function getcjtNot(Request $req,$offset,$limit)
+    function getcjtNot(Request $req, $offset, $limit)
     {
         try {
             $userData = Controller::checkUser($req);
@@ -286,10 +288,10 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(422, "unauthorized action ", []);
                 return json_encode($response);
             }
-            $page=($offset -1 )*$limit;
-            $userRooms=RoomMembers::where('user_id',$userData['user_id'])->select('room_id','seen')->get();
-            $ids=$userRooms->pluck('room_id')->toArray();
-            $rooms=$this->roomsInfo($ids,$offset,$limit);
+            $page = ($offset - 1) * $limit;
+            $userRooms = RoomMembers::where('user_id', $userData['user_id'])->select('room_id', 'seen')->get();
+            $ids = $userRooms->pluck('room_id')->toArray();
+            $rooms = $this->roomsInfo($ids, $offset, $limit);
             // $ids=array();
             // $rooms=  DB::table('room_members')
             // ->join('rooms', 'room_members.room_id', '=', 'rooms.id')
@@ -302,41 +304,40 @@ class RoomController extends Controller
             // ->orderBy('messages.created_at','desc')
             // ->first();
             // array_push($ids,$r)
-           $response = Controller::returnResponse(200, "successful",$rooms);
-           return json_encode($response);
+            $response = Controller::returnResponse(200, "successful", $rooms);
+            return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
         }
     }
     //room type 1 individual 2 group
-    function roomsInfo($rooms,$offset,$limit)
+    function roomsInfo($rooms, $offset, $limit)
     {
-        $page=($offset -1 )*$limit;
-        $Rooms=array();
-        foreach( $rooms as $room)
-        {
+        $page = ($offset - 1) * $limit;
+        $Rooms = array();
+        foreach ($rooms as $room) {
             $roomType = 1;
             $membersCount = RoomMembers::where('room_id', $room)->count();
-                  if ($membersCount > 2) {
-                    $roomType = 2;
-                }
-           $room1= DB::table('messages')
-            ->Join('rooms', 'messages.room_id', '=', 'rooms.id')
-            ->Join('room_members', 'messages.room_id', '=', 'room_members.room_id')
-            ->select('messages.room_id','rooms.name','messages.body','messages.created_at','room_members.seen')
-            ->where('messages.room_id','=',$room)
-            // ->latest()
-            ->orderBy('messages.created_at','desc')
+            if ($membersCount > 2) {
+                $roomType = 2;
+            }
+            $room1 = DB::table('messages')
+                ->Join('rooms', 'messages.room_id', '=', 'rooms.id')
+                ->Join('room_members', 'messages.room_id', '=', 'room_members.room_id')
+                ->select('messages.room_id', 'rooms.name', 'messages.body', 'messages.created_at', 'room_members.seen')
+                ->where('messages.room_id', '=', $room)
+                // ->latest()
+                ->orderBy('messages.created_at', 'desc')
 
-            ->offset($page)->limit($limit)
-            ->first();
-        //    $room1->type=$roomType;
-            array_push($Rooms,$room1);
+                ->offset($page)->limit($limit)
+                ->first();
+            //    $room1->type=$roomType;
+            array_push($Rooms, $room1);
         }
         return $Rooms;
     }
-    function testNotRoom(Request $req,$offset,$limit)
+    function testNotRoom(Request $req, $offset, $limit)
     {
         try {
             $userData = Controller::checkUser($req);
@@ -348,15 +349,19 @@ class RoomController extends Controller
             $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
             $rooms = array();
             $rooms2 = array();
-            $start=($offset-1)*$limit;
+            $start = ($offset - 1) * $limit;
 
-            $ids=array_slice($rooms_ids,$start);
-return(['len rooms '=> count($rooms_ids),"start" =>$start]);
-            for($i=0 ; $i < $limit ;$i++) {
+            $ids = array_slice($rooms_ids, $start);
+
+            if ($start == count($rooms_ids) || $start > $rooms_ids) {
+                $response = Controller::returnResponse(200, "successful", []);
+                return json_encode($response);
+            }
+            for ($i = 0; $i < $limit; $i++) {
                 // dd(['i: '=>$i,'ids: '=>$rooms_ids]);
                 $roomType = 1;
                 $room = array();
-                $room2= array();
+                $room2 = array();
                 $name = Rooms::where('id', $ids[$i])->select('name')->first()->name;
                 $membersCount = RoomMembers::where('room_id',  $ids[$i])->select('room_id')->count();
                 // $membersCount=$members->count();
@@ -365,40 +370,38 @@ return(['len rooms '=> count($rooms_ids),"start" =>$start]);
                 }
                 $chatObj = new ChatController;
 
-                $lastMessage = $chatObj->getRoomLastMessage( $ids[$i]);
-                if ($lastMessage === null )
-                {
-                    $room2= array(
+                $lastMessage = $chatObj->getRoomLastMessage($ids[$i]);
+                if ($lastMessage === null) {
+                    $room2 = array(
                         'room_id' =>  $ids[$i],
                         'name' => $name,
                         'roomType' => $roomType,
                         'lastMessage' => 'first msg',
-                        'date'=>'',
+                        'date' => '',
                     );
                     array_push($rooms2, $room2);
-
                 }
                 // dd($lastMessage->body);
-                else{
-                $room = array(
-                    'room_id' =>  $ids[$i],
-                    'name' => $name,
-                    'roomType' => $roomType,
-                    'lastMessage' => $lastMessage->body,
-                     'date'=>$lastMessage->created_at,
-                );
-                array_push($rooms, $room);
-                $dates=array_column($rooms,'date');
-                array_multisort($dates, SORT_DESC,$rooms);
-            }
+                else {
+                    $room = array(
+                        'room_id' =>  $ids[$i],
+                        'name' => $name,
+                        'roomType' => $roomType,
+                        'lastMessage' => $lastMessage->body,
+                        'date' => $lastMessage->created_at,
+                    );
+                    array_push($rooms, $room);
+                    $dates = array_column($rooms, 'date');
+                    array_multisort($dates, SORT_DESC, $rooms);
+                }
                 // $dates=array_column($rooms,'date');
                 // array_multisort($dates, SORT_DESC,$rooms);
-               
-               
+
+
             }
             // dd($rooms);
-            $all=array_merge($rooms,$rooms2);
-            $response = Controller::returnResponse(200, "successful", $rooms2);
+            $all = array_merge($rooms, $rooms2);
+            $response = Controller::returnResponse(200, "successful", $all);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
