@@ -238,7 +238,7 @@ class Proposals extends Controller
                             $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
                             return (json_encode($response));
                         }
-                        $fenLink="a-user/main/pending-project/". $project_id;
+                        $fenLink="a-user/main/pending-project/".$req->project_id;
                         Controller::sendNotification($team_id,$projectInfo->name,'Initial proposal accepted!',$fenLink,2,'proposals',$req->proposal_id);
                         $mail = $this->notifyAgency($req->proposal_id, 1);
                         $response = Controller::returnResponse(200, "proposal accepted", []);
@@ -256,7 +256,7 @@ class Proposals extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something wrong pppppppppppppppppppppppppppppp", $error->getMessage());
+            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
             return (json_encode($response));
         }
     }
