@@ -51,18 +51,21 @@ class GroupCategoriesController extends Controller
         $group_id = $req->group_id;
         $delete = groups_category::where("group_id", $group_id)->delete();
         $cats = json_decode($req->categories);
+        $categoryArr = array();
 
         foreach ($cats as $key => $category) {
 
-            $categoryArr = array();
-            foreach ($category->subId as $subkey => $subcat) {
+            $categoryArr[$key]['group_id'] = $group_id;
+            $categoryArr[$key]['category_id'] = $category;
+            $categoryArr[$key]['sub_category_id'] = 0;
+            // foreach ($category->subId as $subkey => $subcat) {
 
-                $categoryArr[$subkey]['group_id'] = $group_id;
-                $categoryArr[$subkey]['category_id'] = $category->catId;
-                $categoryArr[$subkey]['sub_category_id'] = $subcat;
-            }
-            $this->addMultiRows($categoryArr);
+            //     $categoryArr[$subkey]['group_id'] = $group_id;
+            //     $categoryArr[$subkey]['category_id'] = $category->catId;
+            //     $categoryArr[$subkey]['sub_category_id'] = $subcat;
+            // }
         }
+        $this->addMultiRows($categoryArr);
         $response = Controller::returnResponse(200, "successful", []);
         return json_encode($response);
     }
