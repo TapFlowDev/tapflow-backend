@@ -27,7 +27,7 @@ class RoomController extends Controller
         try {
 
 
-            $data['name'] = $this->roomName($data['team_id'], $data['company_id']);
+            $data['name'] = $this->roomName($data['agencyAdmin'], $data['agencyAdmin']);
             $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
             $groupMembersObj = new GroupMembersController;
@@ -37,19 +37,22 @@ class RoomController extends Controller
             }
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agencyAdmin']]);
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['companyAdmin']]);
-            // $teamAdmins = $groupMembersObj->getGroupAdminsIds($data['team_id'])->pluck('user_id')->toArray();
-
-            // $companyAdmins = $groupMembersObj->getGroupAdminsIds($data['company_id'])->pluck('user_id')->toArray();
-
-            // $users = array_merge($teamAdmins, $companyAdmins);
-
-            // foreach ($users as $user_id) {
-
-            //     RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id]);
-            // }
-            // $fenLink = "/a-user/main/chat#/" . $room_id;
-            Controller::sendNotification($data['team_id'], '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
-            Controller::sendNotification($data['company_id'], '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
+            
+            $fcmTokenAgency=DB::table('users')
+            ->whereIn('id', $data['agencyAdmin'])
+            ->select('*')
+            ->where('fcm_token', '!=', null)
+            ->pluck('fcm_token')
+            ->toArray();
+            $fcmTokenCompany=DB::table('users')
+            ->whereIn('id', $data['companyAdmin'])
+            ->select('*')
+            ->where('fcm_token', '!=', null)
+            ->pluck('fcm_token')
+            ->toArray();
+            
+            Controller::sendNotification( $fcmTokenAgency, '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 1, 'rooms', $room_id);
+            Controller::sendNotification( $fcmTokenCompany, '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 1, 'rooms', $room_id);
             return ['code' => 200, 'msg' => 'successful'];
         } catch (Exception $error) {
             return ['code' => 500, 'msg' => $error->getMessage()];
