@@ -27,13 +27,13 @@ class RoomController extends Controller
         try {
 
 
-            // $data['name'] = $this->roomName($data['agencyAdmin'], $data['companyAdmin']);
-            $room = Rooms::create(['name' => 'asd']);
+            $data['name'] = $this->roomName($data['agencyAdmin'], $data['companyAdmin']);
+            $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
-            // $exist = $this->checkIfRoomExist($data['agencyAdmin'], $data['companyAdmin']);
-            // if ($exist == 1) {
-            //     return ['code' => 200, 'msg' => 'chat already exist between these pepole'];
-            // }
+            $exist = $this->checkIfRoomExist($data['agencyAdmin'], $data['companyAdmin']);
+            if ($exist == 1) {
+                return ['code' => 200, 'msg' => 'chat already exist between these pepole'];
+            }
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['agencyAdmin']]);
             RoomMembers::create(['room_id' => $room_id, 'user_id' => $data['companyAdmin']]);
             $fcmTokenAgency = DB::table('users')
@@ -212,17 +212,18 @@ class RoomController extends Controller
         }
     }
     function roomName($agencyAdmin, $companyAdmin)
-    {try{
-        $TeamObj = new TeamController;
-        $CompanyObj = new CompanyController;
-        $groupberObj = new GroupController;
-        $team_id = $groupberObj->getGroupIdByUserId($agencyAdmin);
-        $company_id = $groupberObj->getGroupIdByUserId($companyAdmin);
-        $team_name = $TeamObj->get_team_info($team_id)->name;
-        $company_name = $CompanyObj->get_company_info($company_id)->name;
-        return $team_name . ' & ' . $company_name;
-    }catch(Exception $e)
-    {}
+    {
+        try {
+            $TeamObj = new TeamController;
+            $CompanyObj = new CompanyController;
+            $groupberObj = new GroupController;
+            $team_id = $groupberObj->getGroupIdByUserId($agencyAdmin);
+            $company_id = $groupberObj->getGroupIdByUserId($companyAdmin);
+            $team_name = $TeamObj->get_team_info($team_id)->name;
+            $company_name = $CompanyObj->get_company_info($company_id)->name;
+            return $team_name . ' & ' . $company_name;
+        } catch (Exception $e) {
+        }
     }
     function updateRoomName(Request $req)
     {
@@ -421,17 +422,17 @@ class RoomController extends Controller
     }
     private function checkIfRoomExist($agencyAdmin, $companyAdmin)
     {
-        try{
-        $agencyAdminRooms = RoomMembers::where('user_id', $agencyAdmin)->select('room_id')->pluck('room_id')->toArray();
-        $clientAdminRooms = RoomMembers::where('user_id', $companyAdmin)->select('room_id')->pluck('room_id')->toArray();
-        foreach ($agencyAdminRooms as $room_id) {
-            if (in_array($room_id, $clientAdminRooms)) {
-                return 1;
-            } else {
-                return 0;
+        try {
+            $agencyAdminRooms = RoomMembers::where('user_id', $agencyAdmin)->select('*')->pluck('room_id')->toArray();
+            $clientAdminRooms = RoomMembers::where('user_id', $companyAdmin)->select('*')->pluck('room_id')->toArray();
+            foreach ($agencyAdminRooms as $room_id) {
+                if (in_array($room_id, $clientAdminRooms)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             }
+        } catch (Exception $e) {
         }
-    }catch(Exception $e)
-    {}
-}
+    }
 }
