@@ -336,7 +336,7 @@ class RoomController extends Controller
         }
         return $Rooms;
     }
-    function testNotRoom(Request $req)
+    function testNotRoom(Request $req,$offset,$limit)
     {
         try {
             $userData = Controller::checkUser($req);
@@ -348,28 +348,28 @@ class RoomController extends Controller
             $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
             $rooms = array();
             $rooms2 = array();
-
-            foreach ($rooms_ids as  $room_id) {
+            $start=($offset-1)*$limit;
+            for($i=$start ; $i < $limit ;$i++) {
                 $roomType = 1;
                 $room = array();
                 $room2= array();
-                $name = Rooms::where('id', $room_id)->select('name')->first()->name;
-                $membersCount = RoomMembers::where('room_id', $room_id)->select('room_id')->count();
+                $name = Rooms::where('id', $rooms_ids[$i])->select('name')->first()->name;
+                $membersCount = RoomMembers::where('room_id',  $rooms_ids[$i])->select('room_id')->count();
                 // $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
                 }
                 $chatObj = new ChatController;
 
-                $lastMessage = $chatObj->getRoomLastMessage($room_id);
+                $lastMessage = $chatObj->getRoomLastMessage( $rooms_ids[$i]);
                 if ($lastMessage === null )
                 {
                     $room2= array(
-                        'room_id' => $room_id,
+                        'room_id' =>  $rooms_ids[$i],
                         'name' => $name,
                         'roomType' => $roomType,
                         'lastMessage' => 'first msg',
-                         'date'=>'',
+                        'date'=>'',
                     );
                     array_push($rooms2, $room2);
 
@@ -377,7 +377,7 @@ class RoomController extends Controller
                 // dd($lastMessage->body);
                 else{
                 $room = array(
-                    'room_id' => $room_id,
+                    'room_id' =>  $rooms_ids[$i],
                     'name' => $name,
                     'roomType' => $roomType,
                     'lastMessage' => $lastMessage->body,
