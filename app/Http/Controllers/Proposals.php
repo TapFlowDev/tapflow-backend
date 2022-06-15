@@ -231,8 +231,7 @@ class Proposals extends Controller
                         $companyAdmin=$projectObj->getCompanyProjectAdmin($project_id);
                         $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
                         $room=$RoomObj->createRoom($data);
-                        $response = Controller::returnResponse(800, "something wrong chat", $room['msg']);
-                        return (json_encode($response));
+                        
                         if($room['code'] != 200)
                         {
                             $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
@@ -256,7 +255,7 @@ class Proposals extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
+            $response = Controller::returnResponse(500, "something wrong pppppp", $error->getMessage());
             return (json_encode($response));
         }
     }
