@@ -212,7 +212,7 @@ class RoomController extends Controller
         }
     }
     function roomName($agencyAdmin, $companyAdmin)
-    {
+    {try{
         $TeamObj = new TeamController;
         $CompanyObj = new CompanyController;
         $groupberObj = new GroupController;
@@ -221,6 +221,8 @@ class RoomController extends Controller
         $team_name = $TeamObj->get_team_info($team_id)->name;
         $company_name = $CompanyObj->get_company_info($company_id)->name;
         return $team_name . ' & ' . $company_name;
+    }catch(Exception $e)
+    {}
     }
     function updateRoomName(Request $req)
     {
@@ -419,7 +421,7 @@ class RoomController extends Controller
     }
     private function checkIfRoomExist($agencyAdmin, $companyAdmin)
     {
-
+        try{
         $agencyAdminRooms = RoomMembers::where('user_id', $agencyAdmin)->select('room_id')->pluck('room_id')->toArray();
         $clientAdminRooms = RoomMembers::where('user_id', $companyAdmin)->select('room_id')->pluck('room_id')->toArray();
         foreach ($agencyAdminRooms as $room_id) {
@@ -429,5 +431,7 @@ class RoomController extends Controller
                 return 0;
             }
         }
-    }
+    }catch(Exception $e)
+    {}
+}
 }
