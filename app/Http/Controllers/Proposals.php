@@ -221,6 +221,8 @@ class Proposals extends Controller
                         Proposal::where('id', $req->proposal_id)->update(['status' => 1]);
                         // notify agency
                         $proposal=Proposal::where('id', $req->proposal_id)->select('team_id','project_id','user_id')->first();
+                        $response = Controller::returnResponse(500, "something wrong",$proposal);
+                        return (json_encode($response));
                         $team_id=$proposal->team_id;
                         $project_id= $proposal->project_id;
                         $agencyAdmin= $proposal->user_id;
@@ -231,6 +233,8 @@ class Proposals extends Controller
                         $companyAdmin=$projectObj->getCompanyProjectAdmin($project_id);
                         $data=array('name'=>null,'agencyAdmin'=>$agencyAdmin,'companyAdmin'=>$companyAdmin);
                         $room=$RoomObj->createRoom($data);
+                        $response = Controller::returnResponse(800, "something wrong", $room['msg']);
+                        return (json_encode($response));
                         if($room['code'] != 200)
                         {
                             $response = Controller::returnResponse(500, "something wrong", $room['msg']);
