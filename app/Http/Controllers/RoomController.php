@@ -26,7 +26,12 @@ class RoomController extends Controller
     {
         try {
 
-
+            
+           $exist= $this->checkIfRoomExist($data['agencyAdmin'], $data['companyAdmin']);
+            if($exist ==1)
+            {
+                return ['code' => 500, 'msg' =>'alredy exist'];
+            }
             $data['name'] = $this->roomName($data['agencyAdmin'], $data['companyAdmin']);
             $room = Rooms::create(['name' => $data['name']]);
             $room_id = $room->id;
@@ -45,6 +50,7 @@ class RoomController extends Controller
             //     RoomMembers::create(['room_id' => $room_id, 'user_id' => $user_id]);
             // }
             // $fenLink = "/a-user/main/chat#/" . $room_id;
+
             Controller::sendNotification($data['agencyAdmin'], '', 'A new group chat is created', "/a-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
             Controller::sendNotification($data['companyAdmin'], '', 'A new group chat is created', "/Client-user/main/chat#/" . $room_id, 2, 'rooms', $room_id);
             return ['code' => 200, 'msg' => 'successful'];
@@ -411,6 +417,18 @@ class RoomController extends Controller
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
+        }
+    }
+    function checkIfRoomExist($agencyAdmin, $companyAdmin)
+    {
+        $agencyAdminRooms = RoomMembers::where('user_id', $agencyAdmin)->select('room_id')->pluck('room_id')->toArray();
+        $clientAdminRooms = RoomMembers::where('user_id', $companyAdmin)->select('room_id')->pluck('room_id')->toArray();
+        foreach ($agencyAdminRooms as $room_id) {
+            if (in_array($room_id, $clientAdminRooms)) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
     }
 }
