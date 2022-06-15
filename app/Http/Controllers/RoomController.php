@@ -350,6 +350,7 @@ class RoomController extends Controller
             $rooms2 = array();
             $start=($offset-1)*$limit;
             for($i=$start ; $i < $limit ;$i++) {
+                dd(['i: '=>$i,'ids: '=>$rooms_ids]);
                 $roomType = 1;
                 $room = array();
                 $room2= array();
