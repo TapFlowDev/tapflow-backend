@@ -59,14 +59,15 @@ class ChatController extends Controller
         }
     }
 
-    function getRoomMessages(Request $req)
+    function getRoomMessages(Request $req , $offset ,$limit)
     {
         try {
             $userData = Controller::checkUser($req);
             $roomObj = new RoomController;
             $isMember = $roomObj->IsRoomMember($userData['user_id'], $req->room_id);
             if ($isMember == 1) {
-                $allMessages = Messages::where('room_id', $req->room_id)->select('*')->get();
+                $page=($offset -1 )* $limit;
+                $allMessages = Messages::where('room_id', $req->room_id)->select('*')->distinct()->latest()->offset($page)->limit($limit)->get();
                 $messages = $this->getSenderInfo($allMessages);
                 $response = Controller::returnResponse(200, "successful", $messages);
                 return json_encode($response);
