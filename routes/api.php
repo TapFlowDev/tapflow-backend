@@ -39,9 +39,11 @@ use App\Http\Controllers\FormOptionsController;
 use App\Http\Controllers\Milestones;
 use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\DepositRequestController;
+use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\SkillsController;
 use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
@@ -101,7 +103,7 @@ Route::post('clientRegester', [UserController::class, 'clientSignUpProcess']);
 
 
 
-Route::post('addTeam', [GroupController::class, 'add_group_team']);
+// Route::post('addTeam', [GroupController::class, 'add_group_team']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
 // testing
@@ -129,6 +131,14 @@ Route::get('getQuestions', [FormOptionsController::class, 'getData']);
 Route::get('getDemoLink', [ContentDataController::class, 'getDemoLink']);
 Route::get('getTerms', [ContentDataController::class, 'getTerms']);
 Route::get('getPriorities', [PriorityController::class, 'getPriorities']);
+Route::get('getBudget', [CategoriesController::class, 'getBudget']);
+Route::get('getHourlyRate', [CategoriesController::class, 'getHourlyRate']);
+Route::get('getSeniority', [CategoriesController::class, 'getSeniority']);
+Route::get('getSkill/{skill}', [SkillsController::class, 'search']);
+Route::get('getLeadtime', [CategoriesController::class, 'getLeadtime']);
+Route::get('getDeveloperHours', [CategoriesController::class, 'getDeveloperHours']);
+Route::get('getServices', [CategoriesController::class, 'getServices']);
+Route::get('getFeature/{feature}', [FeatureController::class, 'search']);
 
 Route::post('addCountries', [NewCountriesController::class, 'Insert']);
 
@@ -180,6 +190,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
 
     Route::post('addProposal', [Proposals::class, 'Insert']);
+    Route::post('submitProposal', [Proposals::class, 'addProposalHireDev']);
     Route::post('saveFinalProposal', [Final_proposals::class, 'saveFinalProposal']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);

@@ -116,7 +116,10 @@ class TeamsController extends Controller
             "maxPerHour" => $request->maxPerHour,
             "min_work_hour" => $request->min_work_hour,
             "max_work_hour" => $request->max_work_hour,
-            "lead_time" => $request->lead_time
+            "lead_time" => $request->lead_time,
+            "judgment" => $request->judgment,
+            "years_of_experience" => $request->years_of_experience,
+            "response_time" => $request->response_time,
         ]);
         return redirect('/AdminTool/agencies');
     }

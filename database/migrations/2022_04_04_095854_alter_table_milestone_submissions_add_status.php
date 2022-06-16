@@ -27,7 +27,7 @@ class AlterTableMilestoneSubmissionsAddStatus extends Migration
     public function down()
     {
         //
-        Schema::table('teams', function (Blueprint $table) {
+        Schema::table('milestone_submissions', function (Blueprint $table) {
             $table->dropColumn('status');
         });
     }

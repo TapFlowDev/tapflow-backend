@@ -18,6 +18,7 @@ use App\Mail\ProposalMail;
 use App\Models\Countries;
 use App\Models\Group;
 use App\Models\Group_member;
+use App\Models\Proposal_requirement;
 use App\Models\Team;
 use App\Models\User;
 
@@ -83,9 +84,9 @@ class Proposals extends Controller
                             'est' => $estPrice
                         ];
                         Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-                        // Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+                        //Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+                        //Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+                        //Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
                         return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, 'You can not apply now, your agency does not verified yet', []);
@@ -132,7 +133,7 @@ class Proposals extends Controller
 
         $project_group_id = $GroupControllerObj->getGroupIdByUserId($project->user_id);
         $user_group_id = $GroupControllerObj->getGroupIdByUserId($userData->id);
-       
+
         if ($user_group_id == $project_group_id) {
 
             $page = ($offset - 1) * $limit;
@@ -143,22 +144,22 @@ class Proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
-                    $proposalsCounter = DB::table('proposals')
+                $proposalsCounter = DB::table('proposals')
                     ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
                     ->where('project_id', $project_id)
                     ->distinct()
                     ->count();
-             
+
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
                     $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($proposal->team_id);
-                    $proposal->agency_info->admin_email=$agencyAdmin->email;
+                    $proposal->agency_info->admin_email = $agencyAdmin->email;
                     $priceMin = (float)$proposal->price_min * (float)$proposal->from;
                     $priceMax = (float)$proposal->price_max * (float)$proposal->to;
                     $proposal->price_min = $priceMin;
                     $proposal->price_max = $priceMax;
                 }
-                $responseData=array('allData'=>$proposals,'counter'=>$proposalsCounter);
+                $responseData = array('allData' => $proposals, 'counter' => $proposalsCounter);
                 $response = Controller::returnResponse(200, "successful", $responseData);
                 return (json_encode($response));
             } catch (Exception $error) {
@@ -315,7 +316,8 @@ class Proposals extends Controller
 
         return $proposals;
     }
-    function notifyAgency($proposalId, $status){
+    function notifyAgency($proposalId, $status)
+    {
         $groupMemberObj = new GroupMembersController;
         $proposal = Proposal::where('id', $proposalId)->get()->first();
         $teamId = $proposal->team_id;
@@ -323,7 +325,7 @@ class Proposals extends Controller
         $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
         $project = Project::where('id', '=', $projectId)->get()->first();
         $groupId = $project->company_id;
-        $member = Group_member::where('group_id', '=',$groupId)->where('privileges', '=', 1)->get()->first();
+        $member = Group_member::where('group_id', '=', $groupId)->where('privileges', '=', 1)->get()->first();
         $clientId = $member->user_id;
         $clinet = User::where('id', $clientId)->get()->first();
         $subject = $project->name . " Proposal Update";
@@ -337,5 +339,89 @@ class Proposals extends Controller
         // dd($details);
         //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
+    function addProposalHireDev(Request $req)
+    {
+        $userData = $this->checkUser($req);
+        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1;
+        if (!$condtion) {
+            $response = Controller::returnResponse(401, "Unauthrized", []);
+            return (json_encode($response));
+        }
+        try {
+            $rules = array(
+                "project_id" => "required",
+                "requirements" => "required",
+                "our_offer" => "required",
+            );
+            $validators = Validator::make($req->all(), $rules);
+            if ($validators->fails()) {
+                $responseData = $validators->errors();
+                $response = Controller::returnResponse(101, "Validation Error", $responseData);
+                return (json_encode($response));
+            }
 
+            $requirementObj = new Requirement;
+            $projectId = $req->project_id;
+            $teamId = $userData['group_id'];
+            $userId = $userData['user_id'];
+            $requirements = json_decode($req->requirements);
+
+            $project = Project::where('id', '=', $projectId)->first();
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Project does not exsist', []);
+                return (json_encode($response));
+            }
+            if ($project->type != 3) {
+                $response = Controller::returnResponse(422, 'this function not possible for this type of projects', []);
+                return (json_encode($response));
+            }
+
+            $proposalDoesExsist = Proposal::where('project_id', '=', $projectId)->where('team_id', '=', $teamId)->first();
+            if ($proposalDoesExsist) {
+                $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposalDoesExsist]);
+                return (json_encode($response));
+            }
+
+            /**
+             * check requirements ids if valid
+             */
+            $projectRequirements = $requirementObj->getRequirementsAndHourlyRateByProjectId($projectId);
+            $projectRequirements = $projectRequirements->toArray();
+            $projectRequirementsIds = array_column($projectRequirements, 'requirementId');
+            $requirementsIds = array_column($requirements, 'requirementId');
+            if ($requirementsIds != $projectRequirementsIds) {
+                $response = Controller::returnResponse(101, 'Requirments not right', []);
+                return (json_encode($response));
+            }
+
+
+            $proposalArr = array(
+                'team_id' => $teamId,
+                'user_id' => $userId,
+                'project_id' => $projectId,
+                'price_min' => 0,
+                'price_max' => 0,
+                'from' => 0,
+                'to' => 0,
+                'our_offer' => $req->our_offer,
+            );
+            $proposal = proposal::create($proposalArr);
+            foreach ($requirements as $keyRequ => $valRequ) {
+                $requirementArr = array(
+                    'proposal_id' => $proposal->id,
+                    'requirement_id' => $valRequ['requirementId'],
+                    'hourly_rate' => $valRequ['hourlyRate'],
+                );
+                Proposal_requirement::create($requirementArr);
+            }
+            $responseData = array("proposal_id" => $proposal->id);
+            $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
+            /** 
+             * send email
+            */
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
 }
