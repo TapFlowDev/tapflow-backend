@@ -72,7 +72,7 @@ class HireDeveloperProposalsController extends Controller
                 'team_id' => $teamId,
                 'user_id' => $userId,
                 'project_id' => $projectId,
-                'details' => $req->details,
+                'details' => $req->our_offer,
             );
             $proposal = hire_developer_proposals::create($proposalArr);
             foreach ($requirements as $keyRequ => $valRequ) {
