@@ -383,7 +383,7 @@ class RoomController extends Controller
                 $room2 = array();
                 $name = Rooms::where('id', $ids[$i])->select('name')->first()->name;
                 $membersCount = RoomMembers::where('room_id',  $ids[$i])->select('seen')->count();
-                $seen = RoomMembers::where('room_id',  $ids[$i])->select('seen')->first()->seen;
+                $seen = RoomMembers::where('room_id',  $ids[$i])->where('user_id',$user_id)->select('seen')->first()->seen;
                 // $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
