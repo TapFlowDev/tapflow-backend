@@ -190,7 +190,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
 
     Route::post('addProposal', [Proposals::class, 'Insert']);
-    Route::post('submitProposal', [Proposals::class, 'addProposalHireDev']);
+    Route::post('submitProposal', [HireDeveloperProposalsController::class, 'Insert']);
     Route::post('saveFinalProposal', [Final_proposals::class, 'saveFinalProposal']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
