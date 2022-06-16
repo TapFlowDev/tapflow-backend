@@ -371,11 +371,11 @@ class RoomController extends Controller
             $rooms = array();
             $rooms2 = array();
             $start = ($offset - 1) * $limit;
-            // if($limit > count($rooms_ids))
-            // {
-            //     $diff=$limit-$rooms_ids;
-            //     $limit=$limit-$diff;
-            // }
+            if($limit > count($rooms_ids))
+            {
+                $diff=$limit-$rooms_ids;
+                $limit=$limit-$diff;
+            }
             if ($start == count($rooms_ids) or $start > count($rooms_ids)) {
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
