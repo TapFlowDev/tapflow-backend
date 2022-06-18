@@ -65,4 +65,39 @@
         </span>
     @enderror
 </div>
+<div class="mb-3">
+    <label for="judgment" class="form-label">Judgment</label>
+    <input type="number" min="0.0" max="10.0" step="0.1" name="judgment" class="form-control" id="judgment" aria-describedby="emailHelp"
+        value="{{ old('judgment') }}@isset($team){{ $team->judgment }}@endisset">
+    @error('judgment')
+        <span class="invalid-feedback" style="display: block;" role="alert">
+            {{ $message }}
+        </span>
+    @enderror
+</div>
+<div class="mb-3">
+    <label for="years_of_experience" class="form-label">Years of Experience</label>
+    <input  type="number" min="0" step="1"  name="years_of_experience" class="form-control" id="years_of_experience" aria-describedby="emailHelp"
+        value="{{ old('years_of_experience') }}@isset($team){{ $team->years_of_experience }}@endisset">
+    @error('years_of_experience')
+        <span class="invalid-feedback" style="display: block;" role="alert">
+            {{ $message }}
+        </span>
+    @enderror
+</div>
+<div class="mb-3">
+    <label for="response_time" class="form-label">Response Time</label>
+    <select name="response_time" class="form-control" id="type">
+        <option value="10" @isset($team) @if($team->response_time==10) selected @endif @endisset> Very Responsive </option>
+        <option value="8" @isset($team) @if($team->response_time==8) selected @endif @endisset> Responsive </option>
+        <option value="6" @isset($team) @if($team->response_time==6) selected @endif @endisset> Normal </option>
+        <option value="4" @isset($team) @if($team->response_time==4) selected @endif @endisset> Not Responsive </option>
+        <option value="0" @isset($team) @if($team->response_time==0) selected @endif @endisset> Very Not Responsive </option>
+    </select>
+    @error('response_time')
+        <span class="invalid-feedback" style="display: block;" role="alert">
+            {{ $message }}
+        </span>
+    @enderror
+</div>
 <button type="submit" class="btn btn-primary">Submit</button>

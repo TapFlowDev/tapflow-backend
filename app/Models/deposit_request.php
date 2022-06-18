@@ -13,5 +13,6 @@ class deposit_request extends Model
         'reference_number',
         'amount',
         'status',
+        'invoice',
     ];
 }

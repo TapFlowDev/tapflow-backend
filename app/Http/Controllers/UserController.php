@@ -24,8 +24,10 @@ use App\Http\Controllers\FreeLancerController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InviteUsersController;
 use App\Http\Controllers\GroupMembersController;
+use App\Models\Company;
 use Illuminate\Support\Facades\Http;
 use App\Models\country;
+use App\Models\Group;
 use App\Models\User_link;
 use Newsletter;
 
@@ -388,5 +390,246 @@ class UserController extends Controller
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error);
             return (json_encode($response));
         }
+    }
+    function clientSignUpProcess(Request $req)
+    {
+        // $responseData = $req->all();
+        // $response = Controller::returnResponse(500, "user added successfully", $responseData);
+        // return $response;
+        $validation = $this->validateclientSignUpProcess($req);
+        if ($validation['error']) {
+            return json_encode($validation['error']);
+        }
+        $groupObj = new GroupController;
+        $teamObj = new CompanyController;
+        $projectObj = new ProjectController;
+        $userArr = array(
+            'first_name' => $req->user['first_name'],
+            'last_name' => $req->user['last_name'],
+            'email' => $req->user['email'],
+            'password' => $req->user['password'],
+            'type' => 2,
+        );
+        $userResponse = $this->registerClient($userArr);
+        if ($userResponse['error']) {
+            return json_encode($userResponse['error']);
+        }
+        /**
+         * register company
+         */
+        $admin = $userResponse['user'];
+        $teamArr =  array(
+            'admin_id' => $admin['id'],
+            'name' => $req->user['company_name'],
+            'country' => $req->user['country'],
+            'field' => $req->user['field'],
+            'sector' => $req->user['sector'],
+        );
+        $groupResponse = $groupObj->addCompany($teamArr);
+        if ($groupResponse['error']) {
+            // User::where('id', '=', $admin['id'])->destroy();
+            // Client::where('user_id', '=', $admin['id'])->destroy();
+            return json_encode($groupResponse['error']);
+        }
+        $company = $groupResponse['company'];
+        $teamId = $company['id'];
+
+        // if ($req->hasFile('image')) {
+        //     $destPath = 'images/companies';
+        //     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+        //     $img = $req->image;
+        //     $img->move(public_path($destPath), $imageName);
+        //     $teamObj->updateFiles($teamId, $imageName, 'image');
+        // }
+
+        /**
+         * register project
+         */
+        $projectArr = $req->project;
+        $projectArr['user_id'] = $admin['id'];
+        $projectResponse = $projectObj->addProjectSignUp($projectArr);
+        if ($projectResponse['error']) {
+            // User::where('id', '=', $admin['id'])->destroy();
+            // Client::where('user_id', '=', $admin['id'])->destroy();
+            // Group::where('id', '=', $teamId)->destroy();
+            // Company::where('group_id', '=', $teamId)->destroy();
+            return json_encode($projectResponse['error']);
+        }
+        $project = $projectResponse['project'];
+        Newsletter::subscribeOrUpdate($req->user['email'], ['FNAME'=>$req->user['first_name'], 'LNAME'=>$req->user['last_name'],'ROLE'=>"unset", "UTYPE"=>'company-member', 'ADMIN'=>'admin'], 'Tapflow');
+        // dd(Newsletter::getLastError());
+        /**
+         * login user
+         */
+        $responseData = $this->clientInternalLogin($admin['email'], $req->user['password'], $teamId);
+        $response = Controller::returnResponse(200, "user added successfully", $responseData);
+        return $response;
+    }
+
+    function registerClient($arr)
+    {
+        $returnData['error'] = [];
+        $returnData['user'] = [];
+        // $rules = array(
+        //     "first_name" => "required|max:255",
+        //     "last_name" => "required|max:255",
+        //     "email" => "email|required|max:255|unique:users",
+        //     "password" => "required|min:8|max:255",
+        // );
+        // $validator = Validator::make($arr, $rules);
+        // if ($validator->fails()) {
+        //     $responseData = $validator->errors();
+        //     $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+        //     return $response;
+        // }
+        // return $returnData;
+        try {
+            // $user = User::find(156);
+            $user = User::create($arr + ['name' => $arr['first_name'] . " " . $arr['last_name'], 'terms' => 1]);
+            $array = array("user_id" => $user->id, 'type_freelancer' => (int)$arr['type']);
+            $freelancer = Client::create($array);
+            $mailchimpUserType = 'company-member';
+            // Newsletter::subscribeOrUpdate($req->email, ['FNAME'=>$req->first_name, 'LNAME'=>$req->last_name,'ROLE'=>$req->role, "UTYPE"=>$mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+            // dd(Newsletter::getLastError());
+            // $responseData = $this->internal_login($req->email, $req->password);
+            // $returnData = Controller::returnResponse(200, "user added successfully", $responseData);
+            $returnData['user'] = $user->toArray();
+            return $returnData;
+        } catch (Exception $error) {
+            $responseData = $error->getMessage();
+            $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
+            return $response;
+        }
+    }
+    function clientInternalLogin($email, $password, $teamId)
+    {
+        $credentials = array(
+            'email' => $email,
+            'password' => $password
+        );
+        if (!Auth::attempt($credentials)) {
+            $responseData = array();
+            $response = Controller::returnResponse(422, 'Unauthorized', $responseData);
+            return json_encode($response);
+        }
+
+        $user = User::where('email', $email)->first();
+        if (!Hash::check($password, $user->password)) {
+            $responseData = array();
+            $response = Controller::returnResponse(422, 'The Password does not match', $responseData);
+            return json_encode($response);
+        }
+        $tokenResult = $user->createToken('authToken')->plainTextToken;
+        $user->token = $tokenResult;
+        $user_type = $user->type;
+        $user->save();
+
+
+        $response = array(
+            "user_id" => $user->id,
+            "company_id" => $teamId,
+            "user_type" => $user_type,
+            "userToken" => $tokenResult,
+            "tokenType" => "Bearer",
+            "privileges" => 2,
+        );
+        return ($response);
+    }
+    private function validateclientSignUpProcess($req)
+    {
+        $returnData['error'] = [];
+        $returnData['user'] = [];
+        $userAndCompany = $req->user;
+        $project = $req->project;
+        /**
+         * user validation
+         */
+        $userArr = array(
+            'first_name' => $userAndCompany['first_name'],
+            'last_name' => $userAndCompany['last_name'],
+            'email' => $userAndCompany['email'],
+            'password' => $userAndCompany['password'],
+        );
+        $userRules = array(
+            "first_name" => "required|max:255",
+            "last_name" => "required|max:255",
+            "email" => "email|required|max:255|unique:users",
+            "password" => "required|min:8|max:255",
+        );
+        $userValidator = Validator::make($userArr, $userRules);
+        if ($userValidator->fails()) {
+            $responseData = $userValidator->errors();
+            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            return $response;
+        }
+        /**
+         * company validation
+         */
+        $companyArr = array(
+            'name' => $userAndCompany['company_name']
+        );
+        $companyRules = array(
+            "name" => "required|max:255",
+        );
+        $companyValidator = Validator::make($companyArr, $companyRules);
+        if ($companyValidator->fails()) {
+            $responseData = $companyValidator->errors();
+            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            return $response;
+        }
+        /**
+         * project validation
+         */
+        $min = 0;
+        $max = 0;
+        if ($project['min'] > 0) {
+            $min = $project['min'];
+        }
+        if ($project['max'] > 0) {
+            $max = $project['max'];
+        }
+        $projectArr = array(
+            "name" => $project['name'],
+            "description" => $project['description'],
+            "requirements_description" => $project['requirements_description'],
+            "budget_type" => $project['budget_type'],
+            "min" => $min,
+            "max" => $max,
+            "days" => $project['days'],
+            "needs" => $project['needs'],
+            "design" => $project['design'],
+            "type" => $project['type'],
+            "start_project" => $project['start_project'],
+        );
+        $projectRules = array(
+            "name" => "required",
+            // "description" => "required",
+            "requirements_description" => "required",
+            "budget_type" => "required|gte:0|lt:4",
+            "min" => "numeric",
+            "max" => "numeric",
+            "days" => "required|exists:categories,id",
+            "needs" => "required",
+            "design" => "required",
+            "type" => "required|gt:0|lt:4",
+            "start_project" => "required|exists:categories,id",
+        );
+
+        $projectValidator = Validator::make($projectArr, $projectRules);
+        if ($projectValidator->fails()) {
+            $responseData = $projectValidator->errors();
+            $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+            return $response;
+        }
+        return $returnData;
+        // if ($project['type'] == 3) {
+        //     if (isset($project['skills']) && (count($project['skills']) > 3 || count($project['skills']) < 1)) {
+        //         $responseData = array(
+        //             'skills' => 'skills are required and must be less than 3'
+        //         );
+        //         $response['error'] = Controller::returnResponse(101, "Validation Error", $responseData);
+        //         return $response;
+        //     }
+        // }
     }
 }

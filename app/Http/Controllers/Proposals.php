@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ProposalMail;
 use App\Models\Countries;
 use App\Models\Group;
+use App\Models\Group_member;
 use App\Models\Team;
 use App\Models\User;
 
@@ -75,6 +76,7 @@ class Proposals extends Controller
                         $details = [
                             'subject' => 'Initial Proposal ' . $projectData->name,
                             'project_name' => $projectData->name,
+                            'project_id' => $projectData->id,
                             'team_info' => $teamInfo,
                             'admin_name' => $companyAdminData->first_name,
                             'proposal' => $proposal,
@@ -141,6 +143,11 @@ class Proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
+                    $proposalsCounter = DB::table('proposals')
+                    ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
+                    ->where('project_id', $project_id)
+                    ->distinct()
+                    ->count();
              
                 foreach ($proposals as $proposal) {
                     $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
@@ -151,8 +158,8 @@ class Proposals extends Controller
                     $proposal->price_min = $priceMin;
                     $proposal->price_max = $priceMax;
                 }
-
-                $response = Controller::returnResponse(200, "successful", $proposals);
+                $responseData=array('allData'=>$proposals,'counter'=>$proposalsCounter);
+                $response = Controller::returnResponse(200, "successful", $responseData);
                 return (json_encode($response));
             } catch (Exception $error) {
                 $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
@@ -302,10 +309,15 @@ class Proposals extends Controller
         $projectId = $proposal->project_id;
         $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
         $project = Project::where('id', '=', $projectId)->get()->first();
+        $groupId = $project->company_id;
+        $member = Group_member::where('group_id', '=',$groupId)->where('privileges', '=', 1)->get()->first();
+        $clientId = $member->user_id;
+        $clinet = User::where('id', $clientId)->get()->first();
         $subject = $project->name . " Proposal Update";
         $details = array(
             'subject' => $subject,
             'projectName' => $project->name,
+            'clientEmail' => $clinet->email,
             'status' => $status,
         );
         return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));

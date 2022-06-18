@@ -22,6 +22,10 @@ class Project extends Model
         "deleted",
         "status",
         'BA',
-        'design'
+        'design',
+        'type', // 0,1 project based, 2 monthly, 3 hire developers
+        'budget_id',
+        'interview',
+        'start_project',
     ];
 }

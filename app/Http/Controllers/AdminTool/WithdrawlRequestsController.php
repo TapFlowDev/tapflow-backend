@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\WalletsController;
 use App\Models\Billing_info;
 use App\Models\Countries;
+use App\Models\Group;
 use App\Models\User;
 use App\Models\withdrawl_request;
 use Exception;
@@ -68,9 +69,14 @@ class WithdrawlRequestsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($group_id, $id)
     {
-        //
+        $walletObj = new WalletsController;
+        $wallet = $walletObj->getOrCreateWallet($group_id, 1);
+        $group = Group::where('id', $group_id)->first();
+        $withdrawlRequest = withdrawl_request::where('id', '=', $id)->first();
+        // return ($withdrawlRequest);
+        return view('AdminTool.Agencies.WithdrawalRequests.edit', ['team' => $group, 'wallet' => $wallet->id, 'withdrawal' => $withdrawlRequest]);
     }
 
     /**
@@ -86,14 +92,21 @@ class WithdrawlRequestsController extends Controller
             $walletTransactionsObj = new WalletsTransactionsController;
             $validated = $request->validate([
                 'amount' => 'required|numeric|gt:0',
-                'wallet' => 'required|exists:wallets,id'
+                'wallet' => 'required|exists:wallets,id',
             ]);
-            $withdrawlRequest = withdrawl_request::where('id', '=', $id)->get()->first();
+            $withdrawlRequest = withdrawl_request::where('id', '=', $id)->first();
             $withdrawArray = array(
                 'amount' => $request->amount,
                 'wallet' => $request->wallet,
             );
-            // 
+            if ($request->hasFile('invoice')) {
+                $destPath = 'images/invoices';
+                $ext = $request->file('invoice')->extension();
+                $imageName =  time() . "-" . $id . "." . $ext;
+                $request->invoice->move(public_path($destPath), $imageName);
+                // withdrawl_request::where('id', $id)->update(array('invoice' => $imageName));
+                $withdrawlRequest->invoice = $imageName;
+            }
             $walletTransactionResponse = $walletTransactionsObj->withdraw($withdrawArray);
             if ($walletTransactionResponse['code'] == 500) {
                 $withdrawlRequest->status = 2;
@@ -101,11 +114,14 @@ class WithdrawlRequestsController extends Controller
                 $request->session()->flash('fail', 'there was an error');
                 return redirect()->back();
             }
+
+
+
             $withdrawlRequest->wallet_transactiond_id = $walletTransactionResponse['transaction']->id;
             $withdrawlRequest->status = 1;
             $withdrawlRequest->save();
             $request->session()->flash('success', 'action success');
-            return redirect()->back();
+            return redirect('/AdminTool/agencies/' . $group_id . '/withdrawal');
         } catch (Exception $error) {
             $request->session()->flash('fail', 'there was an error');
             return redirect()->back();

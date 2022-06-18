@@ -16,14 +16,17 @@ use App\Http\Controllers\AdminTool\DashboardController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\AdminTool\CategoryTypesController;
 use App\Http\Controllers\AdminTool\ClientsRequests;
+use App\Http\Controllers\AdminTool\CountriesController;
 use App\Http\Controllers\AdminTool\DepositRequestController;
 use App\Http\Controllers\AdminTool\DummyCompaines;
 use App\Http\Controllers\AdminTool\DummyProjects;
+use App\Http\Controllers\AdminTool\FeaturesController;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Http\Controllers\AdminTool\FromOptions;
 use App\Http\Controllers\AdminTool\InitialProposals;
 use App\Http\Controllers\AdminTool\NotificationSettings;
-
+use App\Http\Controllers\AdminTool\PrioritiesController;
+use App\Http\Controllers\AdminTool\SkillsController;
 use App\Http\Controllers\AdminTool\StaticDataController;
 use App\Http\Controllers\AdminTool\WalletsController;
 use App\Http\Controllers\AdminTool\WalletsTransactionsController;
@@ -83,6 +86,18 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/initialProposals', InitialProposals::class);
     Route::resource('wallet.transactions', WalletsTransactionsController::class)->shallow();
     Route::resource('agencies.withdrawal', WithdrawlRequestsController::class);
+    Route::resource('/priorities', PrioritiesController::class);
+    Route::resource('/countries', CountriesController::class);
+    Route::resource('/skills', SkillsController::class);
+    Route::resource('/features', FeaturesController::class);
+    Route::get('/addSkillsCSV', [SkillsController::class, 'addByCSV'])->name('skills.showAddByCSV');
+    Route::post('/addSkillsCSV', [SkillsController::class, 'createByCSV'])->name('skills.creatAddByCSV');
+    Route::get('/checkSkill/{skill}', [SkillsController::class, 'isSkillExsits']);
+
+    Route::get('/addFeatureCSV', [FeaturesController::class, 'addByCSV'])->name('features.showAddByCSV');
+    Route::post('/addFeatureCSV', [FeaturesController::class, 'createByCSV'])->name('features.creatAddByCSV');
+    Route::get('/checkFeature/{feature}', [FeaturesController::class, 'isFeatureExsits']);
+
     // Route::resource('agencies.wallets', WalletsController::class)->shallow();
     Route::get('sendEmailToUser/{id}', [EmailController::class, 'show'])->name('sendEmailShow.show');
     // Route::get('waitingList', [AdminConroller::class, 'waitingList'])->name('waitingList.index');
@@ -96,8 +111,6 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     //
     Route::post('/wallet/create', [WalletsController::class, 'create'])->name('wallet.create');
     Route::get('/agencyExportCsv', [GroupsController::class, 'agencyExportCsv'])->name('agecies.exportCsv');
-
-
 });
 Route::get('/r', function (Request $request) {
     return redirect('/api/r/' . $request->r);

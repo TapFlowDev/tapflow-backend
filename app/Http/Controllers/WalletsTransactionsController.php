@@ -155,9 +155,11 @@ class WalletsTransactionsController extends Controller
             }
             $wallet = $walletObj->getOrCreateWallet($userData['group_id'], 1);
             $transactions = wallets_transaction::where('wallet_id', '=', $wallet->id)->orderBy('created_at', 'desc')->offset($page)->limit($limit)->get();
+            $transactionsCounter= wallets_transaction::where('wallet_id', '=', $wallet->id)->count();
             $responseData = array(
                 'walletInfo' => $wallet,
-                'transactions' => $transactions
+                'transactions' => $transactions,
+                'counter'=>$transactionsCounter
             );
             $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
@@ -179,9 +181,11 @@ class WalletsTransactionsController extends Controller
             }
             $wallet = $walletObj->getOrCreateWallet($userData['group_id'], 1);
             $transactions = wallets_transaction::where('wallet_id', '=', $wallet->id)->orderBy('created_at', 'desc')->offset($page)->limit($limit)->get();
+            $transactionsCounter = wallets_transaction::where('wallet_id', '=', $wallet->id)->count();
             $responseData = array(
                 'walletInfo' => $wallet,
-                'transactions' => $transactions
+                'transactions' => $transactions,
+                'counter'=>$transactionsCounter
             );
             $response = Controller::returnResponse(200, "data found", $responseData);
             return (json_encode($response));
@@ -280,6 +284,40 @@ class WalletsTransactionsController extends Controller
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something wrong", $error->getMessage());
             return (json_encode($response));
+        }
+    }
+    function makePaymentTransactionDepositAgency($milestoneId)
+    {
+        try {
+            $walletObj = new WalletsController;
+            $payment = payments::where('milestone_id', '=', $milestoneId)->where('status', '=', 1)->get()->first();
+            if(!$payment)
+            { return ['paymentStatus' => -1, 'paymentMsg' => 'payment not found', 'responseCode' => 500];}
+            $wallet = $walletObj->getOrCreateWallet($payment->agency_id, 1);
+            $walletBalance = $wallet->balance;
+            $total = $payment->agency_total_price;
+            $transactionData = array(
+                'amount' => $total,
+                'type' => 1,
+                'wallet_id' => $wallet->id,
+                'payment_id' => $payment->id
+            );
+            $transaction = wallets_transaction::create($transactionData);
+            if ($transaction) {
+                $transaction->status = 1;
+                $transaction->save();
+                $newBalance = number_format($walletBalance + $total, 2, '.', '');
+                $wallet->balance = $newBalance;
+                $wallet->save();
+                $payment->status=2;
+                $payment->save();
+                //notify admin
+                $mail = $this->notifyAdminWalletAction($wallet->reference_id, 2, $total, $newBalance);
+                return ['paymentStatus' => 1, 'paymentMsg' => 'paid successfully',  'responseCode' => 200];
+            }
+            return ['paymentStatus' => -1, 'paymentMsg' => 'error', 'responseCode' => 500];
+        } catch (Exception $error) {
+            return ['paymentStatus' => -1, 'paymentMsg' => $error->getMessage(), 'responseCode' => 500];
         }
     }
 }

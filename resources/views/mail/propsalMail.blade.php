@@ -15,63 +15,13 @@
             </tr>
             <tr>
                 <td>
-                    <p style="color: black; font-weight: bold; font-size: medium;">Here is the proposal:</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color: black; font-weight: bold; font-size: small;">Project Name:</p>
-                    <p style="color: black; font-size: small;">{{ $details['project_name'] }}</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color: black; font-weight: bold; font-size: small;">Estimated price:</p>
-                    <p style="color: black; font-size: small;">${{ $details['est']['min'] }} -
-                        ${{ $details['est']['max'] }} </p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color: black; font-weight: bold; font-size: small;">Why us:</p>
-                    <p style="color: black; font-size: small;">{{ $details['proposal']['our_offer'] }}</p>
+                    <a href="https://www.tapflow.app/Client-user/main/posted-projects-details/{{ $details['project_id'] }}"
+                        target="_blank"
+                        style="padding: 8px 12px; border: 1px solid #ffc900;border-radius: 10px;font-family: Helvetica, Arial, sans-serif;font-size: medium; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; background-color: #ffc900">
+                        Check it out
+                    </a>
                 </td>
             </tr>
         </table>
-        <table role="presentation" style="border:'0'; color:black;  font-size: medium" cellspacing="0" width="100%">
-            <tr>
-                <td>
-                    <p style="color: black; font-weight: bold;">Some info about the agency:</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color: black; font-weight: bold; font-size: small;">Country:</p>
-                    <p style="color: black;  font-size: small;">{{ $details['team_info']['country'] }}</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color: black; font-weight: bold; font-size: small;">Agency size:</p>
-                    <p style="color: black;  font-size: small;">
-                        {{ $details['team_info']['employees_number'] }}</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color: black; font-weight: bold; font-size: small;">Website:</p>
-                    <p style="color: black;  font-size: small;">
-                        {{ $details['team_info']['link'] }}</p>
-                </td>
-            </tr>
-        </table>
-        <br>
-        <p style="color: black; font-weight: bold;">
-            Please reply to this email if you would like to connect
-        </p>
-        <br>
-        <p style="color: black;">
-            Good luck,
-        </p>
     </body>
 @endcomponent
