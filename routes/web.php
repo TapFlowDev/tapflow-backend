@@ -105,12 +105,15 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::get('/recommendProject/{id}', [ProjectsController::class, 'recommendProject'])->name('recommendProject.show');
     Route::post('/filterAgenciesByProjectCategories', [ProjectsController::class, 'filterAgenciesByProjectCategories'])->name('filterAgenciesByProjectCategories.filter');
     Route::post('sendEmailAgencies/{id}', [ProjectsController::class, 'sendAgenciesEmail'])->name('sendEmailAgencies.send');
+    Route::post('sendEmailAgency/{id}', [ProjectsController::class, 'sendAgencyEmail'])->name('sendEmailAgency.send');
     Route::post('verifyProject/{id}', [ProjectsController::class, 'verifyProject'])->name('verifyProject.update');
     Route::get('hideContent/{id}', [StaticDataController::class, 'hideContent'])->name('hideContent.hideContent');
     Route::get('showContent/{id}', [StaticDataController::class, 'showContent'])->name('showContent.showContent');
     //
     Route::post('/wallet/create', [WalletsController::class, 'create'])->name('wallet.create');
     Route::get('/agencyExportCsv', [GroupsController::class, 'agencyExportCsv'])->name('agecies.exportCsv');
+    Route::post('removeMatch/{id}', [ProjectsController::class, 'removeMatch'])->name('removeMatch.destroy');
+
 });
 Route::get('/r', function (Request $request) {
     return redirect('/api/r/' . $request->r);
