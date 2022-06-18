@@ -1,46 +1,55 @@
-@component('mail::message')
-    <body style="font-family: Helvetica,Arial,sans-serif;">
-        <h1 style="color: black; font-weight: bold;">Hey {{ $details['name'] }}</h1>
-        <p style="color: black;">
-            We think that your agency is the right fit for a project. Please check the project details below:
-            <br>
-            <br>
-        </p>
-        <p style="color: black; font-weight: bold;">
-            Project Details:
-        </p>
-        <table role="presentation" style="border:'0'; color:black;  font-size: medium" cellspacing="0" width="100%">
-            <tr>
-                <td>Project Name:</td>
-                <td>{{ $details['project']['name'] }}</td>
-            </tr>
-            <tr>
-                <td>Description:</td>
-                <td>{{ $details['project']['description'] }}</td>
-            </tr>
-            <tr>
-                <td>Duration:</td>
-                <td>{{ $details['project']['duration'] }}</td>
-            </tr>
-            <tr>
-                @if ($details['project']['budget_type'] > 0)
-                    <td>Budget:</td>
-                    <td>Not Specified</td>
-                @else
-                    <td>Budget:</td>
-                    <td>${{ $details['project']['min'] }} - ${{ $details['project']['max'] }} </td>
-                @endif
-            </tr>
-        </table>
-        <br>
-        <a href="https://www.tapflow.app/a-user/main/project/{{ $details['project']['id'] }}" target="_blank"
-            style="padding: 8px 12px; border: 1px solid #ffc900;border-radius: 10px;font-family: Helvetica, Arial, sans-serif;font-size: medium; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; background-color: #ffc900">
-            View & Apply
-        </a>
+{{-- @component('mail::message') --}}
+<body style="font-family: Helvetica,Arial,sans-serif;">
+    <h1 style="color: black; font-weight: bold;">Hey {{ $details['name'] }},</h1>
+    <p style="color: black;">
+        We have a project that we think is a great fit. Here are the info:
         <br>
         <br>
-        <p style="color: black;">
-            Good luck,
-        </p>
-    </body>
-@endcomponent
+    </p>
+    <table role="presentation" style="border:'0'; color:black;  font-size: medium" cellspacing="0" width="100%">
+        <tr style="margin-bottom: 2px">
+            <td>Title:</td>
+            <td>{{ $details['project']['name'] }}</td>
+        </tr>
+        <tr style="margin-bottom: 2px">
+            <td>Duration:</td>
+            <td>{{ $details['project']['duration'] }}</td>
+        </tr>
+        <tr style="margin-bottom: 2px">
+            @if ($details['project']['type'] != 3)
+                <td>Budget:</td>
+            @else
+                <td>Hourly Budget:</td>
+            @endif
+            <td>{{ $details['project']['budget'] }} </td>
+        </tr>
+        <tr style="margin-bottom: 2px">
+            <td>Requirements:</td>
+            <td>
+                @foreach ($details['project']['requirments_description'] as $req)
+                    {{ $req }}
+                    @if (!$loop->last)
+                        <br>
+                    @endif
+                @endforeach
+            </td>
+        </tr>
+    </table>
+    <br>
+    <p style="color: black;">
+        If you're interested, please apply from <a
+            href="https://www.tapflow.app/a-user/main/project/{{ $details['project']['id'] }}" target="_blank"
+            style=" color: black;text-decoration: none;font-weight:bold;">
+            Here
+        </a>.
+    </p>
+    <br>
+    <p style="color: black;">
+        Thanks,
+    </p>
+    <br>
+    <p style="color: black;">
+        Tapflow Projects,
+    </p>
+</body>
+{{-- @endcomponent --}}

@@ -34,13 +34,15 @@ class EmailController extends Controller
         // Mail::to($req->email)->send(new CustomMail($details));
         return redirect()->back();
     }
-    function sendEmailToAgencies($agencies, $project){
-        foreach($agencies as $agency){
+    function sendEmailToAgencies($agencies, $project)
+    {
+        foreach ($agencies as $agency) {
             $details = [
-                "subject" => 'We have found you a great project',
+                "subject" => 'You have a new match!',
                 "name" => $agency->admin_name,
                 "project" => $project
             ];
+            // dd($details);
             Mail::mailer('smtp2')->to($agency->admin_email)->send(new ProjectMail($details));
         }
         return 1;
