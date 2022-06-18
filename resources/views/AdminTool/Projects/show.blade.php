@@ -53,10 +53,19 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-3">
+                                        <h6 class="mb-0">Start Project</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        {{ $project->startProject }}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
                                         <h6 class="mb-0">Budget</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        ${{ $project->min }} - ${{ $project->max }}
+                                        {{ $project->budget }}
                                     </div>
                                 </div>
                                 <hr>
@@ -83,48 +92,89 @@
                                         @endif
                                     </div>
                                 </div>
+                                @if ($project->type != 3)
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Description</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            {{ $project->description }}
+                                        </div>
+                                    </div>
+                                @endif
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0">Description</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        {{ $project->description }}
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0"> Requirements</h6>
+                                        <h6 class="mb-0">
+                                            @if ($project->type != 3)
+                                                Requirements
+                                            @else
+                                                Skills
+                                            @endif
+                                        </h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
                                         @foreach ($project->requirments_description as $requirment)
-                                            {{ $requirment }} @if (!$loop->last)
-                                                ,
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Categories</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        @foreach ($project->categories as $cats)
-                                            {{ $cats['name'] }}:
-                                            @foreach ($cats['subs'] as $subs)
-                                                {{ $subs->name }}
-                                                @if (!$loop->last)
-                                                    ,
-                                                @endif
-                                            @endforeach
+                                            {{ $requirment }}
                                             @if (!$loop->last)
                                                 <hr>
                                             @endif
                                         @endforeach
                                     </div>
                                 </div>
+                                {{-- <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Priorities</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        @if (count($project->priorities) > 0)
+                                            @foreach ($project->priorities as $priority)
+                                                {{ $priority->sort }}. {{ $priority->name }}  
+                                                @if (!$loop->last)
+                                                    <hr>
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div> --}}
+                                @if ($project->type != 3)
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Categories</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            @foreach ($project->categories as $cats)
+                                                {{ $cats['name'] }},
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Services</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            @isset($project->servicesArr)
+                                                @foreach ($project->services as $service)
+                                                    {{ $service['name'] }}
+                                                    @if (!$loop->last)
+                                                        <hr>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                @foreach ($project->services as $service)
+                                                    {{ $service->name }}
+                                                    @if (!$loop->last)
+                                                        <hr>
+                                                    @endif
+                                                @endforeach
+                                            @endisset
+                                        </div>
+                                    </div>
+                                @endif
                                 {{-- <hr>
                                 <div class="row">
                                     <div class="col-sm-3">

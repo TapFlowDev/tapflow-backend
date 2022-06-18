@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProjectPriority;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProjectPriorityController extends Controller
 {
@@ -35,5 +36,16 @@ class ProjectPriorityController extends Controller
     //delete row according to row id
     function Delete($id)
     {
+    }
+    function getProjectPriorities($projectId){
+        // $services = Project_service::where('project_id', '=', $projectId)->get();
+        $priorities = DB::table('project_priorities')
+        ->join('priorities', 'project_priorities.priority_id', '=', 'priorities.id')
+        ->select('priorities.*', 'project_priorities.sort')
+        ->where('project_priorities.project_id', '=', $projectId)
+        ->orderBy('project_priorities.sort', 'asc')
+        ->get();
+        return $priorities;
+
     }
 }
