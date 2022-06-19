@@ -39,7 +39,7 @@ class HireDeveloperProposalsController extends Controller
             $projectId = $req->project_id;
             $teamId = $userData['group_id'];
             $userId = $userData['user_id'];
-            $requirements = json_decode($req->requirements);
+            $requirements = $req->requirements;
             dd($requirements);
 
             $project = Project::where('id', '=', $projectId)->first();
