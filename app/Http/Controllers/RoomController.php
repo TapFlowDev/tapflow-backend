@@ -381,6 +381,8 @@ class RoomController extends Controller
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
             }
+            $response = Controller::returnResponse(200, "successful", []);
+                return json_encode($response);
             }
             $ids = array_slice($rooms_ids, $start);
             for ($i = 0; $i < $limit; $i++) {
