@@ -376,14 +376,12 @@ class RoomController extends Controller
             //     $diff=$limit-$rooms_ids;
             //     $limit=$limit-$diff;
             // }
-            if($limit > count($rooms_ids)){
+           
             if ($start == count($rooms_ids) or $start > count($rooms_ids)) {
                 $response = Controller::returnResponse(200, "successful", []);
                 return json_encode($response);
             }
-            $response = Controller::returnResponse(200, "successful", []);
-                return json_encode($response);
-            }
+          
             $ids = array_slice($rooms_ids, $start);
             for ($i = 0; $i < $limit; $i++) {
               
