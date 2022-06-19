@@ -15,6 +15,8 @@ class HireDeveloperProposalsController extends Controller
     //add row 
     function Insert(Request $req)
     {
+        $response = Controller::returnResponse(500, "Validation Error", $req->all());
+        return (json_encode($response));
         $userData = $this->checkUser($req);
         $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1;
         if (!$condtion) {
@@ -87,7 +89,7 @@ class HireDeveloperProposalsController extends Controller
             $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
             /** 
              * send email
-            */
+             */
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
             return (json_encode($response));
@@ -96,11 +98,9 @@ class HireDeveloperProposalsController extends Controller
     //update row according to row id
     function Update($id)
     {
-
     }
     //delete row according to row id
     function Delete($id)
     {
-
     }
 }

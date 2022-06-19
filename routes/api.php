@@ -40,6 +40,7 @@ use App\Http\Controllers\Milestones;
 use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\DepositRequestController;
 use App\Http\Controllers\FeatureController;
+use App\Http\Controllers\HireDeveloperProposalsController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\PriorityController;
