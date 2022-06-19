@@ -51,11 +51,11 @@ class HireDeveloperProposalsController extends Controller
                 return (json_encode($response));
             }
 
-            // $proposalDoesExsist = Proposal_requirement::where('project_id', '=', $projectId)->where('team_id', '=', $teamId)->first();
-            // if ($proposalDoesExsist) {
-            //     $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposalDoesExsist]);
-            //     return (json_encode($response));
-            // }
+            $proposalDoesExsist = hire_developer_proposals::where('project_id', '=', $projectId)->where('team_id', '=', $teamId)->first();
+            if ($proposalDoesExsist) {
+                $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposalDoesExsist]);
+                return (json_encode($response));
+            }
 
             /**
              * check requirements ids if valid
@@ -76,18 +76,19 @@ class HireDeveloperProposalsController extends Controller
                 'project_id' => $projectId,
                 'details' => $req->our_offer,
             );
-            // $proposal = hire_developer_proposals::create($proposalArr);
+            $proposal = hire_developer_proposals::create($proposalArr);
             foreach ($requirements as $keyRequ => $valRequ) {
                 $requirementArr = array(
-                    'proposal_id' => 10,
+                    'proposal_id' => $proposal->id,
                     'requirement_id' => $keyRequ,
                     'hourly_rate' => $valRequ,
                 );
-                return $requirementArr;
-                // Proposal_requirement::create($requirementArr);
+                Proposal_requirement::create($requirementArr);
             }
-            // $responseData = array("proposal_id" => $proposal->id);
-            // $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
+            $responseData = array("proposal_id" => $proposal->id);
+            $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
+            return json_encode($response);
+
             /** 
              * send email
              */
