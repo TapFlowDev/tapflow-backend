@@ -40,7 +40,6 @@ class HireDeveloperProposalsController extends Controller
             $teamId = $userData['group_id'];
             $userId = $userData['user_id'];
             $requirements = $req->requirements;
-            dd($requirements);
 
             $project = Project::where('id', '=', $projectId)->first();
             if (!$project) {
@@ -77,17 +76,18 @@ class HireDeveloperProposalsController extends Controller
                 'project_id' => $projectId,
                 'details' => $req->our_offer,
             );
-            $proposal = hire_developer_proposals::create($proposalArr);
+            // $proposal = hire_developer_proposals::create($proposalArr);
             foreach ($requirements as $keyRequ => $valRequ) {
                 $requirementArr = array(
-                    'proposal_id' => $proposal->id,
+                    'proposal_id' => 10,
                     'requirement_id' => $keyRequ,
                     'hourly_rate' => $valRequ,
                 );
-                Proposal_requirement::create($requirementArr);
+                return $requirementArr;
+                // Proposal_requirement::create($requirementArr);
             }
-            $responseData = array("proposal_id" => $proposal->id);
-            $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
+            // $responseData = array("proposal_id" => $proposal->id);
+            // $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
             /** 
              * send email
              */
