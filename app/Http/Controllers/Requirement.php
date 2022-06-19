@@ -51,10 +51,44 @@ class Requirement extends Controller
   function getRequirementsAndHourlyRateByProjectId($projectId)
   {
     $requirements = DB::table('requirements')
-      ->select('requirements.id as requirementId','requirements.description')
+      ->select('requirements.id as requirementId', 'requirements.description')
       ->where('requirements.project_id', '=', $projectId)
       ->get();
-
     return $requirements;
+  }
+  function getHireDevRequirmentData($projectId)
+  {
+    $requirements = DB::table('requirements')
+      ->select('requirements.id', 'requirements.description')
+      ->where('requirements.project_id', '=', $projectId)
+      ->get();
+      $returnDataArr = $this->splitRequirmnets($requirements);
+      // dd($returnDataArr);
+      return $returnDataArr;
+  }
+  private function splitRequirmnets($requirements)
+  {
+    $splitRequirementsArr = array();
+    $skillsArr = [];
+    foreach($requirements as $requirement){
+      $splitArray = explode(",", $requirement->description);
+      $countSplitArray = count($splitArray);
+      for($i = 0; $i < ($countSplitArray-4); $i++ ){
+        $skillsArr[] = trim($splitArray[$i]);
+      }
+      $splitRequirementsArr[] = [
+        'quantity'=>trim($splitArray[$countSplitArray-1]),
+        'hours'=>trim($splitArray[$countSplitArray-2]),
+        'duration'=>trim($splitArray[$countSplitArray-3]),
+        'seniority'=>trim($splitArray[$countSplitArray-4]),
+        'skills' => $skillsArr
+      ];
+    }
+    $returnDataArr = [
+      'skills'=>array_unique($skillsArr),
+      'reqArr' => $splitRequirementsArr
+    ];
+    // dd(($splitRequirementsArr));
+    return $returnDataArr;
   }
 }
