@@ -369,7 +369,7 @@ class RoomController extends Controller
             }
             $page = ($offset - 1) * $limit;
             $ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->offset($page)->limit($limit)->get();
-            dd($ids);
+            // dd($ids->all());
             // $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
             $rooms = array();
             $rooms2 = array();
