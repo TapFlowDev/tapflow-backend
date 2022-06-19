@@ -387,7 +387,7 @@ class RoomController extends Controller
           
             // $ids = array_slice($rooms_ids, $start);
             // for ($i = 0; $i < $limit; $i++) {
-              foreach($ids as $id)
+              foreach($ids as $id){
                 // dd(['i: '=>$i,'ids: '=>$rooms_ids]);
                 $roomType = 1;
                 $room = array();
