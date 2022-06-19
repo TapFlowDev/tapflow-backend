@@ -368,7 +368,7 @@ class RoomController extends Controller
                 return json_encode($response);
             }
             $page = ($offset - 1) * $limit;
-            $ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->orderBy('updated_at')->offset($page)->limit($limit)->get();
+            $ids = RoomMembers::where('user_id', $user_id)->select('room_id','updated_at')->distinct()->orderBy('updated_at')->offset($page)->limit($limit)->get();
             // dd($ids->all());
             // $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
             $rooms = array();
