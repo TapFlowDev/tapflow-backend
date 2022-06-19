@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Proposal_requirement;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class HireDeveloperProposalsController extends Controller
@@ -18,7 +19,7 @@ class HireDeveloperProposalsController extends Controller
         // $response = Controller::returnResponse(500, "Validation Error", $req->all());
         // return (json_encode($response));
         $userData = $this->checkUser($req);
-        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1;
+        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1 && $userData['verified'] == 1;
         if (!$condtion) {
             $response = Controller::returnResponse(401, "Unauthrized", []);
             return (json_encode($response));
@@ -104,5 +105,18 @@ class HireDeveloperProposalsController extends Controller
     //delete row according to row id
     function Delete($id)
     {
+    }
+    function checkIfProposalExists($project_id, $team_id)
+    {
+        $proposal_id = DB::table('proposals')
+            ->select('id', 'status')
+            ->where('team_id', '=', $team_id)
+            ->where('project_id', '=', $project_id)
+            ->first();
+        if ($proposal_id == null) {
+            return ['exist' => 0];
+        } else {
+            return ['exist' => 1, "proposal_id" => $proposal_id->id, "status" => $proposal_id->status];
+        }
     }
 }

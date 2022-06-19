@@ -1192,7 +1192,6 @@ class ProjectController extends Controller
                 ];
                 $projects = Project::where($conditionArray)->orWhere($conditionArray2)->distinct()->latest()->offset($page)->limit($limit)->get();
                 $projectsCounter = Project::where($conditionArray)->orWhere($conditionArray2)->count();
-
             } else {
                 $projects = Project::where($conditionArray)->distinct()->latest()->offset($page)->limit($limit)->get();
                 $projectsCounter = Project::where($conditionArray)->count();
@@ -1209,7 +1208,7 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-    private function newGetProjectsInfo($projects)
+    private function newGetProjectsInfo($projects, $groupId = 0, $groupType = 0)
     {
         $projectCategoriesObj = new ProjectCategoriesController;
         $requirementsObj = new Requirement;
@@ -1265,10 +1264,61 @@ class ProjectController extends Controller
                 $requirmentsDetails = $requirementsObj->getHireDevRequirmentData($project->id);
                 $project->requirmentsDetails = $requirmentsDetails['reqArr'];
                 $project->requirmentsSkills = $requirmentsDetails['skills'];
+                if ($groupId > 0 && $groupType==1) {
+                    $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                    // hire developer final obj 
+                    $initProp = $hireDeveloperProposalsObj->checkIfProposalExists($project->id, $groupId);
+                    $proposal_status = $initProp['status'];
+                    $project->proposal_status = $proposal_status;
+                    $progressArray = array(
+                        "apply" => ($proposal_status ? 1 : 0),
+                        "discuss" => 0,
+                        "contract" => 0,
+                        "onboard" => 0,
+                    );
+                    $project->progressArray = $progressArray;
+
+
+                }
+
             } else {
                 $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
+                if ($groupId > 0 && $groupType==1) {
+                    $finalPropObj = new Final_proposals;
+                    $initPropObj = new Proposals;
+                    $finalProp = $finalPropObj->checkIfExists($project->id, $groupId);
+                    $initProp = $initPropObj->checkIfProposalExists($project->id, $groupId);
+                    $proposal_status = $initProp['status'];
+                    if ($finalProp['exist'] == 1) {
+                        $finalStatus = $finalProp['status'];
+                    } else {
+                        $finalStatus = null;
+                    }
+                    $project->final_proposal_status =  $finalStatus;
+                    $project->proposal_status =   $proposal_status;
+                    $progressArray = array(
+                        "apply" => ($proposal_status ? 1 : 0),
+                        "discuss" => 0,
+                        "contract" => 0,
+                        "onboard" => 0,
+                    );
+                    $project->progressArray = $progressArray;
+                }
             }
         }
         return $projects;
+    }
+    function newGetProject(Request $req, $id)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $project = Project::where('id', $id)->get();
+            $projectInfo = $this->newGetProjectsInfo($project, $userData['groupId'], $userData['type'])->first();
+            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 }
