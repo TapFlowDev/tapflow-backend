@@ -128,12 +128,12 @@ class HireDeveloperProposalsController extends Controller
             $conditionArray[]= ['team_id', '=', $teamId];
             $proposals = hire_developer_proposals::where($conditionArray)->distinct()->latest()->offset($page)->limit($limit)->get();
             $proposalCount = hire_developer_proposals::where($conditionArray)->count();
-            $proposalData = $this->getData($proposals);
+            // $proposalData = $this->getData($proposals);
         } else {
             $proposals = hire_developer_proposals::where($conditionArray)->distinct()->latest()->offset($page)->limit($limit)->get();
             $proposalCount = hire_developer_proposals::where($conditionArray)->count();
-            $proposalData = $this->getData($proposals);
         }
+        $proposalData = $this->getData($proposals);
         $returnData = [
             'allData' => $proposalData,
             'count' => $proposalCount

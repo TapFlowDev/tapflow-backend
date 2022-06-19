@@ -1344,8 +1344,10 @@ class ProjectController extends Controller
                 $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
                 $proposals = $hireDeveloperProposalsObj->getProposalsByProjectIdTeamId($id, $agencyId, $page, $limit);
             } else {
+                $proposalsObj = new Proposals;
+                $proposals = $proposalsObj->getProposalsByProjectId($id, $agencyId, $page, $limit);
             }
-            $response = Controller::returnResponse(200, "There IS Error Occurred", $proposals);
+            $response = Controller::returnResponse(200, "data found", $proposals);
             return (json_encode($response));
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
