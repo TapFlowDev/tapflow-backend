@@ -381,7 +381,7 @@ class RoomController extends Controller
                 return json_encode($response);
             }
             $ids = array_slice($rooms_ids, $start);
-            for ($i = 0; $i < count($ids); $i++) {
+            for ($i = 0; $i < $limit; $i++) {
               
                 // dd(['i: '=>$i,'ids: '=>$rooms_ids]);
                 $roomType = 1;
