@@ -45,7 +45,7 @@ class ChatController extends Controller
                 $userName = User::where('id', $userData['user_id'])->select('first_name', 'last_name')->first();
                 $msgTitle = $userName->first_name . ' ' . $userName->last_name;
                 $fcmTokens=$roomObj->getRoomMembersTokens($userData['user_id'],$req->room_id);
-
+                $roomObj->updateSeen($userData['user_id'],$req->room_id);
                 Messages::create(['body' => $req->body, 'user_id' => $userData['user_id'], 'room_id' => $req->room_id]);
                 Controller::sendNotification($fcmTokens,$msgTitle,$req->body,$link,1,'chat','');
                 
