@@ -80,9 +80,9 @@ class ChatController extends Controller
             return json_encode($response);
         }
     }
-    function getRoomLastMessage($room_id, $user_id)
+    function getRoomLastMessage($room_id)
     {
-        $lastMessage = Messages::where('room_id', $room_id)->where('user_id','<>',$user_id)->select('body','created_at')->distinct()->latest()
+        $lastMessage = Messages::where('room_id', $room_id)->select('body','created_at')->distinct()->latest()
             ->offset(1)->limit(1)->first();
             if ($lastMessage === null)
             {

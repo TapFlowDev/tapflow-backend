@@ -401,7 +401,7 @@ class RoomController extends Controller
                 }
                 $chatObj = new ChatController;
 
-                $lastMessage = $chatObj->getRoomLastMessage($id->room_id, $userData['user_id']);
+                $lastMessage = $chatObj->getRoomLastMessage($id->room_id);
                 if ($lastMessage === null) {
                     $room2 = array(
                         'room_id' =>  $id->room_id,
