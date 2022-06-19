@@ -1271,7 +1271,7 @@ class ProjectController extends Controller
                     $proposal_status = $initProp['status'];
                     $project->proposal_status = $proposal_status;
                     $progressArray = array(
-                        "apply" => ($initProp['exist']),
+                        "apply" => $initProp['exist'],
                         "discuss" => 0,
                         "contract" => 0,
                         "onboard" => 0,
@@ -1294,7 +1294,7 @@ class ProjectController extends Controller
                     $project->final_proposal_status =  $finalStatus;
                     $project->proposal_status =   $proposal_status;
                     $progressArray = array(
-                        "apply" => ($proposal_status ? 1 : 0),
+                        "apply" => $initProp['exist'],
                         "discuss" => 0,
                         "contract" => 0,
                         "onboard" => 0,
