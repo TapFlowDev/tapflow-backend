@@ -183,6 +183,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
     Route::post('printInvoice', [WalletsTransactionsController::class, 'printInvoice']);
     Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
+    // new apis
+    Route::get('projectInfo/{id}', [ProjectController::class, 'newGetProject']);
+
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
@@ -223,7 +226,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
     Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
     Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
-
+    //new apis
     Route::get('exploreProjects/{type}/{offset}/{limit}', [ProjectController::class, 'newExploreProject']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
