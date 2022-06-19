@@ -76,12 +76,14 @@ class Requirement extends Controller
       for($i = 0; $i < ($countSplitArray-4); $i++ ){
         $skillsArr[] = trim($splitArray[$i]);
       }
+      $hourlyRate = ($requirement->hourly_rate ? $requirement->hourly_rate : null );
       $splitRequirementsArr[] = [
         'quantity'=>trim($splitArray[$countSplitArray-1]),
         'hours'=>trim($splitArray[$countSplitArray-2]),
         'duration'=>trim($splitArray[$countSplitArray-3]),
         'seniority'=>trim($splitArray[$countSplitArray-4]),
-        'skills' => $skillsArr
+        'skills' => $skillsArr,
+        'hourlyRate' => $hourlyRate,
       ];
     }
     $returnDataArr = [
@@ -90,5 +92,16 @@ class Requirement extends Controller
     ];
     // dd(($splitRequirementsArr));
     return $returnDataArr;
+  }
+  function getHireDevInitialProposalRequirements($proposalId)
+  {
+    $requirements = DB::table('proposal_requirements')
+      ->join('requirements', 'proposal_requirements.requirement_id', '=', 'requirements.id')
+      ->select('requirements.*', 'proposal_requirements.hourly_rate')
+      ->where('proposal_requirements.proposal_id', '=', $proposalId)
+      ->get();
+      $returnDataArr = $this->splitRequirmnets($requirements);
+      // dd($returnDataArr);
+      return $returnDataArr;
   }
 }

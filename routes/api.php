@@ -185,6 +185,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
     // new apis
     Route::get('projectInfo/{id}', [ProjectController::class, 'newGetProject']);
+    Route::get('getProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getInitailProposalsProjectId']);
 
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {

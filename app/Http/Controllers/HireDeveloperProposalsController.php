@@ -108,7 +108,7 @@ class HireDeveloperProposalsController extends Controller
     }
     function checkIfProposalExists($project_id, $team_id)
     {
-        $proposal_id = DB::table('proposals')
+        $proposal_id = DB::table('hire_developer_proposals')
             ->select('id', 'status')
             ->where('team_id', '=', $team_id)
             ->where('project_id', '=', $project_id)
@@ -118,5 +118,39 @@ class HireDeveloperProposalsController extends Controller
         } else {
             return ['exist' => 1, "proposal_id" => $proposal_id->id, "status" => $proposal_id->status];
         }
+    }
+    function getProposalsByProjectIdTeamId($projectId, $teamId = 0, $page = 1, $limit = 4)
+    {
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        if ($teamId > 0) {
+            $conditionArray[]= ['team_id', '=', $teamId];
+            $proposals = hire_developer_proposals::where($conditionArray)->distinct()->latest()->offset($page)->limit($limit)->get();
+            $proposalCount = hire_developer_proposals::where($conditionArray)->count();
+            $proposalData = $this->getData($proposals);
+        } else {
+            $proposals = hire_developer_proposals::where($conditionArray)->distinct()->latest()->offset($page)->limit($limit)->get();
+            $proposalCount = hire_developer_proposals::where($conditionArray)->count();
+            $proposalData = $this->getData($proposals);
+        }
+        $returnData = [
+            'allData' => $proposalData,
+            'count' => $proposalCount
+        ];
+        return $returnData;
+    }
+    private function getData($proposals)
+    {
+        $requirementObj = new Requirement;
+        $teamControllersObj = new TeamController;
+
+        foreach ($proposals as $keyP => &$proposal) {
+            $proposal->requirments_description = $requirementObj->getRequirementsByProjectId($proposal->project_id)->pluck('description')->toArray();
+            $proposalRequirments = $requirementObj->getHireDevInitialProposalRequirements($proposal->id);
+            $proposal->requirementDetails = $proposalRequirments;
+            $proposal->teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
+        }
+        return $proposals;
     }
 }

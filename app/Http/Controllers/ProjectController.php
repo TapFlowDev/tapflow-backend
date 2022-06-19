@@ -1264,7 +1264,7 @@ class ProjectController extends Controller
                 $requirmentsDetails = $requirementsObj->getHireDevRequirmentData($project->id);
                 $project->requirmentsDetails = $requirmentsDetails['reqArr'];
                 $project->requirmentsSkills = $requirmentsDetails['skills'];
-                if ($groupId > 0 && $groupType==1) {
+                if ($groupId > 0 && $groupType == 1) {
                     $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
                     // hire developer final obj 
                     $initProp = $hireDeveloperProposalsObj->checkIfProposalExists($project->id, $groupId);
@@ -1277,13 +1277,10 @@ class ProjectController extends Controller
                         "onboard" => 0,
                     );
                     $project->progressArray = $progressArray;
-
-
                 }
-
             } else {
                 $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
-                if ($groupId > 0 && $groupType==1) {
+                if ($groupId > 0 && $groupType == 1) {
                     $finalPropObj = new Final_proposals;
                     $initPropObj = new Proposals;
                     $finalProp = $finalPropObj->checkIfExists($project->id, $groupId);
@@ -1315,6 +1312,40 @@ class ProjectController extends Controller
             $project = Project::where('id', $id)->get();
             $projectInfo = $this->newGetProjectsInfo($project, $userData['groupId'], $userData['type'])->first();
             $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getInitailProposalsProjectId(Request $req, $id, $offset = 0, $limit = 4)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($userData['type'] == 1) {
+                $agencyId = $userData['group_id'];
+                $project = Project::where('id', $id)->first();
+            } else {
+                $agencyId = 0;
+                $project = Project::where('id', $id)->where('company_id', '=', $userData['group_id'])->first();
+            }
+            $page = ($offset - 1) * $limit;
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Project does not exsist', []);
+                return (json_encode($response));
+            }
+            
+            if ($project->type == 3) {
+                $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                $proposals = $hireDeveloperProposalsObj->getProposalsByProjectIdTeamId($id, $agencyId, $page, $limit);
+            } else {
+            }
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $proposals);
             return (json_encode($response));
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
