@@ -1339,13 +1339,13 @@ class ProjectController extends Controller
                 $response = Controller::returnResponse(422, 'Project does not exsist', []);
                 return (json_encode($response));
             }
-            
+
             if ($project->type == 3) {
                 $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
                 $proposals = $hireDeveloperProposalsObj->getProposalsByProjectIdTeamId($id, $agencyId, $page, $limit);
             } else {
             }
-            $response = Controller::returnResponse(500, "There IS Error Occurred", $proposals);
+            $response = Controller::returnResponse(200, "There IS Error Occurred", $proposals);
             return (json_encode($response));
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
