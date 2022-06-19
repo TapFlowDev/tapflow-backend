@@ -15,8 +15,8 @@ class HireDeveloperProposalsController extends Controller
     //add row 
     function Insert(Request $req)
     {
-        $response = Controller::returnResponse(500, "Validation Error", $req->all());
-        return (json_encode($response));
+        // $response = Controller::returnResponse(500, "Validation Error", $req->all());
+        // return (json_encode($response));
         $userData = $this->checkUser($req);
         $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1;
         if (!$condtion) {
@@ -40,6 +40,7 @@ class HireDeveloperProposalsController extends Controller
             $teamId = $userData['group_id'];
             $userId = $userData['user_id'];
             $requirements = json_decode($req->requirements);
+            dd($requirements);
 
             $project = Project::where('id', '=', $projectId)->first();
             if (!$project) {
@@ -80,8 +81,8 @@ class HireDeveloperProposalsController extends Controller
             foreach ($requirements as $keyRequ => $valRequ) {
                 $requirementArr = array(
                     'proposal_id' => $proposal->id,
-                    'requirement_id' => $valRequ['requirementId'],
-                    'hourly_rate' => $valRequ['hourlyRate'],
+                    'requirement_id' => $keyRequ,
+                    'hourly_rate' => $valRequ,
                 );
                 Proposal_requirement::create($requirementArr);
             }
