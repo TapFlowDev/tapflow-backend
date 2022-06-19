@@ -1310,7 +1310,7 @@ class ProjectController extends Controller
         try {
             $userData = $this->checkUser($req);
             $project = Project::where('id', $id)->get();
-            $projectInfo = $this->newGetProjectsInfo($project, $userData['groupId'], $userData['type'])->first();
+            $projectInfo = $this->newGetProjectsInfo($project, $userData['group_id'], $userData['type'])->first();
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));
         } catch (\Exception $error) {
