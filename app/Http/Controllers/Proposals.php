@@ -179,7 +179,7 @@ class Proposals extends Controller
             ->where('project_id', '=', $project_id)
             ->first();
         if ($proposal_id == null) {
-            return ['exist' => 0];
+            return ['exist' => 0, "status" => 0];
         } else {
             return ['exist' => 1, "proposal_id" => $proposal_id->id, "status" => $proposal_id->status];
         }
