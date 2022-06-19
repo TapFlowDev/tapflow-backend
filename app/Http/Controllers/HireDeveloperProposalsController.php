@@ -51,11 +51,11 @@ class HireDeveloperProposalsController extends Controller
                 return (json_encode($response));
             }
 
-            $proposalDoesExsist = Proposal_requirement::where('project_id', '=', $projectId)->where('team_id', '=', $teamId)->first();
-            if ($proposalDoesExsist) {
-                $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposalDoesExsist]);
-                return (json_encode($response));
-            }
+            // $proposalDoesExsist = Proposal_requirement::where('project_id', '=', $projectId)->where('team_id', '=', $teamId)->first();
+            // if ($proposalDoesExsist) {
+            //     $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposalDoesExsist]);
+            //     return (json_encode($response));
+            // }
 
             /**
              * check requirements ids if valid
