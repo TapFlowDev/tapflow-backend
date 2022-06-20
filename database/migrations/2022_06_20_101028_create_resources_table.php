@@ -22,7 +22,7 @@ class CreateResourcesTable extends Migration
             $table->integer('hours')->nullable();
             $table->string('rate', 255)->nullable();
             $table->date('starting_date')->nullable();
-            $table->string('duration_in_days')->nullable();
+            $table->date('end_date')->nullable();
             $table->string('image', 255)->nullable();
             $table->integer('user_id')->nullable();
             $table->integer('status')->default(0);
