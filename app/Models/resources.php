@@ -16,7 +16,7 @@ class resources extends Model
         'hours',
         'rate',
         'starting_date',
-        'duration_in_days',
+        'end_date',
         'image',
         'user_id',
         'status',
