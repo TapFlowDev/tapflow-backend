@@ -48,6 +48,12 @@ class Requirement extends Controller
 
     return ($requirements);
   }
+  function getRequirementsAlldataByProjectId($id)
+  {
+    $requirements = requirementModel::where('project_id', $id)->get();
+
+    return ($requirements);
+  }
   function getRequirementsAndHourlyRateByProjectId($projectId)
   {
     $requirements = DB::table('requirements')
@@ -78,6 +84,7 @@ class Requirement extends Controller
       }
       $hourlyRate = (isset($requirement->hourly_rate) ? $requirement->hourly_rate : null );
       $splitRequirementsArr[] = [
+        'id'=> $requirement->id,
         'quantity'=>trim($splitArray[$countSplitArray-1]),
         'hours'=>trim($splitArray[$countSplitArray-2]),
         'duration'=>trim($splitArray[$countSplitArray-3]),

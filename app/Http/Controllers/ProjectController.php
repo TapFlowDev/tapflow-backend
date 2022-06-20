@@ -1260,6 +1260,7 @@ class ProjectController extends Controller
             $project->company_bio = $company_bio;
             $project->admin_info = $admin_info;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            $project->requirments = $requirementsObj->getRequirementsAlldataByProjectId($project->id);
             if ($project->type == 3) {
                 $requirmentsDetails = $requirementsObj->getHireDevRequirmentData($project->id);
                 $project->requirmentsDetails = $requirmentsDetails['reqArr'];
