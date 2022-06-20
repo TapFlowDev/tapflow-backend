@@ -82,7 +82,7 @@ class Requirement extends Controller
       $reqSkillsArr = [];
       for($i = 0; $i < ($countSplitArray-4); $i++ ){
         $skillsArr[] = trim($splitArray[$i]);
-        $$reqSkillsArr[] = trim($splitArray[$i]);
+        $reqSkillsArr[] = trim($splitArray[$i]);
       }
       $hourlyRate = (isset($requirement->hourly_rate) ? $requirement->hourly_rate : null );
       $splitRequirementsArr[] = [
@@ -91,7 +91,7 @@ class Requirement extends Controller
         'hours'=>trim($splitArray[$countSplitArray-2]),
         'duration'=>trim($splitArray[$countSplitArray-3]),
         'seniority'=>trim($splitArray[$countSplitArray-4]),
-        'skills' => $skillsArr,
+        'skills' => $reqSkillsArr,
         'hourlyRate' => $hourlyRate,
       ];
     }
