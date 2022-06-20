@@ -113,4 +113,34 @@ class Requirement extends Controller
       // dd($returnDataArr);
       return $returnDataArr;
   }
+  function getResourcesByProposalId($proposalId)
+  {
+    $requirements = DB::table('proposal_requirements')
+      ->join('requirements', 'proposal_requirements.requirement_id', '=', 'requirements.id')
+      ->select('requirements.id', 'requirements.description' , 'proposal_requirements.hourly_rate')
+      ->where('proposal_requirements.proposal_id', '=', $proposalId)
+      ->get();
+      $returnDataArr = $this->splitRequirmnetsToResources($requirements);
+      // dd($returnDataArr);
+      return $returnDataArr;
+  }
+  private function splitRequirmnetsToResources($requirements)
+  {
+    $resources = [];
+    foreach($requirements as $requirement){
+      $splitArray = explode(",", $requirement->description);
+      $countSplitArray = count($splitArray);
+      $quantity = (int)trim($splitArray[$countSplitArray-1]);
+      $hourlyRate = (isset($requirement->hourly_rate) ? $requirement->hourly_rate : null );
+      for($i=0; $i < $quantity; $i++){
+        $resources[] = [
+          'id'=> $requirement->id,
+          'skill' => $splitArray[0],
+          'hourlyRate' => $hourlyRate,
+        ];
+      }
+    }
+    // dd(($splitRequirementsArr));
+    return $resources;
+  }
 }
