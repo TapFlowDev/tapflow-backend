@@ -179,7 +179,7 @@ class Proposals extends Controller
             ->where('project_id', '=', $project_id)
             ->first();
         if ($proposal_id == null) {
-            return ['exist' => 0];
+            return ['exist' => 0, "status" => 0];
         } else {
             return ['exist' => 1, "proposal_id" => $proposal_id->id, "status" => $proposal_id->status];
         }
@@ -339,89 +339,60 @@ class Proposals extends Controller
         // dd($details);
         //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
-    function addProposalHireDev(Request $req)
+    function getProposalsByProjectId($projectId, $teamId = 0, $page = 1, $limit = 4)
     {
-        $userData = $this->checkUser($req);
-        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1;
-        if (!$condtion) {
-            $response = Controller::returnResponse(401, "Unauthrized", []);
-            return (json_encode($response));
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        if ($teamId > 0) {
+            $conditionArray[] = ['team_id', '=', $teamId];
+            $proposals = DB::table('proposals')
+                ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
+                ->where($conditionArray)
+                ->distinct()
+                ->latest()->offset($page)->limit($limit)
+                ->get();
+            $proposalsCounter = DB::table('proposals')
+                ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
+                ->where($conditionArray)
+                ->distinct()
+                ->count();
+        } else {
+            $proposals = DB::table('proposals')
+                ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
+                ->where($conditionArray)
+                ->distinct()
+                ->latest()->offset($page)->limit($limit)
+                ->get();
+            $proposalsCounter = DB::table('proposals')
+                ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
+                ->where($conditionArray)
+                ->distinct()
+                ->count();
         }
-        try {
-            $rules = array(
-                "project_id" => "required",
-                "requirements" => "required",
-                "our_offer" => "required",
-            );
-            $validators = Validator::make($req->all(), $rules);
-            if ($validators->fails()) {
-                $responseData = $validators->errors();
-                $response = Controller::returnResponse(101, "Validation Error", $responseData);
-                return (json_encode($response));
-            }
+        $proposalData = $this->getDataProposalData($proposals);
+        $returnData = [
+            'allData' => $proposalData,
+            'count' => $proposalsCounter
+        ];
+        return $returnData;
+    }
+    private function getDataProposalData($proposals)
+    {
+        // $GroupControllerObj = new GroupController;
+        // $groupMemsObj = new GroupMembersController;
+        $teamControllersObj = new TeamController;
 
-            $requirementObj = new Requirement;
-            $projectId = $req->project_id;
-            $teamId = $userData['group_id'];
-            $userId = $userData['user_id'];
-            $requirements = json_decode($req->requirements);
-
-            $project = Project::where('id', '=', $projectId)->first();
-            if (!$project) {
-                $response = Controller::returnResponse(422, 'Project does not exsist', []);
-                return (json_encode($response));
-            }
-            if ($project->type != 3) {
-                $response = Controller::returnResponse(422, 'this function not possible for this type of projects', []);
-                return (json_encode($response));
-            }
-
-            $proposalDoesExsist = Proposal::where('project_id', '=', $projectId)->where('team_id', '=', $teamId)->first();
-            if ($proposalDoesExsist) {
-                $response = Controller::returnResponse(422, 'You already applied to this project', ["propsal" => $proposalDoesExsist]);
-                return (json_encode($response));
-            }
-
-            /**
-             * check requirements ids if valid
-             */
-            $projectRequirements = $requirementObj->getRequirementsAndHourlyRateByProjectId($projectId);
-            $projectRequirements = $projectRequirements->toArray();
-            $projectRequirementsIds = array_column($projectRequirements, 'requirementId');
-            $requirementsIds = array_column($requirements, 'requirementId');
-            if ($requirementsIds != $projectRequirementsIds) {
-                $response = Controller::returnResponse(101, 'Requirments not right', []);
-                return (json_encode($response));
-            }
-
-
-            $proposalArr = array(
-                'team_id' => $teamId,
-                'user_id' => $userId,
-                'project_id' => $projectId,
-                'price_min' => 0,
-                'price_max' => 0,
-                'from' => 0,
-                'to' => 0,
-                'our_offer' => $req->our_offer,
-            );
-            $proposal = proposal::create($proposalArr);
-            foreach ($requirements as $keyRequ => $valRequ) {
-                $requirementArr = array(
-                    'proposal_id' => $proposal->id,
-                    'requirement_id' => $valRequ['requirementId'],
-                    'hourly_rate' => $valRequ['hourlyRate'],
-                );
-                Proposal_requirement::create($requirementArr);
-            }
-            $responseData = array("proposal_id" => $proposal->id);
-            $response = Controller::returnResponse(200, "proposal added successfully", $responseData);
-            /** 
-             * send email
-            */
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
-            return (json_encode($response));
+        foreach ($proposals as &$proposal) {
+            // $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
+            // $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($proposal->team_id);
+            // $proposal->agency_info->admin_email = $agencyAdmin->email;
+            $proposal->teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
+            $priceMin = (float)$proposal->price_min * (float)$proposal->from;
+            $priceMax = (float)$proposal->price_max * (float)$proposal->to;
+            $proposal->price_min = $priceMin;
+            $proposal->price_max = $priceMax;
         }
+        return $proposals;
     }
 }

@@ -40,6 +40,7 @@ use App\Http\Controllers\Milestones;
 use App\Http\Controllers\ContentDataController;
 use App\Http\Controllers\DepositRequestController;
 use App\Http\Controllers\FeatureController;
+use App\Http\Controllers\HireDeveloperProposalsController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\PriorityController;
@@ -149,8 +150,8 @@ Route::get('getNumberOfProjectForCompany/{id}', [ProjectController::class, 'getN
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('getFinalProposalByProjectIdAndTeamId', [Final_proposals::class, 'getProposalByProjectIdAndTeamId']);
-  
-  
+
+
 
     // Route::post('createStripeUser', [PaymentController::class, 'createUserStripe']);
     Route::post('submitMilestone', [Milestones::class, 'submitMilestone']);
@@ -182,7 +183,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
     Route::post('printInvoice', [WalletsTransactionsController::class, 'printInvoice']);
     Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
-
+    // new apis
+    Route::get('projectInfo/{id}', [ProjectController::class, 'newGetProject']);
+    Route::get('getProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getInitailProposalsProjectId']);
 
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
@@ -190,7 +193,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
 
     Route::post('addProposal', [Proposals::class, 'Insert']);
-    Route::post('submitProposal', [Proposals::class, 'addProposalHireDev']);
+    Route::post('submitProposal', [HireDeveloperProposalsController::class, 'Insert']);
     Route::post('saveFinalProposal', [Final_proposals::class, 'saveFinalProposal']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
@@ -224,8 +227,8 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
     Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
     Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
-  
-
+    //new apis
+    Route::get('exploreProjects/{type}/{offset}/{limit}', [ProjectController::class, 'newExploreProject']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);

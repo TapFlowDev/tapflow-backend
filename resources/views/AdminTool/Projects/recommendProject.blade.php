@@ -1,9 +1,9 @@
 @extends('templates.main')
 @section('content')
     <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="content-container">
+        <div class="content-container">
+            <div class="row">
+                <div class="col-12">
                     @if (session('success'))
                         <div class="alert alert-success" role="alert">
                             {{ session('success') }}
@@ -24,19 +24,23 @@
                                         <select data-placeholder="Choose Agencis" multiple class="chosen-select teams"
                                             name='teamsIds[]'>
                                             @foreach ($agencies as $team)
-                                                <option value="{{ $team->id }}"> {{ $team->name }}</option>
+                                                <option value="{{ $team->id }}"
+                                                    @if (in_array($team->id, $matchedAgenciesIds)) selected @endif> {{ $team->name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                         <button type="submit" class="btn btn-success mt-3">Send Emails</button>
-                                        <button type="button" class="btn btn-warning mt-3 chosen-toggle select">Select all</button>
-                                        <button type="button" class="btn btn-danger mt-3 chosen-toggle deselect">Deselect all</button>
+                                        <button type="button" class="btn btn-warning mt-3 chosen-toggle select">Select
+                                            all</button>
+                                        <button type="button" class="btn btn-danger mt-3 chosen-toggle deselect">Deselect
+                                            all</button>
                                     @else
                                         No Data
                                     @endif
                                 </div>
                             </form>
                             <hr>
-                            <form action="{{ route('AdminTool.recommendProject.show', $project->id) }}" method="GET">
+                            {{-- <form action="{{ route('AdminTool.recommendProject.show', $project->id) }}" method="GET">
                                 @csrf
                                 @method('GET')
                                 <div class="mb-3">
@@ -57,9 +61,55 @@
                                     @endforeach
                                 </div>
                                 <button type="submit" class="btn btn-primary">Filter</button>
-                            </form>
+                            </form> --}}
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h2> Matched Agencies </h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#id</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($matchedAgencies as $agency)
+                                <tr>
+                                    <th scope="row">{{ $agency->id }}</th>
+                                    <td>{{ $agency->name }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success"
+                                            onclick="event.preventDefault();
+                                            document.getElementById('verifyProject-form-{{ $agency->id }}').submit()">Send
+                                            Email</button>
+                                        <form id="verifyProject-form-{{ $agency->id }}"
+                                            action="{{ route('AdminTool.sendEmailAgency.send', $project->id) }}"
+                                            method="POST" style="display: none;">
+                                            @csrf
+                                            @method('POST')
+                                            <input type="hidden" name="teamId" value="{{ $agency->id }}">
+
+                                        </form>
+                                        <button class="btn btn-sm btn-danger"
+                                            onclick="event.preventDefault();
+                                            document.getElementById('delete-project-form-{{ $project->id }}').submit()">Unmatch</button>
+                                        <form id="delete-project-form-{{ $project->id }}"
+                                            action="{{ route('AdminTool.removeMatch.destroy', $project->id) }}"
+                                            method="POST" style="display: none;">
+                                            @csrf
+                                            @method('POST')
+                                            <input type="hidden" name="teamId" value="{{ $agency->id }}">
+                                    </td>
+                                </tr>
+                            @endforeach
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

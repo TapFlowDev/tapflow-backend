@@ -5,13 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Proposal_requirement extends Model
+class Agency_active_project extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'proposal_id', // hire developer requirments
-        'requirement_id',
-        'hourly_rate',
+        'group_id',
+        'project_id'
     ];
-    public $timestamps = false;
 }

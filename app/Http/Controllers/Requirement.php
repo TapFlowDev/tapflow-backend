@@ -48,13 +48,69 @@ class Requirement extends Controller
 
     return ($requirements);
   }
+  function getRequirementsAlldataByProjectId($id)
+  {
+    $requirements = requirementModel::where('project_id', $id)->get();
+
+    return ($requirements);
+  }
   function getRequirementsAndHourlyRateByProjectId($projectId)
   {
     $requirements = DB::table('requirements')
-      ->select('requirements.id as requirementId','requirements.description')
+      ->select('requirements.id as requirementId', 'requirements.description')
       ->where('requirements.project_id', '=', $projectId)
       ->get();
-
     return $requirements;
+  }
+  function getHireDevRequirmentData($projectId)
+  {
+    $requirements = DB::table('requirements')
+      ->select('requirements.id', 'requirements.description')
+      ->where('requirements.project_id', '=', $projectId)
+      ->get();
+      $returnDataArr = $this->splitRequirmnets($requirements);
+      // dd($returnDataArr);
+      return $returnDataArr;
+  }
+  private function splitRequirmnets($requirements)
+  {
+    $splitRequirementsArr = array();
+    $skillsArr = [];
+    foreach($requirements as $requirement){
+      $splitArray = explode(",", $requirement->description);
+      $countSplitArray = count($splitArray);
+      $reqSkillsArr = [];
+      for($i = 0; $i < ($countSplitArray-4); $i++ ){
+        $skillsArr[] = trim($splitArray[$i]);
+        $reqSkillsArr[] = trim($splitArray[$i]);
+      }
+      $hourlyRate = (isset($requirement->hourly_rate) ? $requirement->hourly_rate : null );
+      $splitRequirementsArr[] = [
+        'id'=> $requirement->id,
+        'quantity'=>trim($splitArray[$countSplitArray-1]),
+        'hours'=>trim($splitArray[$countSplitArray-2]),
+        'duration'=>trim($splitArray[$countSplitArray-3]),
+        'seniority'=>trim($splitArray[$countSplitArray-4]),
+        'skills' => $reqSkillsArr,
+        'hourlyRate' => $hourlyRate,
+      ];
+    }
+    $returnDataArr = [
+      'skills'=>array_unique($skillsArr),
+      'reqArr' => $splitRequirementsArr
+    ];
+    // dd(($splitRequirementsArr));
+    return $returnDataArr;
+  }
+  function getHireDevInitialProposalRequirements($proposalId)
+  {
+    $requirements = DB::table('proposal_requirements')
+      ->join('requirements', 'proposal_requirements.requirement_id', '=', 'requirements.id')
+      ->select('requirements.*', 'proposal_requirements.hourly_rate')
+      ->where('proposal_requirements.proposal_id', '=', $proposalId)
+      ->get();
+      $returnDataArr = $this->splitRequirmnets($requirements);
+      // dd($returnDataArr);
+      return $returnDataArr;
   }
 }
