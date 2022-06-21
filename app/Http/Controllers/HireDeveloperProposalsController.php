@@ -194,7 +194,23 @@ class HireDeveloperProposalsController extends Controller
             $response = Controller::returnResponse(401, "Unauthrized", []);
             return (json_encode($response));
         }
-        hire_developer_proposals::where('id', $req->proposal_id)->update(['status' => 2]);
+        $proposal = hire_developer_proposals::select('id', 'status', 'project_id')->where('id', $req->proposal_id)->first();
+        if (!$proposal) {
+            $response = Controller::returnResponse(422, 'Proposal does not exsist', []);
+            return (json_encode($response));
+        }
+        $project = Project::select('id')->where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
+        if (!$project) {
+            $response = Controller::returnResponse(422, 'Project does not exsist', []);
+            return (json_encode($response));
+        }
+        if ($proposal->status > 0) {
+            $response = Controller::returnResponse(422, 'Action denied', []);
+            return (json_encode($response));
+        }
+        $proposal->status = 2;
+        $proposal->save();
+
         // notify agency
         $mail = $this->notifyAgency($req->proposal_id, 2);
         $response = Controller::returnResponse(200, "proposal rejected", []);
@@ -209,19 +225,24 @@ class HireDeveloperProposalsController extends Controller
             return (json_encode($response));
         }
         $proposal = hire_developer_proposals::select('id', 'status', 'project_id')->where('id', $req->proposal_id)->first();
-        if(!$proposal){
+        if (!$proposal) {
             $response = Controller::returnResponse(422, 'Proposal does not exsist', []);
             return (json_encode($response));
         }
         $project = Project::select('id')->where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
-        if(!$project){
+        if (!$project) {
             $response = Controller::returnResponse(422, 'Project does not exsist', []);
             return (json_encode($response));
         }
-        hire_developer_proposals::where('id', $req->proposal_id)->update(['status' => 1]);
+        if ($proposal->status > 0) {
+            $response = Controller::returnResponse(422, 'Action denied', []);
+            return (json_encode($response));
+        }
+        $proposal->status = 1;
+        $proposal->save();
         // notify agency
-        $mail = $this->notifyAgency($req->proposal_id, 2);
-        $response = Controller::returnResponse(200, "proposal rejected", []);
+        $mail = $this->notifyAgency($req->proposal_id, 1);
+        $response = Controller::returnResponse(200, "proposal accepted", []);
         return (json_encode($response));
     }
     function notifyAgency($proposalId, $status)
