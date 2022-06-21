@@ -276,4 +276,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('reviewSubmission', [Milestones::class, 'reviseSubmission']);
     Route::get('deposits/{offset}/{limit}', [DepositRequestController::class, 'getDeposits']);
     Route::post('printDepositDeails', [DepositRequestController::class, 'printDepositDeails']);
+    // new apis
+    Route::post('acceptHireProposal', [HireDeveloperProposalsController::class, 'acceptProposal']);
+    Route::post('rejectHireProposal', [HireDeveloperProposalsController::class, 'rejectProposal']);
 });
