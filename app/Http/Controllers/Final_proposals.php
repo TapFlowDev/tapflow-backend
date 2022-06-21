@@ -937,4 +937,11 @@ class Final_proposals extends Controller
             return $text;
         }
     }
+    function getCountByProjectId($projectId){
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        $proposalCount = Final_proposal::where($conditionArray)->count();
+        return $proposalCount;
+    }
 }
