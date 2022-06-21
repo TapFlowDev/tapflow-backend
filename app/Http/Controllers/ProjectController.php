@@ -1384,4 +1384,16 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
+    function getAllProjectsClient(Request $req){
+        try {
+            $userData = $this->checkUser($req);
+            $project = Project::where('company_id', $userData['group_id'])->get();
+            $projectInfo = $this->newGetProjectsInfo($project, $userData['group_id'], $userData['type'])->first();
+            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
 }

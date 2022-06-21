@@ -279,4 +279,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     // new apis
     Route::post('acceptHireProposal', [HireDeveloperProposalsController::class, 'acceptProposal']);
     Route::post('rejectHireProposal', [HireDeveloperProposalsController::class, 'rejectProposal']);
+    Route::get('allProjects', [ProjectController::class, 'getAllProjectsClient']);
 });
