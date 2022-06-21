@@ -14,7 +14,7 @@ class hire_developer_final_proposal extends Model
         'user_id',
         'starting_date',
         'notice_period',
-        'resource_replacment',
+        'resource_replacement',
         'trail_period',
         'payment_settlement',
         'additional_terms',
