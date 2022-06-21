@@ -382,4 +382,11 @@ class Proposals extends Controller
         }
         return $proposals;
     }
+    function getCountByProjectId($projectId){
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        $proposalCount = proposal::where($conditionArray)->count();
+        return $proposalCount;
+    }
 }

@@ -1265,8 +1265,8 @@ class ProjectController extends Controller
                 $requirmentsDetails = $requirementsObj->getHireDevRequirmentData($project->id);
                 $project->requirmentsDetails = $requirmentsDetails['reqArr'];
                 $project->requirmentsSkills = $requirmentsDetails['skills'];
+                $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
                 if ($groupId > 0 && $groupType == 1) {
-                    $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
                     // hire developer final obj 
                     $initProp = $hireDeveloperProposalsObj->checkIfProposalExists($project->id, $groupId);
                     $proposal_status = $initProp['status'];
@@ -1276,6 +1276,19 @@ class ProjectController extends Controller
                         "discuss" => 0,
                         "contract" => 0,
                         "onboard" => 0,
+                    );
+                    $project->progressArray = $progressArray;
+                }elseif($groupId > 0 && $groupType == 2){
+                    $projectAgencyMatchObj = new ProjectAgencyMatchController;
+                    $initPropCount = $hireDeveloperProposalsObj->getCountByProjectId($project->id);
+                    $finalPropCount = $hireDeveloperProposalsObj->getContractsCountByProjectId($project->id);
+                    $hiresPropCount = $hireDeveloperProposalsObj->getHiresCountByProjectId($project->id);
+                    $agencyMatchCount = $projectAgencyMatchObj->getMatchCountByProjectId($project->id);
+                    $progressArray = array(
+                        "matches" => $agencyMatchCount,
+                        "proposals" => $initPropCount,
+                        "contracts" => $finalPropCount,
+                        "hires" => $hiresPropCount,
                     );
                     $project->progressArray = $progressArray;
                 }
@@ -1299,6 +1312,22 @@ class ProjectController extends Controller
                         "discuss" => 0,
                         "contract" => 0,
                         "onboard" => 0,
+                    );
+                    $project->progressArray = $progressArray;
+                }elseif($groupId > 0 && $groupType == 2){
+                    $projectAgencyMatchObj = new ProjectAgencyMatchController;
+                    $finalPropObj = new Final_proposals;
+                    $initPropObj = new Proposals;
+                    $milestonesObj = new Milestones;
+                    $initPropCount = $initPropObj->getCountByProjectId($project->id);
+                    $finalPropCount = $finalPropObj->getCountByProjectId($project->id);
+                    $milestonesCount = $milestonesObj->getCountByProjectId($project->id);
+                    $agencyMatchCount = $projectAgencyMatchObj->getMatchCountByProjectId($project->id);
+                    $progressArray = array(
+                        "matches" => $agencyMatchCount,
+                        "proposals" => $initPropCount,
+                        "contracts" => $finalPropCount,
+                        "milestones" => $milestonesCount,
                     );
                     $project->progressArray = $progressArray;
                 }
