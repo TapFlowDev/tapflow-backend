@@ -75,7 +75,7 @@ class CategoriesController extends Controller
     function getTimeDurations()
     {
         try {
-            
+
             $categories = Category::select('id', 'name')->where('type', 2)->where('deleted', '=', 0)->get();
             $response = Controller::returnResponse(200, 'data found', $categories);
             return json_encode($response);
@@ -170,6 +170,50 @@ class CategoriesController extends Controller
             $response = Controller::returnResponse(200, 'data found', $categories);
             return json_encode($response);
         } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+    function CancellationNoticePeriod()
+    {
+        try {
+            $categories = Category::select('id', 'name')->where('type', 11)->where('deleted', '=', 0)->get();
+            $response = Controller::returnResponse(200, 'data found', $categories);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+    function ResourceReplacement()
+    {
+        try {
+            $categories = Category::select('id', 'name')->where('type', 12)->where('deleted', '=', 0)->get();
+            $response = Controller::returnResponse(200, 'data found', $categories);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+    function TrialPeriod()
+    {
+        try {
+            $categories = Category::select('id', 'name')->where('type', 13)->where('deleted', '=', 0)->get();
+            $response = Controller::returnResponse(200, 'data found', $categories);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
+            return json_encode($response);
+        }
+    }
+    function PaymentSettlement()
+    {
+        try {
+            $categories = Category::select('id', 'name')->where('type', 14)->where('deleted', '=', 0)->get();
+            $response = Controller::returnResponse(200, 'data found', $categories);
+            return json_encode($response);
+        } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error);
             return json_encode($response);
         }

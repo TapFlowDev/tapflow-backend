@@ -44,11 +44,14 @@ use App\Http\Controllers\HireDeveloperProposalsController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentsController;
 use App\Http\Controllers\PriorityController;
+use App\Http\Controllers\Requirement;
 use App\Http\Controllers\SkillsController;
 use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
+use App\Http\Controllers\ResourcesController;
+use App\Http\Controllers\HireDeveloperFinalProposalController;
 
 // use App\Http\Controllers\PaymentController;
 
@@ -142,7 +145,10 @@ Route::get('getServices', [CategoriesController::class, 'getServices']);
 Route::get('getFeature/{feature}', [FeatureController::class, 'search']);
 
 Route::post('addCountries', [NewCountriesController::class, 'Insert']);
-
+Route::get('getPaymentSettlement', [CategoriesController::class, 'PaymentSettlement']);
+Route::get('getTrialPeriod', [CategoriesController::class, 'TrialPeriod']);
+Route::get('getResourceReplacement', [CategoriesController::class, 'ResourceReplacement']);
+Route::get('getCancellationNoticePeriod', [CategoriesController::class, 'CancellationNoticePeriod']);
 
 
 // Route::get('getSuggestedProjects/{agency_id}/{offset}', [ProjectController::class, 'suggestedProjects']);
@@ -229,6 +235,14 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
     //new apis
     Route::get('exploreProjects/{type}/{offset}/{limit}', [ProjectController::class, 'newExploreProject']);
+    Route::post('addResource', [ResourcesController::class, 'Insert']);
+    Route::post('updateResource', [ResourcesController::class, 'Update']);
+    Route::post('deleteResource', [ResourcesController::class, 'Delete']);
+    Route::post('getResources', [ResourcesController::class, 'contractResources']);
+    Route::post('getContractResources', [ResourcesController::class, 'contractResources']);
+    Route::post('addHireDeveloperFinalProposal', [HireDeveloperFinalProposalController::class, 'Insert']);
+    Route::post('saveHireDeveloperFinalProposal', [HireDeveloperFinalProposalController::class, 'save']);
+    Route::post('getHireDeveloperFinalProposal', [HireDeveloperFinalProposalController::class, 'getContract']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
