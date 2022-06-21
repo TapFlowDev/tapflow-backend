@@ -1005,4 +1005,12 @@ class Milestones extends Controller
     catch(Exception $error)
     { return ['code'=>500,'msg'=>$error->getMessage()];}
     }
+    function getCountByProjectId($projectId){
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        $proposalCount = Milestone::where($conditionArray)->count();
+        return $proposalCount;
+    }
+    
 }

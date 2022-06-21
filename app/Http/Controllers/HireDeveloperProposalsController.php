@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\hire_developer_final_proposal;
 use App\Models\hire_developer_proposals;
 use App\Models\Project;
 use App\Models\Proposal_requirement;
+use App\Models\resources;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -125,7 +127,7 @@ class HireDeveloperProposalsController extends Controller
             ['project_id', '=', $projectId]
         ];
         if ($teamId > 0) {
-            $conditionArray[]= ['team_id', '=', $teamId];
+            $conditionArray[] = ['team_id', '=', $teamId];
             $proposals = hire_developer_proposals::where($conditionArray)->distinct()->latest()->offset($page)->limit($limit)->get();
             $proposalCount = hire_developer_proposals::where($conditionArray)->count();
             // $proposalData = $this->getData($proposals);
@@ -152,5 +154,32 @@ class HireDeveloperProposalsController extends Controller
             $proposal->teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
         }
         return $proposals;
+    }
+    function getCountByProjectId($projectId)
+    {
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        $proposalCount = hire_developer_proposals::where($conditionArray)->count();
+        return $proposalCount;
+    }
+    function getContractsCountByProjectId($projectId)
+    {
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        $proposalsIds = hire_developer_proposals::select('id')->where($conditionArray)->pluck('id')->toArray();
+        $proposalCount = hire_developer_final_proposal::whereIn('proposal_id', $proposalsIds)->count();
+        return $proposalCount;
+    }
+    function getHiresCountByProjectId($projectId)
+    {
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        $proposalsIds = hire_developer_proposals::select('id')->where($conditionArray)->pluck('id')->toArray();
+        $finalProposalsIds = hire_developer_final_proposal::select('id')->where('status', '=', 1)->whereIn('proposal_id', $proposalsIds)->pluck('id')->toArray();
+        $resourcesCount = resources::whereIn('contract_id', $finalProposalsIds)->count();
+        return $resourcesCount;
     }
 }
