@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\InitialProposalActions;
+use App\Models\Group_member;
 use App\Models\hire_developer_final_proposal;
 use App\Models\hire_developer_proposals;
 use App\Models\Project;
 use App\Models\Proposal_requirement;
 use App\Models\resources;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class HireDeveloperProposalsController extends Controller
@@ -181,5 +185,66 @@ class HireDeveloperProposalsController extends Controller
         $finalProposalsIds = hire_developer_final_proposal::select('id')->where('status', '=', 1)->whereIn('proposal_id', $proposalsIds)->pluck('id')->toArray();
         $resourcesCount = resources::whereIn('contract_id', $finalProposalsIds)->count();
         return $resourcesCount;
+    }
+    function rejectProposal(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+        if (!$condtion) {
+            $response = Controller::returnResponse(401, "Unauthrized", []);
+            return (json_encode($response));
+        }
+        hire_developer_proposals::where('id', $req->proposal_id)->update(['status' => 2]);
+        // notify agency
+        $mail = $this->notifyAgency($req->proposal_id, 2);
+        $response = Controller::returnResponse(200, "proposal rejected", []);
+        return (json_encode($response));
+    }
+    function acceptProposal(Request $req)
+    {
+        $userData = Controller::checkUser($req);
+        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+        if (!$condtion) {
+            $response = Controller::returnResponse(401, "Unauthrized", []);
+            return (json_encode($response));
+        }
+        $proposal = hire_developer_proposals::select('id', 'status', 'project_id')->where('id', $req->proposal_id)->first();
+        if(!$proposal){
+            $response = Controller::returnResponse(422, 'Proposal does not exsist', []);
+            return (json_encode($response));
+        }
+        $project = Project::select('id')->where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
+        if(!$project){
+            $response = Controller::returnResponse(422, 'Project does not exsist', []);
+            return (json_encode($response));
+        }
+        hire_developer_proposals::where('id', $req->proposal_id)->update(['status' => 1]);
+        // notify agency
+        $mail = $this->notifyAgency($req->proposal_id, 2);
+        $response = Controller::returnResponse(200, "proposal rejected", []);
+        return (json_encode($response));
+    }
+    function notifyAgency($proposalId, $status)
+    {
+        $groupMemberObj = new GroupMembersController;
+        $proposal = hire_developer_proposals::where('id', $proposalId)->get()->first();
+        $teamId = $proposal->team_id;
+        $projectId = $proposal->project_id;
+        $admin = $groupMemberObj->getTeamAdminByGroupId($teamId);
+        $project = Project::where('id', '=', $projectId)->get()->first();
+        $groupId = $project->company_id;
+        $member = Group_member::where('group_id', '=', $groupId)->where('privileges', '=', 1)->get()->first();
+        $clientId = $member->user_id;
+        $clinet = User::where('id', $clientId)->get()->first();
+        $subject = $project->name . " Proposal Update";
+        $details = array(
+            'subject' => $subject,
+            'projectName' => $project->name,
+            'clientEmail' => $clinet->email,
+            'status' => $status,
+        );
+        return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
+        // dd($details);
+        //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
 }
