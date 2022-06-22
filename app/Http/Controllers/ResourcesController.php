@@ -24,6 +24,7 @@ class ResourcesController extends Controller
             }
             $rules = array(
                 "job_function" => "required",
+                "name" => "required",
                 "starting_date" => "required",
                 "hours" => "required|numeric",
                 "rate" => "required|numeric",
@@ -79,8 +80,8 @@ class ResourcesController extends Controller
                     $response = Controller::returnResponse(401, "unauthorized", []);
                     return (json_encode($response));
                 }
-               
-             
+
+
                 resources::where('id', $req->resource_id)->update([
                     'name' => $req->name,
                     'job_function' => $req->job_function,
@@ -165,6 +166,14 @@ class ResourcesController extends Controller
                     return (json_encode($response));
                 }
                 $resources = resources::where('contract_id', $req->contract_id)->get();
+                foreach ($resources as $resource) {
+                    if ($resource->image != '') {
+                        $image = asset('images/users/' . $resource->image);
+                        $resource->image = $image;
+                    } else {
+                        $resource->image = asset('images/profile-pic.jpg');
+                    }
+                }
                 $response = Controller::returnResponse(200, "successful", $resources);
                 return (json_encode($response));
             }
@@ -176,5 +185,10 @@ class ResourcesController extends Controller
     function updateFiles($resource_id, $imageName, $filedName)
     {
         resources::where('id', $resource_id)->update(array($filedName => $imageName));
+    }
+    function getContractResourcesById($contract_id)
+    {
+        $resources = resources::where('contract_id', $contract_id)->get();
+        return $resources;
     }
 }
