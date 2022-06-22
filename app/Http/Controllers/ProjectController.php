@@ -1278,7 +1278,7 @@ class ProjectController extends Controller
                         "onboard" => 0,
                     );
                     $project->progressArray = $progressArray;
-                }elseif($groupId > 0 && $groupType == 2){
+                } elseif ($groupId > 0 && $groupType == 2) {
                     $projectAgencyMatchObj = new ProjectAgencyMatchController;
                     $initPropCount = $hireDeveloperProposalsObj->getCountByProjectId($project->id);
                     $finalPropCount = $hireDeveloperProposalsObj->getContractsCountByProjectId($project->id);
@@ -1314,7 +1314,7 @@ class ProjectController extends Controller
                         "onboard" => 0,
                     );
                     $project->progressArray = $progressArray;
-                }elseif($groupId > 0 && $groupType == 2){
+                } elseif ($groupId > 0 && $groupType == 2) {
                     $projectAgencyMatchObj = new ProjectAgencyMatchController;
                     $finalPropObj = new Final_proposals;
                     $initPropObj = new Proposals;
@@ -1359,10 +1359,10 @@ class ProjectController extends Controller
             }
             if ($userData['type'] == 1) {
                 $agencyId = $userData['group_id'];
-                $project = Project::where('id', $id)->first();
+                $project = Project::where('id', '=', $id)->first();
             } else {
                 $agencyId = 0;
-                $project = Project::where('id', $id)->where('company_id', '=', $userData['group_id'])->first();
+                $project = Project::where('id', '=', $id)->where('company_id', '=', $userData['group_id'])->first();
             }
             $page = ($offset - 1) * $limit;
             if (!$project) {
@@ -1384,7 +1384,8 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-    function getAllProjectsClient(Request $req){
+    function getAllProjectsClient(Request $req)
+    {
         try {
             $userData = $this->checkUser($req);
             $project = Project::where('company_id', $userData['group_id'])->get();
