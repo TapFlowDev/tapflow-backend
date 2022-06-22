@@ -1365,6 +1365,7 @@ class ProjectController extends Controller
                 $project = Project::where('id', '=', $id)->where('company_id', '=', $userData['group_id'])->first();
             }
             $page = ($offset - 1) * $limit;
+            return $project;
             if (!$project) {
                 $response = Controller::returnResponse(422, 'Project does not exsist', []);
                 return (json_encode($response));
