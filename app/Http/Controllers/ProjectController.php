@@ -1431,7 +1431,7 @@ class ProjectController extends Controller
                 }
                 $finalproposals = $hireDeveloperFinalProposalsObj->getContractData($proposalIds, $agencyId, $page, $limit);
             } else {
-                $finalproposalsObj = new Final_Proposals;
+                $finalproposalsObj = new Final_proposals;
                 if ($agencyId > 0) {
                     $proposalObj = new Proposals;
                     $init_proposal = $proposalObj->getProposalInfo($id, $agencyId);
