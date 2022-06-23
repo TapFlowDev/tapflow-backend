@@ -255,7 +255,6 @@
                                                     <p> Agency name:</p>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    @if ($project->type == 3)
                                                         <h6 class="mt-1">{{ $propsal->teamInfo['teamName'] }}</h6>
                                                     
                                                 </div>
