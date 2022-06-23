@@ -13,6 +13,7 @@ use Exception;
 use App\Mail\HireDeveloperActions;
 use App\Models\proposal;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\SubmitHireDeveloper;
 
 class HireDeveloperFinalProposalController extends Controller
 {
@@ -48,10 +49,11 @@ class HireDeveloperFinalProposalController extends Controller
                     if ($proposal->team_id != $userData['group_id']) {
                         $response = Controller::returnResponse(401, "unauthorized", []);
                         return (json_encode($response));
+                    } elseif ($proposal->status != 1) {
+                        $response = Controller::returnResponse(422, "your initial proposal not accepted yest", []);
+                        return (json_encode($response));
                     }
-                    elseif($proposal->status !=1){ $response = Controller::returnResponse(422, "your initial proposal not accepted yest", []);
-                        return (json_encode($response));}
-                
+
                     $requirementObj = new Requirement;
                     $resourcesObj = new ResourcesController;
                     $data = array("proposal_id" => $req->proposal_id, "team_id" => $userData['group_id'], "user_id" => $userData['user_id']);
@@ -59,7 +61,7 @@ class HireDeveloperFinalProposalController extends Controller
                     $resources = $requirementObj->getResourcesByProposalId($req->proposal_id);
                     $resourcesObj->internalAdd($resources, $contract->id);
 
-                    $response = Controller::returnResponse(200, "successful", ["contract_id"=>$contract->id]);
+                    $response = Controller::returnResponse(200, "successful", ["contract_id" => $contract->id]);
                     return (json_encode($response));
                 }
             }
@@ -170,15 +172,21 @@ class HireDeveloperFinalProposalController extends Controller
                     $response = Controller::returnResponse(422, "one of the resources starting date starts before the contract starts", []);
                     return (json_encode($response));
                 }
-                $contract = hire_developer_final_proposal::where('id', $req->contract_id)->update([
-                    'starting_date' => $req->starting_date,
-                    'notice_period' => $req->notice_period,
-                    'resource_replacement' => $req->resource_replacement,
-                    'trail_period' => $req->trail_period,
-                    'payment_settlement' => $req->payment_settlement,
-                    'default_terms' => $req->default_terms,
-                    'status' => 0,
-                ]);
+                $contract = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id')->first();
+                $project_id = hire_developer_proposals::where('id', $contract->proposal_id)->select('project_id')->first()->project_id;
+                $clientObj = new ClientController;
+                $projectObj = new ProjectController;
+                $companyAdmin = json_decode($clientObj->get_client_info($contract->user_id))->data;
+                $adminName = $companyAdmin->first_name . ' ' . $companyAdmin->last_name;
+                $project_info = json_decode($projectObj->getProject($project_id))->data;
+                $details = [
+                    "subject" => 'Contract Submitted ' ,
+                    "name" => $adminName,
+                    "project_id" =>  $project_info->id,
+                    "project_name" =>  $project_info->name,
+                ];
+                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
+                // Mail::mailer('smtp2')->to($companyAdmin->email)->send(new HireDeveloperActions($details));
                 $response = Controller::returnResponse(200, "contract submitted successfully", []);
                 return (json_encode($response));
             }
@@ -204,11 +212,29 @@ class HireDeveloperFinalProposalController extends Controller
         try {
             $userData = Controller::checkUser($req);
 
-            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2 )) {
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2)) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
-                hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 1]);
+                $projectObj = new ProjectController;
+                // hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 1]);
+                $contract = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id')->first();
+                $project_id = hire_developer_proposals::where('id', $contract->proposal_id)->select('project_id')->first()->project_id;
+                $freelancerObj = new FreeLancerController;
+                $agencyAdmin = json_decode($freelancerObj->get_freelancer_info($contract->user_id))->data;
+                $adminName = $agencyAdmin->first_name . ' ' . $agencyAdmin->last_name;
+                $project_info = json_decode($projectObj->getProject($project_id))->data;
+
+                $details = [
+                    "subject" => 'Your FinalProposal Has Been Rejected',
+                    "name" => $adminName,
+                    "project_id" =>  $project_info->id,
+                    "project_name" =>  $project_info->name,
+                    "type" => 1
+
+                ];
+
+                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
                 $response = Controller::returnResponse(200, "successful", []);
                 return (json_encode($response));
             }
@@ -221,28 +247,31 @@ class HireDeveloperFinalProposalController extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-            
-            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2 )) {
+
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2)) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
-                $projectObj=new ProjectController; 
-                // hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 2]);
-                $contract=hire_developer_final_proposal::where('id',$req->contract_id)->select('user_id','proposal_id','team_id')->first();
-                $project_id=hire_developer_proposals::where('id',$contract->proposal_id)->select('project_id')->first()->project_id;
-                $freelancerObj=new FreeLancerController;
-                $agencyAdmin=json_decode($freelancerObj->get_freelancer_info($contract->user_id))->data;
-                $adminName=$agencyAdmin->first_name .' '.$agencyAdmin->last_name;
-                $project_info=json_decode($projectObj->getProject($project_id))->data;
+                $projectObj = new ProjectController;
+                hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 2]);
+                $contract = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id')->first();
+                $project_id = hire_developer_proposals::where('id', $contract->proposal_id)->select('project_id')->first()->project_id;
+                $freelancerObj = new FreeLancerController;
+                $agencyAdmin = json_decode($freelancerObj->get_freelancer_info($contract->user_id))->data;
+                $adminName = $agencyAdmin->first_name . ' ' . $agencyAdmin->last_name;
+                $project_info = json_decode($projectObj->getProject($project_id))->data;
+
                 $details = [
                     "subject" => 'Your FinalProposal Has Been Rejected',
                     "name" => $adminName,
                     "project_id" =>  $project_info->id,
                     "project_name" =>  $project_info->name,
-                    "type" => 1
+                    "type" => 2
 
                 ];
-                Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
+
+                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
+                // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
                 $response = Controller::returnResponse(200, "successful", []);
                 return (json_encode($response));
             }
@@ -293,11 +322,11 @@ class HireDeveloperFinalProposalController extends Controller
                         $resource->image = asset('images/profile-pic.jpg');
                     }
                     if ($resource->end_date === null) {
-                       
+
                         $resource->end_date = 'Open';
-                    } 
+                    }
                 }
-                $contract->resources=$resources;
+                $contract->resources = $resources;
                 $response = Controller::returnResponse(200, "successful", $contract);
                 return (json_encode($response));
             }
