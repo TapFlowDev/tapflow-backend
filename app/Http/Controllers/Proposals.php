@@ -347,25 +347,21 @@ class Proposals extends Controller
         if ($teamId > 0) {
             $conditionArray[] = ['team_id', '=', $teamId];
             $proposals = DB::table('proposals')
-                ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
                 ->where($conditionArray)
                 ->distinct()
                 ->latest()->offset($page)->limit($limit)
                 ->get();
             $proposalsCounter = DB::table('proposals')
-                ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
                 ->where($conditionArray)
                 ->distinct()
                 ->count();
         } else {
             $proposals = DB::table('proposals')
-                ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
                 ->where($conditionArray)
                 ->distinct()
                 ->latest()->offset($page)->limit($limit)
                 ->get();
             $proposalsCounter = DB::table('proposals')
-                ->select('id', 'team_id', 'project_id', 'price_min', 'price_max', 'from', 'to', 'our_offer', 'status', 'created_at')
                 ->where($conditionArray)
                 ->distinct()
                 ->count();
