@@ -952,7 +952,7 @@ class Final_proposals extends Controller
                 ->get();
             // $final_proposal->hours = $final_proposal->hours;
             $finalProposalData = $this->newGetData($final_proposal)->first();
-            $returnData = $finalProposalData;
+            $returnData = ($finalProposalData ? $finalProposalData : [] );
         } else {
             $final_proposal = DB::table('final_proposals')
                 ->where('project_id', '=', $project_id)
