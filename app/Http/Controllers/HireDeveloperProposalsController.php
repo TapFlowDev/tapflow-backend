@@ -165,7 +165,7 @@ class HireDeveloperProposalsController extends Controller
                 'teamCountry' => ($teamCountry ? $teamCountry->name : "unset"),
                 'teamFlag' => ($teamCountry ? $teamCountry->flag : ""),
             );
-            $proposal->teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
+            $proposal->teamInfo = $teamArr;
         }
         return $proposals;
     }

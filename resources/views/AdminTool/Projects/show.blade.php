@@ -11,10 +11,19 @@
                                     <img src="{{ $project->company_image }}" alt="Admin" class="rounded-circle"
                                         width="150">
                                     <div class="mt-3 team-name-link">
-                                        <h4> <a class=""
+                                        <h4>
+                                            <a class=""
                                                 href="{{ route('AdminTool.companies.show', $project->company_id) }}"
                                                 role="button">{{ $project->company_name }}
-                                            </a>| {{ $project->name }}</h4>
+                                            </a>| {{ $project->name }}
+                                            | @if ($project->type < 2)
+                                                Project Based
+                                            @elseif ($project->type == 2)
+                                                Monthly Retainer
+                                            @elseif ($project->type == 3)
+                                                Hire Developer
+                                            @endif
+                                        </h4>
                                     </div>
 
                                 </div>
@@ -198,15 +207,19 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-12">
-                                @if ($status == 1)
+                                {{-- @if ($status == 1)
                                     <h3>Agency who took project</h3>
+                                @else
+                                @endif --}}
+                                @if ($project->type == 3)
+                                    <h3>Applications</h3>
                                 @else
                                     <h3>Initial Propsals</h3>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
-                            @if ($status == 1)
+                            {{-- @if ($status == 1)
                                 <div class="col-lg-4">
                                     <div class="card mb-3 card-projects">
                                         <a href="{{ route('AdminTool.agencies.show', $teams->id) }}"
@@ -225,26 +238,35 @@
                                     </div>
                                 </div>
                             @else
-                                @foreach ($propsals as $propsal)
-                                    <div class="col-lg-4">
-                                        <div class="card mb-3 card-projects">
-                                            <a href="{{ route('AdminTool.initialProposals.show', $propsal->id) }}"
+                            @endif --}}
+                            @foreach ($project->proposals as $propsal)
+                                <div class="col-lg-4">
+                                    <div class="card mb-3 card-projects">
+                                        @if ($project->type == 3)
+                                            <a href="{{ route('AdminTool.applications.show', $propsal->id) }}"
                                                 class=" project-card project-card-href">
-                                                <div class="card-body">
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <p> Agency name:</p>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <h6 class="mt-1">{{ $propsal->team_name }}</h6>
-                                                        </div>
-                                                    </div>
+                                            @else
+                                                <a href="{{ route('AdminTool.initialProposals.show', $propsal->id) }}"
+                                                    class=" project-card project-card-href">
+                                        @endif
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <p> Agency name:</p>
                                                 </div>
-                                            </a>
+                                                <div class="col-sm-6">
+                                                    @if ($project->type == 3)
+                                                        <h6 class="mt-1">{{ $propsal->teamInfo->name }}</h6>
+                                                    @else
+                                                        <h6 class="mt-1">{{ $propsal->agency_info->name }}</h6>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
+                                        </a>
                                     </div>
-                                @endforeach
-                            @endif
+                                </div>
+                            @endforeach
 
                         </div>
                     </div>
