@@ -265,7 +265,7 @@ class Proposals extends Controller
         try {
             $userData = Controller::checkUser($req);
             $page = ($offset - 1) * $limit;
-    
+
             // $final_status=[0,3];
             // $projects=Project::where('company_id',$userData['group_id'])->select('id','name');
             // $projects_ids=$projects->pluck('id')->toArray();
@@ -274,7 +274,7 @@ class Proposals extends Controller
             // $init_ids=$init_proposals->pluck('id')->toArray();
             // $final_proposals=DB::table('final_proposals')
             // ->select('*')->whereIn('proposal_id', $init_ids)->whereIn('status',$final_status)->get();
-          
+
             // $proposals_array=array_merge($final_proposals->toArray() , $init_proposals->toArray());
             // $proposals=$this->getProposaldata($proposals_array);
             // $response = Controller::returnResponse(200, "data found", $proposals);
@@ -286,7 +286,7 @@ class Proposals extends Controller
                 ->join('projects', 'proposals.project_id', '=', 'projects.id')
                 ->select('proposals.*', 'projects.name as projectName', 'final_proposals.price as finalPrice', 'final_proposals.status as finalStatus', 'final_proposals.id as finalId')
                 ->where('projects.company_id', '=', $userData['group_id'])
-                ->latest()->offset($page)->limit($limit) 
+                ->latest()->offset($page)->limit($limit)
                 ->distinct()
                 ->get());
             return $propsals;
@@ -387,7 +387,17 @@ class Proposals extends Controller
             // $proposal->agency_info =  $GroupControllerObj->getGroupNameAndImage($proposal->team_id);
             // $agencyAdmin = $groupMemsObj->getTeamAdminByGroupId($proposal->team_id);
             // $proposal->agency_info->admin_email = $agencyAdmin->email;
-            $proposal->teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
+            // $groupInfo = Group::find($proposal->team_id);
+            $teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
+            $userInfo = User::find($proposal->user_id);
+            $teamCountry = Countries::find($teamInfo->country);
+            $teamArr = array(
+                'teamName' => $teamInfo->name,
+                'teamAdminName' => $userInfo->name,
+                'teamCountry' => ($teamCountry ? $teamCountry->name : "unset"),
+                'teamFlag' => ($teamCountry ? $teamCountry->flag : ""),
+            );
+            $proposal->teamInfo = $teamArr;
             $priceMin = (float)$proposal->price_min * (float)$proposal->from;
             $priceMax = (float)$proposal->price_max * (float)$proposal->to;
             $proposal->price_min = $priceMin;
@@ -395,7 +405,8 @@ class Proposals extends Controller
         }
         return $proposals;
     }
-    function getCountByProjectId($projectId){
+    function getCountByProjectId($projectId)
+    {
         $conditionArray = [
             ['project_id', '=', $projectId]
         ];
