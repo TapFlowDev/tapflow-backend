@@ -256,10 +256,8 @@
                                                 </div>
                                                 <div class="col-sm-6">
                                                     @if ($project->type == 3)
-                                                        <h6 class="mt-1">{{ $propsal->teamInfo->name }}</h6>
-                                                    @else
-                                                        <h6 class="mt-1">{{ $propsal->agency_info->name }}</h6>
-                                                    @endif
+                                                        <h6 class="mt-1">{{ $propsal->teamInfo['teamName'] }}</h6>
+                                                    
                                                 </div>
                                             </div>
                                         </div>
