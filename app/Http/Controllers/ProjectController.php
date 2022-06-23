@@ -1425,7 +1425,6 @@ class ProjectController extends Controller
                 $hireDeveloperFinalProposalsObj = new HireDeveloperFinalProposalController;
                 $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
                 $proposalIds = $hireDeveloperProposalsObj->getAcceptedProposalByProjectId($id, $agencyId);
-                return $proposalIds;
                 if (count($proposalIds) < 1) {
                     $response = Controller::returnResponse(200, "data found", []);
                     return (json_encode($response));
