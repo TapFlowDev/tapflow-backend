@@ -307,6 +307,7 @@ class HireDeveloperFinalProposalController extends Controller
         if ($teamId > 0) {
             $conditionArray[] = ['team_id', '=', $teamId];
             $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where($conditionArray)->select('*')->get();
+            return response($contracts, 200);
             $contractsData = $this->getContractsResources($contracts)->first();
             $returnData = $contractsData; 
         } else {
