@@ -1273,11 +1273,14 @@ class ProjectController extends Controller
                     $proposal_status = $initProp['status'];
                     $project->proposal_status = $proposal_status;
                     $finalStatus = 0;
+                    $finalExists = 0;
                     if(isset($initProp['proposal_id'])){                        
                         $finalProp = $hireDeveloperFinalProposalsObj->checkIfExists($initProp['proposal_id'], $groupId);
                         $finalStatus = $finalProp['status'];
+                        $finalExists = $finalProp['exist'];
                     }
                     $project->final_proposal_status =  $finalStatus;
+                    $project->final_proposal_exist =  $finalExists;
 
                     $progressArray = array(
                         "apply" => $initProp['exist'],
