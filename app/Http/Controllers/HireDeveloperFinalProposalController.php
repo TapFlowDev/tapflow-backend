@@ -10,6 +10,8 @@ use App\Http\Controllers\Requirement;
 use App\Models\hire_developer_final_proposal;
 use App\Models\hire_developer_proposals;
 use Exception;
+use App\Mail\HireDeveloperActions;
+use App\Models\proposal;
 
 class HireDeveloperFinalProposalController extends Controller
 {
@@ -224,6 +226,17 @@ class HireDeveloperFinalProposalController extends Controller
                 return (json_encode($response));
             } else {
                 hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 2]);
+                $contract=hire_developer_proposals::where('id',$req->contract_id)->select('user_id','proposal_id','team_id')->first();
+                $proposal=hire_developer_proposals::where('id',$contract->proposal_id)->first();
+                // $details = [
+                //     "subject" => 'Your FinalProposal Has Been Accepted',
+                //     "name" => $adminName,
+                //     "project_id" =>  $projectInfo->id,
+                //     "project_name" =>  $projectInfo->name,
+                //     "type" => 1
+
+                // ];
+                // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
                 $response = Controller::returnResponse(200, "successful", []);
                 return (json_encode($response));
             }
@@ -243,6 +256,43 @@ class HireDeveloperFinalProposalController extends Controller
             } else {
                 hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 3]);
                 $response = Controller::returnResponse(200, "successful", []);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getContractWithResources(Request $req)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1 && $userData['verified'] == 1)) {
+                $response = Controller::returnResponse(401, "unauthorized", []);
+                return (json_encode($response));
+            } else {
+                $contract = hire_developer_final_proposal::where('id', $req->contract_id)->select('*')->first();
+                if ($contract->team_id != $userData['group_id']) {
+                    $response = Controller::returnResponse(401, "unauthorized", []);
+                    return (json_encode($response));
+                }
+                $resourcesObj = new ResourcesController;
+                $resources = $resourcesObj->getContractResourcesById($req->contract_id);
+                foreach ($resources as $resource) {
+                    if ($resource->image != '') {
+                        $image = asset('images/users/' . $resource->image);
+                        $resource->image = $image;
+                    } else {
+                        $resource->image = asset('images/profile-pic.jpg');
+                    }
+                    if ($resource->end_date === null) {
+                       
+                        $resource->end_date = 'Open';
+                    } 
+                }
+                $contract->resources=$resources;
+                $response = Controller::returnResponse(200, "successful", $contract);
                 return (json_encode($response));
             }
         } catch (Exception $error) {
