@@ -58,6 +58,7 @@ class ResetPasswordController extends Controller
                 'url' => $url
             ];
             Mail::to($request->email)->send(new ResetPassword($details));
+            
             $response = Controller::returnResponse(200, 'email sent successfully', array());
 
             return json_encode($response);
