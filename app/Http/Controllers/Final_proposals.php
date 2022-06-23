@@ -150,7 +150,7 @@ class Final_proposals extends Controller
             ->where('project_id', '=', $project_id)
             ->first();
         if ($final_proposal == null) {
-            return ['exist' => 0];
+            return ['exist' => 0, 'status' =>0];
         } else {
             return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' => (int)$final_proposal->type, 'status' => $final_proposal->status];
         }
@@ -207,7 +207,7 @@ class Final_proposals extends Controller
                     ->distinct()
                     ->latest()->offset($page)->limit($limit)
                     ->get();
-                    $proposalsCounter= DB::table('final_proposals')
+                $proposalsCounter = DB::table('final_proposals')
                     ->select('final_proposals.*')
                     ->where('project_id', $project_id)
                     ->where('status', '!=', -1)
@@ -233,7 +233,7 @@ class Final_proposals extends Controller
                     // $all_people = array_unique($all_people);
                     // $proposal->all_people = $all_people;
                 }
-                $responseData=array('allData'=>$proposals,'counter'=>$proposalsCounter);
+                $responseData = array('allData' => $proposals, 'counter' => $proposalsCounter);
                 $response = Controller::returnResponse(200, "successful", $responseData);
                 return (json_encode($response));
             } catch (Exception $error) {
@@ -628,9 +628,9 @@ class Final_proposals extends Controller
                             // } else {
                             //     Project::where('id', $req->project_id)->update(['team_id' => $final_proposal->team_id, 'status' => 4]);
                             // }
-                            $first_milestone_id=Milestone::where('final_proposal_id',$req->proposal_id)->first()->id;
-                            Milestone::where('id',$first_milestone_id)->update(['status'=>4]);
-                           
+                            $first_milestone_id = Milestone::where('final_proposal_id', $req->proposal_id)->first()->id;
+                            Milestone::where('id', $first_milestone_id)->update(['status' => 4]);
+
                             $final_proposal = Final_proposal::where('id', $req->proposal_id)->select('team_id', 'project_id')->first();
                             $groupMemsObj = new GroupMembersController;
                             $projectObj = new ProjectController;
@@ -808,74 +808,70 @@ class Final_proposals extends Controller
     }
     function SendDraft(Request $req)
     {
-        try{
-        $milestoneObj = new Milestones;
-        $GroupControllerObj = new GroupController;
-        $final_proposal = Final_proposal::where('id', $req->id)->first();
-        // $milestones = $milestoneObj->getMilestoneByProposalId($req->id);
-        $milestones = Milestone::where('final_proposal_id', $req->id)->get();
-        //$agency = $GroupControllerObj->getGroupNameAndImage($final_proposal->team_id);
-        $agency_name = Group::select('name')->where('id', '=', $final_proposal->team_id)->first()->name;
-        $agency_image = Team::select('image')->where('group_id', '=', $final_proposal->team_id)->first()->image;
+        try {
+            $milestoneObj = new Milestones;
+            $GroupControllerObj = new GroupController;
+            $final_proposal = Final_proposal::where('id', $req->id)->first();
+            // $milestones = $milestoneObj->getMilestoneByProposalId($req->id);
+            $milestones = Milestone::where('final_proposal_id', $req->id)->get();
+            //$agency = $GroupControllerObj->getGroupNameAndImage($final_proposal->team_id);
+            $agency_name = Group::select('name')->where('id', '=', $final_proposal->team_id)->first()->name;
+            $agency_image = Team::select('image')->where('group_id', '=', $final_proposal->team_id)->first()->image;
 
-        if ($agency_image == null) {
-            $image = asset('images/profile-pic.jpg');
-            $agency_image = $image;
-        } else {
-            $image = asset('images/companies/' . $agency_image);
-            $agency_image = $image;
-        }
-        // $A=array_column($milestones,'deliverables');
+            if ($agency_image == null) {
+                $image = asset('images/profile-pic.jpg');
+                $agency_image = $image;
+            } else {
+                $image = asset('images/companies/' . $agency_image);
+                $agency_image = $image;
+            }
+            // $A=array_column($milestones,'deliverables');
 
-        // dd($A);
-        $mHtml = $this->generateHtml($milestones,$final_proposal->type);
-        $data = array(
-            
-            'agency_name' => $agency_name,
-            'hours' => $final_proposal->hours,
-            'price' => $final_proposal->price,
-            'title' => $final_proposal->title,
-            'description' => $final_proposal->description,
-            'starting_date' => $final_proposal->starting_date,
-            'type'=>$final_proposal->type,
-            'milestones' => $mHtml,
-        );
-        // dd($mHtml);
-        $filename = public_path() . "/drafts/"."Draft-".$final_proposal->id.".pdf";
-        $Att="/drafts/"."Draft-".$final_proposal->id.".pdf";
-        $pdf = PDF::loadView('pdf/Draft', $data);
-        $dist = public_path() . "/drafts/" ;
-        if (!File::exists($dist)) {
-            File::makeDirectory(public_path() . '/drafts/' . 0755, true);
-            $pdf->save($filename);
-            
-        } else {
-            $pdf->save($filename);
-           
+            // dd($A);
+            $mHtml = $this->generateHtml($milestones, $final_proposal->type);
+            $data = array(
+
+                'agency_name' => $agency_name,
+                'hours' => $final_proposal->hours,
+                'price' => $final_proposal->price,
+                'title' => $final_proposal->title,
+                'description' => $final_proposal->description,
+                'starting_date' => $final_proposal->starting_date,
+                'type' => $final_proposal->type,
+                'milestones' => $mHtml,
+            );
+            // dd($mHtml);
+            $filename = public_path() . "/drafts/" . "Draft-" . $final_proposal->id . ".pdf";
+            $Att = "/drafts/" . "Draft-" . $final_proposal->id . ".pdf";
+            $pdf = PDF::loadView('pdf/Draft', $data);
+            $dist = public_path() . "/drafts/";
+            if (!File::exists($dist)) {
+                File::makeDirectory(public_path() . '/drafts/' . 0755, true);
+                $pdf->save($filename);
+            } else {
+                $pdf->save($filename);
+            }
+            $subject = $final_proposal->title . 'draft';
+            $project = Project::where('id', $final_proposal->project_id)->first();
+            $GroupMembersObj = new GroupMembersController;
+            $mailObj = new MailController;
+            $company_admin = $GroupMembersObj->getCompanyAdminByGroupId($project->company_id);
+            $mailObj->testEmailWithPDF($Att, $req->email_body, $subject, $agency_name, $company_admin->email, $company_admin->first_name);
+            $response = Controller::returnResponse(200, "send successfully", []);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
         }
-        $subject=$final_proposal->title. 'draft';
-        $project=Project::where('id',$final_proposal->project_id)->first();
-        $GroupMembersObj=new GroupMembersController;
-        $mailObj=new MailController;
-        $company_admin=$GroupMembersObj->getCompanyAdminByGroupId($project->company_id);
-        $mailObj->testEmailWithPDF($Att,$req->email_body,$subject,$agency_name,$company_admin->email,$company_admin->first_name);
-        $response = Controller::returnResponse(200, "send successfully",[]);
-        return (json_encode($response));
     }
-    catch(Exception $error) 
-    {  $response = Controller::returnResponse(500, "something went wrong",$error->getMessage());
-        return (json_encode($response));}
-    }
-    function generateHtml($milestones,$type)
+    function generateHtml($milestones, $type)
     {
-        if($type == 1)
-        {
-            $hours_label="<strong>Number of Hours:</strong>";
-            $deliverables_label="<strong>Deliverables:</strong>";
-        }
-        elseif($type ==2 ){
-            $hours_label="<strong> Number of Hours/Month:</strong>";
-            $deliverables_label="<strong>Resources:</strong>";
+        if ($type == 1) {
+            $hours_label = "<strong>Number of Hours:</strong>";
+            $deliverables_label = "<strong>Deliverables:</strong>";
+        } elseif ($type == 2) {
+            $hours_label = "<strong> Number of Hours/Month:</strong>";
+            $deliverables_label = "<strong>Resources:</strong>";
         }
         $text = '';
         foreach ($milestones as $keyM => &$milestone) {
@@ -897,10 +893,10 @@ class Final_proposals extends Controller
             <td colspan='3'><strong>Price:</strong></td>
             <td colspan='3'>$milestone->price</td>
             </tr><tr><td colspan='3'>$deliverables_label</td></tr>";
-            $text .= $this->leveldown($dev, $length, $counter, $text2)."<tr style='border-bottom:1px solid black;'><td colspan='6'></td></tr>";
+            $text .= $this->leveldown($dev, $length, $counter, $text2) . "<tr style='border-bottom:1px solid black;'><td colspan='6'></td></tr>";
         }
-    
-       
+
+
         return $text;
     }
     //    function testRec($id)
@@ -937,11 +933,49 @@ class Final_proposals extends Controller
             return $text;
         }
     }
-    function getCountByProjectId($projectId){
+    function getCountByProjectId($projectId)
+    {
         $conditionArray = [
             ['project_id', '=', $projectId]
         ];
         $proposalCount = Final_proposal::where($conditionArray)->count();
         return $proposalCount;
+    }
+    function newGetFinalProposalByProjectIdAndTeamId($project_id, $team_id = 0, $page = 0, $limit = 0)
+    {
+        // $proposalObj = new Proposals;
+        if ($team_id > 0) {
+            // $init_proposal = $proposalObj->getProposalInfo($project_id, $team_id);
+            $final_proposal = DB::table('final_proposals')
+                ->where('project_id', '=', $project_id)
+                ->where('team_id', '=', $team_id)
+                ->get();
+            // $final_proposal->hours = $final_proposal->hours;
+            $finalProposalData = $this->newGetData($final_proposal)->first();
+            $returnData = ($finalProposalData ? $finalProposalData : [] );
+        } else {
+            $final_proposal = DB::table('final_proposals')
+                ->where('project_id', '=', $project_id)
+                ->distinct()->latest()->offset($page)->limit($limit)->get();
+            $finalProposalCount = DB::table('final_proposals')
+                ->where('project_id', '=', $project_id)
+                ->count();
+            $finalProposalData = $this->newGetData($final_proposal);
+            $returnData = [
+                'allData' => $finalProposalData,
+                'count' => $finalProposalCount
+            ];
+        }
+        return $returnData;
+    }
+    private function newGetData($finalProposals)
+    {
+        $milestone = new Milestones;
+        foreach ($finalProposals as &$finalProposal) {
+            $milestone = new Milestones;
+            $milestones = $milestone->getMilestoneByProposalId($finalProposal->id);
+            $finalProposal->milestones = $milestones;
+        }
+        return $finalProposals;
     }
 }

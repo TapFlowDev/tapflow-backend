@@ -192,6 +192,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // new apis
     Route::get('projectInfo/{id}', [ProjectController::class, 'newGetProject']);
     Route::get('getProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getInitailProposalsProjectId']);
+    Route::get('getFinalProposals/{id}', [ProjectController::class, 'getFinalProposalsProjectId']);
+    Route::get('getFinalProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getFinalProposalsProjectId']);
 
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {

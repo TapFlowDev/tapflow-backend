@@ -8,6 +8,7 @@ use App\Http\Controllers\Proposals;
 use App\Http\Controllers\AdminTool\TeamsController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\GroupMembersController;
+use App\Http\Controllers\HireDeveloperProposalsController;
 use App\Http\Controllers\ProjectPriorityController;
 use App\Http\Controllers\ProjectServiceController;
 use App\Http\Controllers\Requirement;
@@ -105,28 +106,28 @@ class ProjectsController extends Controller
     {
         $teamObj = new TeamsController;
         $project = $this->getData(Project::where('id', '=', $id)->get())->first();
+
         //return gettype($project->services);
-        $teams = [];
-        if ($project->team_id != '') {
-            $teams = $teamObj->getTeamById($project->team_id);
-            $status = 1;
-            $propsals = [];
-        } else {
-            $status = 0;
-            $propsals = proposal::where('project_id', '=', $id)->distinct()->get();
-            // $teamsIds = proposal::select('team_id')->where('project_id', '=', $id)->distinct()->pluck('team_id');
-            foreach ($propsals as &$propsal) {
-                $teamInfo = Group::where('id', '=', $propsal->team_id)->get()->first();
-                $propsal->team_name = $teamInfo->name;
-                // if ($teamInfo != '') {
-                //     $teams[] = $teamInfo;
-                // }
-            }
-            // return $teams;
-        }
+        // if ($project->team_id != '') {
+        //     $teams = $teamObj->getTeamById($project->team_id);
+        //     $status = 1;
+        //     $propsals = [];
+        // } else {
+        //     $status = 0;
+        //     $propsals = proposal::where('project_id', '=', $id)->distinct()->get();
+        //     // $teamsIds = proposal::select('team_id')->where('project_id', '=', $id)->distinct()->pluck('team_id');
+        //     foreach ($propsals as &$propsal) {
+        //         $teamInfo = Group::where('id', '=', $propsal->team_id)->get()->first();
+        //         $propsal->team_name = $teamInfo->name;
+        //         // if ($teamInfo != '') {
+        //         //     $teams[] = $teamInfo;
+        //         // }
+        //     }
+        //     // return $teams;
+        // }
         // $allTeams = $teamObj->getAllTeams();
-        // return $propsals;
-        return view("AdminTool.Projects.show", ['project' => $project, 'status' => $status, 'teams' => $teams, 'propsals' => $propsals]);
+        //  return ($project->proposals);
+        return view("AdminTool.Projects.show", ['project' => $project]);
     }
 
     /**
@@ -192,7 +193,12 @@ class ProjectsController extends Controller
             $project->priorities = $projectPriorityObj->getProjectPriorities($project->id);
             // dd(gettype($project->priorities));
             if ($project->type == 3) {
+                $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                $project->proposals = $hireDeveloperProposalsObj->getProposalsByProjectIdTeamId($project->id, 0, 0, 100)['allData'];
+            
             } else {
+                $proposalsObj = new Proposals;
+                $project->proposals = $proposalsObj->getProposalsByProjectId($project->id, 0, 0, 100)['allData'];
                 $project->categories = $projectCatObj->getProjectCategories($project->id);
                 $services = $projectServicesObj->getProjectServices($project->id);
                 if (count($services) > 0) {
