@@ -1266,11 +1266,19 @@ class ProjectController extends Controller
                 $project->requirmentsDetails = $requirmentsDetails['reqArr'];
                 $project->requirmentsSkills = $requirmentsDetails['skills'];
                 $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                $hireDeveloperFinalProposalsObj = new HireDeveloperFinalProposalController;
                 if ($groupId > 0 && $groupType == 1) {
                     // hire developer final obj 
                     $initProp = $hireDeveloperProposalsObj->checkIfProposalExists($project->id, $groupId);
                     $proposal_status = $initProp['status'];
                     $project->proposal_status = $proposal_status;
+                    $finalStatus = 0;
+                    if(isset($initProp['proposal_id'])){                        
+                        $finalProp = $hireDeveloperFinalProposalsObj->checkIfExists($initProp['proposal_id'], $groupId);
+                        $finalStatus = $finalProp['status'];
+                    }
+                    $project->final_proposal_status =  $finalStatus;
+
                     $progressArray = array(
                         "apply" => $initProp['exist'],
                         "discuss" => 0,
@@ -1300,11 +1308,11 @@ class ProjectController extends Controller
                     $finalProp = $finalPropObj->checkIfExists($project->id, $groupId);
                     $initProp = $initPropObj->checkIfProposalExists($project->id, $groupId);
                     $proposal_status = $initProp['status'];
-                    if ($finalProp['exist'] == 1) {
-                        $finalStatus = $finalProp['status'];
-                    } else {
-                        $finalStatus = null;
-                    }
+                    $finalStatus = $finalProp['status'];
+                    // if ($finalProp['exist'] == 1) {
+                    // } else {
+                    //     $finalStatus = 0;
+                    // }
                     $project->final_proposal_status =  $finalStatus;
                     $project->proposal_status =   $proposal_status;
                     $progressArray = array(

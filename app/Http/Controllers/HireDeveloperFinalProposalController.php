@@ -308,7 +308,7 @@ class HireDeveloperFinalProposalController extends Controller
             $conditionArray[] = ['team_id', '=', $teamId];
             $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where($conditionArray)->select('*')->get();
             $contractsData = $this->getContractsResources($contracts)->first();
-            $returnData = ($contractsData ? $contractsData : [] ); 
+            $returnData = ($contractsData ? $contractsData : []);
         } else {
             $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->select('*')->get();
             $contractsCount = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->select('*')->count();
@@ -340,5 +340,17 @@ class HireDeveloperFinalProposalController extends Controller
             $contract->resources = $resources;
         }
         return $contracts;
+    }
+    function checkIfExists($proposal_id, $team_id)
+    {
+        $final_proposal = hire_developer_final_proposal::select('id', 'type', 'status')
+            ->where('team_id', '=', $team_id)
+            ->where('proposal_id', '=', $proposal_id)
+            ->first();
+        if ($final_proposal == null) {
+            return ['exist' => 0, 'status' => 0];
+        } else {
+            return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' => (int)$final_proposal->type, 'status' => $final_proposal->status];
+        }
     }
 }
