@@ -67,7 +67,7 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-12 mb-2">
-                                        <h6 class="mb-0">Requirement</h6>
+                                        <h6 class="mb-0">Requirements</h6>
                                     </div>
                                     <div class="col-sm-12 text-secondary">
                                         <table class="table">
