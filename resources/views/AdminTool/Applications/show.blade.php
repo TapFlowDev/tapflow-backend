@@ -84,13 +84,13 @@
                                                     <tr>
                                                         <th>
                                                             @foreach ( $req['skills'] as $skill )
-                                                                ${{ $skill }}
+                                                                {{ $skill }}
                                                                 @if (!$loop->last)
                                                                     ,
                                                                 @endif
                                                             @endforeach
                                                         </th>
-                                                        <td>{{ $req['hourlyRate'] }}</td>
+                                                        <td>${{ $req['hourlyRate'] }}</td>
                                                         <td>{{ $req['quantity'] }}</td>
                                                         <td>
                                                             {{ $req['seniority'] }}
