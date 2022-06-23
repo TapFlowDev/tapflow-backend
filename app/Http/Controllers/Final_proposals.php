@@ -960,7 +960,6 @@ class Final_proposals extends Controller
             $finalProposalCount = DB::table('final_proposals')
                 ->where('project_id', '=', $project_id)
                 ->count();
-                dd($final_proposal);
             $finalProposalData = $this->newGetData($final_proposal);
             $returnData = [
                 'allData' => $finalProposalData,
