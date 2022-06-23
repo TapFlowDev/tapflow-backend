@@ -1365,7 +1365,7 @@ class ProjectController extends Controller
                 $project = Project::where('id', '=', $id)->where('company_id', '=', $userData['group_id'])->first();
             }
             $page = ($offset - 1) * $limit;
-            
+
             if (!$project) {
                 $response = Controller::returnResponse(422, 'Project does not exsist', []);
                 return (json_encode($response));
@@ -1392,6 +1392,58 @@ class ProjectController extends Controller
             $project = Project::where('company_id', $userData['group_id'])->get();
             $projectInfo = $this->newGetProjectsInfo($project, $userData['group_id'], $userData['type']);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getFinalProposalsProjectId(Request $req, $id, $offset = 0, $limit = 0)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($userData['type'] == 1) {
+                $agencyId = $userData['group_id'];
+                $project = Project::where('id', '=', $id)->first();
+            } else {
+                $agencyId = 0;
+                $project = Project::where('id', '=', $id)->where('company_id', '=', $userData['group_id'])->first();
+            }
+            $page = ($offset - 1) * $limit;
+
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Project does not exsist', []);
+                return (json_encode($response));
+            }
+
+            if ($project->type == 3) {
+                $hireDeveloperFinalProposalsObj = new HireDeveloperFinalProposalController;
+                $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                $proposalIds = $hireDeveloperProposalsObj->getAcceptedProposalByProjectId($id, $agencyId);
+                if (count($proposalIds) < 1) {
+                    $response = Controller::returnResponse(200, "data found", []);
+                    return (json_encode($response));
+                }
+                $finalproposals = $hireDeveloperFinalProposalsObj->getContractData($proposalIds, $agencyId, $page, $limit);
+            } else {
+                $finalproposalsObj = new Final_Proposals;
+                if ($agencyId > 0) {
+                    $proposalObj = new Proposals;
+                    $init_proposal = $proposalObj->getProposalInfo($id, $agencyId);
+                    if ($init_proposal['exist'] != 1) {
+                        $response = Controller::returnResponse(422, 'you do not have initial proposal ', []);
+                        return json_encode($response);
+                    }
+                }
+
+                $finalproposals = $finalproposalsObj->newGetFinalProposalByProjectIdAndTeamId($id, $agencyId,  $page, $limit);
+            }
+            $response = Controller::returnResponse(200, "data found", $finalproposals);
             return (json_encode($response));
         } catch (\Exception $error) {
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());

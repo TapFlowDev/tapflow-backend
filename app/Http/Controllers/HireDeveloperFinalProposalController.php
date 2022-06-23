@@ -47,10 +47,11 @@ class HireDeveloperFinalProposalController extends Controller
                     if ($proposal->team_id != $userData['group_id']) {
                         $response = Controller::returnResponse(401, "unauthorized", []);
                         return (json_encode($response));
+                    } elseif ($proposal->status != 1) {
+                        $response = Controller::returnResponse(422, "your initial proposal not accepted yest", []);
+                        return (json_encode($response));
                     }
-                    elseif($proposal->status !=1){ $response = Controller::returnResponse(422, "your initial proposal not accepted yest", []);
-                        return (json_encode($response));}
-                
+
                     $requirementObj = new Requirement;
                     $resourcesObj = new ResourcesController;
                     $data = array("proposal_id" => $req->proposal_id, "team_id" => $userData['group_id'], "user_id" => $userData['user_id']);
@@ -58,7 +59,7 @@ class HireDeveloperFinalProposalController extends Controller
                     $resources = $requirementObj->getResourcesByProposalId($req->proposal_id);
                     $resourcesObj->internalAdd($resources, $contract->id);
 
-                    $response = Controller::returnResponse(200, "successful", ["contract_id"=>$contract->id]);
+                    $response = Controller::returnResponse(200, "successful", ["contract_id" => $contract->id]);
                     return (json_encode($response));
                 }
             }
@@ -226,8 +227,8 @@ class HireDeveloperFinalProposalController extends Controller
                 return (json_encode($response));
             } else {
                 hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 2]);
-                $contract=hire_developer_proposals::where('id',$req->contract_id)->select('user_id','proposal_id','team_id')->first();
-                $proposal=hire_developer_proposals::where('id',$contract->proposal_id)->first();
+                $contract = hire_developer_proposals::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id')->first();
+                $proposal = hire_developer_proposals::where('id', $contract->proposal_id)->first();
                 // $details = [
                 //     "subject" => 'Your FinalProposal Has Been Accepted',
                 //     "name" => $adminName,
@@ -287,11 +288,11 @@ class HireDeveloperFinalProposalController extends Controller
                         $resource->image = asset('images/profile-pic.jpg');
                     }
                     if ($resource->end_date === null) {
-                       
+
                         $resource->end_date = 'Open';
-                    } 
+                    }
                 }
-                $contract->resources=$resources;
+                $contract->resources = $resources;
                 $response = Controller::returnResponse(200, "successful", $contract);
                 return (json_encode($response));
             }
@@ -299,5 +300,45 @@ class HireDeveloperFinalProposalController extends Controller
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return (json_encode($response));
         }
+    }
+    function getContractData($proposalIds, $teamId = 0)
+    {
+        $conditionArray[] = ['status', '=', 1];
+        if ($teamId > 0) {
+            $conditionArray[] = ['team_id', '=', $teamId];
+            $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where($conditionArray)->select('*')->get();
+            $contractsData = $this->getContractsResources($contracts)->first();
+            $returnData = $contractsData; 
+        } else {
+            $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where($conditionArray)->select('*')->get();
+            $contractsCount = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where($conditionArray)->select('*')->count();
+            $contractsData = $this->getContractsResources($contracts);
+            $returnData = [
+                'allData' => $contractsData,
+                'count' => $contractsCount
+            ];
+        }
+        return $returnData;
+    }
+    private function getContractsResources($contracts)
+    {
+        $resourcesObj = new ResourcesController;
+        foreach ($contracts as &$contract) {
+            $resources = $resourcesObj->getContractResourcesById($contract->id);
+            foreach ($resources as $resource) {
+                if ($resource->image != '') {
+                    $image = asset('images/users/' . $resource->image);
+                    $resource->image = $image;
+                } else {
+                    $resource->image = asset('images/profile-pic.jpg');
+                }
+                if ($resource->end_date === null) {
+
+                    $resource->end_date = 'Open';
+                }
+            }
+            $contract->resources = $resources;
+        }
+        return $contracts;
     }
 }

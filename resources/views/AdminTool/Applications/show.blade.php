@@ -66,31 +66,40 @@
                                 </div>
                                 <hr>
                                 <div class="row">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Price Details:</h6>
+                                    <div class="col-sm-12 mb-2">
+                                        <h6 class="mb-0">Why us?</h6>
                                     </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        Min hourly rate:
-                                        {{ $proposal->price_min }}
-                                        ,
-                                        Max hourly rate:
-                                        {{ $proposal->price_max }}
-                                        <hr>
-                                        Min no. of hours:
-                                        ${{ $proposal->from }}
-                                        ,
-                                        Max no. of hours:
-                                        ${{ $proposal->to }}
-
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Est Price:</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        ${{ $proposal->est_min }} - ${{ $proposal->est_max }}
+                                    <div class="col-sm-12 text-secondary">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Skills</th>
+                                                    <th scope="col">Rate</th>
+                                                    <th scope="col">Quantity</th>
+                                                    <th scope="col">Seniority</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($proposal->requirementDetails['reqArr'] as $req)
+                                                    <tr>
+                                                        <th>
+                                                            @foreach ( $req['skills'] as $skill )
+                                                                {{ $skill }}
+                                                                @if (!$loop->last)
+                                                                    ,
+                                                                @endif
+                                                            @endforeach
+                                                        </th>
+                                                        <td>{{ $req['hourlyRate'] }}</td>
+                                                        <td>{{ $req['quantity'] }}</td>
+                                                        <td>
+                                                            {{ $req['seniority'] }}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                    
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                                 <hr>
@@ -102,7 +111,7 @@
                                         {{ $proposal->our_offer }}
                                     </div>
                                 </div>
-                                <hr>
+                                {{-- <hr>
                                 <div class="row">
                                     <div class="col-sm-3">
                                         <h6 class="mb-0">Status</h6>
@@ -114,7 +123,7 @@
                                             Approved
                                         @endif
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
