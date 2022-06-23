@@ -278,4 +278,12 @@ class HireDeveloperProposalsController extends Controller
         // dd($details);
         //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
+    function getAcceptedProposalByProjectId($projectId, $agencyId=0){
+        $conditionArray[] = ['project_id', '=', $projectId];
+        $conditionArray[] = ['status', '=', 1];
+        if($agencyId>0){
+            $conditionArray[] = ['team_id', '=', $agencyId];
+        }
+        return hire_developer_proposals::select('id')->where($conditionArray)->pluck('id')->toArray();
+    }
 }
