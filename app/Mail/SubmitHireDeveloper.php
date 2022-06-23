@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class HireDeveloperActions extends Mailable
+class SubmitHireDeveloper extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -20,7 +20,7 @@ class HireDeveloperActions extends Mailable
     public function __construct($details)
     {
         //
-       $this->details= $details;
+        $this->details=$details;
     }
 
     /**
@@ -30,7 +30,6 @@ class HireDeveloperActions extends Mailable
      */
     public function build()
     {
-        return $this->from('projects@tapflow.app', 'Tapflow-Projects')->subject($this->details['subject'])->markdown('mail/hireDeveloperActions');
-
+         return $this->from('projects@tapflow.app', 'Tapflow-Projects')->subject($this->details['subject'])->markdown('mail/submitHireDeveloper');
     }
 }
