@@ -1285,7 +1285,7 @@ class ProjectController extends Controller
                     $progressArray = array(
                         "apply" => $initProp['exist'],
                         "discuss" => 0,
-                        "contract" => 0,
+                        "contract" => $finalExists,
                         "onboard" => 0,
                     );
                     $project->progressArray = $progressArray;
