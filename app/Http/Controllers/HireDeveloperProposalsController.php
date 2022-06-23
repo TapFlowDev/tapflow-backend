@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Mail\InitialProposalActions;
+use App\Models\Countries;
 use App\Models\Group_member;
 use App\Models\hire_developer_final_proposal;
 use App\Models\hire_developer_proposals;
@@ -155,6 +156,15 @@ class HireDeveloperProposalsController extends Controller
             $proposal->requirments_description = $requirementObj->getRequirementsByProjectId($proposal->project_id)->pluck('description')->toArray();
             $proposalRequirments = $requirementObj->getHireDevInitialProposalRequirements($proposal->id);
             $proposal->requirementDetails = $proposalRequirments;
+            $teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
+            $userInfo = User::find($proposal->user_id);
+            $teamCountry = Countries::find($teamInfo->country);
+            $teamArr = array(
+                'teamName' => $teamInfo->name,
+                'teamAdminName' => $userInfo->name,
+                'teamCountry' => ($teamCountry ? $teamCountry->name : "unset"),
+                'teamFlag' => ($teamCountry ? $teamCountry->flag : ""),
+            );
             $proposal->teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
         }
         return $proposals;
