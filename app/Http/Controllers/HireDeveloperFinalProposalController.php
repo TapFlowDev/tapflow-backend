@@ -14,7 +14,9 @@ use App\Mail\HireDeveloperActions;
 use App\Models\proposal;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SubmitHireDeveloper;
+use App\Models\Countries;
 use App\Models\Project;
+use App\Models\User;
 
 class HireDeveloperFinalProposalController extends Controller
 {
@@ -359,6 +361,7 @@ class HireDeveloperFinalProposalController extends Controller
     private function getContractsResources($contracts)
     {
         $resourcesObj = new ResourcesController;
+        $teamControllersObj = new TeamController;
         foreach ($contracts as &$contract) {
             $resources = $resourcesObj->getContractResourcesById($contract->id);
             foreach ($resources as $resource) {
@@ -374,6 +377,16 @@ class HireDeveloperFinalProposalController extends Controller
                 }
             }
             $contract->resources = $resources;
+            $teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
+            $userInfo = User::find($contract->user_id);
+            $teamCountry = Countries::find($teamInfo->country);
+            $teamArr = array(
+                'teamName' => $teamInfo->name,
+                'teamAdminName' => $userInfo->name,
+                'teamCountry' => ($teamCountry ? $teamCountry->name : "unset"),
+                'teamFlag' => ($teamCountry ? $teamCountry->flag : ""),
+            );
+            $contract->teamInfo = $teamArr;
         }
         return $contracts;
     }
