@@ -377,7 +377,7 @@ class HireDeveloperFinalProposalController extends Controller
                 }
             }
             $contract->resources = $resources;
-            $teamInfo = $teamControllersObj->get_team_info($proposal->team_id);
+            $teamInfo = $teamControllersObj->get_team_info($contract->team_id);
             $userInfo = User::find($contract->user_id);
             $teamCountry = Countries::find($teamInfo->country);
             $teamArr = array(
