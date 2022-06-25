@@ -405,7 +405,7 @@ class HireDeveloperFinalProposalController extends Controller
                     return (json_encode($response));
                 }
                 $project = Project::where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
-                dd($project);
+                dd($proposal);
                 if (!$project) {
                     $response = Controller::returnResponse(401, "unauthorized 2", []);
                     return (json_encode($response));
