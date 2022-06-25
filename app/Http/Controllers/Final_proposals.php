@@ -30,6 +30,8 @@ use App\Models\Group;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\MailChimpController;
+use App\Models\Countries;
+use App\Models\User;
 
 class Final_proposals extends Controller
 {
@@ -971,10 +973,21 @@ class Final_proposals extends Controller
     private function newGetData($finalProposals)
     {
         $milestone = new Milestones;
+        $teamControllersObj = new TeamController;
         foreach ($finalProposals as &$finalProposal) {
             $milestone = new Milestones;
             $milestones = $milestone->getMilestoneByProposalId($finalProposal->id);
             $finalProposal->milestones = $milestones;
+            $teamInfo = $teamControllersObj->get_team_info($finalProposal->team_id);
+            $userInfo = User::find($finalProposal->user_id);
+            $teamCountry = Countries::find($teamInfo->country);
+            $teamArr = array(
+                'teamName' => $teamInfo->name,
+                'teamAdminName' => $userInfo->name,
+                'teamCountry' => ($teamCountry ? $teamCountry->name : "unset"),
+                'teamFlag' => ($teamCountry ? $teamCountry->flag : ""),
+            );
+            $finalProposal->teamInfo = $teamArr;
         }
         return $finalProposals;
     }
