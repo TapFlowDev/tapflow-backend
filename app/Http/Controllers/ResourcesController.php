@@ -191,4 +191,7 @@ class ResourcesController extends Controller
         $resources = resources::where('contract_id', $contract_id)->get();
         return $resources;
     }
+    function getClientActiveResources(Request $req, $projectId)
+    {
+    }
 }

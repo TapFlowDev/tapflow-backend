@@ -14,6 +14,7 @@ use App\Mail\HireDeveloperActions;
 use App\Models\proposal;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SubmitHireDeveloper;
+use App\Models\Project;
 
 class HireDeveloperFinalProposalController extends Controller
 {
@@ -386,6 +387,49 @@ class HireDeveloperFinalProposalController extends Controller
             return ['exist' => 0, 'status' => 0];
         } else {
             return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' => (int)$final_proposal->type, 'status' => $final_proposal->status];
+        }
+    }
+    function getContractWithResourcesClient(Request $req, $contractId)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1  && $userData['verified'] == 1)) {
+                $response = Controller::returnResponse(401, "unauthorized", []);
+                return (json_encode($response));
+            } else {
+                $contract = hire_developer_final_proposal::where('id', $contractId)->select('*')->first();
+                $proposal = hire_developer_proposals::select('id')->where('id', '=', $contract->proposal_id)->first();
+                if (!$proposal) {
+                    $response = Controller::returnResponse(401, "unauthorized", []);
+                    return (json_encode($response));
+                }
+                $project = Project::where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
+                 if (!$project) {
+                    $response = Controller::returnResponse(401, "unauthorized", []);
+                    return (json_encode($response));
+                }
+                $resourcesObj = new ResourcesController;
+                $resources = $resourcesObj->getContractResourcesById($contractId);
+                foreach ($resources as $resource) {
+                    if ($resource->image != '') {
+                        $image = asset('images/users/' . $resource->image);
+                        $resource->image = $image;
+                    } else {
+                        $resource->image = asset('images/profile-pic.jpg');
+                    }
+                    if ($resource->end_date === null) {
+
+                        $resource->end_date = 'Open';
+                    }
+                }
+                $contract->resources = $resources;
+                $response = Controller::returnResponse(200, "successful", $contract);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
         }
     }
 }
