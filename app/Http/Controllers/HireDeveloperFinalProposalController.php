@@ -399,13 +399,13 @@ class HireDeveloperFinalProposalController extends Controller
                 return (json_encode($response));
             } else {
                 $contract = hire_developer_final_proposal::where('id', $contractId)->select('*')->first();
-                $proposal = hire_developer_proposals::select('id')->where('id', '=', $contract->proposal_id)->first();
+                $proposal = hire_developer_proposals::select('*')->where('id', '=', $contract->proposal_id)->first();
                 if (!$proposal) {
                     $response = Controller::returnResponse(401, "unauthorized 1", []);
                     return (json_encode($response));
                 }
                 $project = Project::where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
-                dd($proposal);
+                // dd($proposal);
                 if (!$project) {
                     $response = Controller::returnResponse(401, "unauthorized 2", []);
                     return (json_encode($response));
