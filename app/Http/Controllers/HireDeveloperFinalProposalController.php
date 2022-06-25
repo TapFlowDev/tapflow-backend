@@ -14,6 +14,7 @@ use App\Mail\HireDeveloperActions;
 use App\Models\proposal;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SubmitHireDeveloper;
+use App\Models\Category;
 use App\Models\Countries;
 use App\Models\Project;
 use App\Models\User;
@@ -387,6 +388,14 @@ class HireDeveloperFinalProposalController extends Controller
                 'teamFlag' => ($teamCountry ? $teamCountry->flag : ""),
             );
             $contract->teamInfo = $teamArr;
+            $notice_period = Category::find((int)$contract->notice_period);
+            $resource_replacement = Category::find((int)$contract->resource_replacement);
+            $trail_period = Category::find((int)$contract->trail_period);
+            $payment_settlement = Category::find((int)$contract->payment_settlement);
+            $contract->notice_period = ($notice_period ? $notice_period->name : "unset");
+            $contract->resource_replacement = ($notice_period ? $resource_replacement->name : "unset");
+            $contract->trail_period = ($notice_period ? $trail_period->name : "unset");
+            $contract->payment_settlement = ($notice_period ? $payment_settlement->name : "unset");
         }
         return $contracts;
     }
@@ -411,7 +420,8 @@ class HireDeveloperFinalProposalController extends Controller
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
-                $contract = hire_developer_final_proposal::where('id', $contractId)->select('*')->first();
+                $contracts = hire_developer_final_proposal::where('id', $contractId)->select('*')->get();
+                $contract = $contracts->first();
                 $proposal = hire_developer_proposals::select('*')->where('id', '=', $contract->proposal_id)->first();
                 if (!$proposal) {
                     $response = Controller::returnResponse(401, "unauthorized 1", []);
@@ -423,22 +433,24 @@ class HireDeveloperFinalProposalController extends Controller
                     $response = Controller::returnResponse(401, "unauthorized 2", []);
                     return (json_encode($response));
                 }
-                $resourcesObj = new ResourcesController;
-                $resources = $resourcesObj->getContractResourcesById($contractId);
-                foreach ($resources as $resource) {
-                    if ($resource->image != '') {
-                        $image = asset('images/users/' . $resource->image);
-                        $resource->image = $image;
-                    } else {
-                        $resource->image = asset('images/profile-pic.jpg');
-                    }
-                    if ($resource->end_date === null) {
+                // $resourcesObj = new ResourcesController;
+                // $resources = $resourcesObj->getContractResourcesById($contractId);
+                // foreach ($resources as $resource) {
+                //     if ($resource->image != '') {
+                //         $image = asset('images/users/' . $resource->image);
+                //         $resource->image = $image;
+                //     } else {
+                //         $resource->image = asset('images/profile-pic.jpg');
+                //     }
+                //     if ($resource->end_date === null) {
 
-                        $resource->end_date = 'Open';
-                    }
-                }
-                $contract->resources = $resources;
-                $response = Controller::returnResponse(200, "successful", $contract);
+                //         $resource->end_date = 'Open';
+                //     }
+                // }
+                // $contract->resources = $resources;
+                $contractsData = $this->getContractsResources($contracts)->first();
+
+                $response = Controller::returnResponse(200, "successful", $contractsData);
                 return (json_encode($response));
             }
         } catch (Exception $error) {
