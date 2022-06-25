@@ -181,7 +181,7 @@ class HireDeveloperFinalProposalController extends Controller
                 $adminName = $companyAdmin->first_name . ' ' . $companyAdmin->last_name;
                 $project_info = json_decode($projectObj->getProject($project_id))->data;
                 $details = [
-                    "subject" => 'Contract Submitted ' ,
+                    "subject" => 'Contract Submitted ',
                     "name" => $adminName,
                     "project_id" =>  $project_info->id,
                     "project_name" =>  $project_info->name,
@@ -405,7 +405,8 @@ class HireDeveloperFinalProposalController extends Controller
                     return (json_encode($response));
                 }
                 $project = Project::where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
-                 if (!$project) {
+                dd($project);
+                if (!$project) {
                     $response = Controller::returnResponse(401, "unauthorized 2", []);
                     return (json_encode($response));
                 }
