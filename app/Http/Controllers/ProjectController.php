@@ -17,6 +17,7 @@ use App\Models\Company;
 use App\Models\proposal;
 use App\Models\Final_proposal;
 use App\Models\Group_member;
+use App\Models\Agency_active_project;
 use App\Models\Requirement as requirementModel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -1465,36 +1466,125 @@ class ProjectController extends Controller
     function getAgencyProjects(Request $req, $offset = 0, $limit = 4)
     {
         try {
-        $userData = $this->checkUser($req);
-        $page = ($offset - 1) * $limit;
-        $initialFinalHireSelect = ['projects.*', 'hire_developer_proposals.id as proposal_id', 'hire_developer_proposals.status as initial_status', 'hire_developer_final_proposals.id as contract_id', 'hire_developer_final_proposals.status as final_status'];
-        $initialFinalSelect = ['projects.*', 'proposals.id as proposal_id', 'proposals.status as initial_status', 'final_proposals.id as contract_id', 'final_proposals.status as final_status'];
-        // $initialProposals = proposal::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
-        // $initialProposalsHireDevelopers = hire_developer_proposals::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
-        $initailFinalHire = DB::table('hire_developer_proposals')
-            ->leftJoin('hire_developer_final_proposals', 'hire_developer_proposals.id', '=', 'hire_developer_final_proposals.proposal_id')
-            ->join('projects', 'projects.id', '=', 'hire_developer_proposals.project_id')
-            ->select($initialFinalHireSelect)
-            ->where('hire_developer_proposals.team_id', '=', $userData['group_id'])
-            ->get();
+            $userData = $this->checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $initialFinalHireSelect = ['projects.*', 'hire_developer_proposals.id as proposal_id', 'hire_developer_proposals.status as initial_status', 'hire_developer_final_proposals.id as contract_id', 'hire_developer_final_proposals.status as final_status'];
+            $initialFinalSelect = ['projects.*', 'proposals.id as proposal_id', 'proposals.status as initial_status', 'final_proposals.id as contract_id', 'final_proposals.status as final_status'];
+            // $initialProposals = proposal::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+            // $initialProposalsHireDevelopers = hire_developer_proposals::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+            $initailFinalHire = DB::table('hire_developer_proposals')
+                ->leftJoin('hire_developer_final_proposals', 'hire_developer_proposals.id', '=', 'hire_developer_final_proposals.proposal_id')
+                ->join('projects', 'projects.id', '=', 'hire_developer_proposals.project_id')
+                ->select($initialFinalHireSelect)
+                ->where('hire_developer_proposals.team_id', '=', $userData['group_id'])
+                ->get();
 
-        $initailFinal = DB::table('proposals')
-            ->leftJoin('final_proposals', 'proposals.id', '=', 'final_proposals.proposal_id')
-            ->join('projects', 'projects.id', '=', 'proposals.project_id')
-            ->select($initialFinalSelect)
-            ->where('proposals.team_id', '=', $userData['group_id'])
-            ->get();
-        $allProposals = $initailFinalHire->merge($initailFinal);
-        $allProjects = $allProposals->sortDesc()->splice($page, $limit);
-        $projectInfo = $this->newGetProjectsInfo($allProjects, $userData['group_id'], $userData['type'])->first();
-        // $projectIds = $allProposals->pluck('project_id')->toArray();
-        // sort($projectIds);
-        // return $projectInfo;
-        $response = Controller::returnResponse(200, "data found", $projectInfo);
-        return (json_encode($response));
-    } catch (\Exception $error) {
-        $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
-        return (json_encode($response));
+            $initailFinal = DB::table('proposals')
+                ->leftJoin('final_proposals', 'proposals.id', '=', 'final_proposals.proposal_id')
+                ->join('projects', 'projects.id', '=', 'proposals.project_id')
+                ->select($initialFinalSelect)
+                ->where('proposals.team_id', '=', $userData['group_id'])
+                ->get();
+            $allProposals = $initailFinalHire->merge($initailFinal);
+            $allProjects = $allProposals->sortDesc()->splice($page, $limit);
+            $projectsCounter = $allProposals->count();
+            $projectInfo = $this->newGetProjectsInfo($allProjects, $userData['group_id'], $userData['type']);
+            // $projectIds = $allProposals->pluck('project_id')->toArray();
+            // sort($projectIds);
+            // return $projectInfo;
+            $returnData = [
+                'allData' => $projectInfo,
+                'count' => $projectsCounter
+            ];
+            $response = Controller::returnResponse(200, "data found", $returnData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
     }
+    function newAgencyActiveProjects(Request $req, $offset = 0, $limit = 4)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $agencyActiveProjectIds = Agency_active_project::select('project_id')->where('group_id', '=', $userData['group_id'])->pluck('project_id')->toArray();
+            // return $agencyActiveProjectIds;
+            $projects = DB::table('projects')
+                ->select('projects.*')
+                ->where(function ($query) use ($userData, $agencyActiveProjectIds) {
+                    $query->where('projects.team_id', '=', $userData['group_id'])
+                        ->orWhereIn('projects.id', $agencyActiveProjectIds);
+                })
+                ->whereIn('projects.status', [1, 4])
+                ->distinct()
+                ->orderBy('updated_at', 'desc')
+                ->offset($page)->limit($limit)
+                ->get();
+            // return $projects;
+            $projectsCounter = DB::table('projects')
+                ->select('projects.*')
+                ->where(function ($query) use ($userData, $agencyActiveProjectIds) {
+                    $query->where('projects.team_id', '=', $userData['group_id'])
+                        ->orWhereIn('projects.id', $agencyActiveProjectIds);
+                })
+                ->whereIn('projects.status', [1, 4])
+                ->count();
+            $projectInfo = $this->newGetProjectsInfo($projects, $userData['group_id'], $userData['type']);
+
+            $returnData = [
+                'allData' => $projectInfo->pluck('id')->toArray(),
+                'count' => $projectsCounter
+            ];
+            $response = Controller::returnResponse(200, "data found", $returnData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function newAgencyPendingProjects(Request $req, $offset = 0, $limit = 4)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $initialFinalHireSelect = ['projects.*', 'hire_developer_proposals.id as proposal_id', 'hire_developer_proposals.status as initial_status', 'hire_developer_final_proposals.id as contract_id', 'hire_developer_final_proposals.status as final_status'];
+            $initialFinalSelect = ['projects.*', 'proposals.id as proposal_id', 'proposals.status as initial_status', 'final_proposals.id as contract_id', 'final_proposals.status as final_status'];
+            $agencyActiveProjectIds = Agency_active_project::select('project_id')->where('group_id', '=', $userData['group_id'])->pluck('project_id')->toArray();
+
+            // $initialProposals = proposal::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+            // $initialProposalsHireDevelopers = hire_developer_proposals::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+            $initailFinalHire = DB::table('hire_developer_proposals')
+                ->leftJoin('hire_developer_final_proposals', 'hire_developer_proposals.id', '=', 'hire_developer_final_proposals.proposal_id')
+                ->join('projects', 'projects.id', '=', 'hire_developer_proposals.project_id')
+                ->select($initialFinalHireSelect)
+                ->where('hire_developer_proposals.team_id', '=', $userData['group_id'])
+                ->whereNotIn('projects.id', $agencyActiveProjectIds)
+                ->get();
+
+            $initailFinal = DB::table('proposals')
+                ->leftJoin('final_proposals', 'proposals.id', '=', 'final_proposals.proposal_id')
+                ->join('projects', 'projects.id', '=', 'proposals.project_id')
+                ->select($initialFinalSelect)
+                ->where('proposals.team_id', '=', $userData['group_id'])
+                ->where('projects.status', '=', 0)
+                ->get();
+            $allProposals = $initailFinalHire->merge($initailFinal);
+            $projectsCounter = $allProposals->count();
+            $allProjects = $allProposals->sortDesc()->splice($page, $limit);
+            $projectInfo = $this->newGetProjectsInfo($allProjects, $userData['group_id'], $userData['type']);
+            // $projectIds = $allProposals->pluck('project_id')->toArray();
+            // sort($projectIds);
+            // return $projectInfo;
+            $returnData = [
+                'allData' => $projectInfo,
+                'count' => $projectsCounter
+            ];
+            $response = Controller::returnResponse(200, "data found", $returnData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 }
