@@ -249,6 +249,10 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('submitContract', [HireDeveloperFinalProposalController::class, 'submitContract']);
     Route::post('getContractWithResources', [HireDeveloperFinalProposalController::class, 'getContractWithResources']);
     Route::post('checkIfValidToSubmit', [ResourcesController::class, 'checkIfValidToSubmit']);
+    Route::get('agencyProjects/{offset}/{limit}', [ProjectController::class, 'getAgencyProjects']);
+    Route::get('activeProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyActiveProjects']);
+    Route::get('pendingProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyPendingProjects']);
+
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
