@@ -12,13 +12,10 @@
     </p>
     <table role="presentation" style="border:0; color:black;  font-size: medium" cellspacing='0' width="100%">
         <tbody>
-       
             <tr>
                 <td>Project Name:</td>
                 <td>{{ $details['project_name'] }}</td>
             </tr>
-            
-            
         </tbody>
     </table>
     <br>
