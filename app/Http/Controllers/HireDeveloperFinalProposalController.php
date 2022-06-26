@@ -359,7 +359,7 @@ class HireDeveloperFinalProposalController extends Controller
         }
         return $returnData;
     }
-    private function getContractsResources($contracts)
+    private function getContractsResources($contracts, $projectId=0)
     {
         $resourcesObj = new ResourcesController;
         $teamControllersObj = new TeamController;
@@ -396,6 +396,7 @@ class HireDeveloperFinalProposalController extends Controller
             $contract->resource_replacement = ($notice_period ? $resource_replacement->name : "unset");
             $contract->trail_period = ($notice_period ? $trail_period->name : "unset");
             $contract->payment_settlement = ($notice_period ? $payment_settlement->name : "unset");
+            $contract->project_id = $projectId;
         }
         return $contracts;
     }
@@ -448,7 +449,7 @@ class HireDeveloperFinalProposalController extends Controller
                 //     }
                 // }
                 // $contract->resources = $resources;
-                $contractsData = $this->getContractsResources($contracts)->first();
+                $contractsData = $this->getContractsResources($contracts, $project->id)->first();
 
                 $response = Controller::returnResponse(200, "successful", $contractsData);
                 return (json_encode($response));
