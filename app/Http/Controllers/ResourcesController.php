@@ -194,4 +194,16 @@ class ResourcesController extends Controller
     function getClientActiveResources(Request $req, $projectId)
     {
     }
+    function checkIfValidToSubmit($resources)
+    {
+        foreach ($resources as $resource) {
+            $validityArray=array($resource['name'],$resource['job_function'],$resource['starting_date'],$resource['rate'],$resource['hours']);
+            if (!in_array("", $validityArray)) {
+               continue;
+            } else {
+                return 0;
+            }
+        }
+        return 1;
+    }
 }
