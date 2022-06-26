@@ -18,6 +18,7 @@ use App\Models\Category;
 use App\Models\Countries;
 use App\Models\Project;
 use App\Models\User;
+use App\Models\Agency_active_project;
 
 class HireDeveloperFinalProposalController extends Controller
 {
@@ -104,6 +105,8 @@ class HireDeveloperFinalProposalController extends Controller
                     'trail_period' => $req->trail_period,
                     'payment_settlement' => $req->payment_settlement,
                     'default_terms' => $req->default_terms,
+                    'additional_terms	' => $req->additional_terms,
+                    'status'=>-1
                 ]);
                 $response = Controller::returnResponse(200, "data updated successfully", []);
                 return (json_encode($response));
@@ -168,19 +171,26 @@ class HireDeveloperFinalProposalController extends Controller
                     return (json_encode($response));
                 }
                 $resourcesObj = new ResourcesController;
+                $clientObj = new ClientController;
+                $projectObj = new ProjectController;
+                hire_developer_final_proposal::where('id', $req->contract_id)->update([
+                    'starting_date' => $req->starting_date, 'notice_period' => $req->notice_period,
+                    'resource_replacement' => $req->resource_replacement, 'trail_period' => $req->trail_period, 'payment_settlement' => $req->payment_settlement,
+                    'default_terms' => $req->default_terms, 'additional_terms	' => $req->additional_terms,
+                ]);
                 $resources = $resourcesObj->getContractResourcesById($req->contract_id);
                 $dates = $resources->pluck('starting_date')->toArray();
-                $contractDate = hire_developer_final_proposal::where('id', $req->contract_id)->select('starting_date')->first()->starting_date;
-                $dateValidation = $this->checkDates($dates, $contractDate);
+                $contractInfo = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id', 'starting_date')->first();
+                $dateValidation = $this->checkDates($dates, $contractInfo->starting_date);
                 if ($dateValidation == 0) {
                     $response = Controller::returnResponse(422, "one of the resources starting date starts before the contract starts", []);
                     return (json_encode($response));
                 }
-                $contract = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id')->first();
-                $project_id = hire_developer_proposals::where('id', $contract->proposal_id)->select('project_id')->first()->project_id;
-                $clientObj = new ClientController;
-                $projectObj = new ProjectController;
-                $companyAdmin = json_decode($clientObj->get_client_info($contract->user_id))->data;
+               
+                $project_id = hire_developer_proposals::where('id', $contractInfo->proposal_id)->select('project_id')->first()->project_id;
+                Project::where('id',$project_id)->update(['status'=>1]);
+                Agency_active_project::create(['group_id'=>$contractInfo->team_id,'project_id'=>$project_id]);
+                $companyAdmin = json_decode($clientObj->get_client_info($contractInfo->user_id))->data;
                 $adminName = $companyAdmin->first_name . ' ' . $companyAdmin->last_name;
                 $project_info = json_decode($projectObj->getProject($project_id))->data;
                 $details = [
@@ -359,7 +369,7 @@ class HireDeveloperFinalProposalController extends Controller
         }
         return $returnData;
     }
-    private function getContractsResources($contracts, $projectId=0)
+    private function getContractsResources($contracts, $projectId = 0)
     {
         $resourcesObj = new ResourcesController;
         $teamControllersObj = new TeamController;
