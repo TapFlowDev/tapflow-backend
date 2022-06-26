@@ -106,7 +106,7 @@ class HireDeveloperFinalProposalController extends Controller
                     'trail_period' => $req->trail_period,
                     'payment_settlement' => $req->payment_settlement,
                     'default_terms' => $req->default_terms,
-                    'additional_terms	' => $req->additional_terms,
+                    'additional_terms' => $req->additional_terms,
                     'status'=>-1
                 ]);
                 $response = Controller::returnResponse(200, "data updated successfully", []);
