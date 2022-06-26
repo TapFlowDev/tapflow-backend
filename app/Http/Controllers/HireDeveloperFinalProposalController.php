@@ -89,7 +89,8 @@ class HireDeveloperFinalProposalController extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-
+            $response = Controller::returnResponse(422, "testing ", $req->all());
+                return (json_encode($response));
             if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1 && $userData['verified'] == 1)) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
