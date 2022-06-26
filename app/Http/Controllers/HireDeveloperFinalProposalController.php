@@ -89,8 +89,7 @@ class HireDeveloperFinalProposalController extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-            $response = Controller::returnResponse(422, "testing ", $req->all());
-                return (json_encode($response));
+          
             if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1 && $userData['verified'] == 1)) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
@@ -159,7 +158,7 @@ class HireDeveloperFinalProposalController extends Controller
             } else {
                 $rules = array(
                     "contract_id" => "required",
-                    'starting_date' => "required",
+                    'starting_date' => "required|date_format:Y-m-d",
                     'notice_period' => "required",
                     'resource_replacement' => "required",
                     'trail_period' => "required",
