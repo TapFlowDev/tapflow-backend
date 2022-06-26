@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -88,7 +89,7 @@ class HireDeveloperFinalProposalController extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
-
+          
             if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1 && $userData['verified'] == 1)) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
@@ -105,7 +106,7 @@ class HireDeveloperFinalProposalController extends Controller
                     'trail_period' => $req->trail_period,
                     'payment_settlement' => $req->payment_settlement,
                     'default_terms' => $req->default_terms,
-                    'additional_terms	' => $req->additional_terms,
+                    'additional_terms' => $req->additional_terms,
                     'status'=>-1
                 ]);
                 $response = Controller::returnResponse(200, "data updated successfully", []);
@@ -157,7 +158,7 @@ class HireDeveloperFinalProposalController extends Controller
             } else {
                 $rules = array(
                     "contract_id" => "required",
-                    'starting_date' => "required",
+                    'starting_date' => "required|date_format:Y-m-d",
                     'notice_period' => "required",
                     'resource_replacement' => "required",
                     'trail_period' => "required",
@@ -173,12 +174,15 @@ class HireDeveloperFinalProposalController extends Controller
                 $resourcesObj = new ResourcesController;
                 $clientObj = new ClientController;
                 $projectObj = new ProjectController;
-                hire_developer_final_proposal::where('id', $req->contract_id)->update([
-                    'starting_date' => $req->starting_date, 'notice_period' => $req->notice_period,
-                    'resource_replacement' => $req->resource_replacement, 'trail_period' => $req->trail_period, 'payment_settlement' => $req->payment_settlement,
-                    'default_terms' => $req->default_terms, 'additional_terms	' => $req->additional_terms,
-                ]);
+                $groupObj = new GroupController;
+                
                 $resources = $resourcesObj->getContractResourcesById($req->contract_id);
+                $submitValidity=$resourcesObj->checkIfValidToSubmit($resources);
+                if($submitValidity == 0)
+                {
+                    $response = Controller::returnResponse(422, "one of your resources information does not completed ", []);
+                    return (json_encode($response));
+                }
                 $dates = $resources->pluck('starting_date')->toArray();
                 $contractInfo = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id', 'starting_date')->first();
                 $dateValidation = $this->checkDates($dates, $contractInfo->starting_date);
@@ -186,10 +190,16 @@ class HireDeveloperFinalProposalController extends Controller
                     $response = Controller::returnResponse(422, "one of the resources starting date starts before the contract starts", []);
                     return (json_encode($response));
                 }
+                hire_developer_final_proposal::where('id', $req->contract_id)->update([
+                    'starting_date' => $req->starting_date, 'notice_period' => $req->notice_period,
+                    'resource_replacement' => $req->resource_replacement, 'trail_period' => $req->trail_period, 'payment_settlement' => $req->payment_settlement,
+                    'default_terms' => $req->default_terms, 'additional_terms' => $req->additional_terms,'status'=>0
+                ]);
                
                 $project_id = hire_developer_proposals::where('id', $contractInfo->proposal_id)->select('project_id')->first()->project_id;
                 Project::where('id',$project_id)->update(['status'=>1]);
                 Agency_active_project::create(['group_id'=>$contractInfo->team_id,'project_id'=>$project_id]);
+                $agencyName=$groupObj->getGroupById($contractInfo->team_id)->name;
                 $companyAdmin = json_decode($clientObj->get_client_info($contractInfo->user_id))->data;
                 $adminName = $companyAdmin->first_name . ' ' . $companyAdmin->last_name;
                 $project_info = json_decode($projectObj->getProject($project_id))->data;
@@ -198,8 +208,9 @@ class HireDeveloperFinalProposalController extends Controller
                     "name" => $adminName,
                     "project_id" =>  $project_info->id,
                     "project_name" =>  $project_info->name,
+                    "agency_name" =>  $agencyName,
                 ];
-                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
+                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new SubmitHireDeveloper($details));
                 // Mail::mailer('smtp2')->to($companyAdmin->email)->send(new HireDeveloperActions($details));
                 $response = Controller::returnResponse(200, "contract submitted successfully", []);
                 return (json_encode($response));

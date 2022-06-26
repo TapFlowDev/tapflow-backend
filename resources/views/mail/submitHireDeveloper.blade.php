@@ -3,24 +3,18 @@
 <body style="font-family: Helvetica,Arial,sans-serif;">
     <h1 style="color: black; font-weight: bold;">Hey {{ $details['name'] }}</h1>
     <p style="color: black;">
-        The {{$details['agency_name']}} have finished and submitted the final proposal.
+        The {{$details['agency_name']}} have finished and submitted the Contract.
         <br>
         <br>
     </p>
     <p style="color: black; font-weight: bold;">
-        Contract Details:
+        Hire Developers:
     </p>
     <table role="presentation" style="border:0; color:black;  font-size: medium" cellspacing='0' width="100%">
         <tbody>
             <tr>
                 <td>Project Name:</td>
                 <td>{{ $details['project_name'] }}</td>
-            </tr>
-            <tr>
-                <td>Contract Description:</td>
-            </tr>
-            <tr>
-                <td colspan="2">{{ $details['Proposal_description'] }}</td>
             </tr>
         </tbody>
     </table>
