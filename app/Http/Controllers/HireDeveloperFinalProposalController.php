@@ -14,6 +14,10 @@ use App\Mail\HireDeveloperActions;
 use App\Models\proposal;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SubmitHireDeveloper;
+use App\Models\Category;
+use App\Models\Countries;
+use App\Models\Project;
+use App\Models\User;
 
 class HireDeveloperFinalProposalController extends Controller
 {
@@ -180,7 +184,7 @@ class HireDeveloperFinalProposalController extends Controller
                 $adminName = $companyAdmin->first_name . ' ' . $companyAdmin->last_name;
                 $project_info = json_decode($projectObj->getProject($project_id))->data;
                 $details = [
-                    "subject" => 'Contract Submitted ' ,
+                    "subject" => 'Contract Submitted ',
                     "name" => $adminName,
                     "project_id" =>  $project_info->id,
                     "project_name" =>  $project_info->name,
@@ -254,6 +258,7 @@ class HireDeveloperFinalProposalController extends Controller
             } else {
                 $projectObj = new ProjectController;
                 hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 2]);
+
                 $contract = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id')->first();
                 $project_id = hire_developer_proposals::where('id', $contract->proposal_id)->select('project_id')->first()->project_id;
                 $freelancerObj = new FreeLancerController;
@@ -328,6 +333,125 @@ class HireDeveloperFinalProposalController extends Controller
                 }
                 $contract->resources = $resources;
                 $response = Controller::returnResponse(200, "successful", $contract);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getContractData($proposalIds, $teamId = 0)
+    {
+        // $conditionArray[] = ['status', '=', 1];
+        if ($teamId > 0) {
+            $conditionArray[] = ['team_id', '=', $teamId];
+            $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where($conditionArray)->select('*')->get();
+            $contractsData = $this->getContractsResources($contracts)->first();
+            $returnData = ($contractsData ? $contractsData : []);
+        } else {
+            $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->select('*')->get();
+            $contractsCount = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->select('*')->count();
+            $contractsData = $this->getContractsResources($contracts);
+            $returnData = [
+                'allData' => $contractsData,
+                'count' => $contractsCount
+            ];
+        }
+        return $returnData;
+    }
+    private function getContractsResources($contracts, $projectId=0)
+    {
+        $resourcesObj = new ResourcesController;
+        $teamControllersObj = new TeamController;
+        foreach ($contracts as &$contract) {
+            $resources = $resourcesObj->getContractResourcesById($contract->id);
+            foreach ($resources as $resource) {
+                if ($resource->image != '') {
+                    $image = asset('images/users/' . $resource->image);
+                    $resource->image = $image;
+                } else {
+                    $resource->image = asset('images/profile-pic.jpg');
+                }
+                if ($resource->end_date === null) {
+
+                    $resource->end_date = 'Open';
+                }
+            }
+            $contract->resources = $resources;
+            $teamInfo = $teamControllersObj->get_team_info($contract->team_id);
+            $userInfo = User::find($contract->user_id);
+            $teamCountry = Countries::find($teamInfo->country);
+            $teamArr = array(
+                'teamName' => $teamInfo->name,
+                'teamAdminName' => $userInfo->name,
+                'teamCountry' => ($teamCountry ? $teamCountry->name : "unset"),
+                'teamFlag' => ($teamCountry ? $teamCountry->flag : ""),
+            );
+            $contract->teamInfo = $teamArr;
+            $notice_period = Category::find((int)$contract->notice_period);
+            $resource_replacement = Category::find((int)$contract->resource_replacement);
+            $trail_period = Category::find((int)$contract->trail_period);
+            $payment_settlement = Category::find((int)$contract->payment_settlement);
+            $contract->notice_period = ($notice_period ? $notice_period->name : "unset");
+            $contract->resource_replacement = ($notice_period ? $resource_replacement->name : "unset");
+            $contract->trail_period = ($notice_period ? $trail_period->name : "unset");
+            $contract->payment_settlement = ($notice_period ? $payment_settlement->name : "unset");
+            $contract->project_id = $projectId;
+        }
+        return $contracts;
+    }
+    function checkIfExists($proposal_id, $team_id)
+    {
+        $final_proposal = hire_developer_final_proposal::select('id', 'type', 'status')
+            ->where('team_id', '=', $team_id)
+            ->where('proposal_id', '=', $proposal_id)
+            ->first();
+        if ($final_proposal == null) {
+            return ['exist' => 0, 'status' => 0];
+        } else {
+            return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' => (int)$final_proposal->type, 'status' => $final_proposal->status];
+        }
+    }
+    function getContractWithResourcesClient(Request $req, $contractId)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1)) {
+                $response = Controller::returnResponse(401, "unauthorized", []);
+                return (json_encode($response));
+            } else {
+                $contracts = hire_developer_final_proposal::where('id', $contractId)->select('*')->get();
+                $contract = $contracts->first();
+                $proposal = hire_developer_proposals::select('*')->where('id', '=', $contract->proposal_id)->first();
+                if (!$proposal) {
+                    $response = Controller::returnResponse(401, "unauthorized 1", []);
+                    return (json_encode($response));
+                }
+                $project = Project::where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
+                // dd($proposal);
+                if (!$project) {
+                    $response = Controller::returnResponse(401, "unauthorized 2", []);
+                    return (json_encode($response));
+                }
+                // $resourcesObj = new ResourcesController;
+                // $resources = $resourcesObj->getContractResourcesById($contractId);
+                // foreach ($resources as $resource) {
+                //     if ($resource->image != '') {
+                //         $image = asset('images/users/' . $resource->image);
+                //         $resource->image = $image;
+                //     } else {
+                //         $resource->image = asset('images/profile-pic.jpg');
+                //     }
+                //     if ($resource->end_date === null) {
+
+                //         $resource->end_date = 'Open';
+                //     }
+                // }
+                // $contract->resources = $resources;
+                $contractsData = $this->getContractsResources($contracts, $project->id)->first();
+
+                $response = Controller::returnResponse(200, "successful", $contractsData);
                 return (json_encode($response));
             }
         } catch (Exception $error) {
