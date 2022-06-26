@@ -25,6 +25,7 @@ use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
+use App\Models\hire_developer_proposals;
 use App\Models\Milestone;
 use App\Models\Team;
 use App\Models\User;
@@ -1274,7 +1275,7 @@ class ProjectController extends Controller
                     $project->proposal_status = $proposal_status;
                     $finalStatus = 0;
                     $finalExists = 0;
-                    if(isset($initProp['proposal_id'])){                        
+                    if (isset($initProp['proposal_id'])) {
                         $finalProp = $hireDeveloperFinalProposalsObj->checkIfExists($initProp['proposal_id'], $groupId);
                         $finalStatus = $finalProp['status'];
                         $finalExists = $finalProp['exist'];
@@ -1460,5 +1461,33 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
+    }
+    function getAgencyProjects(Request $req, $offset = 0, $limit = 4)
+    {
+        $userData = $this->checkUser($req);
+        $page = ($offset - 1) * $limit;
+        $initialFinalHireSelect = ['projects.*', 'hire_developer_proposals.id as proposal_id', 'hire_developer_proposals.status as initial_status', 'hire_developer_final_proposals.id as contract_id', 'hire_developer_final_proposals.status as final_status'];
+        $initialFinalSelect = ['projects.*', 'proposals.id as proposal_id', 'proposals.status as initial_status', 'final_proposals.id as contract_id', 'final_proposals.status as final_status'];
+        // $initialProposals = proposal::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+        // $initialProposalsHireDevelopers = hire_developer_proposals::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+        $initailFinalHire = DB::table('hire_developer_proposals')
+            ->leftJoin('hire_developer_final_proposals', 'hire_developer_proposals.id', '=', 'hire_developer_final_proposals.proposal_id')
+            ->join('projects', 'projects.id', '=', 'hire_developer_proposals.project_id')
+            ->select($initialFinalHireSelect)
+            ->where('hire_developer_proposals.team_id', '=', $userData['group_id'])
+            ->get();
+
+        $initailFinal = DB::table('proposals')
+            ->leftJoin('final_proposals', 'proposals.id', '=', 'final_proposals.proposal_id')
+            ->join('projects', 'projects.id', '=', 'proposals.project_id')
+            ->select($initialFinalSelect)
+            ->where('proposals.team_id', '=', $userData['group_id'])
+            ->get();
+        $allProposals = $initailFinalHire->merge($initailFinal);
+        $allProjects = $allProposals->sortDesc()->splice($page, $limit);
+        $projectInfo = $this->newGetProjectsInfo($allProjects, $userData['group_id'], $userData['type'])->first();
+        // $projectIds = $allProposals->pluck('project_id')->toArray();
+        // sort($projectIds);
+        return $projectInfo;
     }
 }
