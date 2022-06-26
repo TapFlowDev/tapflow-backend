@@ -217,7 +217,7 @@ class HireDeveloperFinalProposalController extends Controller
                 return (json_encode($response));
             } else {
                 $projectObj = new ProjectController;
-                // hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 1]);
+                hire_developer_proposals::where('id', $req->contract_id)->update(['status' => 1]);
                 $contract = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id')->first();
                 $project_id = hire_developer_proposals::where('id', $contract->proposal_id)->select('project_id')->first()->project_id;
                 $freelancerObj = new FreeLancerController;
