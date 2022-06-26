@@ -324,25 +324,28 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             }
-            $finalProposal = $finalProposalObj->getProposalById($id);
-            $milestones =  Milestone::where('final_proposal_id', $id)
-                ->get()
-                ->makeHidden(['created_at', 'updated_at']);
-            $milestones_details = [];
-            foreach ($milestones as $milestone) {
-                array_push($milestones_details, array(
-                    "milestone_id" => $milestone->id,
-                    "milestone_name" => $milestone->name,
-                    "milestone_description" => $milestone->description,
-                    "milestone_price" => $milestone->price,
-                    "milestone_num_hours" => $milestone->hours,
-                    "milestone_hourly_rate" => $milestone->hourly_rate,
-                    "milestone_down_payment" => $milestone->down_payment,
-                    "deliverables" => unserialize($milestone->deliverables),
-                    "isValid" => $milestone->is_valid
-                ));
+            $projectCondtions[] = ['id', '=', $id];
+            if ($userData['type'] == 1) {
+                $projectCondtions[] = ['team_id', '=', $userData['group_id']];
+            } elseif ($userData['type'] == 2) {
+                $projectCondtions[] = ['company_id', '=', $userData['group_id']];
+            } else {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
             }
-            $response = Controller::returnResponse(200, "successful", $milestones_details);
+            $project = Project::where($projectCondtions)->first();
+            if (!$project) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if($project->team_id < 1){
+                $response = Controller::returnResponse(422, "project not active", []);
+                return (json_encode($response));
+            }
+            $finalProposalControllersObj = new Final_proposals;
+            $final_proposal = $finalProposalControllersObj->getAcceptedFinalProposalDetailsByProjectIdAgencyId($project->id, $project->team_id);
+            $milestones = $final_proposal->milestones;
+            $response = Controller::returnResponse(200, "successful", $milestones);
             return (json_encode($response));
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
