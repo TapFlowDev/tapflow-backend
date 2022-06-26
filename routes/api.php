@@ -194,6 +194,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getInitailProposalsProjectId']);
     Route::get('getFinalProposals/{id}', [ProjectController::class, 'getFinalProposalsProjectId']);
     Route::get('getFinalProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getFinalProposalsProjectId']);
+    Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
 
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
@@ -227,7 +228,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('updateMilestone', [Milestones::class, 'updateMilestone']);
     Route::post('addMilestone', [Milestones::class, 'Insert']);
     Route::post('deleteMilestone', [Milestones::class, 'deleteMilestone']);
-    Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
+    // Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
     Route::post('addSubmissionLinks', [Milestones::class, 'addSubmissionLinks']);
     Route::post('addBillingInfo', [BillingInfoController::class, 'Insert']);
     Route::post('updateBillingInfo/{id}', [BillingInfoController::class, 'Update']);
