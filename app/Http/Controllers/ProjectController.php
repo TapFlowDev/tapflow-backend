@@ -1464,6 +1464,7 @@ class ProjectController extends Controller
     }
     function getAgencyProjects(Request $req, $offset = 0, $limit = 4)
     {
+        try {
         $userData = $this->checkUser($req);
         $page = ($offset - 1) * $limit;
         $initialFinalHireSelect = ['projects.*', 'hire_developer_proposals.id as proposal_id', 'hire_developer_proposals.status as initial_status', 'hire_developer_final_proposals.id as contract_id', 'hire_developer_final_proposals.status as final_status'];
@@ -1488,6 +1489,12 @@ class ProjectController extends Controller
         $projectInfo = $this->newGetProjectsInfo($allProjects, $userData['group_id'], $userData['type'])->first();
         // $projectIds = $allProposals->pluck('project_id')->toArray();
         // sort($projectIds);
-        return $projectInfo;
+        // return $projectInfo;
+        $response = Controller::returnResponse(200, "data found", $projectInfo);
+        return (json_encode($response));
+    } catch (\Exception $error) {
+        $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+        return (json_encode($response));
+    }
     }
 }
