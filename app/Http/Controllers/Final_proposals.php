@@ -991,4 +991,27 @@ class Final_proposals extends Controller
         }
         return $finalProposals;
     }
+    function getAcceptedFinalProposalDetailsByProjectIdAgencyId($project_id, $agencyId)
+    {
+        $milestone = new Milestones;
+        $final_proposal = Final_proposal::where('project_id', $project_id)->where('team_id', '=', $agencyId)
+            ->select(
+                'id',
+                'title',
+                'user_id',
+                'proposal_id',
+                'project_id',
+                'team_id',
+                'hours',
+                'price',
+                'starting_date',
+                'type',
+                'status',
+                'created_at'
+            )->first();
+
+        $milestones = $milestone->getMilestoneByProposalId($final_proposal->id);
+        $final_proposal->milestones = $milestones;
+        return ($final_proposal);
+    }
 }
