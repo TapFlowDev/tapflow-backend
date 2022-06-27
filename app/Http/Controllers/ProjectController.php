@@ -1537,7 +1537,7 @@ class ProjectController extends Controller
             $projectInfo = $this->newGetProjectsInfo($projects, $userData['group_id'], $userData['type']);
 
             $returnData = [
-                'allData' => $projectInfo->pluck('id')->toArray(),
+                'allData' => $projectInfo,
                 'count' => $projectsCounter
             ];
             $response = Controller::returnResponse(200, "data found", $returnData);
