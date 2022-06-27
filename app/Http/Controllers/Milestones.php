@@ -325,14 +325,9 @@ class Milestones extends Controller
                 return (json_encode($response));
             }
             $projectCondtions[] = ['id', '=', $id];
-            if ($userData['type'] == 1) {
-                $projectCondtions[] = ['team_id', '=', $userData['group_id']];
-            } elseif ($userData['type'] == 2) {
+            if ($userData['type'] == 2) {
                 $projectCondtions[] = ['company_id', '=', $userData['group_id']];
-            } else {
-                $response = Controller::returnResponse(401, "unauthorized user", []);
-                return (json_encode($response));
-            }
+            } 
             $project = Project::where($projectCondtions)->first();
             if (!$project) {
                 $response = Controller::returnResponse(401, "unauthorized user", []);
