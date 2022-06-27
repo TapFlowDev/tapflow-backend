@@ -194,7 +194,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getInitailProposalsProjectId']);
     Route::get('getFinalProposals/{id}', [ProjectController::class, 'getFinalProposalsProjectId']);
     Route::get('getFinalProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getFinalProposalsProjectId']);
-    Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
 
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
@@ -252,6 +251,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyProjects/{offset}/{limit}', [ProjectController::class, 'getAgencyProjects']);
     Route::get('activeProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyActiveProjects']);
     Route::get('pendingProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyPendingProjects']);
+    Route::get('milestonesByProposalId/{id}', [Milestones::class, 'getMilestoneByProposalId']);
 
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
@@ -294,4 +294,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('reviewContract', [HireDeveloperFinalProposalController::class, 'reviewContract']);
     Route::post('acceptContract', [HireDeveloperFinalProposalController::class, 'acceptContract']);
     Route::get('getContractDetails/{contractId}', [HireDeveloperFinalProposalController::class, 'getContractWithResourcesClient']);
+    Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
+
 });
