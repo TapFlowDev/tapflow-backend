@@ -41,14 +41,14 @@ class ResourcesController extends Controller
                     $response = Controller::returnResponse(401, "unauthorized", []);
                     return (json_encode($response));
                 }
-                resources::create($req->all());
+               $resource= resources::create($req->all());
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
                     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
                     $img = $req->image;
 
                     $img->move(public_path($destPath), $imageName);
-                    $this->updateFiles($req->resource_id, $imageName, 'image');
+                    $this->updateFiles( $resource->id, $imageName, 'image');
                 }
                 $response = Controller::returnResponse(200, "success", []);
                 return (json_encode($response));
