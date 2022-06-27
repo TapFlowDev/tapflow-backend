@@ -198,8 +198,7 @@ class HireDeveloperFinalProposalController extends Controller
                 ]);
                
                 $project_id = hire_developer_proposals::where('id', $contractInfo->proposal_id)->select('project_id')->first()->project_id;
-                Project::where('id',$project_id)->update(['status'=>1]);
-                Agency_active_project::create(['group_id'=>$contractInfo->team_id,'project_id'=>$project_id]);
+      
                 $agencyName=$groupObj->getGroupById($contractInfo->team_id)->name;
                 $companyAdmin = json_decode($clientObj->get_client_info($contractInfo->user_id))->data;
                 $adminName = $companyAdmin->first_name . ' ' . $companyAdmin->last_name;
@@ -246,6 +245,8 @@ class HireDeveloperFinalProposalController extends Controller
                 hire_developer_final_proposal::where('id', $req->contract_id)->update(['status' => 1]);
                 $contract = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id')->first();
                 $project_id = hire_developer_proposals::where('id', $contract->proposal_id)->select('project_id')->first()->project_id;
+                Project::where('id',$project_id)->update(['status'=>1]);
+                Agency_active_project::create(['group_id'=>$contract->team_id,'project_id'=>$project_id]);
                 $freelancerObj = new FreeLancerController;
                 $agencyAdmin = json_decode($freelancerObj->get_freelancer_info($contract->user_id))->data;
                 $adminName = $agencyAdmin->first_name . ' ' . $agencyAdmin->last_name;
