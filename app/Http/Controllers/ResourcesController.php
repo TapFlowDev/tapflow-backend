@@ -231,7 +231,7 @@ class ResourcesController extends Controller
                 // }
                 $proposalsIds = hire_developer_proposals::where('project_id', $req->project_id)->select('*')->pluck('id')->toArray();
                 $contracts = DB::table('hire_developer_final_proposals')
-                    ->select('contract_id')
+                    ->select('id')
                     ->whereIn('proposal_id', $proposalsIds)
                     ->where('status', 1)
                     ->get();
