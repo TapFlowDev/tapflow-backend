@@ -212,7 +212,7 @@ class HireDeveloperProposalsController extends Controller
             ['project_id', '=', $projectId]
         ];
         $proposalsIds = hire_developer_proposals::select('id')->where($conditionArray)->pluck('id')->toArray();
-        $proposalCount = hire_developer_final_proposal::whereIn('proposal_id', $proposalsIds)->count();
+        $proposalCount = hire_developer_final_proposal::whereIn('proposal_id', $proposalsIds)->where('status', '>', -1)->count();
         return $proposalCount;
     }
     function getHiresCountByProjectId($projectId)
