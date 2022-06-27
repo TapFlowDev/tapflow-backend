@@ -1011,8 +1011,7 @@ class Milestones extends Controller
                 return (json_encode($response));
             }
             $final_proposal = Final_proposal::where('id', $id)->where('team_id', '=', $userData['group_id'])
-                ->first()
-                ->makeHidden(['created_at', 'updated_at']);
+                ->first();
             if(!$final_proposal){
                 $response = Controller::returnResponse(422, "final proposal not found", []);
                 return (json_encode($response));  
