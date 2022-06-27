@@ -91,7 +91,9 @@ class ResourcesController extends Controller
                     return (json_encode($response));
                 }
 
-
+                if(!$req->end_date){
+                    $req->end_date =NULL;
+                }
                 resources::where('id', $req->resource_id)->update([
                     'name' => $req->name,
                     'job_function' => $req->job_function,
