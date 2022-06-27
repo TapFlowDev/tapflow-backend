@@ -38,15 +38,13 @@ class ResourcesController extends Controller
                 $response = Controller::returnResponse(101, "Validation Error", $responseData);
                 return (json_encode($response));
             } else {
-                $response = Controller::returnResponse(200, "success", $req->all());
-                return (json_encode($response));
                 $team_id = hire_developer_final_proposal::where('id', $req->contract_id)->select('team_id')->first()->team_id;
                 if ($team_id != $userData['group_id']) {
                     $response = Controller::returnResponse(401, "unauthorized", []);
                     return (json_encode($response));
                 }
                 if(str_contains($req->end_date, 'N')){
-                    $req->end_date =NULL;
+                    $req->end_date = NULL;
                 }
                 $resource = resources::create($req->all());
                 if ($req->hasFile('image')) {
