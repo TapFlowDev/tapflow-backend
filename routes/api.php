@@ -227,7 +227,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('updateMilestone', [Milestones::class, 'updateMilestone']);
     Route::post('addMilestone', [Milestones::class, 'Insert']);
     Route::post('deleteMilestone', [Milestones::class, 'deleteMilestone']);
-    Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
+    // Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
     Route::post('addSubmissionLinks', [Milestones::class, 'addSubmissionLinks']);
     Route::post('addBillingInfo', [BillingInfoController::class, 'Insert']);
     Route::post('updateBillingInfo/{id}', [BillingInfoController::class, 'Update']);
@@ -248,6 +248,11 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('submitContract', [HireDeveloperFinalProposalController::class, 'submitContract']);
     Route::post('getContractWithResources', [HireDeveloperFinalProposalController::class, 'getContractWithResources']);
     Route::post('checkIfValidToSubmit', [ResourcesController::class, 'checkIfValidToSubmit']);
+    Route::get('agencyProjects/{offset}/{limit}', [ProjectController::class, 'getAgencyProjects']);
+    Route::get('activeProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyActiveProjects']);
+    Route::get('pendingProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyPendingProjects']);
+    Route::get('milestonesByProposalId/{id}', [Milestones::class, 'getMilestonesAgency']);
+
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
@@ -290,5 +295,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('acceptContract', [HireDeveloperFinalProposalController::class, 'acceptContract']);
     Route::get('getContractDetails/{contractId}', [HireDeveloperFinalProposalController::class, 'getContractWithResourcesClient']);
     Route::post('getHires', [ResourcesController::class, 'getHires']);
-
+    Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
 });
