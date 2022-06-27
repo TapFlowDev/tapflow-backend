@@ -224,7 +224,7 @@ class ResourcesController extends Controller
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
-                $company_id = Project::where('id', $req->project_id)->select('company+_id')->first()->company_id;
+                $company_id = Project::where('id', $req->project_id)->select('company_id')->first()->company_id;
                 if ($company_id != $userData['group_id']); {
                     $response = Controller::returnResponse(401, "unauthorized", []);
                     return (json_encode($response));
@@ -245,7 +245,7 @@ class ResourcesController extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(200, "successful", $error->getMessage());
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return (json_encode($response));
         }
     }
