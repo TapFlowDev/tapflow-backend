@@ -45,7 +45,10 @@ class ResourcesController extends Controller
                 }
                 if(str_contains($req->end_date, 'N')){
                     $req->end_date = NULL;
+                    $req->hi=2;
                 }
+                $response = Controller::returnResponse(101, "Validation Error", $req->all());
+                return (json_encode($response));
                 $resource = resources::create($req->all());
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
