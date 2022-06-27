@@ -43,6 +43,9 @@ class ResourcesController extends Controller
                     $response = Controller::returnResponse(401, "unauthorized", []);
                     return (json_encode($response));
                 }
+                if(str_contains($req->end_date, 'N')){
+                    $req->end_date =NULL;
+                }
                 $resource = resources::create($req->all());
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
