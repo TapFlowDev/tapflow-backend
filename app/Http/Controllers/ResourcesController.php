@@ -75,7 +75,7 @@ class ResourcesController extends Controller
                     "name" => "required",
                     "starting_date" => "required",
                     "hours" => "required|numeric",
-                    "end_date" => "required|date|date_format:Y-m-d",
+                    // "end_date" => "required|date|date_format:Y-m-d",
                     "rate" => "required|numeric",
                 );
                 $validators = Validator::make($req->all(), $rules);
