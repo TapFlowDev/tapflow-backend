@@ -1406,7 +1406,7 @@ class ProjectController extends Controller
     {
         try {
             $userData = $this->checkUser($req);
-            $project = Project::where('company_id', $userData['group_id'])->get();
+            $project = Project::where('company_id', $userData['group_id'])->latest()->get();
             $projectInfo = $this->newGetProjectsInfo($project, $userData['group_id'], $userData['type']);
             $response = Controller::returnResponse(200, "data found", $projectInfo);
             return (json_encode($response));

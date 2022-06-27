@@ -311,7 +311,7 @@ class HireDeveloperProposalsController extends Controller
     function getAcceptedProposalByProjectId($projectId, $agencyId = 0)
     {
         $conditionArray[] = ['project_id', '=', $projectId];
-        $conditionArray[] = ['status', '=', 1];
+        $conditionArray[] = ['status', '>', -1];
         if ($agencyId > 0) {
             $conditionArray[] = ['team_id', '=', $agencyId];
         }
