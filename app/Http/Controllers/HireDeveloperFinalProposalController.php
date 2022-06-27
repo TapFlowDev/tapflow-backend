@@ -132,6 +132,8 @@ class HireDeveloperFinalProposalController extends Controller
                     $response = Controller::returnResponse(401, "unauthorized", []);
                     return (json_encode($response));
                 }
+                $proposal = hire_developer_proposals::select('project_id')->where('id', '=', $contract->proposal_id)->first();
+                $contract->project_id = $proposal->project_id;
                 $response = Controller::returnResponse(200, "successful", $contract);
                 return (json_encode($response));
             }
