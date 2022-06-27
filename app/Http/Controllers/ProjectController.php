@@ -1284,8 +1284,8 @@ class ProjectController extends Controller
                     $project->final_proposal_status =  $finalStatus;
                     $project->final_proposal_exist =  $finalExists;
                     
-                    $project->proposal_id = (isset($initProp['proposal_id']) ? $initProp['proposal_id'] : 0);
-                    $project->final_proposal_id = (isset($finalProp['final_proposal_id']) ? $finalProp['final_proposal_id'] : 0);
+                    $project->proposal_id = (isset($initProp['proposal_id']) ? $initProp['proposal_id'] : null);
+                    $project->final_proposal_id = (isset($finalProp['final_proposal_id']) ? $finalProp['final_proposal_id'] : null);
                     $progressArray = array(
                         "apply" => $initProp['exist'],
                         "discuss" => 0,
@@ -1322,8 +1322,8 @@ class ProjectController extends Controller
                     // }
                     $project->final_proposal_status =  $finalStatus;
                     $project->proposal_status =   $proposal_status;
-                    $project->proposal_id = (isset($initProp['proposal_id']) ? $initProp['proposal_id'] : 0);
-                    $project->final_proposal_id = (isset($finalProp['final_proposal_id']) ? $finalProp['final_proposal_id'] : 0);
+                    $project->proposal_id = (isset($initProp['proposal_id']) ? $initProp['proposal_id'] : null);
+                    $project->final_proposal_id = (isset($finalProp['final_proposal_id']) ? $finalProp['final_proposal_id'] : null);
                     $progressArray = array(
                         "apply" => $initProp['exist'],
                         "discuss" => 0,
