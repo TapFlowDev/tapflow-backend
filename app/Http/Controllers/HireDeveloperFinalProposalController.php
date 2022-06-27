@@ -428,7 +428,7 @@ class HireDeveloperFinalProposalController extends Controller
             ->where('proposal_id', '=', $proposal_id)
             ->first();
         if ($final_proposal == null) {
-            return ['exist' => 0, 'status' => 0];
+            return ['exist' => 0, 'status' => null];
         } else {
             return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' => (int)$final_proposal->type, 'status' => $final_proposal->status];
         }
