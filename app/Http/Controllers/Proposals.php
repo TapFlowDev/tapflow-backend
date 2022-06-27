@@ -77,6 +77,7 @@ class Proposals extends Controller
                         $details = [
                             'subject' => 'Initial Proposal ' . $projectData->name,
                             'project_name' => $projectData->name,
+                            'project_type' => $projectData->type,
                             'project_id' => $projectData->id,
                             'team_info' => $teamInfo,
                             'admin_name' => $companyAdminData->first_name,
@@ -332,12 +333,13 @@ class Proposals extends Controller
         $details = array(
             'subject' => $subject,
             'projectName' => $project->name,
+            'projectType' => $project->type,
             'clientEmail' => $clinet->email,
             'status' => $status,
         );
-        return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
+        //return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
         // dd($details);
-        //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
+        return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
     function getProposalsByProjectId($projectId, $teamId = 0, $page = 1, $limit = 4)
     {
