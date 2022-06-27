@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\resources;
 use App\Models\hire_developer_final_proposal;
 use Exception;
-
+use App\Models\hire_developer_proposals;
+use Illuminate\Support\Facades\DB;
+use App\Models\Project;
 
 
 class ResourcesController extends Controller
@@ -41,14 +43,14 @@ class ResourcesController extends Controller
                     $response = Controller::returnResponse(401, "unauthorized", []);
                     return (json_encode($response));
                 }
-               $resource= resources::create($req->all());
+                $resource = resources::create($req->all());
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
                     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
                     $img = $req->image;
 
                     $img->move(public_path($destPath), $imageName);
-                    $this->updateFiles( $resource->id, $imageName, 'image');
+                    $this->updateFiles($resource->id, $imageName, 'image');
                 }
                 $response = Controller::returnResponse(200, "success", []);
                 return (json_encode($response));
@@ -205,13 +207,46 @@ class ResourcesController extends Controller
     function checkIfValidToSubmit($resources)
     {
         foreach ($resources as $resource) {
-            $validityArray=array($resource['name'],$resource['job_function'],$resource['starting_date'],$resource['rate'],$resource['hours']);
+            $validityArray = array($resource['name'], $resource['job_function'], $resource['starting_date'], $resource['rate'], $resource['hours']);
             if (!in_array("", $validityArray)) {
-               continue;
+                continue;
             } else {
                 return 0;
             }
         }
         return 1;
+    }
+    function getHires(Request $req)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2)) {
+                $response = Controller::returnResponse(401, "unauthorized", []);
+                return (json_encode($response));
+            } else {
+                $company_id = Project::where('id', $req->project_id)->select('company+_id')->first()->company_id;
+                if ($company_id != $userData['group_id']); {
+                    $response = Controller::returnResponse(401, "unauthorized", []);
+                    return (json_encode($response));
+                }
+                $proposalsIds = hire_developer_proposals::where('project_id', $req->project_id)->select('*')->pluck('id')->toArray();
+                $contracts = DB::table('hire_developer_final_proposals')
+                    ->select('contract_id')
+                    ->whereIn('proposal_id', $proposalsIds)
+                    ->where('status', 1)
+                    ->get();
+                $contractsIds = $contracts->pluck('id')->toArray();
+
+                $resources = DB::table('resources')
+                    ->select('*')
+                    ->whereIn('contract_id', $contractsIds)
+                    ->get();
+                $response = Controller::returnResponse(200, "successful", $resources);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(200, "successful", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 }

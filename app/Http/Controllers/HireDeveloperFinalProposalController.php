@@ -20,6 +20,7 @@ use App\Models\Countries;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Agency_active_project;
+use App\Models\resources;
 
 class HireDeveloperFinalProposalController extends Controller
 {
@@ -480,4 +481,5 @@ class HireDeveloperFinalProposalController extends Controller
             return (json_encode($response));
         }
     }
+    
 }

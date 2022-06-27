@@ -289,4 +289,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('reviewContract', [HireDeveloperFinalProposalController::class, 'reviewContract']);
     Route::post('acceptContract', [HireDeveloperFinalProposalController::class, 'acceptContract']);
     Route::get('getContractDetails/{contractId}', [HireDeveloperFinalProposalController::class, 'getContractWithResourcesClient']);
+    Route::post('getHires', [ResourcesController::class, 'getHires']);
+
 });
