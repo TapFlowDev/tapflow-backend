@@ -44,12 +44,11 @@ class ResourcesController extends Controller
                     return (json_encode($response));
                 }
                 if(str_contains($req->end_date, 'N')){
-                    $req->end_date = NULL;
-                    $req->hi=2;
+                    $endDate= NULL;
+                }else{
+                    $endDate = $req->end_date;
                 }
-                $response = Controller::returnResponse(101, "Validation Error", $req->all());
-                return (json_encode($response));
-                $resource = resources::create($req->all());
+                $resource = resources::create($req->except(['end_date']) + ['end_date'=> $endDate]);
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
                     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
