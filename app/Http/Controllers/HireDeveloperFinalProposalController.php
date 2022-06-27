@@ -186,7 +186,7 @@ class HireDeveloperFinalProposalController extends Controller
                 }
                 $dates = $resources->pluck('starting_date')->toArray();
                 $contractInfo = hire_developer_final_proposal::where('id', $req->contract_id)->select('user_id', 'proposal_id', 'team_id', 'starting_date')->first();
-                $dateValidation = $this->checkDates($dates, $contractInfo->starting_date);
+                $dateValidation = $this->checkDates($dates, $req->starting_date);
                 if ($dateValidation == 0) {
                     $response = Controller::returnResponse(422, "one of the resources starting date starts before the contract starts", []);
                     return (json_encode($response));
