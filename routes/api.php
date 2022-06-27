@@ -251,7 +251,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyProjects/{offset}/{limit}', [ProjectController::class, 'getAgencyProjects']);
     Route::get('activeProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyActiveProjects']);
     Route::get('pendingProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyPendingProjects']);
-    Route::get('milestonesByProposalId/{id}', [Milestones::class, 'getMilestoneByProposalId']);
+    Route::get('milestonesByProposalId/{id}', [Milestones::class, 'getMilestonesAgency']);
 
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
