@@ -93,7 +93,7 @@ class ResourcesController extends Controller
                     return (json_encode($response));
                 }
 
-                if(!$req->end_date){
+                if(str_contains($req->end_date, 'N')){
                     $req->end_date =NULL;
                 }
                 resources::where('id', $req->resource_id)->update([
