@@ -69,8 +69,6 @@ class ResourcesController extends Controller
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
-                $response = Controller::returnResponse(200, "updated successfully", $req->all());
-                return (json_encode($response));
                 $rules = array(
                     "resource_id" => "required",
                     "job_function" => "required",
