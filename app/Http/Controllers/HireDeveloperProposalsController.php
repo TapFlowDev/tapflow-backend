@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Mail\InitialProposalActions;
+use App\Mail\ProposalMail;
 use App\Models\Countries;
+use App\Models\Group;
 use App\Models\Group_member;
 use App\Models\hire_developer_final_proposal;
 use App\Models\hire_developer_proposals;
 use App\Models\Project;
 use App\Models\Proposal_requirement;
 use App\Models\resources;
+use App\Models\Team;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -100,6 +103,32 @@ class HireDeveloperProposalsController extends Controller
             /** 
              * send email
              */
+            $projectData = $project;
+            $teamData = Group::find($req->team_id);
+            $companyData = Group::find($projectData->company_id);
+            $companyAdminData = User::find($projectData->user_id);
+            $moreTeamData = Team::select('link', 'country', 'employees_number')->where('group_id', '=', $proposal->team_id)->get()->first();
+            $teamInfo['name'] = $teamData->name;
+            $teamInfo['link'] = $moreTeamData->link;
+            $teamInfo['country'] = Countries::find($moreTeamData->country)->name;
+            // $teamInfo['country'] =$moreTeamData->country;
+            $teamInfo['employees_number'] = $moreTeamData->employees_number;
+            // $estPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
+            $details = [
+                'subject' => 'New Application ' . $projectData->name,
+                'project_name' => $projectData->name,
+                'project_type' => $projectData->type,
+                'project_id' => $projectData->id,
+                'team_info' => $teamInfo,
+                'admin_name' => $companyAdminData->first_name,
+                'proposal' => $proposal,
+                // 'est' => $estPrice
+            ];
+            Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+            //Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+            //Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+            //Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+            return (json_encode($response));
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
             return (json_encode($response));
@@ -121,7 +150,7 @@ class HireDeveloperProposalsController extends Controller
             ->where('project_id', '=', $project_id)
             ->first();
         if ($proposal_id == null) {
-            return ['exist' => 0, "status" => 0];
+            return ['exist' => 0, "status" => null];
         } else {
             return ['exist' => 1, "proposal_id" => $proposal_id->id, "status" => $proposal_id->status];
         }
@@ -267,21 +296,23 @@ class HireDeveloperProposalsController extends Controller
         $member = Group_member::where('group_id', '=', $groupId)->where('privileges', '=', 1)->get()->first();
         $clientId = $member->user_id;
         $clinet = User::where('id', $clientId)->get()->first();
-        $subject = $project->name . " Proposal Update";
+        $subject = $project->name . " Application Update";
         $details = array(
             'subject' => $subject,
             'projectName' => $project->name,
+            'projectType' => $project->type,
             'clientEmail' => $clinet->email,
             'status' => $status,
         );
-        return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
+        // return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
         // dd($details);
-        //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
+        return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
-    function getAcceptedProposalByProjectId($projectId, $agencyId=0){
+    function getAcceptedProposalByProjectId($projectId, $agencyId = 0)
+    {
         $conditionArray[] = ['project_id', '=', $projectId];
         $conditionArray[] = ['status', '=', 1];
-        if($agencyId>0){
+        if ($agencyId > 0) {
             $conditionArray[] = ['team_id', '=', $agencyId];
         }
         return hire_developer_proposals::select('id')->where($conditionArray)->pluck('id')->toArray();
