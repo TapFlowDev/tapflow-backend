@@ -245,7 +245,7 @@ class ResourcesController extends Controller
                 return (json_encode($response));
             }
         } catch (Exception $error) {
-            $response = Controller::returnResponse(200, "successful", $error->getMessage());
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return (json_encode($response));
         }
     }
