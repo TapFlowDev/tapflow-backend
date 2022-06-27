@@ -333,6 +333,10 @@ class Milestones extends Controller
                 $response = Controller::returnResponse(401, "unauthorized user", []);
                 return (json_encode($response));
             }
+            if($project->team_id < 1){
+                $response = Controller::returnResponse(422, "project not active", []);
+                return (json_encode($response));
+            }
             $finalProposalControllersObj = new Final_proposals;
             $final_proposal = $finalProposalControllersObj->getAcceptedFinalProposalDetailsByProjectIdAgencyId($project->id, $project->team_id);
             $milestones = $final_proposal->milestones;
