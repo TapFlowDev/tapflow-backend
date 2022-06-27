@@ -365,7 +365,7 @@ class HireDeveloperFinalProposalController extends Controller
             return (json_encode($response));
         }
     }
-    function getContractData($proposalIds, $teamId = 0)
+    function getContractData($proposalIds, $teamId = 0, $page=0, $limit=0)
     {
         // $conditionArray[] = ['status', '=', 1];
         if ($teamId > 0) {
@@ -374,7 +374,7 @@ class HireDeveloperFinalProposalController extends Controller
             $contractsData = $this->getContractsResources($contracts)->first();
             $returnData = ($contractsData ? $contractsData : []);
         } else {
-            $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where('status', '>', -1)->select('*')->latest()->get();
+            $contracts = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where('status', '>', -1)->select('*')->latest()->offset($page)->limit($limit)->get();
             $contractsCount = hire_developer_final_proposal::whereIn('proposal_id', $proposalIds)->where('status', '>', -1)->select('*')->count();
             $contractsData = $this->getContractsResources($contracts);
             $returnData = [
