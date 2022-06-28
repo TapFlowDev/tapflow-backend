@@ -232,10 +232,10 @@ class ResourcesController extends Controller
                 return (json_encode($response));
             } else {
                 $company_id = Project::where('id', $req->project_id)->select('company_id')->first()->company_id;
-                // if ($company_id != $userData['group_id']); {
-                //     $response = Controller::returnResponse(401, "unauthorized group", []);
-                //     return (json_encode($response));
-                // }
+                if ($company_id != $userData['group_id']); {
+                    $response = Controller::returnResponse(401, "unauthorized group", []);
+                    return (json_encode($response));
+                }
                 $proposalsIds = hire_developer_proposals::where('project_id', $req->project_id)->select('*')->pluck('id')->toArray();
                 $contracts = DB::table('hire_developer_final_proposals')
                     ->select('id')
