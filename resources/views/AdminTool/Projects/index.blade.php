@@ -11,7 +11,7 @@
                                 <th scope="col">#id</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Company Name</th>
-                                {{-- <th scope="col">Status</th> --}}
+                                <th scope="col">Type</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -26,15 +26,15 @@
                                             role="button">{{ $project->company_name }}
                                         </a>
                                     </td>
-                                    {{-- <td>
-                                        @if ($project->status == 0)
-                                            Pending
-                                        @elseif ($project->status == 1)
-                                            Active
-                                        @elseif ($project->status == 2)
-                                            Finished
+                                    <td>
+                                        @if ($project->type < 2)
+                                            Project Based
+                                        @elseif ($project->type == 2)
+                                            Monthly Retainer
+                                        @elseif ($project->type == 3)
+                                            Hire developers
                                         @endif
-                                    </td> --}}
+                                    </td>
                                     <td>
                                         <a class="btn btn-sm btn-primary"
                                             href="{{ route('AdminTool.projects.show', $project->id) }}"

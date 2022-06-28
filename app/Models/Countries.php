@@ -15,6 +15,7 @@ class Countries extends Model
         'name',
         'code',
         'flag',
+        'score',
     ];
     public $timestamps = false;
 }

@@ -92,7 +92,7 @@ class Milestones extends Controller
                                         "is_valid" => $isValid
                                     );
                                     if ($req->type == 2) {
-                                        $create_months = $this->createMonthlyMilestones($data, $req->counter,$new_final_proposal['msg']);
+                                        $create_months = $this->createMonthlyMilestones($data, $req->counter, $new_final_proposal['msg']);
                                         if ($create_months['code'] != 200) {
                                             $response = Controller::returnResponse(500, "something went wrong milestones controller", $create_months['msg']);
                                             return (json_encode($response));
@@ -149,7 +149,7 @@ class Milestones extends Controller
                                     //     }
                                     // }
                                     if ($req->type == 2) {
-                                        $milestone = $this->createMonthlyMilestones($data, $req->counter,$final_proposal_id);
+                                        $milestone = $this->createMonthlyMilestones($data, $req->counter, $final_proposal_id);
                                         if ($milestone['code'] != 200) {
                                             $response = Controller::returnResponse(500, "something went wrong milestones controller", $milestone['msg']);
                                             return (json_encode($response));
@@ -319,39 +319,29 @@ class Milestones extends Controller
     {
         try {
             $finalProposalObj = new Final_proposals;
-
             $userData = Controller::checkUser($req);
-            if ($userData['exist'] == 1) {
-                $finalProposal = $finalProposalObj->getProposalById($id);
-                if ($userData['group_id'] == $finalProposal['team_id']) {
-                    $milestones =  Milestone::where('final_proposal_id', $id)
-                        ->get()
-                        ->makeHidden(['created_at', 'updated_at']);
-                    $milestones_details = [];
-                    foreach ($milestones as $milestone) {
-
-                        array_push($milestones_details, array(
-                            "milestone_id" => $milestone->id,
-                            "milestone_name" => $milestone->name,
-                            "milestone_description" => $milestone->description,
-                            "milestone_price" => $milestone->price,
-                            "milestone_num_hours" => $milestone->hours,
-                            "milestone_hourly_rate" => $milestone->hourly_rate,
-                            "milestone_down_payment" => $milestone->down_payment,
-                            "deliverables" => unserialize($milestone->deliverables),
-                            "isValid" => $milestone->is_valid
-                        ));
-                    }
-                    $response = Controller::returnResponse(200, "successful", $milestones_details);
-                    return (json_encode($response));
-                } else {
-                    $response = Controller::returnResponse(422, "you are trying to access data for another agency", []);
-                    return (json_encode($response));
-                }
-            } else {
-                $response = Controller::returnResponse(422, "this user does not have team", []);
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1)) {
+                $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             }
+            $projectCondtions[] = ['id', '=', $id];
+            if ($userData['type'] == 2) {
+                $projectCondtions[] = ['company_id', '=', $userData['group_id']];
+            }
+            $project = Project::where($projectCondtions)->first();
+            if (!$project) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($project->team_id < 1) {
+                $response = Controller::returnResponse(422, "project not active", []);
+                return (json_encode($response));
+            }
+            $finalProposalControllersObj = new Final_proposals;
+            $final_proposal = $finalProposalControllersObj->getAcceptedFinalProposalDetailsByProjectIdAgencyId($project->id, $project->team_id);
+            $milestones = $final_proposal->milestones;
+            $response = Controller::returnResponse(200, "successful", $milestones);
+            return (json_encode($response));
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
             return (json_encode($response));
@@ -615,15 +605,13 @@ class Milestones extends Controller
                         milestone_submission::where('id', $req->submission_id)->update(['client_comments' => $req->comments, 'status' => 3]);
                         Milestone::where('id', $req->milestone_id)->update(['status' => 3]);
                         $walletObj = new WalletsTransactionsController;
-                      $trans=  $walletObj -> makePaymentTransactionDepositAgency($req->milestone_id);
-                      if($trans['responseCode'] !=200)
-                      {
-                        $response = Controller::returnResponse(500, "something went wrong", $trans['paymentMsg']);
-                        return (json_encode($response));
-                      }
-                        $active= $this->ActivateNext($req->milestone_id);
-                        if ($active['code' != 200])
-                        {
+                        $trans =  $walletObj->makePaymentTransactionDepositAgency($req->milestone_id);
+                        if ($trans['responseCode'] != 200) {
+                            $response = Controller::returnResponse(500, "something went wrong", $trans['paymentMsg']);
+                            return (json_encode($response));
+                        }
+                        $active = $this->ActivateNext($req->milestone_id);
+                        if ($active['code' != 200]) {
                             $response = Controller::returnResponse(500, "something went wrong", $active['msg']);
                             return (json_encode($response));
                         }
@@ -973,17 +961,17 @@ class Milestones extends Controller
 
         Final_proposal::where('id', $FP_id)->update(['price' => $total_price, 'hours' => $total_hours]);
     }
-    function createMonthlyMilestones($data, $counter,$final_proposal_id)
+    function createMonthlyMilestones($data, $counter, $final_proposal_id)
     {
 
         try {
-            $c=Milestone::where('final_proposal_id',$final_proposal_id)->select('id')->count();
-            $nameCounter=(int)$c+1;
+            $c = Milestone::where('final_proposal_id', $final_proposal_id)->select('id')->count();
+            $nameCounter = (int)$c + 1;
             for ($i = 0; $i < $counter; $i++) {
-                $name="Month ". $nameCounter;
-                $data['name']=$name;
+                $name = "Month " . $nameCounter;
+                $data['name'] = $name;
                 Milestone::create($data);
-                $nameCounter+=1;
+                $nameCounter += 1;
             }
             return ['code' => 200];
         } catch (Exception $error) {
@@ -993,25 +981,72 @@ class Milestones extends Controller
     }
     private function ActivateNext($current_id)
     {
-        try{
-        $current_milestone = Milestone::where('id', $current_id)->select('status', 'final_proposal_id')->first();
-        if ($current_milestone->status != 3) {
-            return ['code'=>500,'msg'=>'current milestone not closed'];
-        }
-        $all_milestones = Milestone::where('final_proposal_id', $current_milestone->final_proposal_id)->select('id', 'status')->first();
-        $milestones_ids = $all_milestones->pluck('id')->toArray();
-        $last_index = count($milestones_ids) - 1;
-        $project_id = Final_proposal::where('id', $current_milestone->final_proposal_id)->select('project_id')->first()->project_id;
-        $current_index = (int)array_search($current_id, $milestones_ids);
-        $next_index = $current_index + 1;
-        if ($current_index == $last_index) {
-            Project::where('id', $project_id)->update(['status' => 2]);
-        } else {
-            $status = Milestone::where('id', $next_index)->select('status')->first()->status;
-            Milestone::where('id', $milestones_ids[$next_index])->update(['status' => 4]);
+        try {
+            $current_milestone = Milestone::where('id', $current_id)->select('status', 'final_proposal_id')->first();
+            if ($current_milestone->status != 3) {
+                return ['code' => 500, 'msg' => 'current milestone not closed'];
+            }
+            $all_milestones = Milestone::where('final_proposal_id', $current_milestone->final_proposal_id)->select('id', 'status')->first();
+            $milestones_ids = $all_milestones->pluck('id')->toArray();
+            $last_index = count($milestones_ids) - 1;
+            $project_id = Final_proposal::where('id', $current_milestone->final_proposal_id)->select('project_id')->first()->project_id;
+            $current_index = (int)array_search($current_id, $milestones_ids);
+            $next_index = $current_index + 1;
+            if ($current_index == $last_index) {
+                Project::where('id', $project_id)->update(['status' => 2]);
+            } else {
+                $status = Milestone::where('id', $next_index)->select('status')->first()->status;
+                Milestone::where('id', $milestones_ids[$next_index])->update(['status' => 4]);
+            }
+        } catch (Exception $error) {
+            return ['code' => 500, 'msg' => $error->getMessage()];
         }
     }
-    catch(Exception $error)
-    { return ['code'=>500,'msg'=>$error->getMessage()];}
+    function getCountByProjectId($projectId)
+    {
+        $conditionArray = [
+            ['project_id', '=', $projectId]
+        ];
+        $proposalCount = Milestone::where($conditionArray)->count();
+        return $proposalCount;
+    }
+    function getMilestonesAgency(Request $req, $id)
+    {
+        try {
+            $finalProposalObj = new Final_proposals;
+            $userData = Controller::checkUser($req);
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1)) {
+                $response = Controller::returnResponse(401, "unauthorized", []);
+                return (json_encode($response));
+            }
+            $final_proposal = Final_proposal::where('id', $id)->where('team_id', '=', $userData['group_id'])
+                ->first();
+            if(!$final_proposal){
+                $response = Controller::returnResponse(422, "final proposal not found", []);
+                return (json_encode($response));  
+            }
+            $milestones =  Milestone::where('final_proposal_id', $id)
+                ->get()
+                ->makeHidden(['created_at', 'updated_at']);
+            $milestones_details = [];
+            foreach ($milestones as $milestone) {
+                array_push($milestones_details, array(
+                    "milestone_id" => $milestone->id,
+                    "milestone_name" => $milestone->name,
+                    "milestone_description" => $milestone->description,
+                    "milestone_price" => $milestone->price,
+                    "milestone_num_hours" => $milestone->hours,
+                    "milestone_hourly_rate" => $milestone->hourly_rate,
+                    "milestone_down_payment" => $milestone->down_payment,
+                    "deliverables" => unserialize($milestone->deliverables),
+                    "isValid" => $milestone->is_valid
+                ));
+            }
+            $response = Controller::returnResponse(200, "successful", $milestones_details);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong ", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 }

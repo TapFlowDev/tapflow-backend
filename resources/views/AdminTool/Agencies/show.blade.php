@@ -146,16 +146,7 @@
                                     </div>
                                     <div class="col-sm-9 text-secondary">
                                         @foreach ($info->categories as $cats )
-                                           {{ $cats['name'] }}:
-                                           @foreach ($cats['subs'] as $subs)
-                                             {{ $subs->name }}
-                                           @if (!$loop->last)
-                                             ,
-                                           @endif
-                                           @endforeach 
-                                           @if (!$loop->last)
-                                               <hr>
-                                           @endif
+                                           {{ $cats['name'] }},
                                         @endforeach
                                     </div>
                                 </div>

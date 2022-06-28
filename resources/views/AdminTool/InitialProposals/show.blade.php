@@ -71,16 +71,16 @@
                                     </div>
                                     <div class="col-sm-9 text-secondary">
                                         Min hourly rate:
-                                        ${{ $proposal->from }}
-                                        ,
-                                        Max hourly rate:
-                                        ${{ $proposal->to }}
-                                        <hr>
-                                        Min no. of hours:
                                         {{ $proposal->price_min }}
                                         ,
-                                        Max no. of hours:
+                                        Max hourly rate:
                                         {{ $proposal->price_max }}
+                                        <hr>
+                                        Min no. of hours:
+                                        ${{ $proposal->from }}
+                                        ,
+                                        Max no. of hours:
+                                        ${{ $proposal->to }}
 
                                     </div>
                                 </div>

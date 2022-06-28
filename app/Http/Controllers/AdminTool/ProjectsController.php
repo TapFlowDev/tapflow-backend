@@ -8,6 +8,9 @@ use App\Http\Controllers\Proposals;
 use App\Http\Controllers\AdminTool\TeamsController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\GroupMembersController;
+use App\Http\Controllers\HireDeveloperProposalsController;
+use App\Http\Controllers\ProjectPriorityController;
+use App\Http\Controllers\ProjectServiceController;
 use App\Http\Controllers\Requirement;
 use App\Http\Controllers\UserController;
 use App\Models\Category;
@@ -16,6 +19,7 @@ use App\Models\Group;
 use App\Models\Group_member;
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\Project_agency_match;
 use App\Models\proposal;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\DB;
@@ -102,28 +106,28 @@ class ProjectsController extends Controller
     {
         $teamObj = new TeamsController;
         $project = $this->getData(Project::where('id', '=', $id)->get())->first();
-        //return $project;
-        $teams = [];
-        if ($project->team_id != '') {
-            $teams = $teamObj->getTeamById($project->team_id);
-            $status = 1;
-            $propsals = [];
-        } else {
-            $status = 0;
-            $propsals = proposal::where('project_id', '=', $id)->distinct()->get();
-            // $teamsIds = proposal::select('team_id')->where('project_id', '=', $id)->distinct()->pluck('team_id');
-            foreach ($propsals as &$propsal) {
-                $teamInfo = Group::where('id', '=', $propsal->team_id)->get()->first();
-                $propsal->team_name = $teamInfo->name;
-                // if ($teamInfo != '') {
-                //     $teams[] = $teamInfo;
-                // }
-            }
-            // return $teams;
-        }
+
+        //return gettype($project->services);
+        // if ($project->team_id != '') {
+        //     $teams = $teamObj->getTeamById($project->team_id);
+        //     $status = 1;
+        //     $propsals = [];
+        // } else {
+        //     $status = 0;
+        //     $propsals = proposal::where('project_id', '=', $id)->distinct()->get();
+        //     // $teamsIds = proposal::select('team_id')->where('project_id', '=', $id)->distinct()->pluck('team_id');
+        //     foreach ($propsals as &$propsal) {
+        //         $teamInfo = Group::where('id', '=', $propsal->team_id)->get()->first();
+        //         $propsal->team_name = $teamInfo->name;
+        //         // if ($teamInfo != '') {
+        //         //     $teams[] = $teamInfo;
+        //         // }
+        //     }
+        //     // return $teams;
+        // }
         // $allTeams = $teamObj->getAllTeams();
-        // return $propsals;
-        return view("AdminTool.Projects.show", ['project' => $project, 'status' => $status, 'teams' => $teams, 'propsals' => $propsals]);
+        //  return ($project->proposals);
+        return view("AdminTool.Projects.show", ['project' => $project]);
     }
 
     /**
@@ -169,40 +173,68 @@ class ProjectsController extends Controller
         $projectCatObj = new ProjectCategoriesController;
         $companyObj = new CompaniesController;
         $requirementsObj = new Requirement;
+        $projectServicesObj = new ProjectServiceController;
+        $projectPriorityObj = new ProjectPriorityController;
         foreach ($array as $keyP => &$project) {
             $duration = Category::find((int)$project->days);
+            $budget = Category::find((int)$project->budget_id);
+            $startProject = Category::find((int)$project->start_project);
             $company = Group::find($project->company_id);
-            // $company_details = Company::where("group_id", "=", $project->company_id)->get()->first();
             $company_details = $companyObj->getCompanyById($project->company_id);
-            if ($project->budget_type < 1) {
-                $project->duration = $duration->name;
-            } else {
-                $project->duration = "unset";
-            }
-            // if ($company_details->image != "") {
-            //     $company_details->image = asset('images/companies/' . $company_details->image);
-            // } else {
-            //     $company_details->image = asset('images/profile-pic.jpg');
-            // }
             $project->company_name = $company->name;
             $project->company_image = $company_details->image;
-            $project->categories = $projectCatObj->getProjectCategories($project->id);
+            $project->duration = ($duration ? $duration->name : "unset");
+            $project->budget = ($budget ? $budget->name : "$$project->min - $$project->max");
+            $project->startProject = ($startProject ? $startProject->name : "unset");
             $project->admin_name = $company_details->admin_name;
             $project->admin_id = $company_details->admin_id;
             $project->admin_email = $company_details->admin_email;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            $project->priorities = $projectPriorityObj->getProjectPriorities($project->id);
+            // dd(gettype($project->priorities));
+            if ($project->type == 3) {
+                $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                $project->proposals = $hireDeveloperProposalsObj->getProposalsByProjectIdTeamId($project->id, 0, 0, 100)['allData'];
+            
+            } else {
+                $proposalsObj = new Proposals;
+                $project->proposals = $proposalsObj->getProposalsByProjectId($project->id, 0, 0, 100)['allData'];
+                $project->categories = $projectCatObj->getProjectCategories($project->id);
+                $services = $projectServicesObj->getProjectServices($project->id);
+                if (count($services) > 0) {
+                    $project->services = $services;
+                } else {
+                    $servicesArr = array();
+                    if ($project->BA > 0) {
+                        array_push($servicesArr, array('name' => 'Business Development'));
+                    }
+                    if ($project->design > 0) {
+                        array_push($servicesArr, array('name' => 'UI/UX design'));
+                    }
+                    $project->services = $servicesArr;
+                    $project->servicesArr = 1;
+                }
+                // $company_details = Company::where("group_id", "=", $project->company_id)->get()->first();
 
-            // $str = $project->requirements_description;
-            // // $requirements_description = json_decode($str, TRUE);
+                // if ($company_details->image != "") {
+                //     $company_details->image = asset('images/companies/' . $company_details->image);
+                // } else {
+                //     $company_details->image = asset('images/profile-pic.jpg');
+                // }
 
-            // return preg_split("/[\s,]+/", $str);
+
+                // $str = $project->requirements_description;
+                // // $requirements_description = json_decode($str, TRUE);
+
+                // return preg_split("/[\s,]+/", $str);
+            }
         }
         return $array;
     }
 
     function sendAgenciesEmail(Request $request, $id)
     {
-        // return $request->teamsIds;
+        // return $request->all();
         $teamObj = new TeamsController;
         $emailObj = new EmailController;
         $project = $this->getData(Project::where('id', '=', $id)->get())->first();
@@ -214,13 +246,17 @@ class ProjectsController extends Controller
                 if ($teamInfo != '') {
                     $teams[] = $teamInfo;
                 }
+                Project_agency_match::create(array(
+                    'group_id'=>$teamId,
+                    'project_id' => $id
+                ));
             }
             $emailSent = $emailObj->sendEmailToAgencies($teams, $project);
             $request->session()->flash('success', 'email sent successfully');
         } catch (\Exception $error) {
             $request->session()->flash('error', 'email was not sent due to an error');
         }
-        return redirect()->back();
+        return redirect("AdminTool/recommendProject/$id");
     }
 
     function getSubCategoriesByParent($category_id)
@@ -234,37 +270,52 @@ class ProjectsController extends Controller
         return $projects;
     }
 
-    function recommendProject($id, Request $req)
+    function recommendProject($id)
     {
         $projectCatObj = new ProjectCategoriesController;
+        $projectAgencyMatch = new ProjectAgencyMatchController;
 
         $project = Project::find($id);
-        $categories = Category::where('type', 1)->get();
 
-        foreach ($categories as $key => &$value) {
-            $value->subs = $this->getSubCategoriesByParent($value->id);
+        $matchedAgencies = $projectAgencyMatch->getMatchByProjectId($id);
+        $matchedAgenciesIds = array();
+        if ($matchedAgencies) {
+            $matchedAgenciesIds = $matchedAgencies->pluck('id')->toArray();
         }
-        if ($req->subs != '') {
-            $projectCategories = $req->subs;
-            $agencies = DB::table('groups_categories')
-                ->join('groups', 'groups_categories.group_id', '=', 'groups.id')
-                ->select('groups.*')
-                ->whereIn('groups_categories.sub_category_id', $projectCategories)
-                ->where('groups.status', '=', 1)
-                ->distinct()
-                ->get();
-        } else {
-            // $projectCategories = DB::table('projects_categories')->select('sub_category_id')->where('project_id', '=', $id)->pluck('sub_category_id')->toArray();
-            $projectCategories = [];
-            $agencies =  DB::table('teams')
-                ->join('groups', 'teams.group_id', '=', 'groups.id')
-                ->select('groups.*', 'teams.*')
-                ->where('groups.status', '=', 1)
-                ->where('groups.deleted', '=', 0)
-                ->get();
-        }
+        $agencies =  DB::table('teams')
+        ->join('groups', 'teams.group_id', '=', 'groups.id')
+        ->select('groups.*', 'teams.*')
+        ->whereNotIn('groups.id', $matchedAgenciesIds)
+        ->where('groups.status', '=', 1)
+        ->where('groups.deleted', '=', 0)
+        ->get();
+
+        // $categories = Category::where('type', 1)->get();
+
+        // foreach ($categories as $key => &$value) {
+        //     $value->subs = $this->getSubCategoriesByParent($value->id);
+        // }
+        // if ($req->subs != '') {
+        //     $projectCategories = $req->subs;
+        //     $agencies = DB::table('groups_categories')
+        //         ->join('groups', 'groups_categories.group_id', '=', 'groups.id')
+        //         ->select('groups.*')
+        //         ->whereIn('groups_categories.sub_category_id', $projectCategories)
+        //         ->where('groups.status', '=', 1)
+        //         ->distinct()
+        //         ->get();
+        // } else {
+        //     // $projectCategories = DB::table('projects_categories')->select('sub_category_id')->where('project_id', '=', $id)->pluck('sub_category_id')->toArray();
+        //     $projectCategories = [];
+        //     $agencies =  DB::table('teams')
+        //         ->join('groups', 'teams.group_id', '=', 'groups.id')
+        //         ->select('groups.*', 'teams.*')
+        //         ->where('groups.status', '=', 1)
+        //         ->where('groups.deleted', '=', 0)
+        //         ->get();
+        // }
         // dd($agencies);   
-        return view('AdminTool.Projects.recommendProject', ['categories' => $categories, 'agencies' => $agencies, 'projectCategories' => $projectCategories, 'project' => $project]);
+        return view('AdminTool.Projects.recommendProject', ['agencies' => $agencies, 'project' => $project, 'matchedAgenciesIds' => $matchedAgenciesIds, 'matchedAgencies' => $matchedAgencies]);
 
         // return $projects;
     }
@@ -273,5 +324,33 @@ class ProjectsController extends Controller
     {
         Project::where('id', $id)->update(['verified' => (int)$request->verify]);
         return redirect('/AdminTool/projects');
+    }
+
+    function sendAgencyEmail(Request $request, $id)
+    {
+        // return $request->all();
+        $teamObj = new TeamsController;
+        $emailObj = new EmailController;
+        $project = $this->getData(Project::where('id', '=', $id)->get())->first();
+        $teamId = $request->teamId;
+        //return $project;
+        // try {
+            $teamInfo = $teamObj->getTeamById($teamId);
+            $teams[] = $teamInfo;
+            // foreach ($teamsIds as $teamId) {
+            //     if ($teamInfo != '') {
+            //     }
+            // }
+            $emailSent = $emailObj->sendEmailToAgencies($teams, $project);
+            $request->session()->flash('success', 'email sent successfully');
+        // } catch (\Exception $error) {
+        //     $request->session()->flash('error', 'email was not sent due to an error');
+        // }
+        return redirect("AdminTool/recommendProject/$id");
+    }
+    function removeMatch(Request $request, $id){
+        Project_agency_match::where('project_id', '=', $id)->where('group_id', '=', $request->teamId)->delete();
+        $request->session()->flash('success', 'Agency Unmatched');
+        return redirect("AdminTool/recommendProject/$id");
     }
 }
