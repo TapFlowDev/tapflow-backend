@@ -30,12 +30,8 @@ use App\Models\Group;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\MailChimpController;
-<<<<<<< HEAD
-use App\Http\Controllers\NotificationController;
-=======
 use App\Models\Countries;
 use App\Models\User;
->>>>>>> 59de3ea86ec23c0313f80030b7eddc0b13d5847d
 
 class Final_proposals extends Controller
 {
@@ -953,14 +949,14 @@ class Final_proposals extends Controller
             return $text;
         }
     }
-<<<<<<< HEAD
+
     function testsendnot()
     {
         return Controller::sendNotification(121,'test','hi from backend','linkahmad.com',2,'final_proposals',26);
 
     }
 
-=======
+
     function getCountByProjectId($projectId)
     {
         $conditionArray = [
@@ -1039,5 +1035,4 @@ class Final_proposals extends Controller
         $final_proposal->milestones = $milestones;
         return ($final_proposal);
     }
->>>>>>> 59de3ea86ec23c0313f80030b7eddc0b13d5847d
 }
