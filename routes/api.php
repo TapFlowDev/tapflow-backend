@@ -50,8 +50,15 @@ use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
+<<<<<<< HEAD
+use App\Http\Controllers\FireBaseNotificationsController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\NotificationController;
+=======
 use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\HireDeveloperFinalProposalController;
+>>>>>>> 59de3ea86ec23c0313f80030b7eddc0b13d5847d
 
 // use App\Http\Controllers\PaymentController;
 
@@ -78,11 +85,20 @@ use App\Http\Controllers\HireDeveloperFinalProposalController;
 // });
 // for testing test
 // Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
+/////////////////////////////////////
+
+// Route::get('pushNotificaiton', [NotificationController::class, 'push-notificaiton']);
+
+//////////////////////////
+
 Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
+Route::get('Notify/{id}', [Final_proposals::class, 'testsendnot']);
 Route::get('updateMilestonesPrices/{m}/{f}', [Milestones::class, 'updateMilestonesPrices']);
 Route::get('canSubmit/{id}', [Milestones::class, 'canSubmit']);
+Route::get('getRoomLastMessage/{id}', [ChatController::class, 'getRoomLastMessage']);
+Route::get('checkIfRoomExist/{id}/{id2}', [RoomController::class, 'checkIfRoomExist']);
 
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
 
@@ -189,12 +205,28 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
     Route::post('printInvoice', [WalletsTransactionsController::class, 'printInvoice']);
     Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
+<<<<<<< HEAD
+    Route::post('storeToken', [FireBaseNotificationsController::class, 'storeToken']);
+    Route::post('addMember', [RoomController::class, 'addMember']);
+    // Route::post('getRooms', [RoomController::class, 'getRooms']);
+    Route::post('sendMessage', [ChatController::class, 'sendMessage']);
+    Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
+    Route::post('getcjtNot/{offset}/{limit}', [RoomController::class, 'getcjtNot']);
+    Route::get('getRooms/{offset}/{limit}', [RoomController::class, 'getRooms']);
+    Route::post('updateRoomName', [RoomController::class, 'updateRoomName']);
+    Route::post('seenRoomMessages', [RoomController::class, 'seenRoomMessages']);
+    Route::post('getRoomMessages/{offset}/{limit}', [ChatController::class, 'getRoomMessages']);
+    Route::get('getUserNotification/{offset}/{limit}', [NotificationController::class, 'getUserNotification']);
+    Route::post('notificationSeen', [NotificationController::class, 'notificationSeen']);
+    Route::get('ChatNotifications', [NotificationController::class, 'ChatNotifications']);
+=======
     // new apis
     Route::get('projectInfo/{id}', [ProjectController::class, 'newGetProject']);
     Route::get('getProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getInitailProposalsProjectId']);
     Route::get('getFinalProposals/{id}', [ProjectController::class, 'getFinalProposalsProjectId']);
     Route::get('getFinalProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getFinalProposalsProjectId']);
 
+>>>>>>> 59de3ea86ec23c0313f80030b7eddc0b13d5847d
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
@@ -235,6 +267,8 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
     Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
     Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
+<<<<<<< HEAD
+=======
     //new apis
     Route::get('exploreProjects/{type}/{offset}/{limit}', [ProjectController::class, 'newExploreProject']);
     Route::post('addResource', [ResourcesController::class, 'Insert']);
@@ -253,6 +287,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('pendingProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyPendingProjects']);
     Route::get('milestonesByProposalId/{id}', [Milestones::class, 'getMilestonesAgency']);
 
+>>>>>>> 59de3ea86ec23c0313f80030b7eddc0b13d5847d
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
