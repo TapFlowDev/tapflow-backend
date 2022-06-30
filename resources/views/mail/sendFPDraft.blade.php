@@ -55,7 +55,7 @@
             </tr>
         </tbody>
     </table>
-    <a href="https://www.tapflow.app/Client-user/main/posted-projects-details/{{ $details['project_id'] }}" target="_blank" style="padding: 8px 12px; border: 1px solid #ffc900;border-radius: 10px;font-family: Helvetica, Arial, sans-serif;font-size: medium; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; background-color: #ffc900">
+    <a href="https://www.tapflow.app/Client-user/main/project-info/{{ $details['project_id'] }}" target="_blank" style="padding: 8px 12px; border: 1px solid #ffc900;border-radius: 10px;font-family: Helvetica, Arial, sans-serif;font-size: medium; color: #ffffff;text-decoration: none;font-weight:bold;display: inline-block; background-color: #ffc900">
         Open Project
     </a>
 </body>

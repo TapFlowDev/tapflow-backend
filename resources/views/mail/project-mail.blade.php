@@ -38,7 +38,7 @@
     <br>
     <p style="color: black;">
         If you're interested, please apply from <a
-            href="https://www.tapflow.app/a-user/main/project/{{ $details['project']['id'] }}" target="_blank"
+            href="https://www.tapflow.app/a-user/main/project-info/{{ $details['project']['id'] }}" target="_blank"
             style=" color: black;text-decoration: none;font-weight:bold;">
             Here
         </a>.
