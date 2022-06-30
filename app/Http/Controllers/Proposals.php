@@ -74,6 +74,8 @@ class Proposals extends Controller
                         // $teamInfo['country'] =$moreTeamData->country;
                         $teamInfo['employees_number'] = $moreTeamData->employees_number;
                         $estPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
+                        $userInfo = User::find($userData['user_id']);
+
                         $details = [
                             'subject' => 'Initial Proposal ' . $projectData->name,
                             'project_name' => $projectData->name,
@@ -82,7 +84,9 @@ class Proposals extends Controller
                             'team_info' => $teamInfo,
                             'admin_name' => $companyAdminData->first_name,
                             'proposal' => $proposal,
-                            'est' => $estPrice
+                            'est' => $estPrice,
+                            'agency_admin_name' => "$userInfo->first_name $userInfo->last_name",
+
                         ];
                         //Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
                         Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
