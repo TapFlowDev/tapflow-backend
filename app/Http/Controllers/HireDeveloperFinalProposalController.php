@@ -213,7 +213,7 @@ class HireDeveloperFinalProposalController extends Controller
                     "agency_name" =>  $agencyName,
                 ];
                 // Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new SubmitHireDeveloper($details));
-                Mail::mailer('smtp2')->to($companyAdmin->email)->send(new HireDeveloperActions($details));
+                Mail::mailer('smtp2')->to($companyAdmin->email)->send(new SubmitHireDeveloper($details));
                 $response = Controller::returnResponse(200, "contract submitted successfully", []);
                 return (json_encode($response));
             }
