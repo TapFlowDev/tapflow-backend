@@ -225,7 +225,6 @@ class ProjectsController extends Controller
 
                 // $str = $project->requirements_description;
                 // // $requirements_description = json_decode($str, TRUE);
-
                 // return preg_split("/[\s,]+/", $str);
             }
         }
