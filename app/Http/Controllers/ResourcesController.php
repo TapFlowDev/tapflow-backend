@@ -48,7 +48,7 @@ class ResourcesController extends Controller
                 }else{
                     $endDate = $req->end_date;
                 }
-                $resource = resources::create($req->except(['end_date']) + ['end_date'=> $endDate]);
+                $resource = resources::create($req->except(['end_date', 'image']) + ['end_date'=> $endDate]);
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
                     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
