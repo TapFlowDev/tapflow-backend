@@ -93,8 +93,33 @@ class ProjectAgencyMatchController extends Controller
                 'leadTime' => $startProject,
                 'image' => $image,
             ];
-            $agencies[] =$agencyArr; 
+            $agencies[] = $agencyArr;
         }
         return $agencies;
+    }
+    function  AskToApply(Request $req)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2)) {
+                $response = Controller::returnResponse(401, "unauthorized", []);
+                return (json_encode($response));
+            } else {
+                $RoomObj = new RoomController();
+                $projectObj = new ProjectController;
+                $companyAdmin = $projectObj->getCompanyProjectAdmin($req->project_id);
+                $data = array('name' => null, 'agencyAdmin' => $req->agency_admin, 'companyAdmin' => $companyAdmin);
+                $room = $RoomObj->createRoom($data);
+                if ($room['code'] != 200) {
+                    $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
+                    return (json_encode($response));
+                }
+                $response = Controller::returnResponse(200, "successful", ['room_id' => $room['msg']]);
+                return (json_encode($response));
+            }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something wrong chat", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 }

@@ -263,7 +263,7 @@ class HireDeveloperProposalsController extends Controller
             $response = Controller::returnResponse(401, "Unauthrized", []);
             return (json_encode($response));
         }
-        $proposal = hire_developer_proposals::select('id', 'status', 'project_id')->where('id', $req->proposal_id)->first();
+        $proposal = hire_developer_proposals::select('id', 'status', 'project_id','user_id')->where('id', $req->proposal_id)->first();
         if (!$proposal) {
             $response = Controller::returnResponse(422, 'Proposal does not exsist', []);
             return (json_encode($response));
@@ -279,6 +279,16 @@ class HireDeveloperProposalsController extends Controller
         }
         $proposal->status = 1;
         $proposal->save();
+        $projectObj=new ProjectController;
+        $RoomObj=new RoomController();
+        $companyAdmin=$projectObj->getCompanyProjectAdmin($proposal->project_id);
+        $data=array('name'=>null,'agencyAdmin'=>$proposal->user_id,'companyAdmin'=>$companyAdmin);
+        $room=$RoomObj->createRoom($data);
+        if($room['code'] != 200)
+        {
+            $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
+            return (json_encode($response));
+        }
         // notify agency
         $mail = $this->notifyAgency($req->proposal_id, 1);
         $response = Controller::returnResponse(200, "proposal accepted", []);

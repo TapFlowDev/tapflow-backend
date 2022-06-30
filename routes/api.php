@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
-use App\Http\Controllers\AdminTool\ProjectAgencyMatchController;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Models\Rate;
 use Illuminate\Http\Request;
@@ -57,6 +56,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\HireDeveloperFinalProposalController;
+use App\Http\Controllers\ProjectAgencyMatchController;
 
 
 // use App\Http\Controllers\PaymentController;
@@ -329,4 +329,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('getHires', [ResourcesController::class, 'getHires']);
     Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
     Route::get('getProjectAgencyMatches/{id}/{offset}/{limit}', [ProjectAgencyMatchController::class, 'getProjectAgencyMatches']);
+    Route::get('AskToApply', [ProjectAgencyMatchController::class, 'AskToApply']);
 });
