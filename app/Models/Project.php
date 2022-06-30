@@ -27,5 +27,7 @@ class Project extends Model
         'budget_id',
         'interview',
         'start_project',
+        'verified',
+        'visible',
     ];
 }

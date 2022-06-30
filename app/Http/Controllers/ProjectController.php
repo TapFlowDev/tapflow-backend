@@ -17,6 +17,7 @@ use App\Models\Company;
 use App\Models\proposal;
 use App\Models\Final_proposal;
 use App\Models\Group_member;
+use App\Models\Agency_active_project;
 use App\Models\Requirement as requirementModel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Proposals;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Requirement;
 use App\Http\Controllers\ClientController;
+use App\Models\hire_developer_proposals;
 use App\Models\Milestone;
 use App\Models\Team;
 use App\Models\User;
@@ -354,6 +356,7 @@ class ProjectController extends Controller
             $project->company_bio = $company_bio;
             $project->duration = Category::find((int)$project->days)->name;
             $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            $project->requirmentsDetails = $requirementsObj->getRequirementsAndHourlyRateByProjectId($project->id);
             $project->admin_info = $admin_info;
         }
         return $projects;
@@ -1162,6 +1165,430 @@ class ProjectController extends Controller
             $responseData = $error->getMessage();
             $response['error']  = Controller::returnResponse(500, "There IS Error Occurred", $responseData);
             return $response;
+        }
+    }
+    function newExploreProject(Request $req, $type = 3, $offset = 1, $limit = 4)
+    {
+        $userData = $this->checkUser($req);
+        $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 1;
+        if (!$condtion) {
+            $response = Controller::returnResponse(401, "unauthorized user", []);
+            return (json_encode($response));
+        }
+        try {
+            $page = ($offset - 1) * $limit;
+
+            $conditionArray = [
+                ['type', '=', $type],
+                ['verified', '=', 1],
+                ['visible', '=', 1],
+            ];
+            if ($type != 3) {
+                $conditionArray[] = ['status', '<', 1];
+            }
+            if ($type < 2) {
+                $conditionArray2 = [
+                    ['type', '=', 0],
+                    ['verified', '=', 1],
+                    ['visible', '=', 1],
+                ];
+                $projects = Project::where($conditionArray)->orWhere($conditionArray2)->distinct()->latest()->offset($page)->limit($limit)->get();
+                $projectsCounter = Project::where($conditionArray)->orWhere($conditionArray2)->count();
+            } else {
+                $projects = Project::where($conditionArray)->distinct()->latest()->offset($page)->limit($limit)->get();
+                $projectsCounter = Project::where($conditionArray)->count();
+            }
+            // return $projects;
+            $projectsData = $this->newGetProjectsInfo($projects);
+
+            $responseData = array('allData' => $projectsData, 'counter' => $projectsCounter);
+
+            $response = Controller::returnResponse(200, "Data Found", $responseData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    private function newGetProjectsInfo($projects, $groupId = 0, $groupType = 0)
+    {
+        $projectCategoriesObj = new ProjectCategoriesController;
+        $requirementsObj = new Requirement;
+        $clientObj = new ClientController;
+        $countriesObj = new NewCountriesController;
+
+        foreach ($projects as $keyProj => &$project) {
+            $project->company_name = Group::find($project->company_id)->name;
+            $companyAdminId = Group_member::where('group_id', '=', $project->company_id)->where('privileges', '=', 1)->first()->user_id;
+            $companyAdminEmail = User::select('email')->where('id', '=', $companyAdminId)->first()->email;
+            $project->company_email = $companyAdminEmail;
+            $company_image =  Company::select('image')->where('group_id', $project->company_id)->get()->first()->image;
+            $company_bio =  Company::select('bio')->where('group_id', $project->company_id)->get()->first()->bio;
+            $company_field_id =  Company::select('field')->where('group_id', $project->company_id)->get()->first()->field;
+            $company_sector_id =  Company::select('sector')->where('group_id', $project->company_id)->get()->first()->sector;
+            $company_country_id =  Company::select('country')->where('group_id', $project->company_id)->get()->first()->country;
+            $user_info = json_decode($clientObj->get_client_info($project->user_id));
+            $admin_info = array('first_name' => $user_info->data->first_name, "role" => $user_info->data->role);
+            if (isset($user_info->image)) {
+                $admin_info['image'] = asset("images/companies/" . $user_info->image);
+            } else {
+                $admin_info['image'] = asset('images/profile-pic.jpg');
+            }
+            // if ($company_field_id != '' && $company_field_id != null) {
+            //     $project->company_field = Category::find((int)$company_field_id)->name;
+            // }
+            // if ($company_sector_id != '' && $company_sector_id != null) {
+            //     $project->company_sector = Category::find((int)$company_sector_id)->name;
+            // }
+            if ($company_country_id != '' && $company_country_id != null) {
+                $countriesData = $countriesObj->getCountryFlag($company_country_id);
+                $project->company_country_flag = $countriesData->flag;
+                $project->company_country_name = $countriesData->name;
+                $project->company_country_code = $countriesData->code;
+            }
+
+            // dd($company_image);
+            if (isset($company_image)) {
+                $project->company_image = asset("images/companies/" . $company_image);
+            } else {
+                $project->company_image = asset('images/profile-pic.jpg');
+            }
+            $duration = Category::find((int)$project->days);
+            $budget = Category::find((int)$project->budget_id);
+            $startProject = Category::find((int)$project->start_project);
+            $project->duration = ($duration ? $duration->name : "unset");
+            $project->budget = ($budget ? $budget->name : "$$project->min - $$project->max");
+            $project->startProject = ($startProject ? $startProject->name : "unset");
+            $project->company_bio = $company_bio;
+            $project->admin_info = $admin_info;
+            $project->requirments_description = $requirementsObj->getRequirementsByProjectId($project->id)->pluck('description')->toArray();
+            $project->requirments = $requirementsObj->getRequirementsAlldataByProjectId($project->id);
+            if ($project->type == 3) {
+                $requirmentsDetails = $requirementsObj->getHireDevRequirmentData($project->id);
+                $project->requirmentsDetails = $requirmentsDetails['reqArr'];
+                $project->requirmentsSkills = $requirmentsDetails['skills'];
+                $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                $hireDeveloperFinalProposalsObj = new HireDeveloperFinalProposalController;
+                if ($groupId > 0 && $groupType == 1) {
+                    // hire developer final obj 
+                    $initProp = $hireDeveloperProposalsObj->checkIfProposalExists($project->id, $groupId);
+                    $proposal_status = $initProp['status'];
+                    $project->proposal_status = $proposal_status;
+                    $finalStatus = 0;
+                    $finalExists = 0;
+                    if (isset($initProp['proposal_id'])) {
+                        $finalProp = $hireDeveloperFinalProposalsObj->checkIfExists($initProp['proposal_id'], $groupId);
+                        $finalStatus = $finalProp['status'];
+                        $finalExists = $finalProp['exist'];
+                    }
+                    $project->final_proposal_status =  $finalStatus;
+                    $project->final_proposal_exist =  $finalExists;
+                    
+                    $project->proposal_id = (isset($initProp['proposal_id']) ? $initProp['proposal_id'] : null);
+                    $project->final_proposal_id = (isset($finalProp['final_proposal_id']) ? $finalProp['final_proposal_id'] : null);
+                    $progressArray = array(
+                        "apply" => $initProp['exist'],
+                        "discuss" => 0,
+                        "contract" => $finalStatus,
+                        "onboard" => 0,
+                    );
+                    $project->progressArray = $progressArray;
+                } elseif ($groupId > 0 && $groupType == 2) {
+                    $projectAgencyMatchObj = new ProjectAgencyMatchController;
+                    $initPropCount = $hireDeveloperProposalsObj->getCountByProjectId($project->id);
+                    $finalPropCount = $hireDeveloperProposalsObj->getContractsCountByProjectId($project->id);
+                    $hiresPropCount = $hireDeveloperProposalsObj->getHiresCountByProjectId($project->id);
+                    $agencyMatchCount = $projectAgencyMatchObj->getMatchCountByProjectId($project->id);
+                    $progressArray = array(
+                        "matches" => $agencyMatchCount,
+                        "proposals" => $initPropCount,
+                        "contracts" => $finalPropCount,
+                        "hires" => $hiresPropCount,
+                    );
+                    $project->progressArray = $progressArray;
+                }
+            } else {
+                $project->categories = $projectCategoriesObj->getProjectCategories($project->id);
+                if ($groupId > 0 && $groupType == 1) {
+                    $finalPropObj = new Final_proposals;
+                    $initPropObj = new Proposals;
+                    $finalProp = $finalPropObj->checkIfExists($project->id, $groupId);
+                    $initProp = $initPropObj->checkIfProposalExists($project->id, $groupId);
+                    $proposal_status = $initProp['status'];
+                    $finalStatus = $finalProp['status'];
+                    // if ($finalProp['exist'] == 1) {
+                    // } else {
+                    //     $finalStatus = 0;
+                    // }
+                    $project->final_proposal_status =  $finalStatus;
+                    $project->proposal_status =   $proposal_status;
+                    $project->proposal_id = (isset($initProp['proposal_id']) ? $initProp['proposal_id'] : null);
+                    $project->final_proposal_id = (isset($finalProp['final_proposal_id']) ? $finalProp['final_proposal_id'] : null);
+                    $progressArray = array(
+                        "apply" => $initProp['exist'],
+                        "discuss" => 0,
+                        "contract" => $finalStatus,
+                        "onboard" => 0,
+                    );
+                    $project->progressArray = $progressArray;
+                } elseif ($groupId > 0 && $groupType == 2) {
+                    $projectAgencyMatchObj = new ProjectAgencyMatchController;
+                    $finalPropObj = new Final_proposals;
+                    $initPropObj = new Proposals;
+                    $milestonesObj = new Milestones;
+                    $initPropCount = $initPropObj->getCountByProjectId($project->id);
+                    $finalPropCount = $finalPropObj->getCountByProjectId($project->id);
+                    $milestonesCount = $milestonesObj->getCountByProjectId($project->id);
+                    $agencyMatchCount = $projectAgencyMatchObj->getMatchCountByProjectId($project->id);
+                    $progressArray = array(
+                        "matches" => $agencyMatchCount,
+                        "proposals" => $initPropCount,
+                        "contracts" => $finalPropCount,
+                        "milestones" => $milestonesCount,
+                    );
+                    $project->progressArray = $progressArray;
+                }
+            }
+        }
+        return $projects;
+    }
+    function newGetProject(Request $req, $id)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $project = Project::where('id', $id)->get();
+            $projectInfo = $this->newGetProjectsInfo($project, $userData['group_id'], $userData['type'])->first();
+            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getInitailProposalsProjectId(Request $req, $id, $offset = 0, $limit = 4)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($userData['type'] == 1) {
+                $agencyId = $userData['group_id'];
+                $project = Project::where('id', '=', $id)->first();
+            } else {
+                $agencyId = 0;
+                $project = Project::where('id', '=', $id)->where('company_id', '=', $userData['group_id'])->first();
+            }
+            $page = ($offset - 1) * $limit;
+
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Project does not exsist', []);
+                return (json_encode($response));
+            }
+
+            if ($project->type == 3) {
+                $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                $proposals = $hireDeveloperProposalsObj->getProposalsByProjectIdTeamId($id, $agencyId, $page, $limit);
+            } else {
+                $proposalsObj = new Proposals;
+                $proposals = $proposalsObj->getProposalsByProjectId($id, $agencyId, $page, $limit);
+            }
+            $response = Controller::returnResponse(200, "data found", $proposals);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getAllProjectsClient(Request $req)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $project = Project::where('company_id', $userData['group_id'])->latest()->get();
+            $projectInfo = $this->newGetProjectsInfo($project, $userData['group_id'], $userData['type']);
+            $response = Controller::returnResponse(200, "data found", $projectInfo);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getFinalProposalsProjectId(Request $req, $id, $offset = 0, $limit = 0)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "unauthorized user", []);
+                return (json_encode($response));
+            }
+            if ($userData['type'] == 1) {
+                $agencyId = $userData['group_id'];
+                $project = Project::where('id', '=', $id)->first();
+            } else {
+                $agencyId = 0;
+                $project = Project::where('id', '=', $id)->where('company_id', '=', $userData['group_id'])->first();
+            }
+            $page = ($offset - 1) * $limit;
+
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Project does not exsist', []);
+                return (json_encode($response));
+            }
+
+            if ($project->type == 3) {
+                $hireDeveloperFinalProposalsObj = new HireDeveloperFinalProposalController;
+                $hireDeveloperProposalsObj = new HireDeveloperProposalsController;
+                $proposalIds = $hireDeveloperProposalsObj->getAcceptedProposalByProjectId($id, $agencyId);
+                if (count($proposalIds) < 1) {
+                    $response = Controller::returnResponse(200, "data found", []);
+                    return (json_encode($response));
+                }
+                $finalproposals = $hireDeveloperFinalProposalsObj->getContractData($proposalIds, $agencyId, $page, $limit);
+            } else {
+                $finalproposalsObj = new Final_proposals;
+                if ($agencyId > 0) {
+                    $proposalObj = new Proposals;
+                    $init_proposal = $proposalObj->getProposalInfo($id, $agencyId);
+                    if ($init_proposal['exist'] != 1) {
+                        $response = Controller::returnResponse(422, 'you do not have initial proposal ', []);
+                        return json_encode($response);
+                    }
+                }
+
+                $finalproposals = $finalproposalsObj->newGetFinalProposalByProjectIdAndTeamId($id, $agencyId,  $page, $limit);
+            }
+            $response = Controller::returnResponse(200, "data found", $finalproposals);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function getAgencyProjects(Request $req, $offset = 0, $limit = 4)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $initialFinalHireSelect = ['projects.*', 'hire_developer_proposals.id as proposal_id', 'hire_developer_proposals.status as initial_status', 'hire_developer_final_proposals.id as contract_id', 'hire_developer_final_proposals.status as final_status'];
+            $initialFinalSelect = ['projects.*', 'proposals.id as proposal_id', 'proposals.status as initial_status', 'final_proposals.id as contract_id', 'final_proposals.status as final_status'];
+            // $initialProposals = proposal::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+            // $initialProposalsHireDevelopers = hire_developer_proposals::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+            $initailFinalHire = DB::table('hire_developer_proposals')
+                ->leftJoin('hire_developer_final_proposals', 'hire_developer_proposals.id', '=', 'hire_developer_final_proposals.proposal_id')
+                ->join('projects', 'projects.id', '=', 'hire_developer_proposals.project_id')
+                ->select($initialFinalHireSelect)
+                ->where('hire_developer_proposals.team_id', '=', $userData['group_id'])
+                ->get();
+
+            $initailFinal = DB::table('proposals')
+                ->leftJoin('final_proposals', 'proposals.id', '=', 'final_proposals.proposal_id')
+                ->join('projects', 'projects.id', '=', 'proposals.project_id')
+                ->select($initialFinalSelect)
+                ->where('proposals.team_id', '=', $userData['group_id'])
+                ->get();
+            $allProposals = $initailFinalHire->merge($initailFinal);
+            $allProjects = $allProposals->sortDesc()->splice($page, $limit);
+            $projectsCounter = $allProposals->count();
+            $projectInfo = $this->newGetProjectsInfo($allProjects, $userData['group_id'], $userData['type']);
+            // $projectIds = $allProposals->pluck('project_id')->toArray();
+            // sort($projectIds);
+            // return $projectInfo;
+            $returnData = [
+                'allData' => $projectInfo,
+                'count' => $projectsCounter
+            ];
+            $response = Controller::returnResponse(200, "data found", $returnData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function newAgencyActiveProjects(Request $req, $offset = 0, $limit = 4)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $agencyActiveProjectIds = Agency_active_project::select('project_id')->where('group_id', '=', $userData['group_id'])->pluck('project_id')->toArray();
+            // return $agencyActiveProjectIds;
+            $projects = DB::table('projects')
+                ->select('projects.*')
+                ->where(function ($query) use ($userData, $agencyActiveProjectIds) {
+                    $query->where('projects.team_id', '=', $userData['group_id'])
+                        ->orWhereIn('projects.id', $agencyActiveProjectIds);
+                })
+                ->whereIn('projects.status', [1, 4])
+                ->distinct()
+                ->orderBy('updated_at', 'desc')
+                ->offset($page)->limit($limit)
+                ->get();
+            // return $projects;
+            $projectsCounter = DB::table('projects')
+                ->select('projects.*')
+                ->where(function ($query) use ($userData, $agencyActiveProjectIds) {
+                    $query->where('projects.team_id', '=', $userData['group_id'])
+                        ->orWhereIn('projects.id', $agencyActiveProjectIds);
+                })
+                ->whereIn('projects.status', [1, 4])
+                ->count();
+            $projectInfo = $this->newGetProjectsInfo($projects, $userData['group_id'], $userData['type']);
+
+            $returnData = [
+                'allData' => $projectInfo,
+                'count' => $projectsCounter
+            ];
+            $response = Controller::returnResponse(200, "data found", $returnData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
+        }
+    }
+    function newAgencyPendingProjects(Request $req, $offset = 0, $limit = 4)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $initialFinalHireSelect = ['projects.*', 'hire_developer_proposals.id as proposal_id', 'hire_developer_proposals.status as initial_status', 'hire_developer_final_proposals.id as contract_id', 'hire_developer_final_proposals.status as final_status'];
+            $initialFinalSelect = ['projects.*', 'proposals.id as proposal_id', 'proposals.status as initial_status', 'final_proposals.id as contract_id', 'final_proposals.status as final_status'];
+            $agencyActiveProjectIds = Agency_active_project::select('project_id')->where('group_id', '=', $userData['group_id'])->pluck('project_id')->toArray();
+
+            // $initialProposals = proposal::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+            // $initialProposalsHireDevelopers = hire_developer_proposals::select('id', 'project_id', 'status as initial_status')->where('team_id', '=', $userData['group_id'])->get();
+            $initailFinalHire = DB::table('hire_developer_proposals')
+                ->leftJoin('hire_developer_final_proposals', 'hire_developer_proposals.id', '=', 'hire_developer_final_proposals.proposal_id')
+                ->join('projects', 'projects.id', '=', 'hire_developer_proposals.project_id')
+                ->select($initialFinalHireSelect)
+                ->where('hire_developer_proposals.team_id', '=', $userData['group_id'])
+                ->whereNotIn('projects.id', $agencyActiveProjectIds)
+                ->get();
+
+            $initailFinal = DB::table('proposals')
+                ->leftJoin('final_proposals', 'proposals.id', '=', 'final_proposals.proposal_id')
+                ->join('projects', 'projects.id', '=', 'proposals.project_id')
+                ->select($initialFinalSelect)
+                ->where('proposals.team_id', '=', $userData['group_id'])
+                ->where('projects.status', '=', 0)
+                ->get();
+            $allProposals = $initailFinalHire->merge($initailFinal);
+            $projectsCounter = $allProposals->count();
+            $allProjects = $allProposals->sortDesc()->splice($page, $limit);
+            $projectInfo = $this->newGetProjectsInfo($allProjects, $userData['group_id'], $userData['type']);
+            // $projectIds = $allProposals->pluck('project_id')->toArray();
+            // sort($projectIds);
+            // return $projectInfo;
+            $returnData = [
+                'allData' => $projectInfo,
+                'count' => $projectsCounter
+            ];
+            $response = Controller::returnResponse(200, "data found", $returnData);
+            return (json_encode($response));
+        } catch (\Exception $error) {
+            $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
+            return (json_encode($response));
         }
     }
 }

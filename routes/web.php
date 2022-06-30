@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\RolesController;
 use App\Http\Controllers\AdminTool\AnnouncementsController;
+use App\Http\Controllers\AdminTool\ApplicationsController;
 use App\Http\Controllers\AdminTool\DashboardController;
 use App\Http\Controllers\AdminTool\EmailController;
 use App\Http\Controllers\AdminTool\CategoryTypesController;
@@ -90,6 +91,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::resource('/countries', CountriesController::class);
     Route::resource('/skills', SkillsController::class);
     Route::resource('/features', FeaturesController::class);
+    Route::resource('/applications', ApplicationsController::class);
     Route::get('/addSkillsCSV', [SkillsController::class, 'addByCSV'])->name('skills.showAddByCSV');
     Route::post('/addSkillsCSV', [SkillsController::class, 'createByCSV'])->name('skills.creatAddByCSV');
     Route::get('/checkSkill/{skill}', [SkillsController::class, 'isSkillExsits']);

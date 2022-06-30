@@ -58,11 +58,15 @@ class   GroupController extends Controller
         //check if the team agency or team of freelancers-
         $rules = array(
             "name" => "required|max:255",
-            "admin_id" => "required|unique:group_members,user_id|exists:freelancers,user_id",
-            "analysis" => "required",
-            "design" => "required",
-            "minPerHour" => "numeric",
-            "maxPerHour" => "numeric"
+            "bio" => "required|max:255",
+            "country" => "required",
+            "link" => "required",
+            "employees_number" => "required",
+            "hourlyRate" => "required",
+            "leadTime" => "required",
+            "projectTypes" => "required",
+            "categories" => "required",
+            "targets" => "required",
         );
         $validator = Validator::make($req->all(), $rules);
         if ($validator->fails()) {
@@ -77,13 +81,14 @@ class   GroupController extends Controller
             $membersObj = new GroupMembersController;
             $targetObj = new AgencyTargetsController;
             $agencyServicesObj = new AgencyServiceController;
+            $agencyProjectTypeObj = new AgencyProjectTypeController;
 
 
             try {
                 $userData = $req->user();
                 $group = Group::create($req->only(['name', 'admin_id']) + ['type' => $type]);
                 $group_id = $group->id;
-                $userId = $req->admin_id;
+                $userId = $userData->id;
                 $member = $membersObj->Insert($group_id, $userId, 1);
 
                 $targets = $req->targets;
@@ -122,25 +127,39 @@ class   GroupController extends Controller
                     //     }
                     // }
                 } else {
-                    $cats = json_decode($req->categories);
-                    if (isset($cats)) {
-
-                        foreach ($cats as $key => $value) {
-                            $categoryArr = array();
-                            foreach ($value->subCat as $keySub => $subValue) {
-                                $categoryArr[$keySub]['group_id'] = $group_id;
-                                $categoryArr[$keySub]['category_id'] = $value->catId;
-                                $categoryArr[$keySub]['sub_category_id'] = $subValue;
-                            }
-                            $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
-                            if ($add_cat == 500) {
-                                $delGroup = Group::where('id', $group_id)->delete();
-                                $response = Controller::returnResponse(500, 'add cast error', []);
-                                return json_encode($response);
-                            }
-                        }
-                    }
+                    // $cats = json_decode($req->categories);
+                    // // $cats = $req->categories;
+                    // // if (isset($cats)) {
+                    //     $categoryArr = array();
+                    //     foreach ($cats as $key => $value) {
+                    //         $categoryArr[$key]['group_id'] = $group_id;
+                    //         $categoryArr[$key]['category_id'] = $value;
+                    //         $categoryArr[$key]['sub_category_id'] = 0;
+                    //     }
+                    //     $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
+                    //     if ($add_cat == 500) {
+                    //         $delGroup = Group::where('id', $group_id)->delete();
+                    //         $response = Controller::returnResponse(500, 'add cast error', []);
+                    //         return json_encode($response);
+                    //     }
+                    // // }
                 }
+                // $cats = json_decode($req->categories);
+                // $cats = $req->categories;
+                // if (isset($cats)) {
+                $categoryArr = array();
+                foreach (json_decode($req->categories) as $key => $value) {
+                    $categoryArr[$key]['group_id'] = $group_id;
+                    $categoryArr[$key]['category_id'] = $value;
+                    $categoryArr[$key]['sub_category_id'] = 0;
+                }
+                $add_cat = $groupCategoryObj->addMultiRows($categoryArr);
+                if ($add_cat == 500) {
+                    $delGroup = Group::where('id', $group_id)->delete();
+                    $response = Controller::returnResponse(500, 'add cast error', []);
+                    return json_encode($response);
+                }
+                // }
                 $teamArr = array();
                 $teamArr['group_id'] = $group_id;
                 $teamArr['bio'] = $req->bio;
@@ -149,10 +168,12 @@ class   GroupController extends Controller
                 $teamArr['country'] = $req->country;
                 $teamArr['employees_number'] = $req->employees_number;
                 $teamArr['field'] = $req->field;
-                $teamArr['BA'] = $req->analysis;
-                $teamArr['design'] = $req->design;
-                $teamArr['minPerHour'] = $req->minPerHour;
-                $teamArr['maxPerHour'] = $req->maxPerHour;
+                $teamArr['BA'] = 0;
+                $teamArr['design'] = 0;
+                $teamArr['minPerHour'] = 0;
+                $teamArr['maxPerHour'] = 0;
+                $teamArr['lead_time'] = $req->leadTime;
+                $teamArr['hourly_rate'] = $req->hourlyRate;
 
                 $teamInfo = $teamObj->Insert($teamArr);
                 $teamId = $group_id;
@@ -190,28 +211,35 @@ class   GroupController extends Controller
                 //         ]);
                 //     }
                 // }
-                if (isset($req->targets) && count($req->targets) > 0) {
-                    // $targetArray = array();
-                    // foreach ($targets as $keyTarget => $target) {
-                    //     $targetArray[$keyTarget]['group_id'] = $group_id;
-                    //     $targetArray[$keyTarget]['category_id'] = $target;
-                    // }
-                    // $successTarget = $targetObj->addMultiRows($targetArray);
-                    // if ($successTarget == 500) {
-                    //     // $delGroupTarget = Group::where('id', $group_id)->delete();
-                    //     $response = Controller::returnResponse(500, 'add cast error', []);
-                    //     return json_encode($response);
-                    // }
-                    // DB::table('agency_targets')->where('group_id', $teamId)->delete();
+                // if (isset($req->targets) && count($req->targets) > 0) {
+                // $targetArray = array();
+                // foreach ($targets as $keyTarget => $target) {
+                //     $targetArray[$keyTarget]['group_id'] = $group_id;
+                //     $targetArray[$keyTarget]['category_id'] = $target;
+                // }
+                // $successTarget = $targetObj->addMultiRows($targetArray);
+                // if ($successTarget == 500) {
+                //     // $delGroupTarget = Group::where('id', $group_id)->delete();
+                //     $response = Controller::returnResponse(500, 'add cast error', []);
+                //     return json_encode($response);
+                // }
+                // DB::table('agency_targets')->where('group_id', $teamId)->delete();
 
-                    foreach ($req->targets as $keyLink => $valTarget) {
-                        DB::table('agency_targets')->insert([
-                            'group_id' => (int)$teamId,
-                            'category_id' => (int)$valTarget
-                        ]);
-                    }
-                    $services = $agencyServicesObj->Insert($teamId, $req->services);
+                // foreach ($req->targets as $keyLink => $valTarget) {
+                //     DB::table('agency_targets')->insert([
+                //         'group_id' => (int)$teamId,
+                //         'category_id' => (int)$valTarget
+                //     ]);
+                // }
+                // }
+                foreach (json_decode($req->targets) as $keyLink => $valTarget) {
+                    DB::table('agency_targets')->insert([
+                        'group_id' => (int)$teamId,
+                        'category_id' => (int)$valTarget
+                    ]);
                 }
+                $services = $agencyServicesObj->Insert($teamId, json_decode($req->services));
+                $projectTypes = $agencyProjectTypeObj->Insert($teamId, json_decode($req->projectTypes));
 
                 // $response = array("data" => array(
                 //     "message" => "team added successfully",
@@ -222,7 +250,7 @@ class   GroupController extends Controller
 
                 // return (json_encode($response));
                 $mailchimpUserType = 'agency-member';
-                Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+                //Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
                 $responseData = array(
                     "group_id" => $group_id
                 );
@@ -330,7 +358,7 @@ class   GroupController extends Controller
                 "group_id" => $group_id
             );
             $mailchimpUserType = 'company-member';
-            Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
+            //Newsletter::subscribeOrUpdate($userData->email, ['FNAME' => $userData->first_name, 'LNAME' => $userData->last_name, 'ROLE' => $userData->role, "UTYPE" => $mailchimpUserType, 'ADMIN'=>'admin'], 'Tapflow');
             $response = Controller::returnResponse(200, 'company added successfully', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
