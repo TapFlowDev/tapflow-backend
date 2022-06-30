@@ -212,8 +212,8 @@ class HireDeveloperFinalProposalController extends Controller
                     "project_name" =>  $project_info->name,
                     "agency_name" =>  $agencyName,
                 ];
-                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new SubmitHireDeveloper($details));
-                // Mail::mailer('smtp2')->to($companyAdmin->email)->send(new HireDeveloperActions($details));
+                // Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new SubmitHireDeveloper($details));
+                Mail::mailer('smtp2')->to($companyAdmin->email)->send(new HireDeveloperActions($details));
                 $response = Controller::returnResponse(200, "contract submitted successfully", []);
                 return (json_encode($response));
             }
@@ -263,7 +263,9 @@ class HireDeveloperFinalProposalController extends Controller
 
                 ];
 
-                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
+                //Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
+                Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
+
                 $response = Controller::returnResponse(200, "successful", []);
                 return (json_encode($response));
             }
@@ -300,8 +302,8 @@ class HireDeveloperFinalProposalController extends Controller
 
                 ];
 
-                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
-                // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
+                // Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
+                Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
                 $response = Controller::returnResponse(200, "successful", []);
                 return (json_encode($response));
             }
