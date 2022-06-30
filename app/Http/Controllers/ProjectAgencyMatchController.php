@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+
 class ProjectAgencyMatchController extends Controller
 {
     //add row 
@@ -40,6 +41,7 @@ class ProjectAgencyMatchController extends Controller
             ->count();
         return $matchesCount;
     }
+<<<<<<< HEAD
     function getProjectAgencyMatches(Request $req, $id, $offset = 0, $limit = 4)
     {
         try {
@@ -122,4 +124,7 @@ class ProjectAgencyMatchController extends Controller
             return (json_encode($response));
         }
     }
+=======
+
+>>>>>>> a961e584fb8a1207c1472edee702181809e11772
 }
