@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
+use App\Http\Controllers\AdminTool\ProjectAgencyMatchController;
 use App\Http\Controllers\AdminTool\ProjectsController;
 use App\Models\Rate;
 use Illuminate\Http\Request;
@@ -327,4 +328,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('getContractDetails/{contractId}', [HireDeveloperFinalProposalController::class, 'getContractWithResourcesClient']);
     Route::post('getHires', [ResourcesController::class, 'getHires']);
     Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
+    Route::get('getProjectAgencyMatches/{id}/{offset}/{limit}', [ProjectAgencyMatchController::class, 'getProjectAgencyMatches']);
 });
