@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use  App\Http\Controllers\GroupMembersController;
 use  App\Http\Controllers\TeamController;
 use  App\Http\Controllers\CompanyController;
+use App\Models\Team;
+use App\Models\Company;
 
 
 
@@ -369,6 +371,7 @@ class RoomController extends Controller
             }
             $page = ($offset - 1) * $limit;
             $ids = RoomMembers::where('user_id', $user_id)->select('room_id','updated_at')->distinct()->orderBy('updated_at')->offset($page)->limit($limit)->get();
+           
             // dd($ids->all());
             // $rooms_ids = RoomMembers::where('user_id', $user_id)->select('room_id')->distinct()->pluck('room_id')->toArray();
             $rooms = array();
@@ -395,6 +398,7 @@ class RoomController extends Controller
                 $name = Rooms::where('id', $id->room_id)->select('name')->first()->name;
                 $membersCount = RoomMembers::where('room_id',  $id->room_id)->select('seen')->count();
                 $seen = RoomMembers::where('room_id',  $id->room_id)->where('user_id',$user_id)->select('seen')->first()->seen;
+               
                 // $membersCount=$members->count();
                 if ($membersCount > 2) {
                     $roomType = 2;
@@ -402,6 +406,7 @@ class RoomController extends Controller
                 $chatObj = new ChatController;
 
                 $lastMessage = $chatObj->getRoomLastMessage($id->room_id, $userData['user_id']);
+                $image= $this->getRoomImage($userData['group_id'],$userData['type']);
                 if ($lastMessage === null) {
                     $room2 = array(
                         'room_id' =>  $id->room_id,
@@ -410,6 +415,7 @@ class RoomController extends Controller
                         'lastMessage' => 'first msg',
                         'date' => '',
                         'seen' => $seen,
+                        'image' => $image,
                     );
                     array_push($rooms2, $room2);
                 }
@@ -422,6 +428,7 @@ class RoomController extends Controller
                         'lastMessage' => $lastMessage->body,
                         'date' => $lastMessage->created_at,
                         'seen' => $seen,
+                        'image' => $image,
                     );
                     array_push($rooms, $room);
                     $dates = array_column($rooms, 'date');
@@ -462,5 +469,26 @@ class RoomController extends Controller
         ->where('room_id', $room_id)
         ->where('user_id', '!=', $user_id)
         ->update(['seen'=>0]);
+    }
+    function getRoomImage($group_id,$type)
+    {
+        if($type == 1)
+        {
+            $image=Team::where('group_id',$group_id)->select('image')->first()->image;
+            if (!$image) {
+                $image = asset('images/profile-pic.jpg');
+            }else{
+                $image =  asset('images/companies/' . $image);
+            }
+        }
+        else{
+            $image =Company::where('group_id',$group_id)->select('image')->first()->image;
+            if (!$image) {
+                $image = asset('images/profile-pic.jpg');
+            }else{
+                $image =  asset('images/companies/' . $image);
+            }
+        }
+        return $image;
     }
 }
