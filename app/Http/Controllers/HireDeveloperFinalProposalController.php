@@ -134,6 +134,9 @@ class HireDeveloperFinalProposalController extends Controller
                 }
                 $proposal = hire_developer_proposals::select('project_id')->where('id', '=', $contract->proposal_id)->first();
                 $contract->project_id = $proposal->project_id;
+                $projectAdmin = Project::select('user_id')->where('id', '=', $proposal->project_id)->first();
+                $projectAdminName = User::select('first_name', 'last_name')->where('id', '=', $projectAdmin->user_id)->first();
+                $contract->companyAdminName = "$projectAdminName->first_name $projectAdminName->last_name";
                 $response = Controller::returnResponse(200, "successful", $contract);
                 return (json_encode($response));
             }
