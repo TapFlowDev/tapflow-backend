@@ -232,7 +232,7 @@ class ResourcesController extends Controller
                 return (json_encode($response));
             } else {
                 $company_id = Project::where('id', $req->project_id)->select('company_id')->first()->company_id;
-                if ($company_id != $userData['group_id']); {
+                if ($company_id != $userData['group_id']) {
                     $response = Controller::returnResponse(401, "unauthorized group", []);
                     return (json_encode($response));
                 }
