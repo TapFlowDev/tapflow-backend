@@ -103,7 +103,7 @@ class UserController extends Controller
                     $img->move(public_path($destPath), $imageName);
                     $this->updateFiles($user->id, $imageName, 'image');
                 }
-                //Newsletter::subscribeOrUpdate($req->email, ['FNAME'=>$req->first_name, 'LNAME'=>$req->last_name,'ROLE'=>$req->role, "UTYPE"=>$mailchimpUserType, 'ADMIN'=>'not admin'], 'Tapflow');
+                Newsletter::subscribeOrUpdate($req->email, ['FNAME'=>$req->first_name, 'LNAME'=>$req->last_name,'ROLE'=>$req->role, "UTYPE"=>$mailchimpUserType, 'ADMIN'=>'not admin'], 'Tapflow');
                 // dd(Newsletter::getLastError());
                 $responseData = $this->internal_login($req->email, $req->password);
                 $response = Controller::returnResponse(200, "user added successfully", $responseData);
@@ -456,7 +456,7 @@ class UserController extends Controller
             return json_encode($projectResponse['error']);
         }
         $project = $projectResponse['project'];
-        //Newsletter::subscribeOrUpdate($req->user['email'], ['FNAME'=>$req->user['first_name'], 'LNAME'=>$req->user['last_name'],'ROLE'=>"unset", "UTYPE"=>'company-member', 'ADMIN'=>'admin'], 'Tapflow');
+        Newsletter::subscribeOrUpdate($req->user['email'], ['FNAME'=>$req->user['first_name'], 'LNAME'=>$req->user['last_name'],'ROLE'=>"unset", "UTYPE"=>'company-member', 'ADMIN'=>'admin'], 'Tapflow');
         // dd(Newsletter::getLastError());
         /**
          * login user
