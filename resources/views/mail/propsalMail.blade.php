@@ -11,10 +11,10 @@
                 <td>
                     @if ($details['project_type'] == 3)
                     <p style="color: black;">You have received a new Application from
-                        {{ $details['team_info']['name'] }}</p>
+                        {{ $details['agency_admin_name'] }}</p>
                     @else
                         <p style="color: black;">You have received a new initial proposal from
-                            {{ $details['team_info']['name'] }}</p>
+                            {{ $details['agency_admin_name'] }}</p>
                     @endif
                 </td>
             </tr>

@@ -114,6 +114,7 @@ class HireDeveloperProposalsController extends Controller
             // $teamInfo['country'] =$moreTeamData->country;
             $teamInfo['employees_number'] = $moreTeamData->employees_number;
             // $estPrice = $this->calculateEstimatedPrice($proposal->from, $proposal->to, $proposal->price_min, $proposal->price_max);
+            $userInfo = User::find($userData['user_id']);
             $details = [
                 'subject' => 'New Application ' . $projectData->name,
                 'project_name' => $projectData->name,
@@ -122,6 +123,7 @@ class HireDeveloperProposalsController extends Controller
                 'team_info' => $teamInfo,
                 'admin_name' => $companyAdminData->first_name,
                 'proposal' => $proposal,
+                'agency_admin_name' => "$userInfo->first_name $userInfo->last_name",
                 // 'est' => $estPrice
             ];
             Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
