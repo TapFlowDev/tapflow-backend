@@ -72,6 +72,7 @@ class InviteUsersController extends Controller
                 'link' => env('APP_URL') . '/r/?r=' . $inviteEmails['link_token'],
                 'code' => $inviteEmails['code']
             ];
+            
             Mail::to($value)->send(new SendInvitation($details));
         }
         $response = Controller::returnResponse(200, 'users invited successfully', $invite_code);

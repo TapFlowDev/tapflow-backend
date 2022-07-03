@@ -84,7 +84,7 @@ class CompanyController extends Controller
             return json_encode($response);
         }
     }
-    private function get_company_info($id)
+    function get_company_info($id)
     {
         $team = DB::table('groups')
             ->Join('companies', 'groups.id', '=', 'companies.group_id')
@@ -299,4 +299,6 @@ class CompanyController extends Controller
             return (json_encode($response));
         }
     }
+  
 }
+

@@ -65,6 +65,8 @@ class WithdrawlRequestController extends Controller
                 'type' => 1,
             );
             $withdrawl = withdrawl_request::create($withdrawlArray);
+            $fenLink = "/a-user/main/billing/0/withdraw";
+            Controller::sendNotification($userData['group_id'], 'Payment', 'You have successfully requested a withdrawal', $fenLink, 2,'withdrawl_requests',$withdrawl->id);
             $response = Controller::returnResponse(200, "Withdraw requested successfully, our team will make your transfer as soon as possible", []);
             return (json_encode($response));
         } catch (Exception $error) {

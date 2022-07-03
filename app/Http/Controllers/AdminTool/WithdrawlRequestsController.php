@@ -108,6 +108,8 @@ class WithdrawlRequestsController extends Controller
                 $withdrawlRequest->invoice = $imageName;
             }
             $walletTransactionResponse = $walletTransactionsObj->withdraw($withdrawArray);
+            $fenLink="/a-user/main/billing/0/withdraw";
+            Controller::sendNotification( $group_id,"payment",'You have successfully received a withdrawal',$fenLink,2,'withdrawl_request',$id);
             if ($walletTransactionResponse['code'] == 500) {
                 $withdrawlRequest->status = 2;
                 $withdrawlRequest->save();
