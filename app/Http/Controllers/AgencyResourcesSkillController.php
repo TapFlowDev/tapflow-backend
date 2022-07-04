@@ -25,7 +25,8 @@ class AgencyResourcesSkillController extends Controller
     {
     }
     //delete row according to row id
-    function Delete($id)
+    function Delete($agency_resource_id)
     {
+        Agency_resources_skill::where('agency_resource_id', '=', $agency_resource_id)->delete();
     }
 }

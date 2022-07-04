@@ -59,8 +59,57 @@ class AgencyResourceController extends Controller
         }
     }
     //update row according to row id
-    function Update($id)
+    function Update(Request $req)
     {
+        try {
+            $userData = $this->checkUser($req);
+            $condition = ($userData['privileges'] == 1 && $userData['group_id'] != '' );
+            if (!$condition) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
+                return json_encode($response);
+            }
+            $rules = array(
+                "id"=>'exists:agency_resources,id',
+                "name" => "required|max:255",
+                "seniority" => "required|exists:categories,id",
+                "country" => "required|exists:countries,id",
+                "rate" => "required|numeric",
+                "skills" => "required",
+                "cv" => "mimes:doc,pdf,docx",
+            );
+            $validator = Validator::make($req->all(), $rules);
+            if ($validator->fails()) {
+                $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+                return json_encode($response);
+            }
+            $agencyResourcesSkillObj = new AgencyResourcesSkillController;
+            $agencyResource = Agency_resource::where('id', '=', $req->id)->where('team_id', '=', $userData['group_id'])->first();
+            if(!$agencyResource){
+                $response = Controller::returnResponse(401, 'Invalid action', []);
+                return json_encode($response);
+            }
+            $agencyResource->name = $req->name;
+            $agencyResource->seniority = $req->seniority;
+            $agencyResource->country = $req->country;
+            $agencyResource->hourly_rate = $req->rate;
+            if ($req->hasFile('cv')) {
+                $destPath = 'images/cvs';
+                $imageName = time() . "-" . $req->file('cv')->getUserOriginalName();
+                $img = $req->cv;
+                $img->move(public_path($destPath), $imageName);
+                $agencyResource->cv = $imageName;
+                // $this->updateFiles($agencyResource->id, $imageName, 'cv');
+            }
+            $agencyResource->save();
+            $agencyResourcesSkillObj->Delete($req->id);
+            $agencyResourcesSkillObj->Insert($agencyResource->id, $req->skills);
+            $responseData = ['agencyResourceId'=>$req->id]; 
+            $response = Controller::returnResponse(200, 'Success', $responseData);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
+            return json_encode($response);
+        }
     }
     //delete row according to row id
     function Delete($id)
