@@ -90,7 +90,7 @@ class Proposals extends Controller
                             'agency_admin_name' => "$userInfo->first_name $userInfo->last_name",
 
                         ];
-                        $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
+                        $fenLink="/Client-user/main/project-info/".$req->project_id;
 
                         Controller::sendNotification($projectData->company_id,$projectData->name,'Initial proposal submitted',$fenLink,2,'proposals',$proposal_id);
                         Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
