@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\ProjectsController;
+use App\Http\Controllers\AgencyResourceController;
 use App\Models\Rate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,7 @@ use  App\Http\Controllers\GroupCategoriesController;
 use  App\Http\Controllers\UserCategoriesController;
 use  App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\BillingInfoController;
+use App\Http\Controllers\CandidatesController;
 use App\Http\Controllers\ClientsRequestsController;
 use  App\Http\Controllers\ContactUsController;
 use  App\Http\Controllers\WalletsController;
@@ -223,6 +225,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getInitailProposalsProjectId']);
     Route::get('getFinalProposals/{id}', [ProjectController::class, 'getFinalProposalsProjectId']);
     Route::get('getFinalProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getFinalProposalsProjectId']);
+    Route::get('getCandidates/{id}', [CandidatesController::class, 'getProjectCandidates']);
+
 
 
 });
@@ -283,6 +287,9 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('activeProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyActiveProjects']);
     Route::get('pendingProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyPendingProjects']);
     Route::get('milestonesByProposalId/{id}', [Milestones::class, 'getMilestonesAgency']);
+    Route::post('addAgencyResource', [AgencyResourceController::class, 'Insert']);
+    Route::post('addCandidates/{id}', [CandidatesController::class, 'Insert']);
+
 
 
 });
