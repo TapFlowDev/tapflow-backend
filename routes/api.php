@@ -289,6 +289,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('milestonesByProposalId/{id}', [Milestones::class, 'getMilestonesAgency']);
     Route::post('addAgencyResource', [AgencyResourceController::class, 'Insert']);
     Route::post('addCandidates/{id}', [CandidatesController::class, 'Insert']);
+    Route::post('editAgencyResource', [AgencyResourceController::class, 'Update']);
 
 
 
