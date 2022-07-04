@@ -1,37 +1,21 @@
-// Give the service worker access to Firebase Messaging.
-// Note that you can only use Firebase Messaging here. Other Firebase libraries
-// are not available in the service worker.importScripts('https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js');
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-/*
-Initialize the Firebase app in the service worker by passing in the messagingSenderId.
-*/
-firebase.initializeApp({
-    apiKey: "AIzaSyBlQKDh6sFqBhCBkvBpeuDvbiIJ8mux3oU",
-    authDomain: "laravel-firbase22.firebaseapp.com",
-    projectId: "laravel-firbase22",
-    storageBucket: "laravel-firbase22.appspot.com",
-    messagingSenderId: "944849382948",
-    appId: "1:944849382948:web:8d1a3e549833a7898b72b1",
-    measurementId: "G-Z8XFTGKMDK"
-});
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDOuf7uJEgAVPLeg1DVNh66a6iRUEfXR5c",
+  authDomain: "tapflow-chat-dev.firebaseapp.com",
+  projectId: "tapflow-chat-dev",
+  storageBucket: "tapflow-chat-dev.appspot.com",
+  messagingSenderId: "164510617352",
+  appId: "1:164510617352:web:fb2db78f9244e09b2f66bd",
+  measurementId: "G-W8E7WHG2NQ"
+};
 
-
-// Retrieve an instance of Firebase Messaging so that it can handle background
-// messages.
-const messaging = firebase.messaging();
-messaging.setBackgroundMessageHandler(function (payload) {
-    console.log("Message received.", payload);
-
-    const title = "Hello world is awesome";
-    const options = {
-        body: "Your notificaiton message .",
-        icon: "/firebase-logo.png",
-    };
-
-    return self.registration.showNotification(
-        title,
-        options,
-    );
-});
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
