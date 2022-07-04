@@ -71,8 +71,37 @@ class CandidatesController extends Controller
     {
     }
     //delete row according to row id
-    function Delete($id)
+    function Delete(Request $req)
     {
+        try {
+            $userData = $this->checkUser($req);
+            $condition = ($userData['privileges'] == 1 && $userData['group_id'] != '');
+            if (!$condition) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
+                return json_encode($response);
+            }
+            $rules = array(
+                "candidates" => "required",
+            );
+            $validator = Validator::make($req->all(), $rules);
+            if ($validator->fails()) {
+                $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+                return json_encode($response);
+            }
+            $candidates = $req->candidates;
+            $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
+            if (count($candidatesIds) < 1) {
+                $response = Controller::returnResponse(422, 'invalid candidates', []);
+                return json_encode($response);
+            }
+            $candidate = Candidate::whereIn('agency_resource_id',$candidatesIds)->delete();
+            // return $candidateArr;
+            $response = Controller::returnResponse(200, 'Candidates deleted successfully', []);
+            return json_encode($response);
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
+            return json_encode($response);
+        }
     }
     function getProjectCandidates(Request $req, $id)
     {
