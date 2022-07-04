@@ -90,6 +90,7 @@ class Proposals extends Controller
                             'agency_admin_name' => "$userInfo->first_name $userInfo->last_name",
 
                         ];
+
                         $fenLink="/Client-user/main/project-info/".$req->project_id;
 
                         Controller::sendNotification($projectData->company_id,$projectData->name,'Initial proposal submitted',$fenLink,2,'proposals',$proposal_id);
@@ -97,6 +98,7 @@ class Proposals extends Controller
                         //Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
                         //Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
                         //Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+
                         return (json_encode($response));
                     } else {
                         $response = Controller::returnResponse(422, 'You can not apply now, your agency does not verified yet', []);
@@ -371,9 +373,9 @@ class Proposals extends Controller
             'clientEmail' => $clinet->email,
             'status' => $status,
         );
-        //return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
+        return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
         // dd($details);
-        return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
+        //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
     function getProposalsByProjectId($projectId, $teamId = 0, $page = 1, $limit = 4)
     {
