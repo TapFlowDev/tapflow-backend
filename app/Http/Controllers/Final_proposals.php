@@ -476,7 +476,7 @@ class Final_proposals extends Controller
                                         "agency_name" => $agency->name
                                     ];
 
-                                   $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
+                                   $fenLink="/Client-user/main/project-info/".$req->project_id;
                                    
                                     Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals',$final_proposal ->id);
                                     Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
@@ -541,7 +541,7 @@ class Final_proposals extends Controller
                                                 "Proposal_description" => $desc,
                                                 "agency_name" => $agency->name
                                             ];
-                                            $fenLink="/Client-user/main/posted-projects-details/".$req->project_id;
+                                            $fenLink="/Client-user/main/project-info/".$req->project_id;
                                    
                                     Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals',$ifExist['final_proposal_id']);
                                             Mail::mailer('smtp2')->to($companyAdmin->email)->send(new SubmitFinalProposal($details));
@@ -655,7 +655,7 @@ class Final_proposals extends Controller
                                 "type" => 1
 
                             ];
-                            $fenLink="/a-user/main/active-project/". $req->project_id;
+                            $fenLink="/a-user/main/project/". $req->project_id;
                             Controller::sendNotification($final_proposal->team_id, $projectInfo->name,'Final proposal accepted',$fenLink,2,'final_proposals',$req->proposal_id);
                             Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                             $response = Controller::returnResponse(200, "proposal accepted", []);

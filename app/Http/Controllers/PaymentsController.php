@@ -198,7 +198,7 @@ class PaymentsController extends Controller
         }
         $projectObj=new ProjectController;
         $projectInfo=json_decode($projectObj->getProject($final->project_id))->data;
-        $fenLink="/Client-user/main/posted-projects-details/".$final->project_id;
+        $fenLink="/Client-user/main/project-info/".$final->project_id;
         Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Congratulations, your project is active now!',$fenLink,2,'projects',$final->project_id);
         return $project->status;
     }
