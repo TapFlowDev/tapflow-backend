@@ -118,6 +118,7 @@ class CandidatesController extends Controller
             $seniorty = Category::where('id', '=', $resourceInfo->seniority)->first();
             $skills = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $resourceInfo->id)->pluck('skill')->toArray();
             $candidate->name = $resourceInfo->name;
+            $candidate->adminName = $resourceInfo->adminName;
             $candidate->country = (isset($country->flag) ? $country->flag : "");
             $candidate->seniority = (isset($seniorty->name) ? $seniorty->name : "");
             $candidate->jobTitle = $candidate->seniority . " " . $skills[0];
