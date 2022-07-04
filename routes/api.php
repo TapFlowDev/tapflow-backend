@@ -290,6 +290,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addAgencyResource', [AgencyResourceController::class, 'Insert']);
     Route::post('addCandidates/{id}', [CandidatesController::class, 'Insert']);
     Route::post('editAgencyResource', [AgencyResourceController::class, 'Update']);
+    Route::post('removeCandidates', [CandidatesController::class, 'Delete']);
 
 
 
