@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProjectAgencyMatchesTable extends Migration
+class AddTimeSpamToRoomMembersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateProjectAgencyMatchesTable extends Migration
      */
     public function up()
     {
-        Schema::create('project_agency_matches', function (Blueprint $table) {
-            $table->integer('group_id');
-            $table->integer('project_id');
+        Schema::table('room_members', function (Blueprint $table) {
+            //
+            $table->timestamps();
         });
     }
 
@@ -26,6 +26,9 @@ class CreateProjectAgencyMatchesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('project_agency_matches');
+        Schema::table('room_members', function (Blueprint $table) {
+            //
+            Schema::dropIfExists('room_members');
+        });
     }
 }

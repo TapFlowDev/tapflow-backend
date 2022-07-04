@@ -31,6 +31,9 @@ use App\Models\Milestone;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Arr;
+use App\Http\Controllers\CompanyController;
+use GuzzleHttp\Handler\Proxy;
+use Svg\Tag\Rect;
 
 class ProjectController extends Controller
 {
@@ -1167,6 +1170,17 @@ class ProjectController extends Controller
             return $response;
         }
     }
+    function getCompanyInfoByProjectId($project_id)
+    {
+        $company_obj=new CompanyController;
+        $company_id=Project::where('id',$project_id)->select('company_id')->first()->company_id;
+        return $company_obj-> get_company_info ($company_id);
+    }
+    function getCompanyProjectAdmin($project_id)
+    {
+        return Project::where('id',$project_id)->select('user_id')->first()->user_id;
+    }
+
     function newExploreProject(Request $req, $type = 3, $offset = 1, $limit = 4)
     {
         $userData = $this->checkUser($req);
@@ -1590,5 +1604,28 @@ class ProjectController extends Controller
             $response = Controller::returnResponse(500, "There IS Error Occurred", $error->getMessage());
             return (json_encode($response));
         }
+    }
+    function updateProjectInfo(Request $req)
+    {
+        try {
+            $userData = Controller::checkUser($req);
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2 )) {
+              $response = Controller::returnResponse(422, "unauthorized", []);
+              return (json_encode($response));
+            } else {
+                $rules=array('budget'=>"numeric|exists:categories,id","duration"=>"numeric|exists:categories,id");
+                $validator = Validator::make($req->all(), $rules);
+                if ($validator->fails()) {
+                    $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+                    return json_encode($response);
+                }
+              Project::where('id', $req->project_id)->update(['budget_id' =>$req->budget,"days"=>$req->duration]);
+              $response = Controller::returnResponse(200, "successful", []);
+              return (json_encode($response));
+            }
+          } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", []);
+            return (json_encode($response));
+          }
     }
 }

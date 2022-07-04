@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminTool\CompaniesController;
 use App\Http\Controllers\AdminTool\GroupsController;
 use App\Http\Controllers\AdminTool\ProjectsController;
+use App\Http\Controllers\AgencyResourceController;
 use App\Models\Rate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,7 @@ use  App\Http\Controllers\GroupCategoriesController;
 use  App\Http\Controllers\UserCategoriesController;
 use  App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\BillingInfoController;
+use App\Http\Controllers\CandidatesController;
 use App\Http\Controllers\ClientsRequestsController;
 use  App\Http\Controllers\ContactUsController;
 use  App\Http\Controllers\WalletsController;
@@ -50,8 +52,14 @@ use App\Notifications\RealTimeMessageNotification;
 use App\Http\Controllers\WithdrawlRequestController;
 use App\Models\Milestone;
 use phpDocumentor\Reflection\ProjectFactory;
+use App\Http\Controllers\FireBaseNotificationsController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\HireDeveloperFinalProposalController;
+use App\Http\Controllers\ProjectAgencyMatchController;
+
 
 // use App\Http\Controllers\PaymentController;
 
@@ -78,11 +86,20 @@ use App\Http\Controllers\HireDeveloperFinalProposalController;
 // });
 // for testing test
 // Route::post('GeneratePdf', [Final_proposals::class, 'GeneratePdf']);
+/////////////////////////////////////
+
+// Route::get('pushNotificaiton', [NotificationController::class, 'push-notificaiton']);
+
+//////////////////////////
+
 Route::post('SendDraft', [Final_proposals::class, 'SendDraft']);
 Route::post('acceptFinalProposal', [Final_proposals::class, 'acceptFinalProposal']);
 Route::get('testtest/{id}', [Final_proposals::class, 'testtest']);
+Route::get('Notify/{id}', [Final_proposals::class, 'testsendnot']);
 Route::get('updateMilestonesPrices/{m}/{f}', [Milestones::class, 'updateMilestonesPrices']);
 Route::get('canSubmit/{id}', [Milestones::class, 'canSubmit']);
+Route::get('getRoomLastMessage/{id}', [ChatController::class, 'getRoomLastMessage']);
+Route::get('checkIfRoomExist/{id}/{id2}', [RoomController::class, 'checkIfRoomExist']);
 
 Route::get('getPendingProjectInfo/{id}', [ProjectController::class, 'getPendingProjectInfo']);
 
@@ -189,11 +206,28 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('projectMilestons/{id}', [ProjectController::class, 'getProjectMilestones']);
     Route::post('printInvoice', [WalletsTransactionsController::class, 'printInvoice']);
     Route::post('printMilestoneInvoice', [Milestones::class, 'printMilestoneInvoice']);
+    Route::post('storeToken', [FireBaseNotificationsController::class, 'storeToken']);
+    Route::post('addMember', [RoomController::class, 'addMember']);
+    // Route::post('getRooms', [RoomController::class, 'getRooms']);
+    Route::post('sendMessage', [ChatController::class, 'sendMessage']);
+    Route::get('searchForUsers/{name}', [RoomController::class, 'searchForUsers']);
+    Route::post('getcjtNot/{offset}/{limit}', [RoomController::class, 'getcjtNot']);
+    Route::get('getRooms/{offset}/{limit}', [RoomController::class, 'getRooms']);
+    Route::post('updateRoomName', [RoomController::class, 'updateRoomName']);
+    Route::post('seenRoomMessages', [RoomController::class, 'seenRoomMessages']);
+    Route::post('getRoomMessages/{offset}/{limit}', [ChatController::class, 'getRoomMessages']);
+    Route::get('getUserNotification/{offset}/{limit}', [NotificationController::class, 'getUserNotification']);
+    Route::post('notificationSeen', [NotificationController::class, 'notificationSeen']);
+    Route::get('ChatNotifications', [NotificationController::class, 'ChatNotifications']);
+
     // new apis
     Route::get('projectInfo/{id}', [ProjectController::class, 'newGetProject']);
     Route::get('getProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getInitailProposalsProjectId']);
     Route::get('getFinalProposals/{id}', [ProjectController::class, 'getFinalProposalsProjectId']);
     Route::get('getFinalProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getFinalProposalsProjectId']);
+    Route::get('getCandidates/{id}', [CandidatesController::class, 'getProjectCandidates']);
+
+
 
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
@@ -235,6 +269,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('agencyTransactions/{offset}/{limit}', [WalletsTransactionsController::class, 'getAgencyTransactions']);
     Route::post('withdraw', [WithdrawlRequestController::class, 'Insert']);
     Route::get('withdrawRequests/{offset}/{limit}', [WithdrawlRequestController::class, 'getWithdrawlRequests']);
+
     //new apis
     Route::get('exploreProjects/{type}/{offset}/{limit}', [ProjectController::class, 'newExploreProject']);
     Route::post('addResource', [ResourcesController::class, 'Insert']);
@@ -252,6 +287,10 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('activeProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyActiveProjects']);
     Route::get('pendingProjects/{offset}/{limit}', [ProjectController::class, 'newAgencyPendingProjects']);
     Route::get('milestonesByProposalId/{id}', [Milestones::class, 'getMilestonesAgency']);
+    Route::post('addAgencyResource', [AgencyResourceController::class, 'Insert']);
+    Route::post('addCandidates/{id}', [CandidatesController::class, 'Insert']);
+
+
 
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
@@ -296,4 +335,9 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('getContractDetails/{contractId}', [HireDeveloperFinalProposalController::class, 'getContractWithResourcesClient']);
     Route::post('getHires', [ResourcesController::class, 'getHires']);
     Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
+    Route::get('getProjectAgencyMatches/{id}/{offset}/{limit}', [ProjectAgencyMatchController::class, 'getProjectAgencyMatches']);
+    Route::get('AskToApply', [ProjectAgencyMatchController::class, 'AskToApply']);
+    Route::post('editRequirement', [Requirement::class,'editRequirement']);
+    Route::post('deleteRequirement', [Requirement::class,'deleteRequirement']);
+    Route::post('updateProjectInfo', [ProjectController::class,'updateProjectInfo']);
 });

@@ -13,6 +13,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Mail;
+use App\Models\System_Notification;
 
 class Controller extends BaseController
 {
@@ -40,12 +41,12 @@ class Controller extends BaseController
             if ($member === null) {
                 return ['exist' => 0];
             } else {
-                $verified= DB::table('groups')
-                ->where('id','=',$member->group_id)
-                ->select('verified')
-                ->first();
-           
-                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges,"type"=>$userData['type'],'verified'=>$verified->verified];
+                $verified = DB::table('groups')
+                    ->where('id', '=', $member->group_id)
+                    ->select('verified')
+                    ->first();
+
+                return ['exist' => 1, 'user_id' => $member->user_id, 'group_id' => $member->group_id, 'privileges' => $member->privileges, "type" => $userData['type'], 'verified' => $verified->verified];
             }
         } catch (Exception  $error) {
             $response = Controller::returnResponse(500, "check user error", $error->getMessage());
@@ -66,7 +67,7 @@ class Controller extends BaseController
             $admin = User::where('id', $groupMember->user_id)->get()->first();
         }
         $details = array(
-            'subject'=>'Wallet Transaction',
+            'subject' => 'Wallet Transaction',
             'transactionType' => $transactionType,
             'amount' => $amount,
             'currentAmount' => $currentBalance
@@ -75,4 +76,41 @@ class Controller extends BaseController
         // dd($details);
         //return Mail::mailer('smtp')->to('hamzahshajrawi@gmail.com')->send(new WalletActions($details));
     }
+    /**
+     * receiver id  == group id you want to send the notification for them
+     * notification type 1 chat
+     * notification type 2 actions
+     */
+    
+    public function sendNotification($receiver_id, $title, $body,$link,$type,$action,$action_id)
+    {
+        try{
+        	 $serverLink="https://tapflow.dev";
+            //  $serverLink="https://testtest.tapflow.app";
+            //  $serverLink="https://tapflow.app";
+           
+       
+        $firebaseObj = new FireBaseNotificationsController;
+        $groupMembersObj = new GroupMembersController;
+      
+        $actionLink=$serverLink.$link;
+        if($type== 2){
+        $groupAdmins = $groupMembersObj->getGroupAdminsIds($receiver_id);
+        $fcmTokens=$groupAdmins->pluck('fcm_token')->toArray();
+        $admins=$groupAdmins->pluck('user_id')->toArray();
+      foreach( $admins as $id)
+      {
+        System_Notification::create( ['title' => $title,'body'=>$body,'receiver_id'=>$id,"action"=>$action,"action_id"=>$action_id,"link"=>$link]);
+      }
+    }
+        else{$fcmTokens=$receiver_id;}
+       
+        $data = array('FcmToken' => $fcmTokens, 'title' => $title, 'body' => $body,'link'=>$actionLink,'type'=>$type);
+        $notify = $firebaseObj->sendFireBaseNotification($data);
+        return $notify;
+    }catch(Exception $error)
+    {
+      return  ['code'=>500,'msg'=>$error->getMessage()];
+    }
+}
 }

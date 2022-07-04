@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Group;
 use Illuminate\Http\Request;
 use App\Models\Group_member;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use BaconQrCode\Renderer\Color\Gray;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 
@@ -122,7 +124,8 @@ class GroupMembersController extends Controller
             return json_encode($response);
         }
     }
-    function getMemberInfoByUserId($userId){
+    function getMemberInfoByUserId($userId)
+    {
         return Group_member::where('user_id', '=', $userId)->first();
     }
 
@@ -143,26 +146,54 @@ class GroupMembersController extends Controller
     }
     function getTeamAdminByGroupId($id)
     {
-            $teamMembers = DB::table('group_members')
-                ->leftJoin('freelancers', 'group_members.user_id', '=', 'freelancers.user_id')
-                ->leftJoin('users', 'group_members.user_id', '=', 'users.id')
-                ->select("freelancers.user_id", "users.first_name", "users.last_name", "users.email",
-                 "freelancers.type_freelancer",  "freelancers.country", "users.role", "group_members.privileges")
-                ->where('group_members.group_id', '=', $id)
-                ->where('group_members.privileges', '=', 1)
-                ->first();
-            return ($teamMembers);
+        $teamMembers = DB::table('group_members')
+            ->leftJoin('freelancers', 'group_members.user_id', '=', 'freelancers.user_id')
+            ->leftJoin('users', 'group_members.user_id', '=', 'users.id')
+            ->select(
+                "freelancers.user_id",
+                "users.first_name",
+                "users.last_name",
+                "users.email",
+                "freelancers.type_freelancer",
+                "freelancers.country",
+                "users.role",
+                "group_members.privileges"
+            )
+            ->where('group_members.group_id', '=', $id)
+            ->where('group_members.privileges', '=', 1)
+            ->first();
+        return ($teamMembers);
     }
     function getCompanyAdminByGroupId($id)
     {
-            $teamMembers = DB::table('group_members')
-                ->leftJoin('clients', 'group_members.user_id', '=', 'clients.user_id')
-                ->leftJoin('users', 'group_members.user_id', '=', 'users.id')
-                ->select("clients.user_id", "users.first_name", "users.last_name", "users.email",
-                   "clients.country", "users.role", "group_members.privileges")
-                ->where('group_members.group_id', '=', $id)
-                ->where('group_members.privileges', '=', 1)
-                ->first();
-            return ($teamMembers);
+        $teamMembers = DB::table('group_members')
+            ->leftJoin('clients', 'group_members.user_id', '=', 'clients.user_id')
+            ->leftJoin('users', 'group_members.user_id', '=', 'users.id')
+            ->select(
+                "clients.user_id",
+                "users.first_name",
+                "users.last_name",
+                "users.email",
+                "clients.country",
+                "users.role",
+                "group_members.privileges"
+            )
+            ->where('group_members.group_id', '=', $id)
+            ->where('group_members.privileges', '=', 1)
+            ->first();
+        return ($teamMembers);
+    }
+    function getGroupAdminsIds($id)
+    {
+        return  DB::table('group_members')
+            ->leftJoin('users', 'group_members.user_id', '=', 'users.id')
+            ->select('group_members.user_id','users.fcm_token')
+            ->where('group_members.group_id', '=', $id)
+            ->where('group_members.privileges', '=', 1)
+            ->get();
+    }
+    function getGroupType ($id)
+    {
+        return Group::where('id',$id)->select('type')->first()->type;
     }
 }

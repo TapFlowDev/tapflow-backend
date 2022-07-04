@@ -487,4 +487,8 @@ class   GroupController extends Controller
             return $response;
         }
     }
+    function getGroupType($group_id)
+    {
+       return Group::where('id',$group_id)->select('type')->first()->type;
+    }
 }

@@ -31,7 +31,8 @@ class User extends Authenticatable
         'type',
         'token',
         'name',
-        'terms'
+        'terms',
+        'fcm_token',
     ];
 
     /**

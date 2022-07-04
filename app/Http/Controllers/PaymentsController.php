@@ -156,6 +156,8 @@ class PaymentsController extends Controller
                 'msg' => $paymentStatus['paymentMsg'],
                 'projectActive' => $isProjectActive
             );
+            $fenLink="/Client-user/main/payment";
+            Controller::sendNotification( $userData['group_id'],$projectInfo->name,'Amount Paid!',$fenLink,2,'payments',$payment->id);
             $response = Controller::returnResponse($paymentStatus['responseCode'], $paymentStatus['paymentMsg'], $returnData);
             return (json_encode($response));
         } catch (Exception $error) {
@@ -194,6 +196,10 @@ class PaymentsController extends Controller
                 $project->save();
             }
         }
+        $projectObj=new ProjectController;
+        $projectInfo=json_decode($projectObj->getProject($final->project_id))->data;
+        $fenLink="/Client-user/main/project-info/".$final->project_id;
+        Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Congratulations, your project is active now!',$fenLink,2,'projects',$final->project_id);
         return $project->status;
     }
     function printInvoice()

@@ -104,6 +104,8 @@ class WalletsTransactionsController extends Controller
                     $wallet->save();
                     //notify admin
                     $mail = $this->notifyAdminWalletAction($wallet->reference_id, 2, $total, $newBalance);
+                    $fenLink="/Client-user/main/payment";
+                    Controller::sendNotification($payment->company_id,'Payment','Amount Paid!',$fenLink,2,'wallets_transactions',$transaction->id);
                     return ['paymentStatus' => 1, 'paymentMsg' => 'paid successfully',  'responseCode' => 200];
                 }
             }
@@ -135,6 +137,8 @@ class WalletsTransactionsController extends Controller
                 $wallet->save();
                 //notify admin
                 $mail = $this->notifyAdminWalletAction($wallet->reference_id, 2, $total, $newBalance);
+                 $fenLink="/a-user/main/billing";
+                Controller::sendNotification( $wallet->reference_id,"payment",'you successfully received a payment',$fenLink,2,'wallets_transactions',$transaction->id);
                 return ['paymentStatus' => 1, 'paymentMsg' => 'paid successfully',  'responseCode' => 200];
             }
             return ['paymentStatus' => -1, 'paymentMsg' => 'error', 'responseCode' => 500];
