@@ -44,13 +44,13 @@ class Requirement extends Controller
   }
   function getRequirementsByProjectId($id)
   {
-    $requirements = requirementModel::where('project_id', $id)->select('description')->get();
+    $requirements = requirementModel::where('project_id', $id)->where('deleted' ,'=',0)->select('description')->get();
 
     return ($requirements);
   }
   function getRequirementsAlldataByProjectId($id)
   {
-    $requirements = requirementModel::where('project_id', $id)->get();
+    $requirements = requirementModel::where('project_id', $id)->where('deleted' ,'=',0)->get();
 
     return ($requirements);
   }
@@ -67,36 +67,37 @@ class Requirement extends Controller
     $requirements = DB::table('requirements')
       ->select('requirements.id', 'requirements.description')
       ->where('requirements.project_id', '=', $projectId)
+      ->where('deleted' ,'=',0)
       ->get();
-      $returnDataArr = $this->splitRequirmnets($requirements);
-      // dd($returnDataArr);
-      return $returnDataArr;
+    $returnDataArr = $this->splitRequirmnets($requirements);
+    // dd($returnDataArr);
+    return $returnDataArr;
   }
   private function splitRequirmnets($requirements)
   {
     $splitRequirementsArr = array();
     $skillsArr = [];
-    foreach($requirements as $requirement){
+    foreach ($requirements as $requirement) {
       $splitArray = explode(",", $requirement->description);
       $countSplitArray = count($splitArray);
       $reqSkillsArr = [];
-      for($i = 0; $i < ($countSplitArray-4); $i++ ){
+      for ($i = 0; $i < ($countSplitArray - 4); $i++) {
         $skillsArr[] = trim($splitArray[$i]);
         $reqSkillsArr[] = trim($splitArray[$i]);
       }
-      $hourlyRate = (isset($requirement->hourly_rate) ? $requirement->hourly_rate : null );
+      $hourlyRate = (isset($requirement->hourly_rate) ? $requirement->hourly_rate : null);
       $splitRequirementsArr[] = [
-        'id'=> $requirement->id,
-        'quantity'=>trim($splitArray[$countSplitArray-1]),
-        'hours'=>trim($splitArray[$countSplitArray-2]),
-        'duration'=>trim($splitArray[$countSplitArray-3]),
-        'seniority'=>trim($splitArray[$countSplitArray-4]),
+        'id' => $requirement->id,
+        'quantity' => trim($splitArray[$countSplitArray - 1]),
+        'hours' => trim($splitArray[$countSplitArray - 2]),
+        'duration' => trim($splitArray[$countSplitArray - 3]),
+        'seniority' => trim($splitArray[$countSplitArray - 4]),
         'skills' => $reqSkillsArr,
         'hourlyRate' => $hourlyRate,
       ];
     }
     $returnDataArr = [
-      'skills'=>array_unique($skillsArr),
+      'skills' => array_unique($skillsArr),
       'reqArr' => $splitRequirementsArr
     ];
     // dd(($splitRequirementsArr));
@@ -109,32 +110,32 @@ class Requirement extends Controller
       ->select('requirements.*', 'proposal_requirements.hourly_rate')
       ->where('proposal_requirements.proposal_id', '=', $proposalId)
       ->get();
-      $returnDataArr = $this->splitRequirmnets($requirements);
-      // dd($returnDataArr);
-      return $returnDataArr;
+    $returnDataArr = $this->splitRequirmnets($requirements);
+    // dd($returnDataArr);
+    return $returnDataArr;
   }
   function getResourcesByProposalId($proposalId)
   {
     $requirements = DB::table('proposal_requirements')
       ->join('requirements', 'proposal_requirements.requirement_id', '=', 'requirements.id')
-      ->select('requirements.id', 'requirements.description' , 'proposal_requirements.hourly_rate')
+      ->select('requirements.id', 'requirements.description', 'proposal_requirements.hourly_rate')
       ->where('proposal_requirements.proposal_id', '=', $proposalId)
       ->get();
-      $returnDataArr = $this->splitRequirmnetsToResources($requirements);
-      // dd($returnDataArr);
-      return $returnDataArr;
+    $returnDataArr = $this->splitRequirmnetsToResources($requirements);
+    // dd($returnDataArr);
+    return $returnDataArr;
   }
   private function splitRequirmnetsToResources($requirements)
   {
     $resources = [];
-    foreach($requirements as $requirement){
+    foreach ($requirements as $requirement) {
       $splitArray = explode(",", $requirement->description);
       $countSplitArray = count($splitArray);
-      $quantity = (int)trim($splitArray[$countSplitArray-1]);
-      $hourlyRate = (isset($requirement->hourly_rate) ? $requirement->hourly_rate : null );
-      for($i=0; $i < $quantity; $i++){
+      $quantity = (int)trim($splitArray[$countSplitArray - 1]);
+      $hourlyRate = (isset($requirement->hourly_rate) ? $requirement->hourly_rate : null);
+      for ($i = 0; $i < $quantity; $i++) {
         $resources[] = [
-          'id'=> $requirement->id,
+          'id' => $requirement->id,
           'skill' => $splitArray[0],
           'hourlyRate' => $hourlyRate,
         ];
@@ -142,5 +143,39 @@ class Requirement extends Controller
     }
     // dd(($splitRequirementsArr));
     return $resources;
+  }
+  function editRequirement(Request $req)
+  {
+    try {
+      $userData = Controller::checkUser($req);
+      if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2 )) {
+        $response = Controller::returnResponse(401, "unauthorized", []);
+        return (json_encode($response));
+      } else {
+        requirementModel::where('id', $req->requirement_id)->update(['description' => $req->requirement]);
+        $response = Controller::returnResponse(200, "successful", []);
+        return (json_encode($response));
+      }
+    } catch (Exception $error) {
+      $response = Controller::returnResponse(500, "something went wrong", []);
+      return (json_encode($response));
+    }
+  }
+  function deleteRequirement(Request $req)
+  {
+    try {
+      $userData = Controller::checkUser($req);
+      if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2 )) {
+        $response = Controller::returnResponse(422, "unauthorized", []);
+        return (json_encode($response));
+      } else {
+        requirementModel::where('id', $req->requirement_id)->update(['deleted' =>1]);
+        $response = Controller::returnResponse(200, "successful", []);
+        return (json_encode($response));
+      }
+    } catch (Exception $error) {
+      $response = Controller::returnResponse(500, "something went wrong", []);
+      return (json_encode($response));
+    }
   }
 }
