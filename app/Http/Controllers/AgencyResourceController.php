@@ -128,7 +128,7 @@ class AgencyResourceController extends Controller
     }
     function getAgencyResources(Request $req, $projectId = 0)
     {
-        try {
+        // try {
             $userData = $this->checkUser($req);
             $condition = ($userData['privileges'] == 1 && $userData['group_id'] != '');
             if (!$condition) {
@@ -150,10 +150,10 @@ class AgencyResourceController extends Controller
             $agencyResourcesInfo = $this->getAgencyResourcesInfo($agencyResources);
             $response = Controller::returnResponse(200, 'data found', $agencyResourcesInfo);
             return json_encode($response);
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
-            return json_encode($response);
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
+        //     return json_encode($response);
+        // }
     }
     private function getAgencyResourcesInfo($agencyResources)
     {
