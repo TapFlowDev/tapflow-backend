@@ -51,7 +51,7 @@ class AgencyResourceController extends Controller
             $agencyResource = Agency_resource::create($agencyResourceArr);
             if ($req->hasFile('cv')) {
                 $destPath = 'images/cvs';
-                $imageName = time() . "-" . $req->file('cv')->getUserOriginalName();
+                $imageName = time() . "-" . $req->file('cv')->getClientOriginalName();
                 $img = $req->cv;
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($agencyResource->id, $imageName, 'cv');
