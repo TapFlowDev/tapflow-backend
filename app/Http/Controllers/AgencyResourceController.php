@@ -56,7 +56,7 @@ class AgencyResourceController extends Controller
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($agencyResource->id, $imageName, 'cv');
             }
-            $agencyResourcesSkillObj->Insert($agencyResource->id, $req->skills);
+            $agencyResourcesSkillObj->Insert($agencyResource->id, json_decode($req->skills));
             $responseData = ['agencyResourceId' => $agencyResource->id];
             $response = Controller::returnResponse(200, 'Success', $responseData);
             return json_encode($response);
@@ -101,7 +101,7 @@ class AgencyResourceController extends Controller
             $agencyResource->hourly_rate = $req->rate;
             if ($req->hasFile('cv')) {
                 $destPath = 'images/cvs';
-                $imageName = time() . "-" . $req->file('cv')->getUserOriginalName();
+                $imageName = time() . "-" . $req->file('cv')->getClientOriginalName();
                 $img = $req->cv;
                 $img->move(public_path($destPath), $imageName);
                 $agencyResource->cv = $imageName;
@@ -109,7 +109,7 @@ class AgencyResourceController extends Controller
             }
             $agencyResource->save();
             $agencyResourcesSkillObj->Delete($req->id);
-            $agencyResourcesSkillObj->Insert($agencyResource->id, $req->skills);
+            $agencyResourcesSkillObj->Insert($agencyResource->id, json_decode($req->skills));
             $responseData = ['agencyResourceId' => $req->id];
             $response = Controller::returnResponse(200, 'Success', $responseData);
             return json_encode($response);
