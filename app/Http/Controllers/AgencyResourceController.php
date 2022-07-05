@@ -128,7 +128,7 @@ class AgencyResourceController extends Controller
     }
     function getAgencyResources(Request $req, $projectId = 0)
     {
-        // try {
+        try {
             $userData = $this->checkUser($req);
             $condition = ($userData['privileges'] == 1 && $userData['group_id'] != '');
             if (!$condition) {
@@ -150,10 +150,10 @@ class AgencyResourceController extends Controller
             $agencyResourcesInfo = $this->getAgencyResourcesInfo($agencyResources);
             $response = Controller::returnResponse(200, 'data found', $agencyResourcesInfo);
             return json_encode($response);
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
-        //     return json_encode($response);
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
+            return json_encode($response);
+        }
     }
     private function getAgencyResourcesInfo($agencyResources)
     {
@@ -163,7 +163,7 @@ class AgencyResourceController extends Controller
             $skills = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $agencyResource->id)->pluck('skill')->toArray();
             $agencyResource->country = (isset($country->flag) ? $country->flag : "");
             $agencyResource->seniority = (isset($seniorty->name) ? $seniorty->name : "");
-            $agencyResource->jobTitle = $agencyResource->seniority . " " . $skills[0];
+            $agencyResource->jobTitle = $agencyResource->seniority . " " . (isset($skills[0]) ? $skills[0] : "");
             $agencyResource->skills = $skills;
             if (isset($agencyResource->cv)) {
                 $agencyResource->cv = asset("images/cvs/" . $agencyResource->cv);
