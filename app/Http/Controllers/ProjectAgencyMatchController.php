@@ -123,5 +123,37 @@ class ProjectAgencyMatchController extends Controller
             return (json_encode($response));
         }
     }
+    function getAgencyMatchesProjects(Request $req, $offset, $limit)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $page = ($offset - 1) * $limit;
+            $projectsIds = DB::table('project_agency_matches')
+                ->select('project_id')
+                ->where('group_id', '=', $userData['group_id'])
+                ->offset($page)->limit($limit)->get()->pluck('project_id')->toArray();
+            if (count($projectsIds) > 0) {
+                $projects = $this->getProjectsInfo($projectsIds);
+            } else {
+                $projects = [];
+            }
+            $projectsCount = count($projectsIds);
+            $response = Controller::returnResponse(200, "successful", ["projects"=>$projects,'projects_count'=>$projectsCount]);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $responseData = $error->getMessage();
+            $response = Controller::returnResponse(500, "Error", $responseData);
+            return (json_encode($response));
+        }
+    }
 
+    function getProjectsInfo($projectsIds)
+    {
+        $projectObj=new ProjectController;
+        $projects=array();
+        foreach ($projectsIds as $projectId) {
+            $projects=array_push($projects,json_decode($projectObj->getProject($projectId)));
+        }
+        return $projects;
+    }
 }

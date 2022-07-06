@@ -1481,7 +1481,7 @@ class ProjectController extends Controller
             return (json_encode($response));
         }
     }
-    function getAgencyProjects(Request $req, $offset = 0, $limit = 4)
+    function getAgencyProjects(Request $req, $offset ,$limit)
     {
         try {
             $userData = $this->checkUser($req);
@@ -1495,6 +1495,8 @@ class ProjectController extends Controller
                 ->join('projects', 'projects.id', '=', 'hire_developer_proposals.project_id')
                 ->select($initialFinalHireSelect)
                 ->where('hire_developer_proposals.team_id', '=', $userData['group_id'])
+                ->where('hire_developer_proposals.status','<>',2)
+                ->where('hire_developer_final_proposals.status','<>',2)
                 ->get();
 
             $initailFinal = DB::table('proposals')
@@ -1502,6 +1504,8 @@ class ProjectController extends Controller
                 ->join('projects', 'projects.id', '=', 'proposals.project_id')
                 ->select($initialFinalSelect)
                 ->where('proposals.team_id', '=', $userData['group_id'])
+                ->where('proposals.status','<>',2)
+                ->where('final_proposals.status','<>',2)
                 ->get();
             $allProposals = $initailFinalHire->merge($initailFinal);
             $allProjects = $allProposals->sortDesc()->splice($page, $limit);

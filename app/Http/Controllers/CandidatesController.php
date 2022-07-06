@@ -42,7 +42,7 @@ class CandidatesController extends Controller
                 $response = Controller::returnResponse(422, 'Project not found', []);
                 return json_encode($response);
             }
-            $candidates = $req->candidates;
+            $candidates = json_decode($req->candidates);
             $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
             if (count($candidatesIds) < 1) {
                 $response = Controller::returnResponse(422, 'invalid candidates', []);
@@ -89,13 +89,13 @@ class CandidatesController extends Controller
                 $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
                 return json_encode($response);
             }
-            $candidates = $req->candidates;
+            $candidates = json_decode($req->candidates);
             $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
             if (count($candidatesIds) < 1) {
                 $response = Controller::returnResponse(422, 'invalid candidates', []);
                 return json_encode($response);
             }
-            $candidate = Candidate::whereIn('agency_resource_id',$candidatesIds)->delete();
+            $candidate = Candidate::whereIn('agency_resource_id', $candidatesIds)->delete();
             // return $candidateArr;
             $response = Controller::returnResponse(200, 'Candidates deleted successfully', []);
             return json_encode($response);
@@ -127,9 +127,20 @@ class CandidatesController extends Controller
                 $selectProposalsCondtions[] = ['team_id', '=', $userData['group_id']];
             }
             $proposalIds = hire_developer_proposals::select('id')->where($selectProposalsCondtions)->pluck('id')->toArray();
-            $candidates = Candidate::select('*')->whereIn('proposal_id', $proposalIds)->get();
-            $candidates = DB::table('candidates')->join('agency_resources', 'candidates.agency_resource_id', '=', 'agency_resources.id')->
-            select('candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id','agency_resources.*')->get();
+            if ($userData['type'] == 2) {
+                $candidates = DB::table('candidates')
+                    ->join('agency_resources', 'candidates.agency_resource_id', '=', 'agency_resources.id')
+                    ->select('candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id', 'agency_resources.*')
+                    ->whereIn('candidates.proposal_id', $proposalIds)
+                    ->where('candidates.status', '<>', 2)
+                    ->get();
+            } else {
+                $candidates = DB::table('candidates')
+                    ->join('agency_resources', 'candidates.agency_resource_id', '=', 'agency_resources.id')
+                    ->select('candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id', 'agency_resources.*')
+                    ->whereIn('candidates.proposal_id', $proposalIds)
+                    ->get();
+            }
             // $candidatesCount = Candidate::whereIn('proposal_id', $proposalIds)->count();
             $candidatesInfo = $this->getCandidatesInfo($candidates);
             $response = Controller::returnResponse(200, 'data found', $candidatesInfo);
@@ -151,7 +162,7 @@ class CandidatesController extends Controller
             $candidate->adminName = $adminName;
             $candidate->country = (isset($country->flag) ? $country->flag : "");
             $candidate->seniority = (isset($seniorty->name) ? $seniorty->name : "");
-            $candidate->jobTitle = $candidate->seniority . " " . $skills[0];
+            $candidate->jobTitle = $candidate->seniority . " " . (isset($skills[0]) ? $skills[0] : "");
             $candidate->skills = $skills;
             if (isset($candidate->cv)) {
                 $candidate->cv = asset("images/cvs/" . $candidate->cv);
@@ -160,5 +171,29 @@ class CandidatesController extends Controller
             }
         }
         return $candidates;
+    }
+    function candidatesActions(Request $req)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $condition = ($userData['privileges'] == 1 && $userData['group_id'] != '');
+            if (!$condition) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
+                return json_encode($response);
+            }
+            $rules = array(
+                "candidates" => "required",
+                "status" => "required|gt:0|lt:4",
+            );
+            $validator = Validator::make($req->all(), $rules);
+            if ($validator->fails()) {
+                $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+                return json_encode($response);
+            }
+            $candidates = $req->candidates;
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
+            return json_encode($response);
+        }
     }
 }
