@@ -185,4 +185,8 @@ class TeamController extends Controller
             }
         }
     }
+    function dashboardStatus(Request $req)
+    {
+        
+    }
 }

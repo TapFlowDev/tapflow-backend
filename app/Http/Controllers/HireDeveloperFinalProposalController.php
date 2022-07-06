@@ -165,11 +165,11 @@ class HireDeveloperFinalProposalController extends Controller
                 $rules = array(
                     "contract_id" => "required",
                     'starting_date' => "required|date_format:Y-m-d",
-                    'notice_period' => "required",
-                    'resource_replacement' => "required",
-                    'trail_period' => "required",
-                    'payment_settlement' => "required",
-                    'default_terms' => "required",
+                    'notice_period' => "required|string",
+                    'resource_replacement' => "required|string",
+                    'trail_period' => "required|string",
+                    'payment_settlement' =>"required|string",
+                    'default_terms' => "required|string",
                 );
                 $validators = Validator::make($req->all(), $rules);
                 if ($validators->fails()) {
