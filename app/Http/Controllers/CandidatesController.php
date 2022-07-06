@@ -42,7 +42,7 @@ class CandidatesController extends Controller
                 $response = Controller::returnResponse(422, 'Project not found', []);
                 return json_encode($response);
             }
-            $candidates = $req->candidates;
+            $candidates = json_decode($req->candidates);
             $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
             if (count($candidatesIds) < 1) {
                 $response = Controller::returnResponse(422, 'invalid candidates', []);
