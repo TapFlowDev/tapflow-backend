@@ -126,12 +126,16 @@ class HireDeveloperProposalsController extends Controller
                 'agency_admin_name' => "$userInfo->first_name $userInfo->last_name",
                 // 'est' => $estPrice
             ];
+
+
             Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
             $fenLink="/Client-user/main/project-info/".$projectData->id;
             Controller::sendNotification($projectData->company_id, $projectData->name, 'You have received a new Application', $fenLink, 2, 'hire_developer_proposals',  $proposal->id);
             //Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
             //Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
             //Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+
+
             return (json_encode($response));
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
@@ -322,9 +326,9 @@ class HireDeveloperProposalsController extends Controller
             'clientEmail' => $clinet->email,
             'status' => $status,
         );
-        // return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
+        return Mail::mailer('smtp2')->to($admin->email)->send(new InitialProposalActions($details));
         // dd($details);
-        return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
+        //return Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new InitialProposalActions($details));
     }
     function getAcceptedProposalByProjectId($projectId, $agencyId = 0)
     {
