@@ -126,10 +126,16 @@ class HireDeveloperProposalsController extends Controller
                 'agency_admin_name' => "$userInfo->first_name $userInfo->last_name",
                 // 'est' => $estPrice
             ];
-            //Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-            Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-            Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-            Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+
+
+            Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+            $fenLink="/Client-user/main/project-info/".$projectData->id;
+            Controller::sendNotification($projectData->company_id, $projectData->name, 'You have received a new Application', $fenLink, 2, 'hire_developer_proposals',  $proposal->id);
+            //Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+            //Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+            //Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+
+
             return (json_encode($response));
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
@@ -254,6 +260,8 @@ class HireDeveloperProposalsController extends Controller
 
         // notify agency
         $mail = $this->notifyAgency($req->proposal_id, 2);
+        $fenLink="/a-user/main/project/".$project->id;
+        Controller::sendNotification($project->company_id, $project->name, 'Your application rejected', $fenLink, 2, 'hire_developer_proposals',$req->proposal_id);
         $response = Controller::returnResponse(200, "proposal rejected", []);
         return (json_encode($response));
     }
@@ -270,7 +278,7 @@ class HireDeveloperProposalsController extends Controller
             $response = Controller::returnResponse(422, 'Proposal does not exsist', []);
             return (json_encode($response));
         }
-        $project = Project::select('id')->where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
+        $project = Project::select('*')->where('id', '=', $proposal->project_id)->where('company_id', '=', $userData['group_id'])->first();
         if (!$project) {
             $response = Controller::returnResponse(422, 'Project does not exsist', []);
             return (json_encode($response));
@@ -293,6 +301,8 @@ class HireDeveloperProposalsController extends Controller
         }
         // notify agency
         $mail = $this->notifyAgency($req->proposal_id, 1);
+        $fenLink="/a-user/main/project/".$project->id;
+        Controller::sendNotification($project->company_id, $project->name, 'Your application accepted', $fenLink, 2, 'hire_developer_proposals',$req->proposal_id);
         $response = Controller::returnResponse(200, "proposal accepted", []);
         return (json_encode($response));
     }
