@@ -152,6 +152,7 @@ class CandidatesController extends Controller
     }
     function getCandidatesInfo($candidates)
     {
+        $skillsObj = new SkillsController;
         foreach ($candidates as &$candidate) {
             $teamAdminId = hire_developer_proposals::select('user_id')->where('id', '=', $candidate->proposal_id)->first();
             $adminInfo = User::select('first_name', 'last_name')->where('id', '=', $teamAdminId->user_id)->first();
@@ -160,10 +161,14 @@ class CandidatesController extends Controller
             $seniorty = Category::where('id', '=', $candidate->seniority)->first();
             $skills = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $candidate->id)->pluck('skill')->toArray();
             $candidate->adminName = $adminName;
+            $candidate->country_id =  $candidate->country ;
+            $candidate->seniority_id =  $candidate->seniority ;
             $candidate->country = (isset($country->flag) ? $country->flag : "");
             $candidate->seniority = (isset($seniorty->name) ? $seniorty->name : "");
             $candidate->jobTitle = $candidate->seniority . " " . (isset($skills[0]) ? $skills[0] : "");
             $candidate->skills = $skills;
+            $candidate->skillsWithId = (isset($skills) ? $skillsObj->getSkills($skills) : []);
+
             if (isset($candidate->cv)) {
                 $candidate->cv = asset("images/cvs/" . $candidate->cv);
             } else {
@@ -172,7 +177,7 @@ class CandidatesController extends Controller
         }
         return $candidates;
     }
-    function candidatesActions(Request $req)
+    function candidatesStatusActions(Request $req)
     {
         try {
             $userData = $this->checkUser($req);
@@ -183,6 +188,7 @@ class CandidatesController extends Controller
             }
             $rules = array(
                 "candidates" => "required",
+                "projectId" => "required",
                 "status" => "required|gt:0|lt:4",
             );
             $validator = Validator::make($req->all(), $rules);
@@ -190,7 +196,23 @@ class CandidatesController extends Controller
                 $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
                 return json_encode($response);
             }
-            $candidates = $req->candidates;
+            $candidatesIds = $req->candidates;
+
+            $project = Project::select('id')->where('id', '=', $req->projectId)->where('company_id', '=', $userData['group_id'])->first();
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
+                return json_encode($response);
+            }
+            // $candidates = Candidate::whereIn('id', $candidatesIds)->where('status', '<>', 2)->get();
+            $candidates = DB::table('candidates')
+                ->join('hire_developer_proposals', 'candidates.proposal_id', '=', 'hire_developer_proposals.id')
+                ->where('hire_developer_proposals.project_id', '=', $req->projectId)
+                ->where('candidates.status', '<>', 2)
+                ->whereIn('candidates.id', $candidatesIds)
+                ->update(['candidates.status' => $req->status]);
+            
+            $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
+            return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
