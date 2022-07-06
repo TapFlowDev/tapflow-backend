@@ -127,12 +127,14 @@ class HireDeveloperProposalsController extends Controller
                 // 'est' => $estPrice
             ];
 
+
             Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
             $fenLink="/Client-user/main/project-info/".$projectData->id;
             Controller::sendNotification($projectData->company_id, $projectData->name, 'You have received a new Application', $fenLink, 2, 'hire_developer_proposals',  $proposal->id);
             //Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
             //Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
             //Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+
 
             return (json_encode($response));
         } catch (Exception $error) {
