@@ -14,7 +14,7 @@ class AgencyResourcesSkillController extends Controller
         foreach ($skills as $skill) {
             $arr = [
                 'agency_resource_id' => $agencyResourceId,
-                'skill' => $skill
+                'skill' => $skill->name
             ];
             Agency_resources_skill::create($arr);
         }
@@ -25,7 +25,8 @@ class AgencyResourcesSkillController extends Controller
     {
     }
     //delete row according to row id
-    function Delete($id)
+    function Delete($agency_resource_id)
     {
+        Agency_resources_skill::where('agency_resource_id', '=', $agency_resource_id)->delete();
     }
 }

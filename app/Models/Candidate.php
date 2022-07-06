@@ -11,6 +11,6 @@ class Candidate extends Model
     public $fillable = [
         'proposal_id',
         'agency_resource_id',
-        'status',
+        'status', // 0=>new, 1=>accepted, 2=>rejected, 3=>interview
     ];
 }
