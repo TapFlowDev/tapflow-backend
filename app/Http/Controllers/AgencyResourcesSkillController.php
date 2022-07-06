@@ -14,7 +14,7 @@ class AgencyResourcesSkillController extends Controller
         foreach ($skills as $skill) {
             $arr = [
                 'agency_resource_id' => $agencyResourceId,
-                'skill' => $skill
+                'skill' => $skill->name
             ];
             Agency_resources_skill::create($arr);
         }

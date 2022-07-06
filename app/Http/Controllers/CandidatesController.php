@@ -14,6 +14,7 @@ use App\Models\proposal;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CandidatesController extends Controller
@@ -127,7 +128,9 @@ class CandidatesController extends Controller
             }
             $proposalIds = hire_developer_proposals::select('id')->where($selectProposalsCondtions)->pluck('id')->toArray();
             $candidates = Candidate::select('*')->whereIn('proposal_id', $proposalIds)->get();
-            $candidatesCount = Candidate::whereIn('proposal_id', $proposalIds)->count();
+            $candidates = DB::table('candidates')->join('agency_resources', 'candidates.agency_resource_id', '=', 'agency_resources.id')->
+            select('candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id','agency_resources.*')->get();
+            // $candidatesCount = Candidate::whereIn('proposal_id', $proposalIds)->count();
             $candidatesInfo = $this->getCandidatesInfo($candidates);
             $response = Controller::returnResponse(200, 'data found', $candidatesInfo);
             return json_encode($response);
@@ -142,19 +145,16 @@ class CandidatesController extends Controller
             $teamAdminId = hire_developer_proposals::select('user_id')->where('id', '=', $candidate->proposal_id)->first();
             $adminInfo = User::select('first_name', 'last_name')->where('id', '=', $teamAdminId->user_id)->first();
             $adminName = $adminInfo->first_name . " " . $adminInfo->last_name;
-            $resourceInfo = Agency_resource::where('id', '=', $candidate->agency_resource_id)->first();
-            $country = Countries::where('id', '=', $resourceInfo->country)->first();
-            $seniorty = Category::where('id', '=', $resourceInfo->seniority)->first();
-            $skills = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $resourceInfo->id)->pluck('skill')->toArray();
-            $candidate->name = $resourceInfo->name;
-            $candidate->adminName = $resourceInfo->adminName;
+            $country = Countries::where('id', '=', $candidate->country)->first();
+            $seniorty = Category::where('id', '=', $candidate->seniority)->first();
+            $skills = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $candidate->id)->pluck('skill')->toArray();
+            $candidate->adminName = $adminName;
             $candidate->country = (isset($country->flag) ? $country->flag : "");
             $candidate->seniority = (isset($seniorty->name) ? $seniorty->name : "");
             $candidate->jobTitle = $candidate->seniority . " " . $skills[0];
-            $candidate->hourlyRate = $resourceInfo->hourly_rate;
             $candidate->skills = $skills;
-            if (isset($resourceInfo->cv)) {
-                $candidate->cv = asset("images/cvs/" . $resourceInfo->cv);
+            if (isset($candidate->cv)) {
+                $candidate->cv = asset("images/cvs/" . $candidate->cv);
             } else {
                 $candidate->cv  = null;
             }
