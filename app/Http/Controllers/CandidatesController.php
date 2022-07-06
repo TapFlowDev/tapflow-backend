@@ -151,7 +151,7 @@ class CandidatesController extends Controller
             $candidate->adminName = $adminName;
             $candidate->country = (isset($country->flag) ? $country->flag : "");
             $candidate->seniority = (isset($seniorty->name) ? $seniorty->name : "");
-            $candidate->jobTitle = $candidate->seniority . " " . $skills[0];
+            $candidate->jobTitle = $candidate->seniority . " " . (isset($skills[0]) ? $skills[0] : "");
             $candidate->skills = $skills;
             if (isset($candidate->cv)) {
                 $candidate->cv = asset("images/cvs/" . $candidate->cv);
