@@ -45,4 +45,12 @@ class SkillsController extends Controller
         $trimed = str_replace(' ', '-', strtolower(trim($skill)));
         return $trimed;
     }
+    function getSkills($skillsArr){
+        $trimedSkills = [];
+        foreach($skillsArr as $skill){
+            $trimedSkills[] = $this->trimedSkill($skill);
+        }
+        $skills = Skills::select('id', 'name')->whereIn('name', $trimedSkills)->get();
+        return $skills;
+    }
 }
