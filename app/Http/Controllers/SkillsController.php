@@ -61,7 +61,7 @@ class SkillsController extends Controller
         if (!$newSkill) {
             $skillArr = array(
                 'name' => $skill,
-                'unique_name' => $skill,
+                'unique_name' => $trimedSkill,
             );
             Skills::create($skillArr);
         }
