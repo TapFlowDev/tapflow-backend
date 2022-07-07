@@ -522,10 +522,8 @@ class RoomController extends Controller
         try {
             $userData = Controller::checkUser($req);
             $isMember = $this->IsRoomMember($userData['user_id'], $req->room_id);
-            if( $isMember == 0)
-            { $response = Controller::returnResponse(401, "not a member", []);
-                return (json_encode($response));}
-            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['verified'] == 1 )) {
+            
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 &&  $isMember == 1 )) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
