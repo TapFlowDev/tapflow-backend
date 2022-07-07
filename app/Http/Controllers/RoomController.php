@@ -407,9 +407,9 @@ class RoomController extends Controller
     //room type 1 individual 2 group
     function getRooms(Request $req, $offset, $limit)
     {
-        try {
+        // try {
             $userData = Controller::checkUser($req);
-            return $userData;
+          
             $user_id = $userData['user_id'];
             if ($userData['user_id'] != $user_id) {
                 $response = Controller::returnResponse(422, "unauthorized action ", []);
@@ -468,10 +468,10 @@ class RoomController extends Controller
             $all = array_merge($rooms, $rooms2);
             $response = Controller::returnResponse(200, "successful", $all);
             return json_encode($response);
-        } catch (Exception $error) {
-            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
-            return json_encode($response);
-        }
+        // } catch (Exception $error) {
+        //     $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+        //     return json_encode($response);
+        // }
     }
     function checkIfRoomExist($agencyAdmin, $companyAdmin)
     {
