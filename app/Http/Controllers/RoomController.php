@@ -522,10 +522,14 @@ class RoomController extends Controller
         try {
             $userData = Controller::checkUser($req);
             $isMember = $this->IsRoomMember($userData['user_id'], $req->room_id);
-            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['verified'] == 1 && $isMember == 1)) {
+            if( $isMember == 0)
+            { $response = Controller::returnResponse(401, "unauthorized", []);
+                return (json_encode($response));}
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['verified'] == 1 )) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
+
                 $chatObj = new ChatController;
 
                 $name = Rooms::where('id', $req->room_id)->select('name')->first()->name;
