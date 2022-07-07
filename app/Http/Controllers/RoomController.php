@@ -367,10 +367,11 @@ class RoomController extends Controller
                     array_push($rooms, $room);
                     $dates = array_column($rooms, 'date');
                     array_multisort($dates, SORT_DESC, $rooms);
-                    $rooms['count']=$count;
+                   
                 }
             }
             $all = array_merge($rooms, $rooms2);
+            $all['count']=$count;
             $response = Controller::returnResponse(200, "successful", $all);
             return json_encode($response);
         } catch (Exception $error) {
