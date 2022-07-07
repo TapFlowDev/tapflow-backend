@@ -50,7 +50,7 @@ class SkillsController extends Controller
         foreach($skillsArr as $skill){
             $trimedSkills[] = $this->trimedSkill($skill);
         }
-        $skills = Skills::select('id', 'name')->whereIn('unique_name ', $trimedSkills)->get();
+        $skills = Skills::select('id', 'name')->whereIn('unique_name', $trimedSkills)->get();
         return $skills;
     }
 }
