@@ -59,7 +59,7 @@ class AgencyResourceController extends Controller
             // $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
             $agencyResourcesSkillObj->Insert($agencyResource->id, json_decode($req->skills));
             $responseData = ['agencyResourceId' => $agencyResource->id];
-            $response = Controller::returnResponse(200, 'Success', $bebsi);
+            $response = Controller::returnResponse(200, 'Success', $responseData);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
