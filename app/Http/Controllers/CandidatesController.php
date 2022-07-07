@@ -210,9 +210,13 @@ class CandidatesController extends Controller
                 ->where('candidates.status', '<>', 2)
                 ->whereIn('candidates.id', $candidatesIds)
                 ->update(['candidates.status' => $req->status]);
-            
-            $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
-            return json_encode($response);
+            if($candidates < 1){
+                $response = Controller::returnResponse(200, 'Action denied', []);
+                return json_encode($response);
+            }else{
+                $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
+                return json_encode($response);
+            }
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
