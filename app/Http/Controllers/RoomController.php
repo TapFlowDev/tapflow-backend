@@ -409,6 +409,7 @@ class RoomController extends Controller
     {
         try {
             $userData = Controller::checkUser($req);
+            return $userData;
             $user_id = $userData['user_id'];
             if ($userData['user_id'] != $user_id) {
                 $response = Controller::returnResponse(422, "unauthorized action ", []);
