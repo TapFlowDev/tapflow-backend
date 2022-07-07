@@ -540,7 +540,7 @@ class RoomController extends Controller
                 }
                 $seen = RoomMembers::where('room_id',  $req->room_id)->where('user_id', $userData['user_id'])->select('seen')->first()->seen;
                 if ($lastMessage === null) {
-                    $room2 = array(
+                    $room = array(
                         'room_id' =>  $req->room_id,
                         'name' => $name,
                         'roomType' => $roomType,
@@ -549,7 +549,7 @@ class RoomController extends Controller
                         'seen' => $seen,
                         'image' => $image,
                     );
-                    array_push($rooms2, $room2);
+                   
                 } else {
                     $room = array(
                         'room_id' =>  $req->room_id,
@@ -560,9 +560,9 @@ class RoomController extends Controller
                         'seen' => $seen,
                         'image' => $image,
                     );
-                    array_push($rooms, $room);
-                    $dates = array_column($rooms, 'date');
-                    array_multisort($dates, SORT_DESC, $rooms);
+                    
+                    
+                   
                 }
                 $response = Controller::returnResponse(200, "successful", $room);
                 return json_encode($response);
