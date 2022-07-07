@@ -56,6 +56,7 @@ class AgencyResourceController extends Controller
                 $img->move(public_path($destPath), $imageName);
                 $this->updateFiles($agencyResource->id, $imageName, 'cv');
             }
+            // $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
             $agencyResourcesSkillObj->Insert($agencyResource->id, json_decode($req->skills));
             $responseData = ['agencyResourceId' => $agencyResource->id];
             $response = Controller::returnResponse(200, 'Success', $responseData);
