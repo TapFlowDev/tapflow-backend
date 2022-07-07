@@ -83,19 +83,35 @@ class CandidatesController extends Controller
             }
             $rules = array(
                 "candidates" => "required",
+                "projectId" => "required"
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
                 $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
                 return json_encode($response);
             }
-            $candidates = json_decode($req->candidates);
-            $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
-            if (count($candidatesIds) < 1) {
-                $response = Controller::returnResponse(422, 'invalid candidates', []);
+            $candidatesIds = json_decode($req->candidates);
+
+            $project = Project::select('id')->where('id', '=', $req->projectId)->first();
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
                 return json_encode($response);
             }
-            $candidate = Candidate::whereIn('agency_resource_id', $candidatesIds)->delete();
+            $proposalIds = hire_developer_proposals::where('project_id', '=', $req->projectId)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
+            if(count($proposalIds)< 1){
+                $response = Controller::returnResponse(422, 'Action denied', []);
+                return json_encode($response);   
+            }
+            $candidates = DB::table('candidates')
+                ->whereIn('candidates.id', $candidatesIds)->where('proposal_id', '=',$proposalIds[0])
+                ->delete();
+            // $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
+            // if (count($candidatesIds) < 1) {
+            //     $response = Controller::returnResponse(422, 'invalid candidates', []);
+            //     return json_encode($response);
+            // }
+            // $candidate = Candidate::whereIn('agency_resource_id', $candidatesIds)->delete();
+
             // return $candidateArr;
             $response = Controller::returnResponse(200, 'Candidates deleted successfully', []);
             return json_encode($response);
