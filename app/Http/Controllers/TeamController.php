@@ -57,12 +57,12 @@ class TeamController extends Controller
             $cats = $GroupCategoriesController->getTeamCategories($id);
             $targets = $agencyTargetsController->getTargets($id);
             $info = $this->get_team_info($id);
-            $wallet_info=$walletObj->getOrCreateWallet($id,1);
+            $wallet_info = $walletObj->getOrCreateWallet($id, 1);
             $country_id = $info->country;
             $Country = $NewCountriesController->getCountryFlag($country_id);
             if (!$info->image) {
                 $info->image = asset('images/profile-pic.jpg');
-            }else{
+            } else {
                 $info->image =  asset('images/companies/' . $info->image);
             }
             $info->links = $links;
@@ -80,7 +80,7 @@ class TeamController extends Controller
             return json_encode($response);
         }
     }
-   function get_team_info($id)
+    function get_team_info($id)
     {
         $team = DB::table('groups')
             ->Join('teams', 'groups.id', '=', 'teams.group_id')
@@ -187,6 +187,38 @@ class TeamController extends Controller
     }
     function dashboardStatus(Request $req)
     {
-        
+        try{
+        $userData = Controller::checkUser($req);
+        if (!($userData['exist'] == 1)) {
+            $response = Controller::returnResponse(401, "unauthorized", []);
+            return (json_encode($response));
+        } else {
+            $activeProjectsCounter = DB::table('projects')
+                ->select('projects.*')
+                ->where('projects.team_id', '=', $userData['group_id'])
+                ->whereIn('projects.status', [1, 4])
+                ->count();
+            $completedProjectsCounter = DB::table('projects')
+                ->select('projects.*')
+                ->where('projects.team_id', '=', $userData['group_id'])
+                ->where('projects.status', '=', 2)
+                ->count();
+            $activeResourcesCounter = DB::table('hire_developer_final_proposals')
+                ->join('resources', 'hire_developer_final_proposals.id', '=', 'resources.contract_id')
+                ->select('resources.id')
+                ->where('hire_developer_final_proposals.team_id', '=', $userData['group_id'])
+                ->where('hire_developer_final_proposals.status', '=', 1)
+                ->count();
+            $earnedMoney = 0;
+            $responseData = [
+                'activeProjectsCounter' => $activeProjectsCounter, 'completedProjectsCounter' => $completedProjectsCounter,
+                'activeResourcesCounter' => $activeResourcesCounter, 'earnedMoney' => $earnedMoney ];
+            $response = Controller::returnResponse(200, 'successful', $responseData);
+            return json_encode($response);
+        }
+    } catch (Exception $error) {
+        $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
+        return json_encode($response);
+    }
     }
 }
