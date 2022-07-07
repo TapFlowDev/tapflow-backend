@@ -196,7 +196,7 @@ class CandidatesController extends Controller
                 $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
                 return json_encode($response);
             }
-            $candidatesIds = $req->candidates;
+            $candidatesIds = json_decode($req->candidates);
 
             $project = Project::select('id')->where('id', '=', $req->projectId)->where('company_id', '=', $userData['group_id'])->first();
             if (!$project) {
