@@ -226,9 +226,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getFinalProposals/{id}', [ProjectController::class, 'getFinalProposalsProjectId']);
     Route::get('getFinalProposals/{id}/{offset}/{limit}', [ProjectController::class, 'getFinalProposalsProjectId']);
     Route::get('getCandidates/{id}', [CandidatesController::class, 'getProjectCandidates']);
-
-
-
+    Route::get('getChatNot/{offset}/{limit}', [RoomController::class, 'getChatNot']);
+    Route::post('getRoom', [RoomController::class, 'getRoom']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
@@ -295,9 +294,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('editAgencyResource', [AgencyResourceController::class, 'Update']);
     Route::post('removeCandidates', [CandidatesController::class, 'Delete']);
     Route::get('getAgencyResources/{id}', [AgencyResourceController::class, 'getAgencyResources']);
-
-
-
+    Route::get('dashboardStatus', [TeamController::class, 'dashboardStatus']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
@@ -343,7 +340,7 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
     Route::get('getProjectAgencyMatches/{id}/{offset}/{limit}', [ProjectAgencyMatchController::class, 'getProjectAgencyMatches']);
     Route::get('AskToApply', [ProjectAgencyMatchController::class, 'AskToApply']);
-    Route::post('editRequirement', [Requirement::class,'editRequirement']);
-    Route::post('deleteRequirement', [Requirement::class,'deleteRequirement']);
-    Route::post('updateProjectInfo', [ProjectController::class,'updateProjectInfo']);
+    Route::post('editRequirement', [Requirement::class, 'editRequirement']);
+    Route::post('deleteRequirement', [Requirement::class, 'deleteRequirement']);
+    Route::post('updateProjectInfo', [ProjectController::class, 'updateProjectInfo']);
 });
