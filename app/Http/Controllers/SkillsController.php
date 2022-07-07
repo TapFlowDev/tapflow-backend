@@ -57,7 +57,7 @@ class SkillsController extends Controller
     function addNewSkill($skill)
     {
         $trimedSkill = $this->trimedSkill($skill);
-        $newSkill = Skills::select('unique_name')->whereIn('unique_name', $trimedSkill)->first();
+        $newSkill = Skills::select('unique_name')->where('unique_name', '=', $trimedSkill)->first();
         if (!$newSkill) {
             $skillArr = array(
                 'name' => $skill,
