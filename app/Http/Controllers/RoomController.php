@@ -495,7 +495,7 @@ class RoomController extends Controller
     function getRoomImage($room_id, $user_id)
     {
         $groupObj = new GroupController;
-        $clientAdminId = RoomMembers::where('room_id',  $room_id)->where('user_id', '<>', $user_id)->select('user_id')->user_id;
+        $clientAdminId = RoomMembers::where('room_id',  $room_id)->where('user_id', '<>', $user_id)->select('user_id')->first()->user_id;
         $group_id = $groupObj->getGroupIdByUserId($clientAdminId);
         $image = $groupObj->getGroupNameAndImage($group_id)->image;
 
