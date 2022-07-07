@@ -57,7 +57,7 @@ class AgencyResourceController extends Controller
                 $this->updateFiles($agencyResource->id, $imageName, 'cv');
             }
             // $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
-            $bebsi = $agencyResourcesSkillObj->Insert($agencyResource->id, json_decode($req->skills));
+            $agencyResourcesSkillObj->Insert($agencyResource->id, json_decode($req->skills));
             $responseData = ['agencyResourceId' => $agencyResource->id];
             $response = Controller::returnResponse(200, 'Success', $bebsi);
             return json_encode($response);
