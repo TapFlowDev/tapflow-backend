@@ -14,7 +14,7 @@ class AgencyResourcesSkillController extends Controller
         $skillsObj = new SkillsController;
         foreach ($skills as $skill) {
             $skillName = $skill->name;
-            $newSkill = $skillsObj->addNewSkill($skillName);
+            $skillsObj->addNewSkill($skillName);
             $arr = [
                 'agency_resource_id' => $agencyResourceId,
                 'skill' => $skillName
