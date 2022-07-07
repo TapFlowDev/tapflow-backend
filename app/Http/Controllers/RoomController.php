@@ -410,11 +410,11 @@ class RoomController extends Controller
         // try {
             $userData = Controller::checkUser($req);
           
-            $user_id = $userData['user_id'];
+           
          
             $page = ($offset - 1) * $limit;
-            $ids = RoomMembers::where('user_id', $user_id)->select('room_id', 'updated_at')->distinct()->orderBy('updated_at')->offset($page)->limit($limit)->get();
-            return $ids;
+            $ids = RoomMembers::where('user_id', $userData['user_id'])->select('room_id', 'updated_at')->distinct()->orderBy('updated_at')->offset($page)->limit($limit)->get();
+           
             $rooms = array();
             $rooms2 = array();
 
@@ -425,7 +425,7 @@ class RoomController extends Controller
                 $room2 = array();
                 $name = Rooms::where('id', $id->room_id)->select('name')->first()->name;
                 $membersCount = RoomMembers::where('room_id',  $id->room_id)->select('seen')->count();
-                $seen = RoomMembers::where('room_id',  $id->room_id)->where('user_id', $user_id)->select('seen')->first()->seen;
+                $seen = RoomMembers::where('room_id',  $id->room_id)->where('user_id', $userData['user_id'])->select('seen')->first()->seen;
                 if ($membersCount > 2) {
                     $roomType = 2;
                 }
