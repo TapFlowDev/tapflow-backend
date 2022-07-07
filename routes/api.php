@@ -340,7 +340,9 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
     Route::get('getProjectAgencyMatches/{id}/{offset}/{limit}', [ProjectAgencyMatchController::class, 'getProjectAgencyMatches']);
     Route::get('AskToApply', [ProjectAgencyMatchController::class, 'AskToApply']);
-    Route::post('editRequirement', [Requirement::class, 'editRequirement']);
-    Route::post('deleteRequirement', [Requirement::class, 'deleteRequirement']);
-    Route::post('updateProjectInfo', [ProjectController::class, 'updateProjectInfo']);
+    Route::post('editRequirement', [Requirement::class,'editRequirement']);
+    Route::post('deleteRequirement', [Requirement::class,'deleteRequirement']);
+    Route::post('updateProjectInfo', [ProjectController::class,'updateProjectInfo']);
+    Route::post('candidatesActions', [CandidatesController::class,'candidatesStatusActions']);
+
 });
