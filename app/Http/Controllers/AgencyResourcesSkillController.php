@@ -11,8 +11,10 @@ class AgencyResourcesSkillController extends Controller
     //add row 
     function Insert($agencyResourceId, $skills)
     {
+        return $skills;
         $skillsObj = new SkillsController;
         foreach ($skills as $skill) {
+            
             $newSkill = $skillsObj->addNewSkill($skill->name);
             $arr = [
                 'agency_resource_id' => $agencyResourceId,
