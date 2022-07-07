@@ -371,8 +371,8 @@ class RoomController extends Controller
                 }
             }
             $all = array_merge($rooms, $rooms2);
-            $all['count']=$count;
-            $response = Controller::returnResponse(200, "successful", $all);
+            // $all['count']=$count;
+            $response = Controller::returnResponse(200, "successful",['chatNotifications'=> $all,'count'=>$count]);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
