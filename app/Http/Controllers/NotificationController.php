@@ -22,7 +22,7 @@ class NotificationController extends Controller
             $userNotifications = DB::table('system_notifications')
                 ->select('*')
                 ->where('receiver_id', '=', $userData['user_id'])
-                ->where('seen', '<>', 1)
+                ->where('seen', '=', 0)
                 ->distinct()
                 ->latest()->offset($page)->limit($limit)
                 ->get();
