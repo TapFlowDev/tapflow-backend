@@ -318,7 +318,7 @@ class RoomController extends Controller
                 ->distinct()->orderBy('updated_at')
                 ->offset($page)->limit($limit)
                 ->get();
-                $count= RoomMembers::where('user_id',  $userData['user_id'])
+            $count = RoomMembers::where('user_id',  $userData['user_id'])
                 ->where('seen', 0)
                 ->select('room_id', 'updated_at')
                 ->distinct()->orderBy('updated_at')
@@ -342,7 +342,7 @@ class RoomController extends Controller
 
 
 
-                $image = $this->getRoomImage($id->room_id, $userData['user_id']);
+                $image = $this->getRoomImage($id->room_id, $userData['user_id'],$userData['type']);
                 if ($lastMessage === null) {
                     $room2 = array(
                         'room_id' =>  $id->room_id,
@@ -367,12 +367,11 @@ class RoomController extends Controller
                     array_push($rooms, $room);
                     $dates = array_column($rooms, 'date');
                     array_multisort($dates, SORT_DESC, $rooms);
-                   
                 }
             }
             $all = array_merge($rooms, $rooms2);
             // $all['count']=$count;
-            $response = Controller::returnResponse(200, "successful",['chatNotifications'=> $all,'count'=>$count]);
+            $response = Controller::returnResponse(200, "successful", ['chatNotifications' => $all, 'count' => $count]);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
@@ -409,64 +408,64 @@ class RoomController extends Controller
     function getRooms(Request $req, $offset, $limit)
     {
         // try {
-            $userData = Controller::checkUser($req);
-          
-           
-         
-            $page = ($offset - 1) * $limit;
-            $ids = RoomMembers::where('user_id', $userData['user_id'])->select('room_id', 'updated_at')->distinct()->orderBy('updated_at')->offset($page)->limit($limit)->get();
-           
-            $rooms = array();
-            $rooms2 = array();
-
-
-            foreach ($ids as $id) {
-                $roomType = 1;
-                $room = array();
-                $room2 = array();
-                $name = Rooms::where('id', $id->room_id)->select('name')->first()->name;
-                $membersCount = RoomMembers::where('room_id',  $id->room_id)->select('seen')->count();
-                $seen = RoomMembers::where('room_id',  $id->room_id)->where('user_id', $userData['user_id'])->select('seen')->first()->seen;
-                if ($membersCount > 2) {
-                    $roomType = 2;
-                }
-                $chatObj = new ChatController;
-
-
-                $lastMessage = $chatObj->getRoomLastMessage($id->room_id, $userData['user_id']);
+        $userData = Controller::checkUser($req);
 
 
 
-                $image = $this->getRoomImage($id->room_id, $userData['user_id']);
-                if ($lastMessage === null) {
-                    $room2 = array(
-                        'room_id' =>  $id->room_id,
-                        'name' => $name,
-                        'roomType' => $roomType,
-                        'lastMessage' => 'first msg',
-                        'date' => '',
-                        'seen' => $seen,
-                        'image' => $image,
-                    );
-                    array_push($rooms2, $room2);
-                } else {
-                    $room = array(
-                        'room_id' =>  $id->room_id,
-                        'name' => $name,
-                        'roomType' => $roomType,
-                        'lastMessage' => $lastMessage->body,
-                        'date' => $lastMessage->created_at,
-                        'seen' => $seen,
-                        'image' => $image,
-                    );
-                    array_push($rooms, $room);
-                    $dates = array_column($rooms, 'date');
-                    array_multisort($dates, SORT_DESC, $rooms);
-                }
+        $page = ($offset - 1) * $limit;
+        $ids = RoomMembers::where('user_id', $userData['user_id'])->select('room_id', 'updated_at')->distinct()->orderBy('updated_at')->offset($page)->limit($limit)->get();
+
+        $rooms = array();
+        $rooms2 = array();
+
+
+        foreach ($ids as $id) {
+            $roomType = 1;
+            $room = array();
+            $room2 = array();
+            $name = Rooms::where('id', $id->room_id)->select('name')->first()->name;
+            $membersCount = RoomMembers::where('room_id',  $id->room_id)->select('seen')->count();
+            $seen = RoomMembers::where('room_id',  $id->room_id)->where('user_id', $userData['user_id'])->select('seen')->first()->seen;
+            if ($membersCount > 2) {
+                $roomType = 2;
             }
-            $all = array_merge($rooms, $rooms2);
-            $response = Controller::returnResponse(200, "successful", $all);
-            return json_encode($response);
+            $chatObj = new ChatController;
+
+
+            $lastMessage = $chatObj->getRoomLastMessage($id->room_id, $userData['user_id']);
+
+
+
+            $image = $this->getRoomImage($id->room_id, $userData['user_id'],$userData['type']);
+            if ($lastMessage === null) {
+                $room2 = array(
+                    'room_id' =>  $id->room_id,
+                    'name' => $name,
+                    'roomType' => $roomType,
+                    'lastMessage' => 'first msg',
+                    'date' => '',
+                    'seen' => $seen,
+                    'image' => $image,
+                );
+                array_push($rooms2, $room2);
+            } else {
+                $room = array(
+                    'room_id' =>  $id->room_id,
+                    'name' => $name,
+                    'roomType' => $roomType,
+                    'lastMessage' => $lastMessage->body,
+                    'date' => $lastMessage->created_at,
+                    'seen' => $seen,
+                    'image' => $image,
+                );
+                array_push($rooms, $room);
+                $dates = array_column($rooms, 'date');
+                array_multisort($dates, SORT_DESC, $rooms);
+            }
+        }
+        $all = array_merge($rooms, $rooms2);
+        $response = Controller::returnResponse(200, "successful", $all);
+        return json_encode($response);
         // } catch (Exception $error) {
         //     $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
         //     return json_encode($response);
@@ -493,28 +492,26 @@ class RoomController extends Controller
             ->where('user_id', '!=', $user_id)
             ->update(['seen' => 0]);
     }
-    function getRoomImage($room_id, $user_id)
+    function getRoomImage($room_id, $user_id, $type)
     {
         $groupObj = new GroupController;
-        $clientAdminId = RoomMembers::where('room_id',  $room_id)->where('user_id', '<>', $user_id)->select('user_id')->first()->user_id;
-        $group_id = $groupObj->getGroupIdByUserId($clientAdminId);
-        $image = $groupObj->getGroupNameAndImage($group_id)->image;
-
-        // if ($type == 1) {
-        //     $image = Team::where('group_id', $group_id)->select('image')->first()->image;
-        //     if (!$image) {
-        //         $image = asset('images/profile-pic.jpg');
-        //     } else {
-        //         $image =  asset('images/companies/' . $image);
-        //     }
-        // } else {
-        //     $image = Company::where('group_id', $group_id)->select('image')->first()->image;
-        //     if (!$image) {
-        //         $image = asset('images/profile-pic.jpg');
-        //     } else {
-        //         $image =  asset('images/companies/' . $image);
-        //     }
-        // }
+        $groupAdminId = RoomMembers::where('room_id',  $room_id)->where('user_id', '<>', $user_id)->select('user_id')->first()->user_id;
+        $group_id = $groupObj->getGroupIdByUserId($groupAdminId);
+        if ($type == 2) {
+            $image = Team::where('group_id', $group_id)->select('image')->first()->image;
+            if (!$image) {
+                $image = asset('images/profile-pic.jpg');
+            } else {
+                $image =  asset('images/companies/' . $image);
+            }
+        } else {
+            $image = Company::where('group_id', $group_id)->select('image')->first()->image;
+            if (!$image) {
+                $image = asset('images/profile-pic.jpg');
+            } else {
+                $image =  asset('images/companies/' . $image);
+            }
+        }
         return $image;
     }
     function getRoom(Request $req)
@@ -522,8 +519,8 @@ class RoomController extends Controller
         try {
             $userData = Controller::checkUser($req);
             $isMember = $this->IsRoomMember($userData['user_id'], $req->room_id);
-            
-            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 &&  $isMember == 1 )) {
+
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 &&  $isMember == 1)) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
@@ -532,7 +529,7 @@ class RoomController extends Controller
 
                 $name = Rooms::where('id', $req->room_id)->select('name')->first()->name;
                 $lastMessage = $chatObj->getRoomLastMessage($req->room_id, $userData['user_id']);
-                $image = $this->getRoomImage($req->room_id, $userData['user_id']);
+                $image = $this->getRoomImage($req->room_id, $userData['user_id'],$userData['type']);
                 $roomType = 1;
                 $membersCount = RoomMembers::where('room_id',  $req->room_id)->select('seen')->count();
                 if ($membersCount > 2) {
@@ -549,7 +546,6 @@ class RoomController extends Controller
                         'seen' => $seen,
                         'image' => $image,
                     );
-                   
                 } else {
                     $room = array(
                         'room_id' =>  $req->room_id,
@@ -560,9 +556,6 @@ class RoomController extends Controller
                         'seen' => $seen,
                         'image' => $image,
                     );
-                    
-                    
-                   
                 }
                 $response = Controller::returnResponse(200, "successful", $room);
                 return json_encode($response);
