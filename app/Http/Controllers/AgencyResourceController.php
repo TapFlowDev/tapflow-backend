@@ -147,7 +147,7 @@ class AgencyResourceController extends Controller
             $selectProposalsCondtions[] = ['team_id', '=', $userData['group_id']];
             $proposalIds = hire_developer_proposals::select('id')->where($selectProposalsCondtions)->pluck('id')->toArray();
             $candidates = Candidate::select('agency_resource_id')->whereIn('proposal_id', $proposalIds)->pluck('agency_resource_id')->toArray();
-            $agencyResources = Agency_resource::whereNotIn('id', $candidates)->get();
+            $agencyResources = Agency_resource::whereNotIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->get();
             $agencyResourcesInfo = $this->getAgencyResourcesInfo($agencyResources);
             $response = Controller::returnResponse(200, 'data found', $agencyResourcesInfo);
             return json_encode($response);
