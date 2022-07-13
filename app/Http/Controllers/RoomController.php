@@ -571,4 +571,22 @@ class RoomController extends Controller
             return json_encode($response);
         }
     }
+    function getRoomIdByAgencyAndCompanyAdmins(Request $req){
+        $userData = Controller::checkUser($req);
+        if (!($userData['exist'] == 1 && $userData['privileges'] == 1 )) {
+            $response = Controller::returnResponse(401, "unauthorized", []);
+            return (json_encode($response));
+        }
+        else{
+            $admins=[$userData['user_id'],$req->admin_id];
+            $room_id=RoomMembers::select('room_id')->whereIn('user_id', $admins)->first()->room_id;
+            if($room_id === null )
+            {
+                $response = Controller::returnResponse(422, "room does not exist", []);
+                return json_encode($response);
+            }
+            $response = Controller::returnResponse(200, "successful", ['room_id'=>$room_id]);
+            return json_encode($response);
+        }
+    }
 }
