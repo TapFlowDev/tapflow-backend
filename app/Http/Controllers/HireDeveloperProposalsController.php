@@ -129,7 +129,7 @@ class HireDeveloperProposalsController extends Controller
 
 
             Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-            $fenLink="/Client-user/main/project-info/".$projectData->id;
+            $fenLink = "/Client-user/main/project-info/" . $projectData->id;
             Controller::sendNotification($projectData->company_id, $projectData->name, 'You have received a new Application', $fenLink, 2, 'hire_developer_proposals',  $proposal->id);
             //Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
             //Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
@@ -260,8 +260,8 @@ class HireDeveloperProposalsController extends Controller
 
         // notify agency
         $mail = $this->notifyAgency($req->proposal_id, 2);
-        $fenLink="/a-user/main/project/".$project->id;
-        Controller::sendNotification($project->company_id, $project->name, 'Your application rejected', $fenLink, 2, 'hire_developer_proposals',$req->proposal_id);
+        $fenLink = "/a-user/main/project/" . $project->id;
+        Controller::sendNotification($project->company_id, $project->name, 'Your application rejected', $fenLink, 2, 'hire_developer_proposals', $req->proposal_id);
         $response = Controller::returnResponse(200, "proposal rejected", []);
         return (json_encode($response));
     }
@@ -273,7 +273,7 @@ class HireDeveloperProposalsController extends Controller
             $response = Controller::returnResponse(401, "Unauthrized", []);
             return (json_encode($response));
         }
-        $proposal = hire_developer_proposals::select('id', 'status', 'project_id','user_id')->where('id', $req->proposal_id)->first();
+        $proposal = hire_developer_proposals::select('id', 'status', 'project_id', 'user_id')->where('id', $req->proposal_id)->first();
         if (!$proposal) {
             $response = Controller::returnResponse(422, 'Proposal does not exsist', []);
             return (json_encode($response));
@@ -289,20 +289,19 @@ class HireDeveloperProposalsController extends Controller
         }
         $proposal->status = 1;
         $proposal->save();
-        $projectObj=new ProjectController;
-        $RoomObj=new RoomController();
-        $companyAdmin=$projectObj->getCompanyProjectAdmin($proposal->project_id);
-        $data=array('name'=>null,'agencyAdmin'=>$proposal->user_id,'companyAdmin'=>$companyAdmin);
-        $room=$RoomObj->createRoom($data);
-        if($room['code'] != 200)
-        {
+        $projectObj = new ProjectController;
+        $RoomObj = new RoomController();
+        $companyAdmin = $projectObj->getCompanyProjectAdmin($proposal->project_id);
+        $data = array('name' => null, 'agencyAdmin' => $proposal->user_id, 'companyAdmin' => $companyAdmin);
+        $room = $RoomObj->createRoom($data);
+        if ($room['code'] != 200) {
             $response = Controller::returnResponse(500, "something wrong chat", $room['msg']);
             return (json_encode($response));
         }
         // notify agency
         $mail = $this->notifyAgency($req->proposal_id, 1);
-        $fenLink="/a-user/main/project/".$project->id;
-        Controller::sendNotification($project->company_id, $project->name, 'Your application accepted', $fenLink, 2, 'hire_developer_proposals',$req->proposal_id);
+        $fenLink = "/a-user/main/project/" . $project->id;
+        Controller::sendNotification($project->company_id, $project->name, 'Your application accepted', $fenLink, 2, 'hire_developer_proposals', $req->proposal_id);
         $response = Controller::returnResponse(200, "proposal accepted", []);
         return (json_encode($response));
     }
@@ -338,5 +337,43 @@ class HireDeveloperProposalsController extends Controller
             $conditionArray[] = ['team_id', '=', $agencyId];
         }
         return hire_developer_proposals::select('id')->where($conditionArray)->pluck('id')->toArray();
+    }
+    function getProposalsAdmins(Request $req, $projectId)
+    {
+        try {
+            $freeLancerObj = new FreeLancerController;
+            $userData = Controller::checkUser($req);
+            $condtion = $userData['exist'] == 1 && $userData['privileges'] == 1;
+            if (!$condtion) {
+                $response = Controller::returnResponse(401, "Unauthrized", []);
+                return (json_encode($response));
+            }
+            $project = Project::select('company_id')
+                ->where('id', '=', $projectId)
+                ->where('company_id', '=', $userData['group_id'])
+                ->first();
+            if (!$project) {
+                $response = Controller::returnResponse(422, "there is an error", []);
+                return (json_encode($response));
+            }
+            $propsalsAdmins = DB::table('hire_developer_proposals')
+                ->join('users', 'hire_developer_proposals.user_id', '=', 'users.id')
+                ->select('users.*')
+                ->where('hire_developer_proposals.project_id', '=', $projectId)
+                ->where('hire_developer_proposals.status', '<>', 2)
+                ->distinct()
+                ->get();
+
+            if (count($propsalsAdmins) < 1) {
+                $response = Controller::returnResponse(200, "no data", []);
+                return (json_encode($response));
+            }
+            $usersData = $freeLancerObj->newGetUserInfo($propsalsAdmins);
+            $response = Controller::returnResponse(200, "Data found", $usersData);
+            return (json_encode($response));
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
+            return (json_encode($response));
+        }
     }
 }
