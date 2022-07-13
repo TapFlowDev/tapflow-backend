@@ -575,7 +575,7 @@ class RoomController extends Controller
         }
         else{
             $admins=[$userData['user_id'],$req->admin_id];
-            $room_id=RoomMembers::select('room_id')->whereIn('user_id', $admins)->first()->room_id;
+            $room_id=RoomMembers::select('room_id')->where('user_id', $userData['user_id'])->where('user_id', $req->admin_id)->first()->room_id;
             if($room_id === null )
             {
                 $response = Controller::returnResponse(422, "room does not exist", []);
