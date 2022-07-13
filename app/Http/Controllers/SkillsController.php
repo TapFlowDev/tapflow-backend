@@ -45,12 +45,45 @@ class SkillsController extends Controller
         $trimed = str_replace(' ', '-', strtolower(trim($skill)));
         return $trimed;
     }
-    function getSkills($skillsArr){
+    function getSkills($skillsArr)
+    {
         $trimedSkills = [];
-        foreach($skillsArr as $skill){
+        foreach ($skillsArr as $skill) {
             $trimedSkills[] = $this->trimedSkill($skill);
         }
         $skills = Skills::select('id', 'name')->whereIn('unique_name', $trimedSkills)->get();
         return $skills;
+    }
+    function addNewSkill($skill)
+    {
+        $trimedSkill = $this->trimedSkill($skill);
+        $newSkill = Skills::select('unique_name')->where('unique_name', '=', $trimedSkill)->first();
+        if (!$newSkill) {
+            $skillArr = array(
+                'name' => $skill,
+                'unique_name' => $trimedSkill,
+            );
+            Skills::create($skillArr);
+        }
+    }
+    function splitSkillsRequirmnets($requirements)
+    {
+        try {
+            $splitRequirementsArr = array();
+            $skillsArr = [];
+            foreach ($requirements as $requirement) {
+                $splitArray = explode(",", $requirement->description);
+                $countSplitArray = count($splitArray);
+                for ($i = 0; $i < ($countSplitArray - 4); $i++) {
+                    $skillsArr[] = trim($splitArray[$i]);
+                }
+            }
+            $addSkills = array_map([$this, 'addNewSkill'], array_unique($skillsArr));
+
+            // dd(($splitRequirementsArr));
+            return 1;
+        } catch (Exception $error) {
+            return 0;
+        }
     }
 }

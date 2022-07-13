@@ -345,4 +345,5 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('updateProjectInfo', [ProjectController::class,'updateProjectInfo']);
     Route::post('candidatesActions', [CandidatesController::class,'candidatesStatusActions']);
     Route::post('getRoomId', [RoomController::class,'getRoomIdByAgencyAndCompanyAdmins']);
+    Route::get('askForMore/{projectId}', [HireDeveloperProposalsController::class, 'getProposalsAdmins']);
 });

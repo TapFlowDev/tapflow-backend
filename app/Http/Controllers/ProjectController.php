@@ -993,7 +993,7 @@ class ProjectController extends Controller
         $requirementObj = new Requirement;
         $ProjectCategoriesObj = new ProjectCategoriesController;
         $projectPriortyObj = new ProjectPriorityController;
-        $skillsObj = new ProjectSkillsController;
+        $skillsObj = new SkillsController;
         $projectServicesObj = new ProjectServiceController;
         $returnData['error'] = [];
         $returnData['project'] = [];
@@ -1057,6 +1057,7 @@ class ProjectController extends Controller
             $requirementsDescriptionArr = array();
             if ((int)$req['type'] == 3) {
                 $requirementsDescriptionArr = $req['requirements_description'];
+                $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
             } else {
                 foreach ($req['requirements_description'] as $keyR => $valR) {
                     $requirementsDescriptionArr[] = $valR['name'];
