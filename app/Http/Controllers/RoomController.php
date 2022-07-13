@@ -577,11 +577,11 @@ class RoomController extends Controller
             $roomClient=RoomMembers::select('room_id')->where('user_id', $userData['user_id'])->pluck('room_id')->toArray();
             $roomAgency=RoomMembers::select('room_id')->where('user_id',  $req->admin_id)->pluck('room_id')->toArray();
             $room_id=array_intersect($roomClient,$roomAgency);
-            // if($room_id === null )
-            // {
-            //     $response = Controller::returnResponse(422, "room does not exist", []);
-            //     return json_encode($response);
-            // }
+            if($room_id === null )
+            {
+                $response = Controller::returnResponse(422, "room does not exist", []);
+                return json_encode($response);
+            }
             $response = Controller::returnResponse(200, "successful", ['room_id'=>$room_id]);
             return json_encode($response);
         }
