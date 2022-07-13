@@ -342,7 +342,7 @@ class RoomController extends Controller
 
 
 
-                $image = $this->getRoomImage($id->room_id, $userData['user_id']);
+                $image = $this->getRoomImage($id->room_id, $userData['user_id'],$userData['type']);
                 if ($lastMessage === null) {
                     $room2 = array(
                         'room_id' =>  $id->room_id,
@@ -438,7 +438,7 @@ class RoomController extends Controller
 
 
 
-                $image = $this->getRoomImage($id->room_id, $userData['user_id']);
+                $image = $this->getRoomImage($id->room_id, $userData['user_id'],$userData['type']);
                 if ($lastMessage === null) {
                     $room2 = array(
                         'room_id' =>  $id->room_id,
@@ -494,28 +494,26 @@ class RoomController extends Controller
             ->where('user_id', '!=', $user_id)
             ->update(['seen' => 0]);
     }
-    function getRoomImage($room_id, $user_id)
+    function getRoomImage($room_id, $user_id, $type)
     {
         $groupObj = new GroupController;
-        $clientAdminId = RoomMembers::where('room_id',  $room_id)->where('user_id', '<>', $user_id)->select('user_id')->first()->user_id;
-        $group_id = $groupObj->getGroupIdByUserId($clientAdminId);
-        $image = $groupObj->getGroupNameAndImage($group_id)->image;
-
-        // if ($type == 1) {
-        //     $image = Team::where('group_id', $group_id)->select('image')->first()->image;
-        //     if (!$image) {
-        //         $image = asset('images/profile-pic.jpg');
-        //     } else {
-        //         $image =  asset('images/companies/' . $image);
-        //     }
-        // } else {
-        //     $image = Company::where('group_id', $group_id)->select('image')->first()->image;
-        //     if (!$image) {
-        //         $image = asset('images/profile-pic.jpg');
-        //     } else {
-        //         $image =  asset('images/companies/' . $image);
-        //     }
-        // }
+        $groupAdminId = RoomMembers::where('room_id',  $room_id)->where('user_id', '<>', $user_id)->select('user_id')->first()->user_id;
+        $group_id = $groupObj->getGroupIdByUserId($groupAdminId);
+        if ($type == 2) {
+            $image = Team::where('group_id', $group_id)->select('image')->first()->image;
+            if (!$image) {
+                $image = asset('images/profile-pic.jpg');
+            } else {
+                $image =  asset('images/companies/' . $image);
+            }
+        } else {
+            $image = Company::where('group_id', $group_id)->select('image')->first()->image;
+            if (!$image) {
+                $image = asset('images/profile-pic.jpg');
+            } else {
+                $image =  asset('images/companies/' . $image);
+            }
+        }
         return $image;
     }
     function getRoom(Request $req)
@@ -531,7 +529,7 @@ class RoomController extends Controller
 
                 $name = Rooms::where('id', $req->room_id)->select('name')->first()->name;
                 $lastMessage = $chatObj->getRoomLastMessage($req->room_id, $userData['user_id']);
-                $image = $this->getRoomImage($req->room_id, $userData['user_id']);
+                $image = $this->getRoomImage($req->room_id, $userData['user_id'],$userData['type']);
                 $roomType = 1;
                 $membersCount = RoomMembers::where('room_id',  $req->room_id)->select('seen')->count();
                 if ($membersCount > 2) {
