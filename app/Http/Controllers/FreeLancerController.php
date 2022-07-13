@@ -288,6 +288,7 @@ class FreeLancerController extends Controller
         foreach ($users as $keyUser => &$user) {
             if ($user->type == 1) {
                 $moreInfo = Freelancer::select('image', 'country')->where('user_id', '=', $user->id)->first();
+                $image = $moreInfo->image;
                 $countryId = $moreInfo->country;
             } else {
                 $moreInfo = Client::select('image', 'country')->where('user_id', '=', $user->id)->first();
