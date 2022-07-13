@@ -15,6 +15,7 @@ use App\Http\Controllers\UserCategoriesController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\GroupMembersController;
 use App\Models\Category;
+use App\Models\Client;
 use PhpParser\Node\Expr\Isset_;
 use Symfony\Component\VarDumper\Cloner\Data;
 
@@ -134,10 +135,25 @@ class FreeLancerController extends Controller
             $user = DB::table('users')
                 ->leftJoin('freelancers', 'users.id', '=', 'freelancers.user_id')
                 ->where('users.id', $id)
-                ->select('users.id','users.first_name','users.last_name','users.email','users.role','users.dob', 'users.gender','users.type','users.token','users.fcm_token',
-                'freelancers.type_freelancer','freelancers.bio','freelancers.country','freelancers.image','freelancers.tools',)
+                ->select(
+                    'users.id',
+                    'users.first_name',
+                    'users.last_name',
+                    'users.email',
+                    'users.role',
+                    'users.dob',
+                    'users.gender',
+                    'users.type',
+                    'users.token',
+                    'users.fcm_token',
+                    'freelancers.type_freelancer',
+                    'freelancers.bio',
+                    'freelancers.country',
+                    'freelancers.image',
+                    'freelancers.tools',
+                )
                 ->get();
-               
+
 
             $user = $this->getUserInfo($user)->first();
             $response = Controller::returnResponse(200, 'data found', $user);
@@ -200,14 +216,14 @@ class FreeLancerController extends Controller
             if ($user->image != '') {
                 $image = asset('images/users/' . $user->image);
                 $user->image = $image;
-            }else{
+            } else {
                 $user->image = asset('images/profile-pic.jpg');
             }
             $groupId = $membersObj->getGroupId($user->id);
             if ($groupId != '') {
                 $user->team_id = $groupId->group_id;
                 $privileges = $membersObj->getUserPrivileges($user->id);
-                $user->privileges=$privileges;
+                $user->privileges = $privileges;
             } else {
                 $user->team_id =  null;
             }
@@ -248,22 +264,46 @@ class FreeLancerController extends Controller
         if ($validator->fails()) {
             $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
             return json_encode($response);
-        } 
-            $id = $req->user_id;
-            $user_image = Freelancer::where('user_id', $id)->select('image')->first()->image;
-            $image_path = "images/users/" . $user_image;
-             File::delete(public_path($image_path));
-            if ($req->hasFile('image')) {
-                $destPath = 'images/users';
-                $ext = $req->file('image')->extension();
-                $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
-                // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
-                $img = $req->image;
-                $img->move(public_path($destPath), $imageName);
-                $this->updateFiles($id, $imageName, 'image');
-                $response=Controller::returnResponse(200,'successful',[]);
-                return json_encode($response);
+        }
+        $id = $req->user_id;
+        $user_image = Freelancer::where('user_id', $id)->select('image')->first()->image;
+        $image_path = "images/users/" . $user_image;
+        File::delete(public_path($image_path));
+        if ($req->hasFile('image')) {
+            $destPath = 'images/users';
+            $ext = $req->file('image')->extension();
+            $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
+            // $imageName = $req->file('image') . "user-image-" . $userId . "." . $ext;
+            $img = $req->image;
+            $img->move(public_path($destPath), $imageName);
+            $this->updateFiles($id, $imageName, 'image');
+            $response = Controller::returnResponse(200, 'successful', []);
+            return json_encode($response);
+        }
+    }
+    function newGetUserInfo($users)
+    {
+        $membersObj = new GroupMembersController;
+        foreach ($users as $keyUser => &$user) {
+            if($user->type == 1){
+                $image = Freelancer::select('image')->where('user_id', '=', $user->id)->first()->image;
+            }else{
+                $image = Client::select('image')->where('user_id', '=', $user->id)->first()->image;
             }
-        
+            if ($image != '') {
+               $user->image  = asset('images/users/' . $user->image);
+            } else {
+                $user->image = asset('images/profile-pic.jpg');
+            }
+            $groupId = $membersObj->getGroupId($user->id);
+            if ($groupId != '') {
+                $user->team_id = $groupId->group_id;
+                $privileges = $membersObj->getUserPrivileges($user->id);
+                $user->privileges = $privileges;
+            } else {
+                $user->team_id =  null;
+            }
+        }
+        return $users;
     }
 }

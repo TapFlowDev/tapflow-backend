@@ -344,5 +344,6 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('deleteRequirement', [Requirement::class,'deleteRequirement']);
     Route::post('updateProjectInfo', [ProjectController::class,'updateProjectInfo']);
     Route::post('candidatesActions', [CandidatesController::class,'candidatesStatusActions']);
+    Route::get('askForMore/{projectId}', [HireDeveloperProposalsController::class, 'getProposalsAdmins']);
 
 });
