@@ -318,7 +318,7 @@ class RoomController extends Controller
                 ->distinct()->orderBy('updated_at')
                 ->offset($page)->limit($limit)
                 ->get();
-                $count= RoomMembers::where('user_id',  $userData['user_id'])
+            $count = RoomMembers::where('user_id',  $userData['user_id'])
                 ->where('seen', 0)
                 ->select('room_id', 'updated_at')
                 ->distinct()->orderBy('updated_at')
@@ -367,11 +367,11 @@ class RoomController extends Controller
                     array_push($rooms, $room);
                     $dates = array_column($rooms, 'date');
                     array_multisort($dates, SORT_DESC, $rooms);
-                    $rooms['count']=$count;
                 }
             }
             $all = array_merge($rooms, $rooms2);
-            $response = Controller::returnResponse(200, "successful", $all);
+            // $all['count']=$count;
+            $response = Controller::returnResponse(200, "successful", ['chatNotifications' => $all, 'count' => $count]);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
