@@ -22,11 +22,16 @@ class NotificationController extends Controller
             $userNotifications = DB::table('system_notifications')
                 ->select('*')
                 ->where('receiver_id', '=', $userData['user_id'])
-                ->where('seen', '<>', 1)
-                ->distinct()
+                ->where('seen', '=', 0)
                 ->latest()->offset($page)->limit($limit)
                 ->get();
-            $response = Controller::returnResponse(200, "successful", $userNotifications);
+                $count = DB::table('system_notifications')
+                ->select('*')
+                ->where('receiver_id', '=', $userData['user_id'])
+                ->where('seen', '=', 0)
+                ->count();
+               
+            $response = Controller::returnResponse(200, "successful",[ 'notifications'=>$userNotifications,'count'=>$count]);
             return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
