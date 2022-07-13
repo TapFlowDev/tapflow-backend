@@ -17,6 +17,7 @@ use App\Http\Controllers\GroupMembersController;
 use App\Models\Category;
 use App\Models\Client;
 use App\Models\Countries;
+use App\Models\Team;
 use PhpParser\Node\Expr\Isset_;
 use Symfony\Component\VarDumper\Cloner\Data;
 
@@ -286,14 +287,21 @@ class FreeLancerController extends Controller
     {
         $membersObj = new GroupMembersController;
         foreach ($users as $keyUser => &$user) {
-            if ($user->type == 1) {
-                $moreInfo = Freelancer::select('image', 'country')->where('user_id', '=', $user->id)->first();
-                $image = $moreInfo->image;
-                $countryId = $moreInfo->country;
+          
+            $groupId = $membersObj->getGroupId($user->id);
+            if ($groupId != '') {
+                $user->team_id = $groupId->group_id;
+                $privileges = $membersObj->getUserPrivileges($user->id);
+                $user->privileges = $privileges;
             } else {
-                $moreInfo = Client::select('image', 'country')->where('user_id', '=', $user->id)->first();
-                $image = $moreInfo->image;
-                $countryId = $moreInfo->country;
+                $user->team_id =  null;
+            }
+            if ($user->type == 1) {
+                $image = Freelancer::select('image')->where('user_id', '=', $user->id)->first()->image;
+                $countryId = Team::select('country')->where('group_id', '=', $user->team_id)->first()->country;
+            } else {
+                $image = Client::select('image')->where('user_id', '=', $user->id)->first()->image;
+                $countryId = Team::select('country')->where('group_id', '=', $user->team_id)->first()->country;
             }
             if ($image != '') {
                 $user->image  = asset('images/users/' . $user->image);
@@ -305,14 +313,6 @@ class FreeLancerController extends Controller
                 $user->country = ($country->flag ? $country->flag : null);
             } else {
                 $user->country = null;
-            }
-            $groupId = $membersObj->getGroupId($user->id);
-            if ($groupId != '') {
-                $user->team_id = $groupId->group_id;
-                $privileges = $membersObj->getUserPrivileges($user->id);
-                $user->privileges = $privileges;
-            } else {
-                $user->team_id =  null;
             }
         }
         return $users;
