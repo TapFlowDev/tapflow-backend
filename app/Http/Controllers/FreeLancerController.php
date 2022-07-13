@@ -16,6 +16,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\GroupMembersController;
 use App\Models\Category;
 use App\Models\Client;
+use App\Models\Countries;
 use PhpParser\Node\Expr\Isset_;
 use Symfony\Component\VarDumper\Cloner\Data;
 
@@ -285,15 +286,24 @@ class FreeLancerController extends Controller
     {
         $membersObj = new GroupMembersController;
         foreach ($users as $keyUser => &$user) {
-            if($user->type == 1){
-                $image = Freelancer::select('image')->where('user_id', '=', $user->id)->first()->image;
-            }else{
-                $image = Client::select('image')->where('user_id', '=', $user->id)->first()->image;
+            if ($user->type == 1) {
+                $moreInfo = Freelancer::select('image', 'country')->where('user_id', '=', $user->id)->first();
+                $countryId = $moreInfo->country;
+            } else {
+                $moreInfo = Client::select('image', 'country')->where('user_id', '=', $user->id)->first();
+                $image = $moreInfo->image;
+                $countryId = $moreInfo->country;
             }
             if ($image != '') {
-               $user->image  = asset('images/users/' . $user->image);
+                $user->image  = asset('images/users/' . $user->image);
             } else {
                 $user->image = asset('images/profile-pic.jpg');
+            }
+            if ($countryId != "") {
+                $country = Countries::select('flag')->where('id', '=', $countryId)->first();
+                $user->country = ($country->flag ? $country->flag : null);
+            } else {
+                $user->country = null;
             }
             $groupId = $membersObj->getGroupId($user->id);
             if ($groupId != '') {
