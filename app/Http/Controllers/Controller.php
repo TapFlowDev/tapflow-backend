@@ -18,6 +18,9 @@ use App\Models\System_Notification;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    public $NotificationsType=array(
+        "final_proposals"=>3,
+    );
     public function returnResponse($requestStatus = 200, $requestMessage = 'successfully', $array)
     {
         $response = array(
@@ -95,7 +98,8 @@ class Controller extends BaseController
       
         $actionLink=$serverLink.$link;
         if($type== 2){
-        $groupAdmins = $groupMembersObj->getGroupAdminsIds($receiver_id);
+        $actionType=$this->NotificationsType[$action];
+        $groupAdmins = $groupMembersObj->filterAdminsAcceptNotifications($receiver_id, $actionType);
         $fcmTokens=$groupAdmins->pluck('fcm_token')->toArray();
         $admins=$groupAdmins->pluck('user_id')->toArray();
       foreach( $admins as $id)

@@ -59,6 +59,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\HireDeveloperFinalProposalController;
 use App\Http\Controllers\ProjectAgencyMatchController;
+use App\Http\Controllers\NotificationSettings;
 
 
 // use App\Http\Controllers\PaymentController;
@@ -127,6 +128,9 @@ Route::post('clientRegester', [UserController::class, 'clientSignUpProcess']);
 // Route::post('addTeam', [GroupController::class, 'add_group_team']);
 
 Route::post('createWallet', [WalletsController::class, 'Insert']);
+Route::get('settings/{id}', [NotificationSettings::class, 'Insert']);
+Route::post('push', [NotificationSettings::class, 'pushNotification']);
+Route::post('email', [NotificationSettings::class, 'emailNotification']);
 // testing
 // Route::get('printInvoiceTestTT', [PaymentsController::class, 'printInvoice']);
 
@@ -228,6 +232,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getCandidates/{id}', [CandidatesController::class, 'getProjectCandidates']);
     Route::get('getChatNot/{offset}/{limit}', [RoomController::class, 'getChatNot']);
     Route::post('getRoom', [RoomController::class, 'getRoom']);
+    Route::post('pushNotification', [NotificationSettings::class, 'pushNotification']);
+    Route::post('emailNotification', [NotificationSettings::class, 'emailNotification']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);
@@ -340,10 +346,10 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('getMilestonesByProposalId/{id}', [Milestones::class, 'getMilestones']);
     Route::get('getProjectAgencyMatches/{id}/{offset}/{limit}', [ProjectAgencyMatchController::class, 'getProjectAgencyMatches']);
     Route::get('AskToApply', [ProjectAgencyMatchController::class, 'AskToApply']);
-    Route::post('editRequirement', [Requirement::class,'editRequirement']);
-    Route::post('deleteRequirement', [Requirement::class,'deleteRequirement']);
-    Route::post('updateProjectInfo', [ProjectController::class,'updateProjectInfo']);
-    Route::post('candidatesActions', [CandidatesController::class,'candidatesStatusActions']);
-    Route::post('getRoomId', [RoomController::class,'getRoomIdByAgencyAndCompanyAdmins']);
+    Route::post('editRequirement', [Requirement::class, 'editRequirement']);
+    Route::post('deleteRequirement', [Requirement::class, 'deleteRequirement']);
+    Route::post('updateProjectInfo', [ProjectController::class, 'updateProjectInfo']);
+    Route::post('candidatesActions', [CandidatesController::class, 'candidatesStatusActions']);
+    Route::post('getRoomId', [RoomController::class, 'getRoomIdByAgencyAndCompanyAdmins']);
     Route::get('askForMore/{projectId}', [HireDeveloperProposalsController::class, 'getProposalsAdmins']);
 });

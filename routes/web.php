@@ -32,6 +32,7 @@ use App\Http\Controllers\AdminTool\StaticDataController;
 use App\Http\Controllers\AdminTool\WalletsController;
 use App\Http\Controllers\AdminTool\WalletsTransactionsController;
 use App\Http\Controllers\AdminTool\WithdrawlRequestsController;
+use App\Http\Controllers\GroupMembersController;
 use App\Http\Controllers\MailChimpController;
 use App\Http\Controllers\NotificationsSettings;
 use Illuminate\Http\Request;
@@ -117,6 +118,7 @@ Route::prefix('AdminTool')->middleware(['auth', 'auth.isAdmin'])->name('AdminToo
     Route::post('removeMatch/{id}', [ProjectsController::class, 'removeMatch'])->name('removeMatch.destroy');
 
 });
+
 Route::get('/r', function (Request $request) {
     return redirect('/api/r/' . $request->r);
 });

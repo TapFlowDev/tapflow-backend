@@ -105,6 +105,8 @@ class UserController extends Controller
                 }
                 //Newsletter::subscribeOrUpdate($req->email, ['FNAME'=>$req->first_name, 'LNAME'=>$req->last_name,'ROLE'=>$req->role, "UTYPE"=>$mailchimpUserType, 'ADMIN'=>'not admin'], 'Tapflow');
                 // dd(Newsletter::getLastError());
+                $notificationSettingsObj=new NotificationSettingsController;
+                $notificationSettingsObj->Insert($user->id);
                 $responseData = $this->internal_login($req->email, $req->password);
                 $response = Controller::returnResponse(200, "user added successfully", $responseData);
                 return (json_encode($response));
@@ -461,6 +463,8 @@ class UserController extends Controller
         /**
          * login user
          */
+        $notificationSettingsObj=new NotificationSettingsController;
+        $notificationSettingsObj->Insert($admin['id']);
         $responseData = $this->clientInternalLogin($admin['email'], $req->user['password'], $teamId);
         $response = Controller::returnResponse(200, "user added successfully", $responseData);
         return $response;

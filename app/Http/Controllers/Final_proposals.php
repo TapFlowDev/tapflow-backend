@@ -153,7 +153,7 @@ class Final_proposals extends Controller
             ->where('project_id', '=', $project_id)
             ->first();
         if ($final_proposal == null) {
-            return ['exist' => 0, 'status' =>null];
+            return ['exist' => 0, 'status' => null];
         } else {
             return ['exist' => 1, "final_proposal_id" => $final_proposal->id, 'type' => (int)$final_proposal->type, 'status' => $final_proposal->status];
         }
@@ -476,9 +476,9 @@ class Final_proposals extends Controller
                                         "agency_name" => $agency->name
                                     ];
 
-                                   $fenLink="/Client-user/main/project-info/".$req->project_id;
-                                   
-                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals',$final_proposal ->id);
+                                    $fenLink = "/Client-user/main/project-info/" . $req->project_id;
+
+                                    Controller::sendNotification($projectInfo->company_id, $projectInfo->name, 'Final proposal submitted', $fenLink, 2, 'final_proposals', $final_proposal->id);
                                     Mail::mailer('smtp2')->to($companyAdmin->email)->send(new submitFinalProposal($details));
                                     $response = Controller::returnResponse(200, 'Final proposal add successfully', $final_proposal->id);
                                     return (json_encode($response));
@@ -541,9 +541,9 @@ class Final_proposals extends Controller
                                                 "Proposal_description" => $desc,
                                                 "agency_name" => $agency->name
                                             ];
-                                            $fenLink="/Client-user/main/project-info/".$req->project_id;
-                                   
-                                    Controller::sendNotification($projectInfo->company_id,$projectInfo->name,'Final proposal submitted',$fenLink,2,'final_proposals',$ifExist['final_proposal_id']);
+                                            $fenLink = "/Client-user/main/project-info/" . $req->project_id;
+
+                                            Controller::sendNotification($projectInfo->company_id, $projectInfo->name, 'Final proposal submitted', $fenLink, 2, 'final_proposals', $ifExist['final_proposal_id']);
                                             Mail::mailer('smtp2')->to($companyAdmin->email)->send(new SubmitFinalProposal($details));
                                             $response = Controller::returnResponse(200, 'update data successful', []);
                                             return json_encode($response);
@@ -655,8 +655,8 @@ class Final_proposals extends Controller
                                 "type" => 1
 
                             ];
-                            $fenLink="/a-user/main/project/". $req->project_id;
-                            Controller::sendNotification($final_proposal->team_id, $projectInfo->name,'Final proposal accepted',$fenLink,2,'final_proposals',$req->proposal_id);
+                            $fenLink = "/a-user/main/project/" . $req->project_id;
+                            Controller::sendNotification($final_proposal->team_id, $projectInfo->name, 'Final proposal accepted', $fenLink, 2, 'final_proposals', $req->proposal_id);
                             Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                             $response = Controller::returnResponse(200, "proposal accepted", []);
                             return (json_encode($response));
@@ -703,9 +703,9 @@ class Final_proposals extends Controller
                             "type" => 2
 
                         ];
-                        $fenLink="#";
+                        $fenLink = "#";
 
-                        Controller::sendNotification($final_proposal->team_id,$projectInfo->name,'Final proposal rejected',$fenLink,2,'final_proposals',$req->proposal_id);
+                        Controller::sendNotification($final_proposal->team_id, $projectInfo->name, 'Final proposal rejected', $fenLink, 2, 'final_proposals', $req->proposal_id);
                         Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
                         $response = Controller::returnResponse(200, "proposal rejected", []);
                         return (json_encode($response));
@@ -749,8 +749,8 @@ class Final_proposals extends Controller
 
                         // ];
                         // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new FinalProposalActions($details));
-                        $fenLink="a-user/main/pending-project/".$req->project_id;
-                        Controller::sendNotification($final_proposal->team_id,$projectInfo->name,'Your received a comment on the final proposal',$fenLink,2,'final_proposals',$req->proposal_id);
+                        $fenLink = "a-user/main/pending-project/" . $req->project_id;
+                        Controller::sendNotification($final_proposal->team_id, $projectInfo->name, 'Your received a comment on the final proposal', $fenLink, 2, 'final_proposals', $req->proposal_id);
                         $response = Controller::returnResponse(200, "Please contact the agency via email ", ['admin_email' => $agencyAdmin->email]);
                         return (json_encode($response));
                     } else {
@@ -953,8 +953,7 @@ class Final_proposals extends Controller
 
     function testsendnot()
     {
-        return Controller::sendNotification(121,'test','hi from backend','linkahmad.com',2,'final_proposals',26);
-
+        return Controller::sendNotification(121, 'test', 'hi from backend', 'linkahmad.com', 2, 'final_proposals', 26);
     }
 
 
@@ -977,7 +976,7 @@ class Final_proposals extends Controller
                 ->get();
             // $final_proposal->hours = $final_proposal->hours;
             $finalProposalData = $this->newGetData($final_proposal)->first();
-            $returnData = ($finalProposalData ? $finalProposalData : [] );
+            $returnData = ($finalProposalData ? $finalProposalData : []);
         } else {
             $final_proposal = DB::table('final_proposals')
                 ->where('project_id', '=', $project_id)
@@ -1036,5 +1035,4 @@ class Final_proposals extends Controller
         $final_proposal->milestones = $milestones;
         return ($final_proposal);
     }
-
 }

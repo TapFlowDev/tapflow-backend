@@ -196,4 +196,16 @@ class GroupMembersController extends Controller
     {
         return Group::where('id',$id)->select('type')->first()->type;
     }
+    function filterAdminsAcceptNotifications($id,$type)
+    {
+        return DB::table('group_members')
+        ->join('users', 'group_members.user_id', '=', 'users.id')
+        ->join('notification_settings', 'notification_settings.user_id', '=', 'users.id')
+        ->select('group_members.user_id','users.fcm_token')
+        ->where('notification_settings.notification', '=', 1)
+        ->where('notification_settings.notification_type', '=', $type)
+        ->where('group_members.group_id', '=', $id)
+        ->where('group_members.privileges', '=', 1)
+        ->get();
+    }
 }
