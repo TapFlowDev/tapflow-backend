@@ -470,7 +470,7 @@ class RoomController extends Controller
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
-
+        }
     }
     function checkIfRoomExist($agencyAdmin, $companyAdmin)
     {
