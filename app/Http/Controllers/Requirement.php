@@ -44,13 +44,13 @@ class Requirement extends Controller
   }
   function getRequirementsByProjectId($id)
   {
-    $requirements = requirementModel::where('project_id', $id)->where('deleted' ,'=',0)->select('description')->get();
+    $requirements = requirementModel::where('project_id', $id)->where('deleted', '=', 0)->select('description')->get();
 
     return ($requirements);
   }
   function getRequirementsAlldataByProjectId($id)
   {
-    $requirements = requirementModel::where('project_id', $id)->where('deleted' ,'=',0)->get();
+    $requirements = requirementModel::where('project_id', $id)->where('deleted', '=', 0)->get();
 
     return ($requirements);
   }
@@ -67,7 +67,7 @@ class Requirement extends Controller
     $requirements = DB::table('requirements')
       ->select('requirements.id', 'requirements.description')
       ->where('requirements.project_id', '=', $projectId)
-      ->where('deleted' ,'=',0)
+      ->where('deleted', '=', 0)
       ->get();
     $returnDataArr = $this->splitRequirmnets($requirements);
     // dd($returnDataArr);
@@ -148,7 +148,7 @@ class Requirement extends Controller
   {
     try {
       $userData = Controller::checkUser($req);
-      if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2 )) {
+      if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2)) {
         $response = Controller::returnResponse(401, "unauthorized", []);
         return (json_encode($response));
       } else {
@@ -165,12 +165,39 @@ class Requirement extends Controller
   {
     try {
       $userData = Controller::checkUser($req);
-      if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2 )) {
+      if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2)) {
         $response = Controller::returnResponse(422, "unauthorized", []);
         return (json_encode($response));
       } else {
-        requirementModel::where('id', $req->requirement_id)->update(['deleted' =>1]);
+        requirementModel::where('id', $req->requirement_id)->update(['deleted' => 1]);
         $response = Controller::returnResponse(200, "successful", []);
+        return (json_encode($response));
+      }
+    } catch (Exception $error) {
+      $response = Controller::returnResponse(500, "something went wrong", []);
+      return (json_encode($response));
+    }
+  }
+  function addRequirement(Request $req)
+  {
+    try {
+      $userData = Controller::checkUser($req);
+      if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['type'] == 2)) {
+        $response = Controller::returnResponse(401, "unauthorized", []);
+        return (json_encode($response));
+      } else {
+        $skillsObj = new SkillsController;
+        $project_id = $req->project_id;
+        $project = Project::select('id')->where([['id', '=', $project_id], ['company_id', '=', $userData['group_id'], ['type', '=', 3]]])->first();
+        if (!$project) {
+          $response = Controller::returnResponse(422, "Action denied", []);
+          return (json_encode($response));
+        }
+        $requirementsDescriptionArr = $req->requirements_description;
+        $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
+        $reqs = $this->Insert($requirementsDescriptionArr, $project_id, $userData['user_id']);
+        // requirementModel::where('id', $req->requirement_id)->update(['description' => $req->requirement]);
+        $response = Controller::returnResponse(200, "successful", $reqs);
         return (json_encode($response));
       }
     } catch (Exception $error) {

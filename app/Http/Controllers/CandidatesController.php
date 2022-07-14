@@ -83,19 +83,35 @@ class CandidatesController extends Controller
             }
             $rules = array(
                 "candidates" => "required",
+                "projectId" => "required"
             );
             $validator = Validator::make($req->all(), $rules);
             if ($validator->fails()) {
                 $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
                 return json_encode($response);
             }
-            $candidates = json_decode($req->candidates);
-            $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
-            if (count($candidatesIds) < 1) {
-                $response = Controller::returnResponse(422, 'invalid candidates', []);
+            $candidatesIds = json_decode($req->candidates);
+
+            $project = Project::select('id')->where('id', '=', $req->projectId)->first();
+            if (!$project) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
                 return json_encode($response);
             }
-            $candidate = Candidate::whereIn('agency_resource_id', $candidatesIds)->delete();
+            $proposalIds = hire_developer_proposals::where('project_id', '=', $req->projectId)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
+            if (count($proposalIds) < 1) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
+                return json_encode($response);
+            }
+            $candidates = DB::table('candidates')
+                ->whereIn('candidates.id', $candidatesIds)->where('proposal_id', '=', $proposalIds[0])
+                ->delete();
+            // $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
+            // if (count($candidatesIds) < 1) {
+            //     $response = Controller::returnResponse(422, 'invalid candidates', []);
+            //     return json_encode($response);
+            // }
+            // $candidate = Candidate::whereIn('agency_resource_id', $candidatesIds)->delete();
+
             // return $candidateArr;
             $response = Controller::returnResponse(200, 'Candidates deleted successfully', []);
             return json_encode($response);
@@ -161,8 +177,8 @@ class CandidatesController extends Controller
             $seniorty = Category::where('id', '=', $candidate->seniority)->first();
             $skills = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $candidate->id)->pluck('skill')->toArray();
             $candidate->adminName = $adminName;
-            $candidate->country_id =  $candidate->country ;
-            $candidate->seniority_id =  $candidate->seniority ;
+            $candidate->country_id =  $candidate->country;
+            $candidate->seniority_id =  $candidate->seniority;
             $candidate->country = (isset($country->flag) ? $country->flag : "");
             $candidate->seniority = (isset($seniorty->name) ? $seniorty->name : "");
             $candidate->jobTitle = $candidate->seniority . " " . (isset($skills[0]) ? $skills[0] : "");
@@ -196,7 +212,7 @@ class CandidatesController extends Controller
                 $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
                 return json_encode($response);
             }
-            $candidatesIds = $req->candidates;
+            $candidatesIds = json_decode($req->candidates);
 
             $project = Project::select('id')->where('id', '=', $req->projectId)->where('company_id', '=', $userData['group_id'])->first();
             if (!$project) {
@@ -210,9 +226,13 @@ class CandidatesController extends Controller
                 ->where('candidates.status', '<>', 2)
                 ->whereIn('candidates.id', $candidatesIds)
                 ->update(['candidates.status' => $req->status]);
-            
-            $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
-            return json_encode($response);
+            if ($candidates < 1) {
+                $response = Controller::returnResponse(200, 'Action denied', []);
+                return json_encode($response);
+            } else {
+                $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
+                return json_encode($response);
+            }
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);

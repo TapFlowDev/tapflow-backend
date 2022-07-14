@@ -407,7 +407,8 @@ class RoomController extends Controller
     //room type 1 individual 2 group
     function getRooms(Request $req, $offset, $limit)
     {
-        // try {
+        try {
+
         $userData = Controller::checkUser($req);
 
 
@@ -466,10 +467,10 @@ class RoomController extends Controller
         $all = array_merge($rooms, $rooms2);
         $response = Controller::returnResponse(200, "successful", $all);
         return json_encode($response);
-        // } catch (Exception $error) {
-        //     $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
-        //     return json_encode($response);
-        // }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return json_encode($response);
+
     }
     function checkIfRoomExist($agencyAdmin, $companyAdmin)
     {
@@ -562,6 +563,25 @@ class RoomController extends Controller
             }
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
+            return json_encode($response);
+        }
+    }
+    function getRoomIdByAgencyAndCompanyAdmins(Request $req){
+        $userData = Controller::checkUser($req);
+        if (!($userData['exist'] == 1 && $userData['privileges'] == 1 )) {
+            $response = Controller::returnResponse(401, "unauthorized", []);
+            return (json_encode($response));
+        }
+        else{
+            $roomClient=RoomMembers::select('room_id')->where('user_id', $userData['user_id'])->pluck('room_id')->toArray();
+            $roomAgency=RoomMembers::select('room_id')->where('user_id',  $req->admin_id)->pluck('room_id')->toArray();
+            $room_id=array_intersect($roomClient,$roomAgency);
+            if($room_id === null )
+            {
+                $response = Controller::returnResponse(422, "room does not exist", []);
+                return json_encode($response);
+            }
+            $response = Controller::returnResponse(200, "successful", ['room_id'=>$room_id]);
             return json_encode($response);
         }
     }
