@@ -408,6 +408,7 @@ class RoomController extends Controller
     function getRooms(Request $req, $offset, $limit)
     {
         try {
+
         $userData = Controller::checkUser($req);
 
 
@@ -469,7 +470,7 @@ class RoomController extends Controller
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, "something went wrong", $error->getMessage());
             return json_encode($response);
-        }
+
     }
     function checkIfRoomExist($agencyAdmin, $companyAdmin)
     {
@@ -519,10 +520,12 @@ class RoomController extends Controller
         try {
             $userData = Controller::checkUser($req);
             $isMember = $this->IsRoomMember($userData['user_id'], $req->room_id);
-            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 && $userData['verified'] == 1 && $isMember == 1)) {
+
+            if (!($userData['exist'] == 1 && $userData['privileges'] == 1 &&  $isMember == 1)) {
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
+
                 $chatObj = new ChatController;
 
                 $name = Rooms::where('id', $req->room_id)->select('name')->first()->name;
@@ -535,7 +538,7 @@ class RoomController extends Controller
                 }
                 $seen = RoomMembers::where('room_id',  $req->room_id)->where('user_id', $userData['user_id'])->select('seen')->first()->seen;
                 if ($lastMessage === null) {
-                    $room2 = array(
+                    $room = array(
                         'room_id' =>  $req->room_id,
                         'name' => $name,
                         'roomType' => $roomType,
@@ -544,7 +547,6 @@ class RoomController extends Controller
                         'seen' => $seen,
                         'image' => $image,
                     );
-                    array_push($rooms2, $room2);
                 } else {
                     $room = array(
                         'room_id' =>  $req->room_id,
@@ -555,9 +557,6 @@ class RoomController extends Controller
                         'seen' => $seen,
                         'image' => $image,
                     );
-                    array_push($rooms, $room);
-                    $dates = array_column($rooms, 'date');
-                    array_multisort($dates, SORT_DESC, $rooms);
                 }
                 $response = Controller::returnResponse(200, "successful", $room);
                 return json_encode($response);
