@@ -74,11 +74,11 @@ class SkillsController extends Controller
             foreach ($requirements as $requirement) {
                 $splitArray = explode(",", $requirement->description);
                 $countSplitArray = count($splitArray);
+                return $countSplitArray;
                 for ($i = 0; $i < ($countSplitArray - 4); $i++) {
                     $skillsArr[] = trim($splitArray[$i]);
                 }
             }
-            return $skillsArr;
             $addSkills = array_map([$this, 'addNewSkill'], array_unique($skillsArr));
 
             // dd(($splitRequirementsArr));
