@@ -152,6 +152,25 @@ class Requirement extends Controller
         $response = Controller::returnResponse(401, "unauthorized", []);
         return (json_encode($response));
       } else {
+        $skillsObj = new SkillsController;
+        $project_idObj = requirementModel::select('project_id')->where('id', $req->requirement_id)->first();
+        $project_id = ($project_idObj ? $project_idObj->project_id : 0);
+        if ($project_id < 1) {
+          $response = Controller::returnResponse(422, "Action denied", []);
+          return (json_encode($response));
+        }
+        $project = Project::select('id', 'type')->where([
+          ['id', '=', $project_id],
+          ['company_id', '=', $userData['group_id']]
+        ])->first();
+        if (!$project) {
+          $response = Controller::returnResponse(422, "Action denied", []);
+          return (json_encode($response));
+        }
+        if($project->type==3){
+          $requirementsDescriptionArr = [$req->requirement];
+          $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
+        }
         requirementModel::where('id', $req->requirement_id)->update(['description' => $req->requirement]);
         $response = Controller::returnResponse(200, "successful", []);
         return (json_encode($response));
@@ -169,6 +188,20 @@ class Requirement extends Controller
         $response = Controller::returnResponse(422, "unauthorized", []);
         return (json_encode($response));
       } else {
+        $project_idObj = requirementModel::select('project_id')->where('id', $req->requirement_id)->first();
+        $project_id = ($project_idObj ? $project_idObj->project_id : 0);
+        if ($project_id < 1) {
+          $response = Controller::returnResponse(422, "Action denied", []);
+          return (json_encode($response));
+        }
+        $project = Project::select('id', 'type')->where([
+          ['id', '=', $project_id],
+          ['company_id', '=', $userData['group_id']]
+        ])->first();
+        if (!$project) {
+          $response = Controller::returnResponse(422, "Action denied", []);
+          return (json_encode($response));
+        }
         requirementModel::where('id', $req->requirement_id)->update(['deleted' => 1]);
         $response = Controller::returnResponse(200, "successful", []);
         return (json_encode($response));
@@ -188,12 +221,16 @@ class Requirement extends Controller
       } else {
         $skillsObj = new SkillsController;
         $project_id = $req->project_id;
-        $project = Project::select('id')->where([['id', '=', $project_id], ['company_id', '=', $userData['group_id'], ['type', '=', 3]]])->first();
+        $project = Project::select('id')->where([
+          ['id', '=', $project_id],
+          ['company_id', '=', $userData['group_id']],
+          ['type', '=', 3]
+        ])->first();
         if (!$project) {
           $response = Controller::returnResponse(422, "Action denied", []);
           return (json_encode($response));
         }
-        $requirementsDescriptionArr = $req->requirements_description;
+        $requirementsDescriptionArr = [$req->requirements_description];
         $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
         $reqs = $this->Insert($requirementsDescriptionArr, $project_id, $userData['user_id']);
         // requirementModel::where('id', $req->requirement_id)->update(['description' => $req->requirement]);
