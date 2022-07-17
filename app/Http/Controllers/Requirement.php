@@ -188,7 +188,8 @@ class Requirement extends Controller
       } else {
         $skillsObj = new SkillsController;
         $project_id = $req->project_id;
-        $project = Project::select('id')->where([['id', '=', $project_id], ['company_id', '=', $userData['group_id'], ['type', '=', 3]]])->first();
+        $project = Project::select('id')->where([['id', '=', $project_id], 
+        ['company_id', '=', $userData['group_id']], ['type', '=', 3]])->first();
         if (!$project) {
           $response = Controller::returnResponse(422, "Action denied", []);
           return (json_encode($response));
