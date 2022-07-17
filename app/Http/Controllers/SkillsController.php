@@ -69,12 +69,12 @@ class SkillsController extends Controller
     function splitSkillsRequirmnets($requirements)
     {
         try {
+            return $requirements;
             $splitRequirementsArr = array();
             $skillsArr = [];
             foreach ($requirements as $requirement) {
                 $splitArray = explode(",", $requirement->description);
                 $countSplitArray = count($splitArray);
-                return $countSplitArray;
                 for ($i = 0; $i < ($countSplitArray - 4); $i++) {
                     $skillsArr[] = trim($splitArray[$i]);
                 }
