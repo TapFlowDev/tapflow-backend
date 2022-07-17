@@ -78,7 +78,7 @@ class SkillsController extends Controller
                     $skillsArr[] = trim($splitArray[$i]);
                 }
             }
-            return 100;
+            return $skillsArr;
             $addSkills = array_map([$this, 'addNewSkill'], array_unique($skillsArr));
 
             // dd(($splitRequirementsArr));
