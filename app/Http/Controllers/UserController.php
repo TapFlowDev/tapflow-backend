@@ -409,6 +409,7 @@ class UserController extends Controller
             'email' => $req->user['email'],
             'password' => $req->user['password'],
             'type' => 2,
+            'LBU' => $req->user['learn'],
         );
         $userResponse = $this->registerClient($userArr);
         if ($userResponse['error']) {
