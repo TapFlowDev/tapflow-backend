@@ -198,9 +198,9 @@ class Requirement extends Controller
           return (json_encode($response));
         }
         $requirementsDescriptionArr = $req->requirements_description;
+        $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
         $response = Controller::returnResponse(500, "successful", []);
         return (json_encode($response));
-        $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
         $reqs = $this->Insert($requirementsDescriptionArr, $project_id, $userData['user_id']);
         // requirementModel::where('id', $req->requirement_id)->update(['description' => $req->requirement]);
         $response = Controller::returnResponse(200, "successful", $reqs);
