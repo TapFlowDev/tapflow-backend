@@ -197,7 +197,7 @@ class Requirement extends Controller
           $response = Controller::returnResponse(422, "Action denied", []);
           return (json_encode($response));
         }
-        $requirementsDescriptionArr = $req->requirements_description;
+        $requirementsDescriptionArr = [$req->requirements_description];
         $newSkills = $skillsObj->splitSkillsRequirmnets($requirementsDescriptionArr);
         $response = Controller::returnResponse(500, "successful", $newSkills);
         return (json_encode($response));

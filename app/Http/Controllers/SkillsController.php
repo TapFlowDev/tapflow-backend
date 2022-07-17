@@ -66,25 +66,17 @@ class SkillsController extends Controller
             Skills::create($skillArr);
         }
     }
-    function splitSkillsRequirmnets($requirements, $isArr = 0)
+    function splitSkillsRequirmnets($requirements)
     {
         try {
+            return $requirements;
             $splitRequirementsArr = array();
             $skillsArr = [];
-            if ($isArr > 0) {
-                $splitArray = explode(",", $requirements);
+            foreach ($requirements as $requirement) {
+                $splitArray = explode(",", $requirement->description);
                 $countSplitArray = count($splitArray);
                 for ($i = 0; $i < ($countSplitArray - 4); $i++) {
                     $skillsArr[] = trim($splitArray[$i]);
-                }
-                return $skillsArr;
-            } else {
-                foreach ($requirements as $requirement) {
-                    $splitArray = explode(",", $requirement->description);
-                    $countSplitArray = count($splitArray);
-                    for ($i = 0; $i < ($countSplitArray - 4); $i++) {
-                        $skillsArr[] = trim($splitArray[$i]);
-                    }
                 }
             }
             $addSkills = array_map([$this, 'addNewSkill'], array_unique($skillsArr));
