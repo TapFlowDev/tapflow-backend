@@ -215,10 +215,10 @@ class HireDeveloperFinalProposalController extends Controller
                     "agency_name" =>  $agencyName,
                 ];
 
-                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new SubmitHireDeveloper($details));
+                //Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new SubmitHireDeveloper($details));
                 $fenLink="/Client-user/main/project-info/".$project_info->id;
                 Controller::sendNotification($project_info->company_id, $project_info->name, 'Final proposal submitted', $fenLink, 2, 'hire_developer_final_proposal', $req->contract_id);
-                // Mail::mailer('smtp2')->to($companyAdmin->email)->send(new HireDeveloperActions($details));
+                Mail::mailer('smtp2')->to($companyAdmin->email)->send(new SubmitHireDeveloper($details));
 
                 $response = Controller::returnResponse(200, "contract submitted successfully", []);
                 return (json_encode($response));
@@ -270,9 +270,10 @@ class HireDeveloperFinalProposalController extends Controller
                 ];
 
 
-                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
+                // Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
                 $fenLink="/a-user/main/project/". $req->project_id;
                 Controller::sendNotification($contract->team_id, $project_info->name, 'contract accepted', $fenLink, 2, 'hire_developer_final_proposal', $req->contract_id);
+                Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
 
                 $response = Controller::returnResponse(200, "successful", []);
                 return (json_encode($response));
@@ -311,10 +312,10 @@ class HireDeveloperFinalProposalController extends Controller
                 ];
 
 
-                Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
+                //Mail::mailer('smtp2')->to('barbarawiahmad07@gmail.com')->send(new HireDeveloperActions($details));
                 $fenLink="/a-user/main/project/". $req->project_id;
                 Controller::sendNotification($contract->team_id, $project_info->name, 'contract rejected', $fenLink, 2, 'hire_developer_final_proposal', $req->contract_id);
-                // Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
+                Mail::mailer('smtp2')->to($agencyAdmin->email)->send(new HireDeveloperActions($details));
 
                 $response = Controller::returnResponse(200, "successful", []);
                 return (json_encode($response));
