@@ -39,22 +39,29 @@ class CandidatesController extends Controller
             }
             $proposal = hire_developer_proposals::where('project_id', '=', $id)->where('team_id', '=', $userData['group_id'])->first();
             if (!$proposal) {
+                $proposalArr = [
+                    "project_id" => $id,
+                    "team_id" => $userData['group_id'],
+                    "user_id" => $userData['user_id'],
+                ];
+                $proposal = hire_developer_proposals::create($proposalArr);
                 $response = Controller::returnResponse(422, 'Project not found', []);
                 return json_encode($response);
             }
             $candidates = json_decode($req->candidates);
-            $candidatesIds = Agency_resource::select('id')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->pluck('id')->toArray();
+            $candidatesIds = Agency_resource::select('id', 'hourly_rate')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->get();
             if (count($candidatesIds) < 1) {
                 $response = Controller::returnResponse(422, 'invalid candidates', []);
                 return json_encode($response);
             }
             foreach ($candidatesIds as $candidate) {
                 //check if not exist before add 
-                $doesExist = Candidate::select('id')->where('proposal_id', '=', $proposal->id)->where('agency_resource_id', '=', $candidate)->first();
+                $doesExist = Candidate::select('id')->where('proposal_id', '=', $proposal->id)->where('agency_resource_id', '=', $candidate->id)->first();
                 if (!$doesExist) {
                     $candidateArr = [
                         'proposal_id' => $proposal->id,
-                        'agency_resource_id' => $candidate,
+                        'agency_resource_id' => $candidate->id,
+                        'hourly_rate' => $candidate->hourly_rate,
                     ];
                     $candidate = Candidate::create($candidateArr);
                 }
@@ -153,7 +160,7 @@ class CandidatesController extends Controller
             } else {
                 $candidates = DB::table('candidates')
                     ->join('agency_resources', 'candidates.agency_resource_id', '=', 'agency_resources.id')
-                    ->select('candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id', 'agency_resources.*')
+                    ->select('candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id', 'candidates.hourly_rate', 'agency_resources.*', 'agency_resources.hourly_rate as default_hourly_rate')
                     ->whereIn('candidates.proposal_id', $proposalIds)
                     ->get();
             }
@@ -233,6 +240,45 @@ class CandidatesController extends Controller
                 $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
                 return json_encode($response);
             }
+        } catch (Exception $error) {
+            $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
+            return json_encode($response);
+        }
+    }
+    function updateCandidateHourlyRate(Request $req)
+    {
+        try {
+            $userData = $this->checkUser($req);
+            $condition = ($userData['privileges'] == 1 && $userData['group_id'] != '');
+            if (!$condition) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
+                return json_encode($response);
+            }
+            $rules = array(
+                "candidateId" => "required|exists:candidates,id",
+                "hourlyRate" => "required|gt:0|numeric",
+            );
+            $validator = Validator::make($req->all(), $rules);
+            if ($validator->fails()) {
+                $response = Controller::returnResponse(101, 'Validation Error', $validator->errors());
+                return json_encode($response);
+            }
+            $candidate = Candidate::where('id', '=', $req->candidateId)->first();
+            /**
+             * validate candidate  
+             */
+            $agency_resource = Agency_resource::select('id')->where('id', '=', $candidate->agency_resource_id)->where('team_id', '=', $userData['group_id'])->first();
+            if (!$agency_resource) {
+                $response = Controller::returnResponse(422, 'Action denied', []);
+                return json_encode($response);
+            }
+            /**
+             * update hourly rate
+             */
+            $candidate->hourly_rate = $req->hourlyRate;
+            $candidate->save();
+            $response = Controller::returnResponse(200, 'updated successfully', []);
+            return json_encode($response);
         } catch (Exception $error) {
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
