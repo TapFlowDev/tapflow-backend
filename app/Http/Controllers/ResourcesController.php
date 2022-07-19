@@ -164,7 +164,7 @@ class ResourcesController extends Controller
             $array = array(
                 "contract_id" => $contract_id,
                 "job_function" => $skill,
-                "rate" => $resource->hourlyRate,
+                "rate" => $resource->hourly_rate,
                 "image" => $resource->image,
                 "candidate_id" => $resource->candidate_id,
                 "name" => $resource->name,
