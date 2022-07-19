@@ -11,7 +11,7 @@ use Exception;
 use App\Models\hire_developer_proposals;
 use Illuminate\Support\Facades\DB;
 use App\Models\Project;
-
+use App\Models\Agency_resources_skill;
 
 class ResourcesController extends Controller
 {
@@ -43,12 +43,12 @@ class ResourcesController extends Controller
                     $response = Controller::returnResponse(401, "unauthorized", []);
                     return (json_encode($response));
                 }
-                if(str_contains($req->end_date, 'N')){
-                    $endDate= NULL;
-                }else{
+                if (str_contains($req->end_date, 'N')) {
+                    $endDate = NULL;
+                } else {
                     $endDate = $req->end_date;
                 }
-                $resource = resources::create($req->except(['end_date', 'image']) + ['end_date'=> $endDate]);
+                $resource = resources::create($req->except(['end_date', 'image']) + ['end_date' => $endDate]);
                 if ($req->hasFile('image')) {
                     $destPath = 'images/users';
                     $imageName = time() . "-" . $req->file('image')->getClientOriginalName();
@@ -96,8 +96,8 @@ class ResourcesController extends Controller
                     return (json_encode($response));
                 }
 
-                if(str_contains($req->end_date, 'N')){
-                    $req->end_date =NULL;
+                if (str_contains($req->end_date, 'N')) {
+                    $req->end_date = NULL;
                 }
                 resources::where('id', $req->resource_id)->update([
                     'name' => $req->name,
@@ -160,11 +160,14 @@ class ResourcesController extends Controller
     {
 
         foreach ($data as $resource) {
+            $skill = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $resource->agency_resource_id)->first();
             $array = array(
                 "contract_id" => $contract_id,
-                "job_function" => $resource['skill'],
-                "rate" => $resource['hourlyRate'],
-                "starting_date" => date("Y-m-d")
+                "job_function" => $skill,
+                "rate" => $resource->hourlyRate,
+                "image" => $resource->image,
+                "candidate_id" => $resource->candidate_id,
+                "name" => $resource->name,
             );
             resources::create($array);
         }
@@ -256,5 +259,4 @@ class ResourcesController extends Controller
             return (json_encode($response));
         }
     }
-   
 }

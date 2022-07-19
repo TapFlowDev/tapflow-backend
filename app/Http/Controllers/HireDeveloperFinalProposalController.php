@@ -63,9 +63,10 @@ class HireDeveloperFinalProposalController extends Controller
 
                     $requirementObj = new Requirement;
                     $resourcesObj = new ResourcesController;
+                    $candidatesObj = new CandidatesController;
                     $data = array("proposal_id" => $req->proposal_id, "team_id" => $userData['group_id'], "user_id" => $userData['user_id']);
                     $contract = hire_developer_final_proposal::create($data);
-                    $resources = $requirementObj->getResourcesByProposalId($req->proposal_id);
+                    $resources = $candidatesObj->getCandidatesByProposalId($req->proposal_id);
                     $resourcesObj->internalAdd($resources, $contract->id);
 
                     $response = Controller::returnResponse(200, "successful", ["contract_id" => $contract->id]);

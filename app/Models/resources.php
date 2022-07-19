@@ -21,5 +21,6 @@ class resources extends Model
         'user_id',
         'status',
         'deleted',
+        'candidate_id',
     ];
 }
