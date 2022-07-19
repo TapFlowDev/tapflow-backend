@@ -242,7 +242,7 @@ class CandidatesController extends Controller
                     ->where('hire_developer_proposals.status', '<>', 0)
                     ->whereIn('candidates.id', $candidatesIds)
                     ->get();
-                $response = Controller::returnResponse(200, 'im here', $proposals);
+                $response = Controller::returnResponse(200, 'im here', [$proposals, $candidatesIds]);
                 return json_encode($response);
             }
             if ($candidates < 1) {
