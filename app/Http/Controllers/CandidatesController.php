@@ -299,9 +299,9 @@ class CandidatesController extends Controller
     function getCandidatesByProposalId($proposal_id)
     {
        $cc= DB::table('candidates')
-        ->join('agency_resources',' candidates.agency_resource_id','agency_resources.id')
-        ->join('agency_resources_skills',' candidates.agency_resource_id','agency_resources_skills.agency_resource_id')
-        ->select('agency_resources.name','agency_resources.seniority','agency_resources.hourly_rate','agency_resources.image','agency_resources_skills.skill','candidates.agency_resource_id')
+        ->join('agency_resources','candidates.agency_resource_id','agency_resources.id')
+        ->join('agency_resources_skills','candidates.agency_resource_id','agency_resources_skills.agency_resource_id')
+        ->select('agency_resources.name','agency_resources.seniority','agency_resources.hourly_rate','agency_resources.image','agency_resources_skills.skill')
         ->where('candidates.proposal_id','=',$proposal_id)
         ->where('candidates.status','=',1)
         ->get();
