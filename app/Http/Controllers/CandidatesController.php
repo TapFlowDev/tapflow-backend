@@ -158,7 +158,7 @@ class CandidatesController extends Controller
             } else {
                 $candidates = DB::table('candidates')
                     ->join('agency_resources', 'candidates.agency_resource_id', '=', 'agency_resources.id')
-                    ->select('agency_resources.*','candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id', 'candidates.hourly_rate', 'agency_resources.hourly_rate as default_hourly_rate')
+                    ->select('agency_resources.*', 'candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id', 'candidates.hourly_rate', 'agency_resources.hourly_rate as default_hourly_rate')
                     ->whereIn('candidates.proposal_id', $proposalIds)
                     ->get();
             }
@@ -225,6 +225,7 @@ class CandidatesController extends Controller
                 return json_encode($response);
             }
             // $candidates = Candidate::whereIn('id', $candidatesIds)->where('status', '<>', 2)->get();
+
             $candidates = DB::table('candidates')
                 ->join('hire_developer_proposals', 'candidates.proposal_id', '=', 'hire_developer_proposals.id')
                 ->where('hire_developer_proposals.project_id', '=', $req->projectId)
@@ -232,6 +233,14 @@ class CandidatesController extends Controller
                 ->where('candidates.status', '<>', 1)
                 ->whereIn('candidates.id', $candidatesIds)
                 ->update(['candidates.status' => $req->status]);
+            if ($req->status == 1) {
+                $proposals = DB::table('hire_developer_proposals')
+                    ->join('candidates', 'hire_developer_proposals.id', '=', 'candidates.proposal_id')
+                    ->where('hire_developer_proposals.project_id', '=', $req->projectId)
+                    ->where('hire_developer_proposals.status', '<>', 0)
+                    ->whereIn('candidates.id', $candidatesIds)
+                    ->update(['hire_developer_proposals.status' => 1]);
+            }
             if ($candidates < 1) {
                 $response = Controller::returnResponse(200, 'Action denied', []);
                 return json_encode($response);
