@@ -304,7 +304,7 @@ class CandidatesController extends Controller
         ->select('agency_resources.name','agency_resources.seniority','agency_resources.hourly_rate','agency_resources.image','agency_resources_skills.skill','candidates.id as candidate_id','candidates.agency_resource_id')
         ->where('candidates.proposal_id','=',$proposal_id)
         ->where('candidates.status','=',1)
-        ->distinct()
+        ->groupBy('agency_resource_id')
         ->get();
         $response = Controller::returnResponse(200, 'successfully', $cc);
         return json_encode($response);
