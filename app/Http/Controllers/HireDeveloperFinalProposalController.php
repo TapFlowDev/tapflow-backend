@@ -64,7 +64,7 @@ class HireDeveloperFinalProposalController extends Controller
                     $requirementObj = new Requirement;
                     $resourcesObj = new ResourcesController;
                     $candidatesObj = new CandidatesController;
-                    $data = array("proposal_id" => $req->proposal_id, "team_id" => $userData['group_id'], "user_id" => $userData['user_id']);
+                    $data = array("proposal_id" => $req->proposal_id, "team_id" => $userData['group_id'], "user_id" => $userData['user_id'],'status'=>-1);
                     $contract = hire_developer_final_proposal::create($data);
                     $resources = $candidatesObj->getCandidatesByProposalId($req->proposal_id);
                     $rr=$resourcesObj->internalAdd($resources, $contract->id);
@@ -468,7 +468,7 @@ class HireDeveloperFinalProposalController extends Controller
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
-                $contracts = hire_developer_final_proposal::where('id', $contractId)->select('*')->get();
+                $contracts = hire_developer_final_proposal::where('id', $contractId)->where('status','!=',-1)->select('*')->get();
                 $contract = $contracts->first();
                 $proposal = hire_developer_proposals::select('*')->where('id', '=', $contract->proposal_id)->first();
                 if (!$proposal) {
