@@ -294,4 +294,15 @@ class CandidatesController extends Controller
             return json_encode($response);
         }
     }
+    function getCandidatesByProposalId($proposal_id)
+    {
+       $cc= DB::table('candidates')
+        ->join('agency_resources','candidates.agency_resource_id','agency_resources.id')
+        ->select('agency_resources.name','agency_resources.seniority','agency_resources.hourly_rate','agency_resources.image','candidates.id as candidate_id','candidates.agency_resource_id')
+        ->where('candidates.proposal_id','=',$proposal_id)
+        ->where('candidates.status','=',1)
+        ->get();
+        $response = Controller::returnResponse(200, 'successfully', $cc);
+        return json_encode($response);
+    }
 }
