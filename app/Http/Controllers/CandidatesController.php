@@ -226,24 +226,22 @@ class CandidatesController extends Controller
             }
             // $candidates = Candidate::whereIn('id', $candidatesIds)->where('status', '<>', 2)->get();
 
-            // $candidates = DB::table('candidates')
-            //     ->join('hire_developer_proposals', 'candidates.proposal_id', '=', 'hire_developer_proposals.id')
-            //     ->where('hire_developer_proposals.project_id', '=', $req->projectId)
-            //     ->where('candidates.status', '<>', 2)
-            //     ->where('candidates.status', '<>', 1)
-            //     ->whereIn('candidates.id', $candidatesIds)
-            //     ->update(['candidates.status' => $req->status]);
-            $candidates = 0;
+            $candidates = DB::table('candidates')
+                ->join('hire_developer_proposals', 'candidates.proposal_id', '=', 'hire_developer_proposals.id')
+                ->where('hire_developer_proposals.project_id', '=', $req->projectId)
+                ->where('candidates.status', '<>', 2)
+                ->where('candidates.status', '<>', 1)
+                ->whereIn('candidates.id', $candidatesIds)
+                ->update(['candidates.status' => $req->status]);
             if ($req->status == 1) {
                 $proposals = DB::table('hire_developer_proposals')
                     ->join('candidates', 'hire_developer_proposals.id', '=', 'candidates.proposal_id')
-                    ->select('hire_developer_proposals.id')
                     ->where('hire_developer_proposals.project_id', '=', $req->projectId)
-                    ->where('hire_developer_proposals.status', '<>', 0)
+                    ->where('hire_developer_proposals.status', '=', 0)
                     ->whereIn('candidates.id', $candidatesIds)
-                    ->get();
-                $response = Controller::returnResponse(200, 'im here', [$proposals, $candidatesIds]);
-                return json_encode($response);
+                    ->update(['hire_developer_proposals.status' => 1]);
+                    $response = Controller::returnResponse(200, 'Action denied', []);
+                    return json_encode($response);
             }
             if ($candidates < 1) {
                 $response = Controller::returnResponse(200, 'Action denied', []);
@@ -295,17 +293,5 @@ class CandidatesController extends Controller
             $response = Controller::returnResponse(500, 'There IS Error Occurred', $error->getMessage());
             return json_encode($response);
         }
-    }
-    function getCandidatesByProposalId($proposal_id)
-    {
-       $cc= DB::table('candidates')
-        ->join('agency_resources',' candidates.agency_resource_id','agency_resources.id')
-        ->join('agency_resources_skills',' candidates.agency_resource_id','agency_resources_skills.agency_resource_id')
-        ->select('agency_resources.name','agency_resources.seniority','agency_resources.hourly_rate','agency_resources.image','agency_resources_skills.skill','candidates.agency_resource_id')
-        ->where('candidates.proposal_id','=',$proposal_id)
-        ->where('candidates.status','=',1)
-        ->get();
-        $response = Controller::returnResponse(200, 'successfully', $cc);
-        return json_encode($response);
     }
 }
