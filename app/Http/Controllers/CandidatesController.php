@@ -229,6 +229,7 @@ class CandidatesController extends Controller
                 ->join('hire_developer_proposals', 'candidates.proposal_id', '=', 'hire_developer_proposals.id')
                 ->where('hire_developer_proposals.project_id', '=', $req->projectId)
                 ->where('candidates.status', '<>', 2)
+                ->where('candidates.status', '<>', 1)
                 ->whereIn('candidates.id', $candidatesIds)
                 ->update(['candidates.status' => $req->status]);
             if ($candidates < 1) {

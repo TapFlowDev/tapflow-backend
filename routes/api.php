@@ -234,7 +234,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::get('getTeamCategories/{id}', [GroupCategoriesController::class, 'getTeamCategories']);
 
     Route::post('addProposal', [Proposals::class, 'Insert']);
-    Route::post('submitProposal', [HireDeveloperProposalsController::class, 'Insert']);
+    // Route::post('submitProposal', [HireDeveloperProposalsController::class, 'Insert']);
     Route::post('saveFinalProposal', [Final_proposals::class, 'saveFinalProposal']);
     Route::post('updateTeamCategories', [GroupCategoriesController::class, 'updateTeamCategories']);
     Route::post('updateFreelancerBio', [FreeLancerController::class, 'update_Bio']);
@@ -330,8 +330,8 @@ Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::get('deposits/{offset}/{limit}', [DepositRequestController::class, 'getDeposits']);
     Route::post('printDepositDeails', [DepositRequestController::class, 'printDepositDeails']);
     // new apis
-    Route::post('acceptHireProposal', [HireDeveloperProposalsController::class, 'acceptProposal']);
-    Route::post('rejectHireProposal', [HireDeveloperProposalsController::class, 'rejectProposal']);
+    // Route::post('acceptHireProposal', [HireDeveloperProposalsController::class, 'acceptProposal']);
+    // Route::post('rejectHireProposal', [HireDeveloperProposalsController::class, 'rejectProposal']);
     Route::get('allProjects', [ProjectController::class, 'getAllProjectsClient']);
     Route::post('rejectContract', [HireDeveloperFinalProposalController::class, 'rejectContract']);
     Route::post('reviewContract', [HireDeveloperFinalProposalController::class, 'reviewContract']);
