@@ -160,7 +160,7 @@ class CandidatesController extends Controller
             } else {
                 $candidates = DB::table('candidates')
                     ->join('agency_resources', 'candidates.agency_resource_id', '=', 'agency_resources.id')
-                    ->select('candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id', 'candidates.hourly_rate', 'agency_resources.*', 'agency_resources.hourly_rate as default_hourly_rate')
+                    ->select('agency_resources.*','candidates.id as candidate_id', 'candidates.status as candidate_status', 'candidates.proposal_id', 'candidates.hourly_rate', 'agency_resources.hourly_rate as default_hourly_rate')
                     ->whereIn('candidates.proposal_id', $proposalIds)
                     ->get();
             }
