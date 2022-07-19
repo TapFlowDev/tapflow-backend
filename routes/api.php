@@ -295,6 +295,7 @@ Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('removeCandidates', [CandidatesController::class, 'Delete']);
     Route::get('getAgencyResources/{id}', [AgencyResourceController::class, 'getAgencyResources']);
     Route::get('dashboardStatus', [TeamController::class, 'dashboardStatus']);
+    Route::post('updateCandidate ', [CandidatesController::class, 'updateCandidateHourlyRate']);
 });
 Route::group(['middleware' => ['auth.isClient', 'auth:sanctum']], function () {
     Route::post('addCompany', [GroupController::class, 'add_group_company']);
