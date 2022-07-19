@@ -160,7 +160,7 @@ class ResourcesController extends Controller
     {
         try{
         foreach ($data as $resource) {
-            $skill = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $resource->agency_resource_id)->first();
+            $skill = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $resource->agency_resource_id)->first()->skill;
             $array = array(
                 "contract_id" => $contract_id,
                 "job_function" => $skill,
