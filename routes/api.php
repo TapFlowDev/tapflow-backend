@@ -228,6 +228,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('getCandidates/{id}', [CandidatesController::class, 'getProjectCandidates']);
     Route::get('getChatNot/{offset}/{limit}', [RoomController::class, 'getChatNot']);
     Route::post('getRoom', [RoomController::class, 'getRoom']);
+    Route::get('getCandidatesByProposalId/{id}', [CandidatesController::class,'getCandidatesByProposalId']);
 });
 Route::group(['middleware' => ['auth.isAgency', 'auth:sanctum']], function () {
     Route::post('addTeam', [GroupController::class, 'add_group_team']);

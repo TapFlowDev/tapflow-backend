@@ -256,4 +256,5 @@ class ResourcesController extends Controller
             return (json_encode($response));
         }
     }
+   
 }
