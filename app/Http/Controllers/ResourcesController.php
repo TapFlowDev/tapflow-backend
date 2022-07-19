@@ -170,10 +170,10 @@ class ResourcesController extends Controller
                 "name" => $resource->name,
             );
             resources::create($array);
-            ['code'=>200,'msg'=>"successful"];
         }
+        return ['code'=>200,'msg'=>"successful"];
         }catch(Exception $error){
-            ['code'=>500,'msg'=>$error->getMessage()];
+            return ['code'=>500,'msg'=>$error->getMessage()];
         }
     }
     function contractResources(Request $req)
