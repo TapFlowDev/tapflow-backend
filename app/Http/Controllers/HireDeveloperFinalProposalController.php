@@ -67,8 +67,9 @@ class HireDeveloperFinalProposalController extends Controller
                     $data = array("proposal_id" => $req->proposal_id, "team_id" => $userData['group_id'], "user_id" => $userData['user_id']);
                     $contract = hire_developer_final_proposal::create($data);
                     $resources = $candidatesObj->getCandidatesByProposalId($req->proposal_id);
-                    $resourcesObj->internalAdd($resources, $contract->id);
-
+                    $rr=$resourcesObj->internalAdd($resources, $contract->id);
+                    if($rr['code']!=200){ $response = Controller::returnResponse(500, "something went wrong resources",$rr['msg']);
+                        return (json_encode($response));}
                     $response = Controller::returnResponse(200, "successful", ["contract_id" => $contract->id]);
                     return (json_encode($response));
                 }

@@ -158,7 +158,7 @@ class ResourcesController extends Controller
     }
     function internalAdd($data, $contract_id)
     {
-
+        try{
         foreach ($data as $resource) {
             $skill = Agency_resources_skill::select('skill')->where('agency_resource_id', '=', $resource->agency_resource_id)->first();
             $array = array(
@@ -170,6 +170,10 @@ class ResourcesController extends Controller
                 "name" => $resource->name,
             );
             resources::create($array);
+            ['code'=>200,'msg'=>"successful"];
+        }
+        }catch(Exception $error){
+            ['code'=>500,'msg'=>$error->getMessage()];
         }
     }
     function contractResources(Request $req)
