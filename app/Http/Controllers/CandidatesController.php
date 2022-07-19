@@ -45,8 +45,6 @@ class CandidatesController extends Controller
                     "user_id" => $userData['user_id'],
                 ];
                 $proposal = hire_developer_proposals::create($proposalArr);
-                $response = Controller::returnResponse(422, 'Project not found', []);
-                return json_encode($response);
             }
             $candidates = json_decode($req->candidates);
             $candidatesIds = Agency_resource::select('id', 'hourly_rate')->whereIn('id', $candidates)->where('team_id', '=', $userData['group_id'])->get();
