@@ -226,20 +226,24 @@ class CandidatesController extends Controller
             }
             // $candidates = Candidate::whereIn('id', $candidatesIds)->where('status', '<>', 2)->get();
 
-            $candidates = DB::table('candidates')
-                ->join('hire_developer_proposals', 'candidates.proposal_id', '=', 'hire_developer_proposals.id')
-                ->where('hire_developer_proposals.project_id', '=', $req->projectId)
-                ->where('candidates.status', '<>', 2)
-                ->where('candidates.status', '<>', 1)
-                ->whereIn('candidates.id', $candidatesIds)
-                ->update(['candidates.status' => $req->status]);
+            // $candidates = DB::table('candidates')
+            //     ->join('hire_developer_proposals', 'candidates.proposal_id', '=', 'hire_developer_proposals.id')
+            //     ->where('hire_developer_proposals.project_id', '=', $req->projectId)
+            //     ->where('candidates.status', '<>', 2)
+            //     ->where('candidates.status', '<>', 1)
+            //     ->whereIn('candidates.id', $candidatesIds)
+            //     ->update(['candidates.status' => $req->status]);
+            $candidates = 0;
             if ($req->status == 1) {
                 $proposals = DB::table('hire_developer_proposals')
                     ->join('candidates', 'hire_developer_proposals.id', '=', 'candidates.proposal_id')
+                    ->select('hire_developer_proposals.id')
                     ->where('hire_developer_proposals.project_id', '=', $req->projectId)
                     ->where('hire_developer_proposals.status', '<>', 0)
                     ->whereIn('candidates.id', $candidatesIds)
-                    ->update(['hire_developer_proposals.status' => 1]);
+                    ->get();
+                $response = Controller::returnResponse(200, 'im here', $proposals);
+                return json_encode($response);
             }
             if ($candidates < 1) {
                 $response = Controller::returnResponse(200, 'Action denied', []);
