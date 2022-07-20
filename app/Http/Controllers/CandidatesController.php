@@ -70,7 +70,7 @@ class CandidatesController extends Controller
             /**
              * add mail and notifications
              */
-            $project = Project::select('id', 'name', 'user_id')->where('id', '=', $req->projectId)->first();
+            $project = Project::select('id', 'name', 'user_id','company_id')->where('id', '=', $req->projectId)->first();
             $user = User::select('first_name', 'last_name', 'email')->where('id', $project->user_id)->get();
             $details = [
                 'subject' => 'New Candidate(s)',
@@ -79,6 +79,8 @@ class CandidatesController extends Controller
                 'admin_name' => $user->first_name,
                 'mail_type' => 2,
             ];
+            $fenLink="/Client-user/main/project-info/".$project->id;                       
+            Controller::sendNotification($project->company_id,$project->name,'You have received new candidates',$fenLink,2,'hire_developer_proposals',$proposal->id);
             Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
             // Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
             $response = Controller::returnResponse(200, 'Candidates added successfully', []);
@@ -272,6 +274,7 @@ class CandidatesController extends Controller
                     ->whereIn('candidates.id', $candidatesIds)
                     ->pluck('user_id')->toArray();
                 $users = User::select('first_name', 'last_name', 'email')->whereIn('id', $adminIds)->distinct()->get();
+                $groupObj=new GroupController;
                 foreach ($users as $user) {
                     $details = [
                         'subject' => 'Candidate(s) Review ',
@@ -280,6 +283,9 @@ class CandidatesController extends Controller
                         'admin_name' => $user->first_name,
                         'mail_type' => 1,
                     ];
+                    $team_id=$groupObj->getGroupIdByUserId($user->id);
+                    $fenLink="/Client-user/main/project-info/".$project->id;                       
+                    Controller::sendNotification($team_id,$project->name,'You candidates have been reviewed',$fenLink,2,'projects',$project->id);
                     Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
                     // Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
                 }

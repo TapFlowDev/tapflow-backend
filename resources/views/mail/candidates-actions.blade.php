@@ -10,7 +10,7 @@
             <tr>
                 <td>
                     @if ($details['mail_type'] == 1)
-                        <p style="color: black;">Your Candidates for Project {{ $details['project_name'] }} has been
+                        <p style="color: black;">Your Candidates for Project {{ $details['project_name'] }} have been
                             reviewed,
                             <a href="https://www.tapflow.app/a-user/main/project/{{ $details['project_id'] }}"
                                 target="_blank" style=" color: black;text-decoration: none;font-weight:bold;">
