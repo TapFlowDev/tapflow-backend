@@ -70,7 +70,7 @@ class CandidatesController extends Controller
             /**
              * add mail and notifications
              */
-            $project = Project::select('id', 'name', 'user_id','company_id')->where('id', '=', $req->projectId)->first();
+            $project = Project::select('id', 'name', 'user_id','company_id')->where('id', '=', $id)->first();
             $user = User::select('first_name', 'last_name', 'email')->where('id', $project->user_id)->first();
             $details = [
                 'subject' => 'New Candidate(s)',
