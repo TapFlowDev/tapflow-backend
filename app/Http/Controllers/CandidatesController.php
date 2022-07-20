@@ -286,7 +286,7 @@ class CandidatesController extends Controller
                     Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
                     // Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
                     $team_id=$groupObj->getGroupIdByUserId($user->id);
-                    $fenLink="/Client-user/main/project-info/".$project->id;                       
+                    $fenLink="/a-user/main/project/".$project->id;                       
                     Controller::sendNotification($team_id,$project->name,'You candidates have been reviewed',$fenLink,2,'projects',$project->id);
                 }
                 $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
