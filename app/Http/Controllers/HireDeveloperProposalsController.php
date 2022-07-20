@@ -241,7 +241,7 @@ class HireDeveloperProposalsController extends Controller
             $response = Controller::returnResponse(401, "Unauthrized", []);
             return (json_encode($response));
         }
-        $proposal = hire_developer_proposals::select('id', 'status', 'project_id','team_id')->where('id', $req->proposal_id)->first();
+        $proposal = hire_developer_proposals::select('id', 'status', 'project_id', 'team_id')->where('id', $req->proposal_id)->first();
         if (!$proposal) {
             $response = Controller::returnResponse(422, 'Proposal does not exsist', []);
             return (json_encode($response));
@@ -273,7 +273,7 @@ class HireDeveloperProposalsController extends Controller
             $response = Controller::returnResponse(401, "Unauthrized", []);
             return (json_encode($response));
         }
-        $proposal = hire_developer_proposals::select('id', 'status', 'project_id', 'user_id','team_id')->where('id', $req->proposal_id)->first();
+        $proposal = hire_developer_proposals::select('id', 'status', 'project_id', 'user_id', 'team_id')->where('id', $req->proposal_id)->first();
         if (!$proposal) {
             $response = Controller::returnResponse(422, 'Proposal does not exsist', []);
             return (json_encode($response));
@@ -375,5 +375,15 @@ class HireDeveloperProposalsController extends Controller
             $response = Controller::returnResponse(500, "there is an error", $error->getMessage());
             return (json_encode($response));
         }
+    }
+    function getCandidatesCountByProjectId($projectId)
+    {
+        $candidatesCount = DB::table('hire_developer_proposals')
+            ->join('candidates', 'hire_developer_proposals.id', '=', 'candidates.proposal_id')
+            ->select('candidates.id')
+            ->where('hire_developer_proposals.project_id', '=', $projectId)
+            ->where('candidates.status', '<>', 2)
+            ->count();
+        return $candidatesCount;
     }
 }
