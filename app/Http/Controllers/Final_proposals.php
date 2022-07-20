@@ -71,8 +71,8 @@ class Final_proposals extends Controller
                                         // $price = $this->calculatePrice($req->hours, $req->hourly_rate);
                                         // $req['price'] = $price;
                                         $title = $this->createTitle($req->project_id);
-                                        $req['title'] = $title;
-                                        $final_proposal = Final_proposal::create($req + ['status' => -1]);
+                                        // $req['title'] = $title;
+                                        $final_proposal = Final_proposal::create($req->all() + ['status' => -1, 'title' => $title]);
                                         // if ($req->down_payment['status'] == 1) {
                                         //     $this->downPaymentHandler($req->down_payment, $final_proposal->id);
                                         // } else {
