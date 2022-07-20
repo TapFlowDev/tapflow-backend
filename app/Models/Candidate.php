@@ -12,5 +12,6 @@ class Candidate extends Model
         'proposal_id',
         'agency_resource_id',
         'status', // 0=>new, 1=>accepted, 2=>rejected, 3=>interview
+        'hourly_rate',
     ];
 }
