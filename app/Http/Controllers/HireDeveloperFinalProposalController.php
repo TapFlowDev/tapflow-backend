@@ -63,11 +63,13 @@ class HireDeveloperFinalProposalController extends Controller
 
                     $requirementObj = new Requirement;
                     $resourcesObj = new ResourcesController;
-                    $data = array("proposal_id" => $req->proposal_id, "team_id" => $userData['group_id'], "user_id" => $userData['user_id']);
+                    $candidatesObj = new CandidatesController;
+                    $data = array("proposal_id" => $req->proposal_id, "team_id" => $userData['group_id'], "user_id" => $userData['user_id'],'status'=>-1);
                     $contract = hire_developer_final_proposal::create($data);
-                    $resources = $requirementObj->getResourcesByProposalId($req->proposal_id);
-                    $resourcesObj->internalAdd($resources, $contract->id);
-
+                    $resources = $candidatesObj->getCandidatesByProposalId($req->proposal_id);
+                    $rr=$resourcesObj->internalAdd($resources, $contract->id);
+                    if($rr['code']!=200){ $response = Controller::returnResponse(500, "something went wrong resources",$rr['msg']);
+                        return (json_encode($response));}
                     $response = Controller::returnResponse(200, "successful", ["contract_id" => $contract->id]);
                     return (json_encode($response));
                 }
@@ -466,7 +468,7 @@ class HireDeveloperFinalProposalController extends Controller
                 $response = Controller::returnResponse(401, "unauthorized", []);
                 return (json_encode($response));
             } else {
-                $contracts = hire_developer_final_proposal::where('id', $contractId)->select('*')->get();
+                $contracts = hire_developer_final_proposal::where('id', $contractId)->where('status','!=',-1)->select('*')->get();
                 $contract = $contracts->first();
                 $proposal = hire_developer_proposals::select('*')->where('id', '=', $contract->proposal_id)->first();
                 if (!$proposal) {
