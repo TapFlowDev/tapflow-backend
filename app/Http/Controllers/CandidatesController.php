@@ -70,7 +70,7 @@ class CandidatesController extends Controller
             /**
              * add mail and notifications
              */
-            $project = Project::select('id', 'name', 'user_id','company_id')->where('id', '=', $id)->first();
+            $project = Project::select('id', 'name', 'user_id', 'company_id')->where('id', '=', $id)->first();
             $user = User::select('first_name', 'last_name', 'email')->where('id', $project->user_id)->first();
             $details = [
                 'subject' => 'New Candidate(s)',
@@ -79,8 +79,8 @@ class CandidatesController extends Controller
                 'admin_name' => $user->first_name,
                 'mail_type' => 2,
             ];
-            $fenLink="/Client-user/main/project-info/".$project->id;                       
-            Controller::sendNotification($project->company_id,$project->name,'You have received new candidates',$fenLink,2,'hire_developer_proposals',$proposal->id);
+            $fenLink = "/Client-user/main/project-info/" . $project->id;
+            Controller::sendNotification($project->company_id, $project->name, 'You have received new candidates', $fenLink, 2, 'hire_developer_proposals', $proposal->id);
             // Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
             Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
             $response = Controller::returnResponse(200, 'Candidates added successfully', []);
@@ -272,9 +272,10 @@ class CandidatesController extends Controller
                     ->where('hire_developer_proposals.project_id', '=', $req->projectId)
                     ->whereIn('candidates.id', $candidatesIds)
                     ->pluck('user_id')->toArray();
-                    
+
                 $users = User::select('first_name', 'last_name', 'email', 'id')->whereIn('id', $adminIds)->distinct()->get();
-                $groupObj=new GroupController;
+                $groupObj = new GroupController;
+                $RoomObj = new RoomController();
                 foreach ($users as $user) {
                     $details = [
                         'subject' => 'Candidate(s) Review ',
@@ -283,11 +284,15 @@ class CandidatesController extends Controller
                         'admin_name' => $user->first_name,
                         'mail_type' => 1,
                     ];
+                    if ($req->status == 1) {
+                        $data = array('name' => null, 'agencyAdmin' => $user->id, 'companyAdmin' => $userData['user_id']);
+                        $room = $RoomObj->createRoom($data);
+                    }
                     // Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
                     Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
-                    $team_id=$groupObj->getGroupIdByUserId($user->id);
-                    $fenLink="/a-user/main/project/".$project->id;                       
-                    Controller::sendNotification($team_id,$project->name,'You candidates have been reviewed',$fenLink,2,'projects',$project->id);
+                    $team_id = $groupObj->getGroupIdByUserId($user->id);
+                    $fenLink = "/a-user/main/project/" . $project->id;
+                    Controller::sendNotification($team_id, $project->name, 'You candidates have been reviewed', $fenLink, 2, 'projects', $project->id);
                 }
                 $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
                 return json_encode($response);
