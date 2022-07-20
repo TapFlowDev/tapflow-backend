@@ -94,10 +94,10 @@ class Proposals extends Controller
                         $fenLink="/Client-user/main/project-info/".$req->project_id;
 
                         Controller::sendNotification($projectData->company_id,$projectData->name,'Initial proposal submitted',$fenLink,2,'proposals',$proposal_id);
-                        Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
-                        //Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
-                        //Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
-                        //Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
+                        // Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to($companyAdminData->email)->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('abed@tapflow.app')->send(new ProposalMail($details));
+                        Mail::mailer('smtp2')->to('naser@tapflow.app')->send(new ProposalMail($details));
 
                         return (json_encode($response));
                     } else {
