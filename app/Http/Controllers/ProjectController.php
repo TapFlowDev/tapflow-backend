@@ -1310,7 +1310,7 @@ class ProjectController extends Controller
                     $project->progressArray = $progressArray;
                 } elseif ($groupId > 0 && $groupType == 2) {
                     $projectAgencyMatchObj = new ProjectAgencyMatchController;
-                    $initPropCount = $hireDeveloperProposalsObj->getCountByProjectId($project->id);
+                    $initPropCount = $hireDeveloperProposalsObj->getCandidatesCountByProjectId($project->id);
                     $finalPropCount = $hireDeveloperProposalsObj->getContractsCountByProjectId($project->id);
                     $hiresPropCount = $hireDeveloperProposalsObj->getHiresCountByProjectId($project->id);
                     $agencyMatchCount = $projectAgencyMatchObj->getMatchCountByProjectId($project->id);

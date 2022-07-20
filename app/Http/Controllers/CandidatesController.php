@@ -240,8 +240,6 @@ class CandidatesController extends Controller
                     ->where('hire_developer_proposals.status', '=', 0)
                     ->whereIn('candidates.id', $candidatesIds)
                     ->update(['hire_developer_proposals.status' => 1]);
-                    $response = Controller::returnResponse(200, 'Action denied', []);
-                    return json_encode($response);
             }
             if ($candidates < 1) {
                 $response = Controller::returnResponse(200, 'Action denied', []);
