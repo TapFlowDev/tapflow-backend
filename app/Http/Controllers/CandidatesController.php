@@ -81,8 +81,8 @@ class CandidatesController extends Controller
             ];
             $fenLink="/Client-user/main/project-info/".$project->id;                       
             Controller::sendNotification($project->company_id,$project->name,'You have received new candidates',$fenLink,2,'hire_developer_proposals',$proposal->id);
-            Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
-            // Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
+            // Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
+            Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
             $response = Controller::returnResponse(200, 'Candidates added successfully', []);
             return json_encode($response);
         } catch (Exception $error) {
@@ -283,11 +283,11 @@ class CandidatesController extends Controller
                         'admin_name' => $user->first_name,
                         'mail_type' => 1,
                     ];
+                    Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
+                    // Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
                     $team_id=$groupObj->getGroupIdByUserId($user->id);
                     $fenLink="/Client-user/main/project-info/".$project->id;                       
                     Controller::sendNotification($team_id,$project->name,'You candidates have been reviewed',$fenLink,2,'projects',$project->id);
-                    Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
-                    // Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
                 }
                 $response = Controller::returnResponse(200, 'Candidates updated successfully', []);
                 return json_encode($response);
