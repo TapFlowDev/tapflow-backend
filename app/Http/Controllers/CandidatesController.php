@@ -273,7 +273,7 @@ class CandidatesController extends Controller
                     ->whereIn('candidates.id', $candidatesIds)
                     ->pluck('user_id')->toArray();
                     
-                $users = User::select('first_name', 'last_name', 'email')->whereIn('id', $adminIds)->distinct()->get();
+                $users = User::select('first_name', 'last_name', 'email', 'id')->whereIn('id', $adminIds)->distinct()->get();
                 $groupObj=new GroupController;
                 foreach ($users as $user) {
                     $details = [
