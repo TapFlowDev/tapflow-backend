@@ -85,9 +85,9 @@ class Controller extends BaseController
     public function sendNotification($receiver_id, $title, $body,$link,$type,$action,$action_id)
     {
         try{
-        	 $serverLink="https://tapflow.dev";
+        	 $serverLink="https://www.tapflow.dev";
             //  $serverLink="https://testtest.tapflow.app";
-            //  $serverLink="https://tapflow.app";
+            //  $serverLink="https://www.tapflow.app";
            
        
         $firebaseObj = new FireBaseNotificationsController;
