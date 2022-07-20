@@ -283,6 +283,8 @@ class CandidatesController extends Controller
                         'admin_name' => $user->first_name,
                         'mail_type' => 1,
                     ];
+                    $response = Controller::returnResponse(500, 'Candidates', $user);
+                return json_encode($response);
                     Mail::mailer('smtp2')->to('hamzahshajrawi@gmail.com')->send(new CandidatesActions($details));
                     // Mail::mailer('smtp2')->to($user->email)->send(new CandidatesActions($details));
                     $team_id=$groupObj->getGroupIdByUserId($user->id);
